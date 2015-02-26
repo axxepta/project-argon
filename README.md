@@ -1,4 +1,4 @@
 # Project Argon
 Author technical information with Oxygen + BaseX 
 
-See Wiki for more information
+See [Wiki](https://github.com/axxepta/project-argon/wiki) for more information
