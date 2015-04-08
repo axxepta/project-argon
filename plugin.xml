@@ -8,15 +8,15 @@
         description="Test"
         version="${project.version}"
         vendor="SyncRO"
-        class="myGroup.workspace.WorkspaceAccessPlugin"
+        class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
         classLoaderType="preferReferencedResources">
     <runtime>
         <library name="lib/${project.build.finalName}.jar"/>
     </runtime>
 
     <extension type="WorkspaceAccess"
-               class="myGroup.workspace.CustomWorkspaceAccessPluginExtension"/>
-    <extension type="OptionPage" class="myGroup.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
+               class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessPluginExtension"/>
+    <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
 
     <!--The sample view which will present messages from the sample plugin.-->
     <view id="SampleWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
