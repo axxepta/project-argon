@@ -11,7 +11,7 @@
         class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
         classLoaderType="preferReferencedResources">
     <runtime>
-        <library name="lib/${project.build.finalName}.jar"/>
+        <library name="libs/argon-0.0.1.jar"/>
     </runtime>
 
     <extension type="WorkspaceAccess"
