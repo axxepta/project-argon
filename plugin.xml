@@ -5,9 +5,9 @@
 <plugin
         id="com.oxygenxml.plugin.WorkspaceAccess"
         name="CustomWorkspaceAccess"
-        description="Test"
-        version="${project.version}"
-        vendor="SyncRO"
+        description="Plugin for accessing BaseX DB"
+        version="0.0.1"
+        vendor="axxepta solutions GmbH"
         class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
         classLoaderType="preferReferencedResources">
     <runtime>
