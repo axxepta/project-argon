@@ -4,7 +4,7 @@
 
 <plugin
         id="com.oxygenxml.plugin.WorkspaceAccess"
-        name="CustomWorkspaceAccess"
+        name="Argon"
         description="Plugin for accessing BaseX DB"
         version="0.0.1"
         vendor="axxepta solutions GmbH"
@@ -14,8 +14,7 @@
         <library name="libs/argon-0.0.1.jar"/>
     </runtime>
 
-    <extension type="WorkspaceAccess"
-               class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessPluginExtension"/>
+    <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessPluginExtension"></extension>
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
 
     <!--The sample view which will present messages from the sample plugin.-->

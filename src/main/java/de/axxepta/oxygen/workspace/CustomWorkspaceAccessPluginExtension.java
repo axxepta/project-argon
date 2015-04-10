@@ -26,8 +26,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTree;
 import javax.swing.text.BadLocationException;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.jidesoft.swing.JideScrollPane;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
 import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
@@ -85,6 +88,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
      */
     private StandalonePluginWorkspace pluginWorkspaceAccess;
 
+
 //  /**
 //   * The Oxygen menu bar. You can set this field on startup
 //   * and then provide custom actions or filters when a certain file is opened.
@@ -104,6 +108,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
+
                 if (editorAccess != null) {
                     URL tempFileUrl = editorAccess.getEditorLocation();
                     // Get the corresponding URL
@@ -600,10 +605,34 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
             public void customizeView(ViewInfo viewInfo) {
                 if(
                     //The view ID defined in the "plugin.xml"
-                        "SampleWorkspaceAccessID".equals(viewInfo.getViewID())) {
+                    "SampleWorkspaceAccessID".equals(viewInfo.getViewID())) {
+
+
+                    // Create data for the tree
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Database: localhost:1984" );
+
+                    //create the child nodes
+                    DefaultMutableTreeNode db1Node = new DefaultMutableTreeNode("dbname_1");
+                    DefaultMutableTreeNode db2Node = new DefaultMutableTreeNode("dbname_2");
+                    DefaultMutableTreeNode db3Node = new DefaultMutableTreeNode("dbname_3");
+
+                    //add the child nodes to the root node
+                    root.add(db1Node);
+                    root.add(db2Node);
+                    root.add(db3Node);
+
+                    // Create a new tree control
+                    JTree tree = new JTree(root);
+
                     cmsMessagesArea = new JTextArea("CMS Session History:");
-                    viewInfo.setComponent(new JScrollPane(cmsMessagesArea));
-                    viewInfo.setTitle("CMS Messages");
+
+                    JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
+                    scrollPane.getViewport().add(tree);
+
+                    viewInfo.setComponent(scrollPane);
+
+
+                    viewInfo.setTitle("BaseX Db Connection");
                     viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
                 } else if("Project".equals(viewInfo.getViewID())) {
                     // Change the 'Project' view title.
@@ -611,6 +640,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                 }
             }
         });
+
+
         //Add a DITA Map Topic Ref resolver.
         pluginWorkspaceAccess.addTopicRefTargetInfoProvider("cms", new TopicRefTargetInfoProvider() {
             @Override

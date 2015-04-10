@@ -72,7 +72,7 @@ public class CustomWorkspaceAccessOptionPagePluginExtension extends OptionPagePl
      */
     @Override
     public String getTitle() {
-        return "Workspace Access Sample Plugin";
+        return "BaseX Configuration";
     }
 
     /**
@@ -82,13 +82,19 @@ public class CustomWorkspaceAccessOptionPagePluginExtension extends OptionPagePl
     public JComponent init(final PluginWorkspace pluginWorkspace) {
         GridBagConstraints c = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
-        JLabel saveTmpLocationLbl = new JLabel("Save location for temporary files:");
+        JLabel saveTmpLocationLbl = new JLabel("This Panel will be used to set BaseX DB configurations");
+
+        // Create a new tree control
+        //tree = new JTree();
+
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 0;
         c.weighty = 0;
         c.anchor = GridBagConstraints.WEST;
         panel.add(saveTmpLocationLbl, c);
+
+        /*
 
         saveTmpLocationTextField = new JTextField();
         c.gridx ++;
@@ -162,6 +168,7 @@ public class CustomWorkspaceAccessOptionPagePluginExtension extends OptionPagePl
         // Initialize the text fields with the stored options.
         saveTmpLocationTextField.setText(saveTmpLocation != null ? saveTmpLocation : "");
         defaultCheckoutLocationTextField.setText(defaultCheckOutLocation != null ? defaultCheckOutLocation : "");
+        */
 
         return panel;
     }
