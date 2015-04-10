@@ -100,8 +100,10 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
      */
     @Override
     public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
+
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
         this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+
         // Check In action
         @SuppressWarnings("serial")
         final Action checkInAction = new AbstractAction() {

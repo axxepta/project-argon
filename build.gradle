@@ -1,4 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
 
 version = '0.0.1'
 
@@ -10,7 +14,18 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.jidesoft:jide-oss:3.6.7'
+    compile 'com.sun.jersey:jersey-client:1.9'
+}
+
+idea{
+    project {
+        languageLevel = '1.6'
+    }
+    module {
+        downloadJavadoc = true // defaults to false
+        downloadSources = true
+    }
 }

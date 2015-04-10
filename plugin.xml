@@ -3,7 +3,6 @@
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
 
 <plugin
-        id="com.oxygenxml.plugin.WorkspaceAccess"
         name="Argon"
         description="Plugin for accessing BaseX DB"
         version="0.0.1"
@@ -14,11 +13,15 @@
         <library name="libs/argon-0.0.1.jar"/>
     </runtime>
 
-    <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessPluginExtension"></extension>
+    <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
+    <!--
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
+    -->
 
     <!--The sample view which will present messages from the sample plugin.-->
-    <view id="SampleWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
+    <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
+
     <!--The sample toolbar which will present messages from the sample plugin.-->
     <toolbar id="SampleWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
+
 </plugin>
