@@ -1,8 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-sourceCompatibility = '1.6'
-targetCompatibility = '1.6'
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
 
 version = '0.0.1'
 
@@ -13,16 +13,44 @@ repositories {
     }
 }
 
+configurations {
+    releaseJars
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.jidesoft:jide-oss:3.6.7'
     compile 'com.sun.jersey:jersey-client:1.9'
+    releaseJars 'com.jidesoft:jide-oss:3.6.7'
+    releaseJars 'com.sun.jersey:jersey-client:1.9'
 }
+
+/*
+jar {
+    into('libs') {
+        from configurations.releaseJars
+    }
+}
+*/
+
+//create a single Jar with all dependencies
+/*
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'de.axxepta.oxygen.workspace.WorkspaceAccessPlugin'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+*/
 
 idea{
     project {
-        languageLevel = '1.6'
+        languageLevel = '1.7'
     }
     module {
         downloadJavadoc = true // defaults to false
