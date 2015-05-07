@@ -22,8 +22,11 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.jidesoft:jide-oss:3.6.7'
     compile 'com.sun.jersey:jersey-client:1.9'
+    compile 'net.sf.saxon:Saxon-HE:9.6.0-5'
     releaseJars 'com.jidesoft:jide-oss:3.6.7'
     releaseJars 'com.sun.jersey:jersey-client:1.9'
+    compile 'com.google.code.gson:gson:2.3.1'
+    releaseJars 'com.google.code.gson:gson:2.3.1'
 }
 
 /*

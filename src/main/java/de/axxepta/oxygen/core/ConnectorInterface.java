@@ -1,5 +1,9 @@
 package de.axxepta.oxygen.core;
 
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -11,6 +15,6 @@ public interface ConnectorInterface {
 
     void setRestApiClient(String username, String password);
 
-    ArrayList<String> getResources();
+    ArrayList<String> getResources() throws IOException, SAXException, ParserConfigurationException;
 
 }

@@ -1,7 +1,9 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.rest.BasexWrapper;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
+import org.xml.sax.SAXException;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
@@ -11,6 +13,12 @@ import ro.sync.ui.Icons;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by daltiparmak on 10.04.15.
@@ -35,6 +43,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
              */
             @Override
             public void customizeView(ViewInfo viewInfo) {
+
+                Iterator<String> iterator = null;
+
                 if(
                     //The view ID defined in the "plugin.xml"
                     "ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
@@ -42,47 +53,32 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // Create data for the tree
                     // DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Database: localhost:1984" );
 
+                    // Create some data to populate our tree.
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Databases");
 
-                    /*
                     BasexWrapper basexWrapper = new BasexWrapper();
-                    basexWrapper.setRestApiClient("admin", "admin");
+                    basexWrapper.setRestApiClient();
 
-                    ArrayList<String> resources = basexWrapper.getResources();
-
-                    Iterator<String> iterator = resources.iterator();
-                    while (iterator.hasNext()) {
-                        DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode("nansen");
-                        root.add(dbNode);
+                    List<String> databaseList = null;
+                    try {
+                        databaseList = basexWrapper.getResources();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (SAXException e) {
+                        e.printStackTrace();
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
                     }
 
+                    iterator = databaseList.iterator();
 
-                    DefaultMutableTreeNode db1Node = new DefaultMutableTreeNode("dbname_1");
-                    root.add(db1Node);
-                    DefaultMutableTreeNode db2Node = new DefaultMutableTreeNode("dbname_2");
-                    root.add(db2Node);
-                    DefaultMutableTreeNode db3Node = new DefaultMutableTreeNode("dbname_3");
-                    root.add(db3Node);
-                    */
-
-                    // Create some data to populate our tree.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Root" );
-                    DefaultMutableTreeNode first = new DefaultMutableTreeNode( "First" );
-                    DefaultMutableTreeNode second = new DefaultMutableTreeNode( "Second" );
-
-                    root.add( first );
-                    root.add( second );
-
-                    first.add( new DefaultMutableTreeNode( "One" ) );
-                    first.add( new DefaultMutableTreeNode( "Two" ) );
-                    first.add( new DefaultMutableTreeNode( "Three" ) );
-                    first.add( new DefaultMutableTreeNode( "Four" ) );
-                    first.add( new DefaultMutableTreeNode( "Five" ) );
-
-                    second.add( new DefaultMutableTreeNode( "One" ) );
-                    second.add( new DefaultMutableTreeNode( "Two" ) );
-                    second.add( new DefaultMutableTreeNode( "Three" ) );
-                    second.add( new DefaultMutableTreeNode( "Four" ) );
-                    second.add( new DefaultMutableTreeNode( "Five" ) );
+                    int i = 0;
+                    while (iterator.hasNext()) {
+                        DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
+                        root.add(dbNode);
+                        iterator.next();
+                        i++;
+                    }
 
                     // Create a new tree control
                     BasexTree tree = new BasexTree(root);
@@ -92,7 +88,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TreeListener tlistener = new TreeListener(tree);
                     tree.addMouseListener(tlistener);
 
-                    JOptionPane.showMessageDialog(null, "This language just gets better and better!");
+                    //JOptionPane.showMessageDialog(null, "This language just gets better and better!");
 
                     cmsMessagesArea = new JTextArea("CMS Session History:");
                     JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
