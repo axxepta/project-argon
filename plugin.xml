@@ -11,6 +11,9 @@
         classLoaderType="preferReferencedResources">
     <runtime>
         <library name="libs/argon-0.0.1.jar"/>
+        <library name="libs/lib/jersey-core-1.9.jar"/>
+        <library name="libs/lib/jide-oss-3.6.7.jar"/>
+        <library name="libs/lib/jersey-client-1.9.jar"/>
     </runtime>
 
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
@@ -22,6 +25,6 @@
     <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
 
     <!--The sample toolbar which will present messages from the sample plugin.-->
-    <toolbar id="SampleWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
+    <toolbar id="ArgonWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
 
 </plugin>

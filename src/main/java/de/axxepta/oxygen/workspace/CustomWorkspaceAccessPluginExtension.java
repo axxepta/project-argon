@@ -122,7 +122,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                     }
                 }
                 // Show 'CMS Messages' view
-                pluginWorkspaceAccess.showView("SampleWorkspaceAccessID", true);
+                pluginWorkspaceAccess.showView("ArgonWorkspaceAccessID", true);
             }
         };
 
