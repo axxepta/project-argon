@@ -16,17 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -295,10 +285,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                 ImageIcon imageIcon = null;
                 java.io.InputStream inputStream = null;
                 try {
-
                     inputStream = getClass().getResourceAsStream("/browseCMS.png");
                     imageIcon = new ImageIcon(ImageIO.read(inputStream));
-
                 } catch (FileNotFoundException e2) {
                     e2.printStackTrace();
                 } catch (IOException e2) {
@@ -383,6 +371,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                         //              }
                         return true;
                     }
+
                     @Override
                     public void editorOpened(URL editorLocation) {
                         checkActionsStatus(editorLocation);
@@ -402,7 +391,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
                     // Customize popup menu
                     private void customizePopupMenu() {
-                        if(currentCustomizedAuthorPageAccess != null && authorPopupMenuCustomizer != null) {
+                        if (currentCustomizedAuthorPageAccess != null && authorPopupMenuCustomizer != null) {
                             //Remove the old popup menu customizer in order to avoid adding two customizers on the same page from the same plugin.
                             currentCustomizedAuthorPageAccess.removePopUpMenuCustomizer(authorPopupMenuCustomizer);
                         }
@@ -418,7 +407,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                                     // CMS menu
                                     JMenu menuCMS = createCMSMenu(checkInAction, checkOutAction, selectionSourceAction, surroundWith);
                                     // Add the CMS menu
-                                    ((JPopupMenu)popUp).add(menuCMS, 0);
+                                    ((JPopupMenu) popUp).add(menuCMS, 0);
                                     // Add 'Open in external application' action
 
                                     final URL selectedUrl;
@@ -427,14 +416,15 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                                         if (selectedText != null) {
                                             selectedUrl = new URL(selectedText);
                                             // Open selected url in system application
-                                            ((JPopupMenu)popUp).add(new JMenuItem(new AbstractAction("Open in system application") {
+                                            ((JPopupMenu) popUp).add(new JMenuItem(new AbstractAction("Open in system application") {
                                                 @Override
                                                 public void actionPerformed(ActionEvent e) {
                                                     pluginWorkspaceAccess.openInExternalApplication(selectedUrl, true);
                                                 }
                                             }), 0);
                                         }
-                                    } catch (MalformedURLException e) {}
+                                    } catch (MalformedURLException e) {
+                                    }
                                 }
                             };
                             currentCustomizedAuthorPageAccess.addPopUpMenuCustomizer(authorPopupMenuCustomizer);
@@ -465,16 +455,16 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                     @Override
                     public boolean editorAboutToBeClosed(URL editorLocation) {
                         URL checkedOutUrl = openedCheckedOutUrls.get(editorLocation);
-                        if(checkedOutUrl != null) {
+                        if (checkedOutUrl != null) {
                             if (verifyCheckInOnClose) {
                                 if (forceCheckIn) {
                                     // Save the current file.
                                     checkInFile(pluginWorkspaceAccess, null, editorLocation, checkedOutUrl, false);
-                                } else if(pluginWorkspaceAccess.showConfirmDialog(
+                                } else if (pluginWorkspaceAccess.showConfirmDialog(
                                         "Close",
                                         "The closed file " + editorLocation + " is Checked Out.\n Do you want to Check In?",
-                                        new String[] {"Ok", "Cancel"},
-                                        new int[] {0, 1}) == 0) {
+                                        new String[]{"Ok", "Cancel"},
+                                        new int[]{0, 1}) == 0) {
                                     // Save the current file.
                                     checkInFile(pluginWorkspaceAccess, null, editorLocation, checkedOutUrl, false);
                                 } else {
@@ -495,7 +485,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                     public void editorRelocated(URL previousEditorLocation, URL newEditorLocation) {
                         //Refresh the mappings.
                         URL previousCheckedOutUrl = openedCheckedOutUrls.get(previousEditorLocation);
-                        if(previousCheckedOutUrl != null) {
+                        if (previousCheckedOutUrl != null) {
                             openedCheckedOutUrls.remove(previousEditorLocation);
                             openedCheckedOutUrls.put(newEditorLocation, previousCheckedOutUrl);
                         }
@@ -543,7 +533,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
             @Override
             public void customizeToolbar(ToolbarInfo toolbarInfo) {
                 //The toolbar ID is defined in the "plugin.xml"
-                if("SampleWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
+                if ("SampleWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
                     List<JComponent> comps = new ArrayList<JComponent>();
                     JComponent[] initialComponents = toolbarInfo.getComponents();
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
@@ -574,14 +564,14 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
                     // Set title
                     String initialTitle = toolbarInfo.getTitle();
-                    String title  = "";
+                    String title = "";
                     if (hasInitialComponents && initialTitle != null && initialTitle.trim().length() > 0) {
                         // Include initial tile
-                        title += initialTitle + " | " ;
+                        title += initialTitle + " | ";
                     }
-                    title  += "CMS";
+                    title += "CMS";
                     toolbarInfo.setTitle(title);
-                } else if("Author_custom_actions1".equals(toolbarInfo.getToolbarID())) {
+                } else if ("Author_custom_actions1".equals(toolbarInfo.getToolbarID())) {
                     //Contribute a new action directly in the Author toolbar which was dynamically created from the document type
                     //associated to the XML file. You can add a new action or remove an existing one.
                     //See the Javadoc for:
@@ -605,13 +595,13 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
              */
             @Override
             public void customizeView(ViewInfo viewInfo) {
-                if(
+                if (
                     //The view ID defined in the "plugin.xml"
-                    "SampleWorkspaceAccessID".equals(viewInfo.getViewID())) {
+                        "SampleWorkspaceAccessID".equals(viewInfo.getViewID())) {
 
 
                     // Create data for the tree
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Database: localhost:1984" );
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Database: localhost:1984");
 
                     //create the child nodes
                     DefaultMutableTreeNode db1Node = new DefaultMutableTreeNode("dbname_1");
@@ -636,7 +626,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
                     viewInfo.setTitle("BaseX Db Connection");
                     viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
-                } else if("Project".equals(viewInfo.getViewID())) {
+                } else if ("Project".equals(viewInfo.getViewID())) {
                     // Change the 'Project' view title.
                     viewInfo.setTitle("CMS Project");
                 }
