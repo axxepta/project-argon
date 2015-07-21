@@ -85,7 +85,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add Tree Listener
-                    TreeListener tlistener = new TreeListener(tree);
+                    TreeListener tlistener = new TreeListener(tree, pluginWorkspaceAccess);
                     tree.addMouseListener(tlistener);
 
                     //JOptionPane.showMessageDialog(null, "This language just gets better and better!");

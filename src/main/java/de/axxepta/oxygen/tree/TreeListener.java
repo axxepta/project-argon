@@ -1,10 +1,16 @@
 package de.axxepta.oxygen.tree;
 
 import javax.swing.*;
+
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.CryptoPrimitive;
 import java.text.ParseException;
 import java.util.logging.Logger;
 
@@ -16,13 +22,15 @@ public class TreeListener extends MouseAdapter {
     private boolean singleClick  = true;
     private int doubleClickDelay = 300;
     private Timer timer;
+	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(JTree tree)
+    public TreeListener(JTree tree, StandalonePluginWorkspace workspaceAccess)
     {
+    	this.wsa = workspaceAccess;
         this._Tree = tree;
         ActionListener actionListener = new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e ) {
                 timer.stop();
                 if (singleClick) {
                     singleClickHandler(e);
@@ -50,6 +58,14 @@ public class TreeListener extends MouseAdapter {
 
     private void singleClickHandler(ActionEvent e) {
         System.out.println("-- single click --");
+        URL cprotoURL = null;
+		try {
+			cprotoURL = new URL("cproto:/tmp/tmp.xml");
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        this.wsa.open(cprotoURL);
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {

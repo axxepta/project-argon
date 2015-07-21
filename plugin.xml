@@ -14,10 +14,21 @@
         <library name="libs/lib/jersey-core-1.9.jar"/>
         <library name="libs/lib/jide-oss-3.6.7.jar"/>
         <library name="libs/lib/jersey-client-1.9.jar"/>
-        <library name="libs/lib/basex-7.6.jae" />
+        <library name="libs/lib/basex-7.6.jar" />
     </runtime>
 
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
+    
+     <extension type="URLHandler"
+      class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension"/>
+
+
+     <extension type="URLChooser"
+      class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension"/>
+
+     <extension type="URLChooserToolbar"
+      class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension"/>
+
     <!--
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
     -->
