@@ -35,7 +35,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
   /**
    * The custom protocol name.
    */
-  private static final String CPROTO = "cproto";
+  private static final String ARGON = "argon";
 
   /**
    * The dialog used to select the URL
@@ -63,9 +63,9 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
       JLabel label = new JLabel("URL:");
       label.setPreferredSize(label.getMinimumSize());
       // The text field containing the URL of the file to be opened
-      selectionArea.setText(CPROTO + ":/");
+      selectionArea.setText(ARGON + ":/");
       // Set the caret at the end of text
-      selectionArea.setCaretPosition("cproto:/".length());
+      selectionArea.setCaretPosition("argon:/".length());
       selectionArea.setPreferredSize(new Dimension(250, 100));
       selectionArea.setBorder(BorderFactory.createEtchedBorder());
 
@@ -149,9 +149,9 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
             StringBuffer selection = new StringBuffer();
             try {
               for (int i = 0; i < selectedFiles.length; i++) {
-                String cprotoURL = CPROTO + ":" + selectedFiles[i].toURI().toURL().getPath();
-                selectedURLs.add(new URL(cprotoURL));
-                selection.append(cprotoURL).append("\n");
+                String argonURL = ARGON + ":" + selectedFiles[i].toURI().toURL().getPath();
+                selectedURLs.add(new URL(argonURL));
+                selection.append(argonURL).append("\n");
               }
               selectionArea.setText(selection.toString());
               selectionArea.requestFocus();
@@ -219,9 +219,9 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
 	List<URL> selectedURLs = new ArrayList<URL>();
 	selectedURLs.clear();
 	
-    String cprotoURL = "cproto:/Users/daltiparmak/zilicon/develop/app/ionic/config.xml";
+    String argonURL = "argon:/Users/daltiparmak/zilicon/develop/app/ionic/config.xml";
     try {
-		selectedURLs.add(new URL(cprotoURL));
+		selectedURLs.add(new URL(argonURL));
 	} catch (MalformedURLException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

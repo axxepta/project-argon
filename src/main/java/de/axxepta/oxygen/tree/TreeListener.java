@@ -58,14 +58,14 @@ public class TreeListener extends MouseAdapter {
 
     private void singleClickHandler(ActionEvent e) {
         System.out.println("-- single click --");
-        URL cprotoURL = null;
+        URL argonURL = null;
 		try {
-			cprotoURL = new URL("cproto:/tmp/tmp.xml");
+			argonURL = new URL("argon:/tmp/tmp.xml");
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        this.wsa.open(cprotoURL);
+        this.wsa.open(argonURL);
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {

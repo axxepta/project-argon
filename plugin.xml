@@ -1,42 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
-<!DOCTYPE plugin SYSTEM "../plugin.dtd">
-
-<plugin
-        name="Argon"
-        description="Plugin for accessing BaseX DB"
-        version="0.0.1"
-        vendor="axxepta solutions GmbH"
-        class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
-        classLoaderType="preferReferencedResources">
+<plugin name="Argon" description="Plugin for accessing BaseX DB" version="0.0.1" vendor="axxepta solutions GmbH" class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin" classLoaderType="preferReferencedResources">
     <runtime>
-        <library name="libs/argon-0.0.1.jar"/>
-        <library name="libs/lib/jersey-core-1.9.jar"/>
-        <library name="libs/lib/jide-oss-3.6.7.jar"/>
-        <library name="libs/lib/jersey-client-1.9.jar"/>
+        <library name="libs/argon-0.0.1.jar" />
+        <library name="libs/lib/jersey-core-1.9.jar" />
+        <library name="libs/lib/jide-oss-3.6.7.jar" />
+        <library name="libs/lib/jersey-client-1.9.jar" />
         <library name="libs/lib/basex-7.6.jar" />
     </runtime>
-
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
-    
-     <extension type="URLHandler"
-      class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension"/>
-
-
-     <extension type="URLChooser"
-      class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension"/>
-
-     <extension type="URLChooserToolbar"
-      class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension"/>
-
+    <extension type="URLHandler" class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension" />
+    <extension type="URLChooser" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
+    <extension type="URLChooserToolbar" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     <!--
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
     -->
-
     <!--The sample view which will present messages from the sample plugin.-->
-    <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
-
+    <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0" />
     <!--The sample toolbar which will present messages from the sample plugin.-->
-    <toolbar id="ArgonWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
-
+    <toolbar id="ArgonWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1" />
 </plugin>

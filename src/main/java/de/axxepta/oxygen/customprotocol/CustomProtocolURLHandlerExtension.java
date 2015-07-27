@@ -15,7 +15,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
   /**
    * The custom protocol name.
    */
-  private static final String CPROTO = "cproto";
+  private static final String ARGON = "argon";
   
   /**
    * The file xml zip protocol name.
@@ -26,8 +26,8 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * Gets the handler for the custom protocol
    */
   public URLStreamHandler getURLStreamHandler(String protocol) {
-    // If the protocol is cproto return its handler
-    if (protocol.equals(CPROTO)) {
+    // If the protocol is argon return its handler
+    if (protocol.equals(ARGON)) {
       URLStreamHandler handler = new CustomProtocolHandler();
       return handler;
     } else 
@@ -57,7 +57,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#canCheckReadOnly(java.lang.String)
    */
   public boolean canCheckReadOnly(String protocol) {
-    return protocol.equals(CPROTO);
+    return protocol.equals(ARGON);
   }
 
   /**

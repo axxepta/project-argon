@@ -149,7 +149,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
       throw new NullPointerException("The URL cannot be null.");
     }
     try {
-      URI uri = new URI(url.toString().replace("cproto", "file"));
+      URI uri = new URI(url.toString().replace("argon", "file"));
       file = new File(uri);
     } catch (URISyntaxException e) {
       e.printStackTrace();
