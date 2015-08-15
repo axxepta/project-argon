@@ -15,8 +15,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,8 +83,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add Tree Listener
-                    TreeListener tlistener = new TreeListener(tree, pluginWorkspaceAccess);
+                    TreeListener tlistener = new TreeListener(tree, pluginWorkspaceAccess, basexWrapper);
+                    tree.addTreeWillExpandListener(tlistener);
                     tree.addMouseListener(tlistener);
+                    tree.addTreeSelectionListener(tlistener);
 
                     //JOptionPane.showMessageDialog(null, "This language just gets better and better!");
 

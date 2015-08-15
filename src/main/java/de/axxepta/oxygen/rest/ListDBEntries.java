@@ -15,6 +15,8 @@ import org.basex.util.Base64;
 import org.basex.util.Token;
 import org.basex.util.TokenBuilder;
 
+import javax.swing.*;
+
 /**
  * Example for retrieving and processing data via REST from BaseX.
  *
@@ -30,10 +32,12 @@ public class ListDBEntries {
     }
     catch (Exception er){}
   }
+
   /**
    * Example code.
    * @throws Exception ignored (shouldn't be)
    */
+
   public ListDBEntries() throws Exception {
     // login data
     String user = "admin";
@@ -46,13 +50,16 @@ public class ListDBEntries {
     tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
     //Get file from resources folder
+    String queryType = "xquery/list-db-entries.xq";
+    //String queryType ="xquery/list-restxq-entries.xq";
     ClassLoader classLoader = getClass().getClassLoader();
-    File qFile = new File(classLoader.getResource("xquery/list-db-entries.xq").getFile());
+    File qFile = new File(classLoader.getResource(queryType).getFile());
 
     String db = "test1";
-    String db_path = "/";
+    String db_path = "/etc/";
     tb.add(new IOFile(qFile).read());
     tb.add("]]></text><variable name=\"db\" value=\""+db+"\"/><variable name=\"path\" value=\""+db_path+"\"/></query>");
+    //tb.add("]]></text></query>");
 
     // send request, receive response
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
@@ -68,6 +75,8 @@ public class ListDBEntries {
     // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
     ANode root = (ANode) query(result, null);
 
+    JOptionPane.showMessageDialog(null, result, "Nachricht", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(null, root, "Nachricht", JOptionPane.PLAIN_MESSAGE);
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
@@ -134,11 +143,5 @@ public class ListDBEntries {
     return Token.string(node.attribute(name));
   }
 
-
-  /**
-   * Runs the example
-   * @param args ignored
-   * @throws Exception ignored
-   */
 
 }
