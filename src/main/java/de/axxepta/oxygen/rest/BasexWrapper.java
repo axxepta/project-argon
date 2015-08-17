@@ -166,6 +166,7 @@ public class BasexWrapper extends RestWrapper{
         String host = "localhost";
         String db, db_path;
         int port = 8984;
+        File qFile;
         // build POST request
         TokenBuilder tb = new TokenBuilder();
         tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
@@ -173,19 +174,25 @@ public class BasexWrapper extends RestWrapper{
         //Get file from resources folder
         ClassLoader classLoader = getClass().getClassLoader();
         if (reqType.equals("db-entries")) {
-            JOptionPane.showMessageDialog(null, "In equals db-entries", "Nachricht", JOptionPane.PLAIN_MESSAGE);
-            reqType = "xquery/list-db-entries.xq";
+
+            //reqType = "xquery/list-db-entries.xq";
+            reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
             db = paras[0];
             db_path = paras[1];
             try {
-                File qFile = new File(classLoader.getResource(reqType).getFile());
+                //qFile = new File(classLoader.getResource(reqType).getFile());
+                qFile = new File(reqType);
                 tb.add(new IOFile(qFile).read());
-            } catch (Exception er) {}
-
+            } catch (Exception e1){
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "xq file not found", "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+            }
             tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
         } else {
-            reqType = "xquery/list-restxq-entries.xq";
-            File qFile = new File(classLoader.getResource(reqType).getFile());
+            //reqType = "xquery/list-restxq-entries.xq";
+            reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-restxq-entries.xq";
+            //qFile = new File(classLoader.getResource(reqType).getFile());
+            qFile = new File(reqType);
             tb.add(new IOFile(qFile).read());
             tb.add("]]></text></query>");
         }
@@ -200,20 +207,17 @@ public class BasexWrapper extends RestWrapper{
         conn.setDoOutput(true);
         conn.getOutputStream().write(tb.finish());
         String result = Token.string(new IOStream(conn.getInputStream()).read());
-        JOptionPane.showMessageDialog(null, "Before query", "Nachricht", JOptionPane.PLAIN_MESSAGE);
         // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
         ANode root = (ANode) query(result, null);
-        JOptionPane.showMessageDialog(null, result, "Nachricht", JOptionPane.PLAIN_MESSAGE);
-        JOptionPane.showMessageDialog(null, root, "Nachricht", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
         // this demonstrates how you can loop through the children of the root element
         // - similar to DOM, but more efficient and light-weight
         // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-        JOptionPane.showMessageDialog(null, "Before addList", "Nachricht", JOptionPane.PLAIN_MESSAGE);
         for(ANode resource : root.children()) {
             String type = name(resource);
             String databaseEntry = value(resource);
             tList.add(databaseEntry);
-            JOptionPane.showMessageDialog(null, databaseEntry, "Nachricht", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
             System.out.println("- " + value(resource) + " (" + type + "):");
 
             // output different results, depending on resource type
@@ -231,7 +235,6 @@ public class BasexWrapper extends RestWrapper{
                     break;
             }
         }
-        JOptionPane.showMessageDialog(null, tList, "Nachricht", JOptionPane.PLAIN_MESSAGE);
         return tList;
     }
 

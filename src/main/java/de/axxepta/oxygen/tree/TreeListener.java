@@ -13,6 +13,7 @@ import javax.swing.event.TreeSelectionEvent;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -78,8 +79,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     @Override
     public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-        //JOptionPane.showMessageDialog(null, this.path, "Nachricht", JOptionPane.PLAIN_MESSAGE);
-        //JOptionPane.showMessageDialog(null, this.node, "Nachricht", JOptionPane.PLAIN_MESSAGE);
     }
 
     @Override
@@ -88,30 +87,83 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void singleClickHandler(ActionEvent e) {
         System.out.println("-- single click --");
-        URL argonURL = null;
+/*        URL argonURL = null;
 		try {
 			argonURL = new URL("argon:/tmp/tmp.xml");
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        this.wsa.open(argonURL);
+        this.wsa.open(argonURL);*/
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
-        ArrayList<String> newNodes = new ArrayList<String>();
-        String[] dbReq = new String[2];
-        dbReq[0] = this.path.getPathComponent(1).toString();
-        dbReq[1] = "/";
+//        JOptionPane.showMessageDialog(null, this.path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+ //       JOptionPane.showMessageDialog(null, this.node, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
 
         System.out.println("-- double click -- id=");
-        if (this.path.getPathCount() > 1){
+        if (this.path.getPathCount() > 1) {
+            ArrayList<String> newNodes;
+            String db = this.path.getPathComponent(1).toString();
+            String db_path = "/";
+            for (int i = 2; i < this.path.getPathCount(); i++) {
+                db_path = db_path + this.path.getPathComponent(i).toString() + '/';
+            }
+            JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
             try {
-                newNodes = this._basexWrapper.ListDBEntries("db-entries",dbReq);
-            } catch (Exception er){}
+                newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
+            } catch (Exception e1){
+                e1.printStackTrace();
+                newNodes = new ArrayList<String>();
+                newNodes.add("Blatt1");
+                newNodes.add("Blatt2");
+            }
+            if (updateExpandedNode(this.node, newNodes)) this._Tree.expandPath(this.path);
         }
-        JOptionPane.showMessageDialog(null, this.path, "Nachricht", JOptionPane.PLAIN_MESSAGE);
-        JOptionPane.showMessageDialog(null, this.node, "Nachricht", JOptionPane.PLAIN_MESSAGE);
-        JOptionPane.showMessageDialog(null, newNodes, "Nachricht", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children){
+        DefaultMutableTreeNode newChild;
+        boolean treeChanged = false;
+
+        if ((children.size() > 0) && (children.size() != node.getChildCount())) {
+            for (int i=0; i<children.size(); i++){
+                newChild = new DefaultMutableTreeNode(children.get(i));
+                node.add(newChild);
+            }
+            treeChanged = true;
+        }
+
+/*        // check whether old children are in new list and vice versa
+        if (node.getChildCount() > 0) {
+            boolean[] inNewList = new boolean[node.getChildCount()];
+            if (children.size() > 0){
+                ArrayList<String> oldChildren = new ArrayList<>();
+                for (int i=0; i<node.getChildCount(); i++){
+                    DefaultMutableTreeNode currChild = (DefaultMutableTreeNode)node.getChildAt(i);
+                    oldChildren.add((String)currChild.getUserObject());
+                    for (int j=0; i<children.size(); i++){
+                        if (currChild.getUserObject().equals(children.get(j))) {
+                            inNewList[j] = true;
+                            break;
+                        }
+                    }
+                }
+                if children.removeAll(oldChildren) {}
+            }
+            for (int i=node.getChildCount()-1; i>-1; i--){
+                if (!inNewList[i]) {
+                    node.remove(i);
+                    treeChanged = true;
+                }
+            }
+        }
+        for (int i=0; i<children.size(); i++){
+            newChild = new DefaultMutableTreeNode(children.get(i));
+            node.add(newChild);
+            treeChanged = true;
+        }*/
+
+        return treeChanged;
     }
 }

@@ -55,10 +55,10 @@ public class ListDBEntries {
     ClassLoader classLoader = getClass().getClassLoader();
     File qFile = new File(classLoader.getResource(queryType).getFile());
 
-    String db = "test1";
-    String db_path = "/etc/";
+    String db = "test2";
+    String db_path = "/";
     tb.add(new IOFile(qFile).read());
-    tb.add("]]></text><variable name=\"db\" value=\""+db+"\"/><variable name=\"path\" value=\""+db_path+"\"/></query>");
+    tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     //tb.add("]]></text></query>");
 
     // send request, receive response
@@ -71,7 +71,6 @@ public class ListDBEntries {
     conn.setDoOutput(true);
     conn.getOutputStream().write(tb.finish());
     String result = Token.string(new IOStream(conn.getInputStream()).read());
-
     // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
     ANode root = (ANode) query(result, null);
 

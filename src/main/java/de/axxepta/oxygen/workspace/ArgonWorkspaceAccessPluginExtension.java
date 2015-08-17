@@ -73,6 +73,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     int i = 0;
                     while (iterator.hasNext()) {
                         DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
+                        dbNode.setAllowsChildren(true);
                         root.add(dbNode);
                         iterator.next();
                         i++;
