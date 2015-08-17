@@ -7,6 +7,7 @@ import org.basex.io.IOStream;
 import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
 import org.basex.query.value.Value;
+import org.basex.query.value.item.Str;
 import org.basex.query.value.node.ANode;
 import org.basex.util.Token;
 import org.basex.util.TokenBuilder;
@@ -19,14 +20,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by daltiparmak on 10.04.15.
@@ -35,6 +39,28 @@ public class BasexWrapper extends RestWrapper{
     // BaseX database context
     Context ctx = new Context();
     public ArrayList<String> tempList = new ArrayList<String>();
+    String user;
+    String pass;
+    String host;
+    int port;
+
+    public BasexWrapper(){
+        this.host = "127.0.0.1";
+        this.user = "admin";
+        this.pass = "admin";
+        this.port = 8984;
+    }
+
+    private String getURL(){
+        String url = "http://" + this.host + ':' + this.port + "/rest";
+        return url;
+    }
+
+    private String getAuth(){
+        String userpass = this.user + ":" + this.pass;
+        String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+        return basicAuth;
+    }
 
     @Override
     public ArrayList<String> getResources() throws IOException, SAXException, ParserConfigurationException {
@@ -42,7 +68,7 @@ public class BasexWrapper extends RestWrapper{
 
         URL url = null;
         try {
-            url = new URL("http://127.0.0.1:8984/rest");
+            url = new URL(getURL());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -66,8 +92,9 @@ public class BasexWrapper extends RestWrapper{
     private void getHTTPXml(URL url) throws ParserConfigurationException, IOException,
             SAXException, XPathFactoryConfigurationException {
 
-        String userpass = "admin" + ":" + "admin";
-        String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+        //String userpass = "admin" + ":" + "admin";
+        //String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+        String basicAuth = getAuth();
 
         sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
         conn.setRequestProperty("Authorization", basicAuth);
@@ -160,12 +187,7 @@ public class BasexWrapper extends RestWrapper{
     public ArrayList<String> ListDBEntries(String reqType, String... paras) throws Exception {
         ArrayList<String> tList = new ArrayList<String>();
 
-        // login data
-        String user = "admin";
-        String pass = "admin";
-        String host = "localhost";
         String db, db_path;
-        int port = 8984;
         File qFile;
         // build POST request
         TokenBuilder tb = new TokenBuilder();
@@ -198,11 +220,11 @@ public class BasexWrapper extends RestWrapper{
         }
 
         // send request, receive response
-        String basicAuth = "Basic " + new String(org.basex.util.Base64.encode(user + ':' + pass));
-        URL url = new URL("http://" + host + ':' + port + "/rest");
+        //String basicAuth = getAuth();
+        URL url = new URL(getURL());
         // will always be HttpURLConnection if URL starts with "http://"
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization", basicAuth);
+        conn.setRequestProperty("Authorization", getAuth());
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
         conn.getOutputStream().write(tb.finish());
@@ -279,5 +301,83 @@ public class BasexWrapper extends RestWrapper{
     String attribute(ANode node, String name) throws Exception {
         return Token.string(node.attribute(name));
     }
+
+    public void postReq() throws IOException {
+        ArrayList<String> tList = new ArrayList<String>();
+        List<String> reqList;
+
+        // The java URL connection to the resource
+        URL url = new URL(getURL());
+
+        // Query to be sent to the server
+        String db = "test2";
+        String db_path = "/";
+
+
+        String reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
+        File qFile = new File(reqType);
+        //String reqText = (new IOFile(qFile).read()).toString();
+        Path qPath = Paths.get(reqType);
+        JOptionPane.showMessageDialog(null, qPath, "postReq", JOptionPane.PLAIN_MESSAGE);
+        String listString = "";
+/*        try {
+            reqList = Files.readAllLines(qPath);
+            JOptionPane.showMessageDialog(null, reqList, "postReq", JOptionPane.PLAIN_MESSAGE);
+            for (String s : reqList)
+            {
+                listString += s + "\r\n";
+            }
+        } catch (IOException e1){
+            JOptionPane.showMessageDialog(null, "couldn't read file", "postReq", JOptionPane.PLAIN_MESSAGE);
+        }*/
+
+        String request =
+    /*            "<query xmlns='http://basex.org/rest'><text><![CDATA[" +
+                 //reqText +
+                        listString +
+                "]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>";
+       */
+        "<query xmlns='http://basex.org/rest'><text><![CDATA[]]></query>";
+
+        // Establish the connection to the URL
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("Authorization", getAuth());
+        // Set an output connection
+        conn.setDoOutput(true);
+        // Set as PUT request
+        conn.setRequestMethod("POST");
+        // Specify content type
+        conn.setRequestProperty("Content-Type", "application/query+xml");
+
+        // Get and cache output stream
+        try(OutputStream out = conn.getOutputStream()) {
+            // Send UTF-8 encoded query to server
+            out.write(request.getBytes("UTF-8"));
+        }
+
+        // Print the HTTP response code
+        int code = conn.getResponseCode();
+
+        // Check if request was successful
+        if(code == HttpURLConnection.HTTP_OK) {
+
+            // Get and cache input as UTF-8 encoded stream
+            try(BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+
+                // Print all lines of the result
+                for(String line; (line = br.readLine()) != null;) {
+                    tList.add(line);
+
+                }
+                JOptionPane.showMessageDialog(null, tList, "postReq", JOptionPane.PLAIN_MESSAGE);
+            }
+
+        } else JOptionPane.showMessageDialog(null, "Request not successful", "postReq", JOptionPane.PLAIN_MESSAGE);
+
+        // Close connection
+        conn.disconnect();
+    }
+
 
 }

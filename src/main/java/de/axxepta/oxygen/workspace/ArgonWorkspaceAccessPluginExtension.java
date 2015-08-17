@@ -12,7 +12,9 @@ import ro.sync.ui.Icons;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -80,11 +82,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     }
 
                     // Create a new tree control
-                    BasexTree tree = new BasexTree(root);
+                    DefaultTreeModel treeModel = new DefaultTreeModel(root);
+                    treeModel.setAsksAllowsChildren(true);
+                    BasexTree tree = new BasexTree(treeModel);
+                    tree.setEditable(true);
+                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add Tree Listener
-                    TreeListener tlistener = new TreeListener(tree, pluginWorkspaceAccess, basexWrapper);
+                    TreeListener tlistener = new TreeListener(tree, treeModel, pluginWorkspaceAccess, basexWrapper);
                     tree.addTreeWillExpandListener(tlistener);
                     tree.addMouseListener(tlistener);
                     tree.addTreeSelectionListener(tlistener);

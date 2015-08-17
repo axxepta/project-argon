@@ -74,8 +74,8 @@ public class ListDBEntries {
     // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
     ANode root = (ANode) query(result, null);
 
-    JOptionPane.showMessageDialog(null, result, "Nachricht", JOptionPane.PLAIN_MESSAGE);
-    JOptionPane.showMessageDialog(null, root, "Nachricht", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")

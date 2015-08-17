@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -18,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.CryptoPrimitive;
@@ -30,6 +32,7 @@ import java.util.logging.Logger;
  */
 public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener{
     private BasexTree _Tree;
+    private DefaultTreeModel _treeModel;
     private BasexWrapper _basexWrapper;
     private TreePath path;
     private DefaultMutableTreeNode node;
@@ -38,10 +41,11 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private Timer timer;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, StandalonePluginWorkspace workspaceAccess, BasexWrapper bxWrapper)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, StandalonePluginWorkspace workspaceAccess, BasexWrapper bxWrapper)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
+        this._treeModel = treeModel;
         this._basexWrapper = bxWrapper;
         ActionListener actionListener = new ActionListener() {
 
@@ -109,15 +113,20 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             for (int i = 2; i < this.path.getPathCount(); i++) {
                 db_path = db_path + this.path.getPathComponent(i).toString() + '/';
             }
-            JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+            //try {
+            //    newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
+            //} catch (Exception e1){
+            //    e1.printStackTrace();
             try {
-                newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
-            } catch (Exception e1){
+                this._basexWrapper.postReq();
+            } catch (IOException e1) {
                 e1.printStackTrace();
-                newNodes = new ArrayList<String>();
+            }
+            newNodes = new ArrayList<String>();
                 newNodes.add("Blatt1");
                 newNodes.add("Blatt2");
-            }
+            //}
             if (updateExpandedNode(this.node, newNodes)) this._Tree.expandPath(this.path);
         }
     }
@@ -129,7 +138,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         if ((children.size() > 0) && (children.size() != node.getChildCount())) {
             for (int i=0; i<children.size(); i++){
                 newChild = new DefaultMutableTreeNode(children.get(i));
-                node.add(newChild);
+                node.setAllowsChildren(true);
+                //node.add(newChild);
+                this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
             }
             treeChanged = true;
         }
