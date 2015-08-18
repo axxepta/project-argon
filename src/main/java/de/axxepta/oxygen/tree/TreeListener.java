@@ -102,43 +102,41 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
-//        JOptionPane.showMessageDialog(null, this.path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
- //       JOptionPane.showMessageDialog(null, this.node, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
 
         System.out.println("-- double click -- id=");
-        if (this.path.getPathCount() > 1) {
-            ArrayList<String> newNodes;
+        if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren())) {
+            ArrayList<String> newNodes = new ArrayList<String>();
+            ArrayList<String> newTypes = new ArrayList<String>();
+            ArrayList<String> newValues = new ArrayList<String>();
             String db = this.path.getPathComponent(1).toString();
             String db_path = "/";
             for (int i = 2; i < this.path.getPathCount(); i++) {
                 db_path = db_path + this.path.getPathComponent(i).toString() + '/';
             }
             //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
-            //try {
-            //    newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
-            //} catch (Exception e1){
-            //    e1.printStackTrace();
             try {
-                this._basexWrapper.postReq();
-            } catch (IOException e1) {
+                newNodes = this._basexWrapper.listDBEntries(db, db_path);
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
-            newNodes = new ArrayList<String>();
-                newNodes.add("Blatt1");
-                newNodes.add("Blatt2");
-            //}
-            if (updateExpandedNode(this.node, newNodes)) this._Tree.expandPath(this.path);
+            if (newNodes.size() > 0) {
+                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
+                newValues.addAll(newNodes.subList(0,newNodes.size()/2));
+            }
+
+            if (updateExpandedNode(this.node, newValues, newTypes)) this._Tree.expandPath(this.path);
         }
     }
 
-    private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children){
+    private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
         DefaultMutableTreeNode newChild;
         boolean treeChanged = false;
 
         if ((children.size() > 0) && (children.size() != node.getChildCount())) {
             for (int i=0; i<children.size(); i++){
                 newChild = new DefaultMutableTreeNode(children.get(i));
-                node.setAllowsChildren(true);
+                if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
+                else newChild.setAllowsChildren(false);
                 //node.add(newChild);
                 this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
             }

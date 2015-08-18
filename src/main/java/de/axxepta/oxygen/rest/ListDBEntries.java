@@ -60,6 +60,7 @@ public class ListDBEntries {
     tb.add(new IOFile(qFile).read());
     tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     //tb.add("]]></text></query>");
+    //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
     // send request, receive response
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));

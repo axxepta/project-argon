@@ -14,6 +14,19 @@ import org.basex.util.TokenBuilder;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+
 import javax.swing.*;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -130,7 +143,7 @@ public class BasexWrapper extends RestWrapper{
 
         System.out.println(xFactory.toString());
         XPath xpath = xFactory.newXPath();
-        System.err.println("Loaded XPath Provider " + xpath.getClass().getName() +" using factory " + xpath.getClass().getName());
+        System.err.println("Loaded XPath Provider " + xpath.getClass().getName() + " using factory " + xpath.getClass().getName());
 
         // namespace?
         if (nsPrefix != null) {
@@ -210,6 +223,7 @@ public class BasexWrapper extends RestWrapper{
                 JOptionPane.showMessageDialog(null, "xq file not found", "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
             }
             tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
+            //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
         } else {
             //reqType = "xquery/list-restxq-entries.xq";
             reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-restxq-entries.xq";
@@ -221,7 +235,7 @@ public class BasexWrapper extends RestWrapper{
 
         // send request, receive response
         //String basicAuth = getAuth();
-        URL url = new URL(getURL());
+        URL url = new URL(getURL()+'/'+paras[0]+paras[1]);
         // will always be HttpURLConnection if URL starts with "http://"
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty("Authorization", getAuth());
@@ -229,37 +243,77 @@ public class BasexWrapper extends RestWrapper{
         conn.setDoOutput(true);
         conn.getOutputStream().write(tb.finish());
         String result = Token.string(new IOStream(conn.getInputStream()).read());
+        JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
         // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
         ANode root = (ANode) query(result, null);
-        JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+
         // this demonstrates how you can loop through the children of the root element
-        // - similar to DOM, but more efficient and light-weight
-        // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-        for(ANode resource : root.children()) {
-            String type = name(resource);
+/*        for(ANode resource : root.children()) {
             String databaseEntry = value(resource);
             tList.add(databaseEntry);
             JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-            System.out.println("- " + value(resource) + " (" + type + "):");
+        }
+        for(ANode resource : root.children()) {
+            String type = name(resource);
+            tList.add(type);
+            JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+        }*/
+        return tList;
+    }
 
-            // output different results, depending on resource type
-            switch(type) {
-                case "document":
-                    // most efficient approach (directly access node attributes):
-                    System.out.println("  nodes: " + attribute(resource, "nodes"));
-                    // the XQuery approach:
-                    System.out.println("  nodes: " + query("@nodes/number", resource));
-                    break;
-                case "binary":
-                    System.out.println("  size: " + attribute(resource, "size"));
-                    break;
-                case "directory":
-                    break;
+    public ArrayList<String> listDBEntries(String db, String db_path) throws Exception {
+        ArrayList<String> tList = new ArrayList<String>();
+
+        // build POST request
+        TokenBuilder tb = new TokenBuilder();
+        tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
+        tb.add("]]></text></query>");
+
+        // send request, receive response
+        URL url = new URL(getURL()+'/'+db+db_path);
+        // will always be HttpURLConnection if URL starts with "http://"
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("Authorization", getAuth());
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(tb.finish());
+        String result = Token.string(new IOStream(conn.getInputStream()).read());
+
+        // build XML structure from result
+        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        InputSource inSource = new InputSource();
+        inSource.setCharacterStream(new StringReader(result));
+        Document doc = docBuilder.parse(inSource);
+        NodeList nodes = doc.getElementsByTagName("rest:resource");
+
+        // add files/directories with distinct values to tList, and at the end of the list the corresponding file/dir type
+        for (int i=0; i<nodes.getLength(); i++){
+            String fName = nodes.item(i).getTextContent().substring(db_path.length()-1);
+            String type = nodes.item(i).getAttributes().getNamedItem("type").getTextContent();
+            if (fName.contains("/")) {
+                fName = fName.substring(0, fName.indexOf("/"));
+                //ToDo: check type attribute for empty directories
+                type = "directory";
+            }
+            if (!tList.contains(fName)) {
+                int insertPos = tList.size()/2;
+                // list dirs before files
+                if (type.equals("directory")) {
+                    for (int listEntry = tList.size()/2; listEntry < tList.size(); listEntry++){
+                        if (!tList.get(listEntry).equals("directory")) {
+                            insertPos = listEntry-tList.size()/2;
+                            break;
+                        }
+                    }
+                }
+                tList.add(insertPos, fName);
+                if (insertPos != (tList.size()/2)) tList.add(insertPos+tList.size()/2, type);
+                else tList.add(type);
             }
         }
         return tList;
     }
-
 
     /**
      * Convenience method for running an XQuery expression and returns the result.
@@ -301,83 +355,5 @@ public class BasexWrapper extends RestWrapper{
     String attribute(ANode node, String name) throws Exception {
         return Token.string(node.attribute(name));
     }
-
-    public void postReq() throws IOException {
-        ArrayList<String> tList = new ArrayList<String>();
-        List<String> reqList;
-
-        // The java URL connection to the resource
-        URL url = new URL(getURL());
-
-        // Query to be sent to the server
-        String db = "test2";
-        String db_path = "/";
-
-
-        String reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
-        File qFile = new File(reqType);
-        //String reqText = (new IOFile(qFile).read()).toString();
-        Path qPath = Paths.get(reqType);
-        JOptionPane.showMessageDialog(null, qPath, "postReq", JOptionPane.PLAIN_MESSAGE);
-        String listString = "";
-/*        try {
-            reqList = Files.readAllLines(qPath);
-            JOptionPane.showMessageDialog(null, reqList, "postReq", JOptionPane.PLAIN_MESSAGE);
-            for (String s : reqList)
-            {
-                listString += s + "\r\n";
-            }
-        } catch (IOException e1){
-            JOptionPane.showMessageDialog(null, "couldn't read file", "postReq", JOptionPane.PLAIN_MESSAGE);
-        }*/
-
-        String request =
-    /*            "<query xmlns='http://basex.org/rest'><text><![CDATA[" +
-                 //reqText +
-                        listString +
-                "]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>";
-       */
-        "<query xmlns='http://basex.org/rest'><text><![CDATA[]]></query>";
-
-        // Establish the connection to the URL
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization", getAuth());
-        // Set an output connection
-        conn.setDoOutput(true);
-        // Set as PUT request
-        conn.setRequestMethod("POST");
-        // Specify content type
-        conn.setRequestProperty("Content-Type", "application/query+xml");
-
-        // Get and cache output stream
-        try(OutputStream out = conn.getOutputStream()) {
-            // Send UTF-8 encoded query to server
-            out.write(request.getBytes("UTF-8"));
-        }
-
-        // Print the HTTP response code
-        int code = conn.getResponseCode();
-
-        // Check if request was successful
-        if(code == HttpURLConnection.HTTP_OK) {
-
-            // Get and cache input as UTF-8 encoded stream
-            try(BufferedReader br = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
-
-                // Print all lines of the result
-                for(String line; (line = br.readLine()) != null;) {
-                    tList.add(line);
-
-                }
-                JOptionPane.showMessageDialog(null, tList, "postReq", JOptionPane.PLAIN_MESSAGE);
-            }
-
-        } else JOptionPane.showMessageDialog(null, "Request not successful", "postReq", JOptionPane.PLAIN_MESSAGE);
-
-        // Close connection
-        conn.disconnect();
-    }
-
 
 }
