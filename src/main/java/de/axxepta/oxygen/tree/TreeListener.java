@@ -36,6 +36,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private BasexWrapper _basexWrapper;
     private TreePath path;
     private DefaultMutableTreeNode node;
+    private boolean newExpandEvent;
     private boolean singleClick  = true;
     private int doubleClickDelay = 300;
     private Timer timer;
@@ -47,6 +48,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this._Tree = tree;
         this._treeModel = treeModel;
         this._basexWrapper = bxWrapper;
+        this.newExpandEvent = true;
         ActionListener actionListener = new ActionListener() {
 
             public void actionPerformed(ActionEvent e ) {
@@ -83,6 +85,40 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     @Override
     public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+        // method is called twice, if new data is loaded--prevent database check in 2nd call
+        boolean newTreeExpandEvent = this.newExpandEvent;
+
+        this.path = event.getPath();
+        this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+
+        System.out.println("-- tree expansion -- id=");
+        if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren()) && this.newExpandEvent) {
+            ArrayList<String> newNodes = new ArrayList<>();
+            ArrayList<String> newTypes = new ArrayList<>();
+            ArrayList<String> newValues = new ArrayList<>();
+            String db = this.path.getPathComponent(1).toString();
+            String db_path = "/";
+            for (int i = 2; i < this.path.getPathCount(); i++) {
+                db_path = db_path + this.path.getPathComponent(i).toString() + '/';
+            }
+            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+            try {
+                newNodes = this._basexWrapper.listDBEntries(db, db_path);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            if (newNodes.size() > 0) {
+                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
+                newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
+            }
+
+            if (updateExpandedNode(this.node, newValues, newTypes)) {
+                this.newExpandEvent = false;
+                this._Tree.expandPath(this.path);
+            }
+
+        }
+        if (!newTreeExpandEvent) this.newExpandEvent = true;
     }
 
     @Override
@@ -102,30 +138,17 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
-
-        System.out.println("-- double click -- id=");
-        if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren())) {
-            ArrayList<String> newNodes = new ArrayList<String>();
-            ArrayList<String> newTypes = new ArrayList<String>();
-            ArrayList<String> newValues = new ArrayList<String>();
-            String db = this.path.getPathComponent(1).toString();
-            String db_path = "/";
-            for (int i = 2; i < this.path.getPathCount(); i++) {
-                db_path = db_path + this.path.getPathComponent(i).toString() + '/';
-            }
-            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+        System.out.println("-- double click --");
+/*        if (!this.node.getAllowsChildren()) {
+            // open file
+            URL argonURL = null;
             try {
-                newNodes = this._basexWrapper.listDBEntries(db, db_path);
-            } catch (Exception e1) {
+                argonURL = new URL("???");
+            } catch (MalformedURLException e1) {
                 e1.printStackTrace();
             }
-            if (newNodes.size() > 0) {
-                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
-                newValues.addAll(newNodes.subList(0,newNodes.size()/2));
-            }
-
-            if (updateExpandedNode(this.node, newValues, newTypes)) this._Tree.expandPath(this.path);
-        }
+            this.wsa.open(argonURL);
+        }*/
     }
 
     private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
@@ -137,7 +160,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 newChild = new DefaultMutableTreeNode(children.get(i));
                 if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
                 else newChild.setAllowsChildren(false);
-                //node.add(newChild);
                 this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
             }
             treeChanged = true;
@@ -162,14 +184,18 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
             for (int i=node.getChildCount()-1; i>-1; i--){
                 if (!inNewList[i]) {
-                    node.remove(i);
+                    this._treeModel.removeNodeFromParent(node);
+                    this._treeModel.nodeChanged(node);
                     treeChanged = true;
                 }
             }
         }
         for (int i=0; i<children.size(); i++){
             newChild = new DefaultMutableTreeNode(children.get(i));
-            node.add(newChild);
+            if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
+                else newChild.setAllowsChildren(false);
+            //ToDo: check whether new child is directory and node has already files as children -> adapt insert pos
+            this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
             treeChanged = true;
         }*/
 

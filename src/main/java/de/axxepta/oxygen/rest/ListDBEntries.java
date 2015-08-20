@@ -50,16 +50,22 @@ public class ListDBEntries {
     tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
     //Get file from resources folder
-    String queryType = "xquery/list-db-entries.xq";
-    //String queryType ="xquery/list-restxq-entries.xq";
+    //String queryType = "xquery/list-db-entries.xq";
+    String queryType ="xquery/list-restxq-entries.xq";
     ClassLoader classLoader = getClass().getClassLoader();
     File qFile = new File(classLoader.getResource(queryType).getFile());
 
     String db = "test2";
     String db_path = "/";
+    String path = "./dba";
     tb.add(new IOFile(qFile).read());
-    tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-    //tb.add("]]></text></query>");
+
+    if (queryType.equals("xquery/list-db-entries.xq"))
+    {
+      tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
+    } else {
+      tb.add("]]></text><variable name=\"path\" value=\"" + path + "\"/></query>");
+    }
     //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
     // send request, receive response

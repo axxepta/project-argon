@@ -23,7 +23,19 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
     public Component getTreeCellRendererComponent( JTree aTree, Object aValue, boolean aSelected,
                                                    boolean aExpanded, boolean aLeaf, int aRow, boolean aHasFocus )
     {
-        JPanel panel = new JPanel(); // Create a new panel where we will show the data.
+
+        if( (aValue != null) && (aValue instanceof DefaultMutableTreeNode) && aLeaf ) {
+            String thisLeafFileType = fileType(aValue);
+/*            switch (thisLeafFileType) {
+                case "xml": setIcon(xmlIcon);
+                    break;
+                case "txt": setIcon(txtIcon);
+                    break;
+                default: setIcon(fileIcon);
+            }*/
+        }
+
+/*        JPanel panel = new JPanel(); // Create a new panel where we will show the data.
         String text = (String)((DefaultMutableTreeNode)aValue).getUserObject();
 
         panel.add( new JLabel( text ) ); // Actually show the data.
@@ -48,7 +60,7 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
             }
             panel.setEnabled( aTree.isEnabled() );
             return panel;
-        }
+        }*/
 
         /*
         if (!aLeaf) {
@@ -69,5 +81,13 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
         // For everything else use default renderer.
         return defaultRenderer.getTreeCellRendererComponent( aTree, aValue, aSelected, aExpanded, aLeaf,
                 aRow, aHasFocus );
+    }
+
+    protected String fileType(Object value) {
+        DefaultMutableTreeNode leaf = (DefaultMutableTreeNode)value;
+        String leafStr = leaf.toString();
+        if (leafStr.contains(".")) {
+            return leafStr.substring(leafStr.lastIndexOf(".")+1);
+        } else return "";
     }
 }
