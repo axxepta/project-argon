@@ -30,7 +30,7 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
     {
 
         if( (aValue != null) && (aValue instanceof DefaultMutableTreeNode) && aLeaf ) {
-            JPanel panel = new JPanel(); // Create a new panel where we will show the data.
+/*            JPanel panel = new JPanel(); // Create a new panel where we will show the data.
             String text = (String)((DefaultMutableTreeNode)aValue).getUserObject();
 
             String thisLeafFileType = fileType(aValue);
@@ -38,12 +38,9 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
                 case "xml": panel.add(new JLabel(text, this.xmlIcon, LEFT));
                     break;
                 case "txt": panel.add(new JLabel(text, this.txtIcon, LEFT));
-                    //setIcon(this.txtIcon);
                     break;
-                default: //setIcon(this.fileIcon);
-                    panel.add(new JLabel(text, this.fileIcon, LEFT));
+                default: panel.add(new JLabel(text, this.fileIcon, LEFT));
             }
-            //panel.add( new JLabel( text ) );
             if( aSelected )
             {
                 panel.setBackground( Color.RED );
@@ -59,7 +56,18 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer
                     panel.setBackground( new Color( 230, 230, 230 ) );
                 }
             }
-            return panel;
+            return panel;*/
+
+            super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, aLeaf, aRow, aHasFocus);
+            String thisLeafFileType = fileType(aValue);
+            switch (thisLeafFileType) {
+                case "xml": setIcon(this.xmlIcon);
+                    break;
+                case "txt": setIcon(this.txtIcon);
+                    break;
+                default: setIcon(this.fileIcon);
+            }
+            return this;
         }
 
         /*
