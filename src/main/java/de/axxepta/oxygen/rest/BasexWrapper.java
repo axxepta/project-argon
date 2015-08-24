@@ -210,13 +210,13 @@ public class BasexWrapper extends RestWrapper{
         ClassLoader classLoader = getClass().getClassLoader();
         if (reqType.equals("db-entries")) {
 
-            //reqType = "xquery/list-db-entries.xq";
-            reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
+            reqType = "/xquery/list-db-entries.xq";
+            //reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
             db = paras[0];
             db_path = paras[1];
             try {
-                //qFile = new File(classLoader.getResource(reqType).getFile());
-                qFile = new File(reqType);
+                qFile = new File(classLoader.getResource(reqType).getFile());
+                //qFile = new File(reqType);
                 tb.add(new IOFile(qFile).read());
             } catch (Exception e1){
                 e1.printStackTrace();
@@ -225,10 +225,10 @@ public class BasexWrapper extends RestWrapper{
             tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
             //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
         } else {
-            //reqType = "xquery/list-restxq-entries.xq";
-            reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-restxq-entries.xq";
-            //qFile = new File(classLoader.getResource(reqType).getFile());
-            qFile = new File(reqType);
+            reqType = "/xquery/list-restxq-entries.xq";
+            //reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-restxq-entries.xq";
+            qFile = new File(classLoader.getResource(reqType).getFile());
+            //qFile = new File(reqType);
             tb.add(new IOFile(qFile).read());
             tb.add("]]></text></query>");
         }
