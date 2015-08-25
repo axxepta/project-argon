@@ -3,6 +3,7 @@ package de.axxepta.oxygen.rest;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.File;
+import java.util.ArrayList;
 
 import org.basex.core.Context;
 import org.basex.io.IOFile;
@@ -25,7 +26,7 @@ import javax.swing.*;
 public class ListDBEntries {
   // BaseX database context
   Context ctx = new Context();
-
+  private ArrayList<String> result;
   public static void main(String... args){
     try {
       ListDBEntries test = new ListDBEntries();
@@ -39,6 +40,8 @@ public class ListDBEntries {
    */
 
   public ListDBEntries() throws Exception {
+    ArrayList<String> tList = new ArrayList<String>();
+
     // login data
     String user = "admin";
     String pass = "admin";
@@ -51,9 +54,11 @@ public class ListDBEntries {
 
     //Get file from resources folder
     //String queryType = "xquery/list-db-entries.xq";
-    String queryType ="xquery/list-restxq-entries.xq";
+    String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
+    //String queryType ="xquery/list-restxq-entries.xq";
     ClassLoader classLoader = getClass().getClassLoader();
-    File qFile = new File(classLoader.getResource(queryType).getFile());
+    //File qFile = new File(classLoader.getResource(queryType).getFile());
+    File qFile = new File(queryType);
 
     String db = "test2";
     String db_path = "/";
@@ -66,7 +71,7 @@ public class ListDBEntries {
     } else {
       tb.add("]]></text><variable name=\"path\" value=\"" + path + "\"/></query>");
     }
-    //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
     // send request, receive response
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
@@ -86,7 +91,7 @@ public class ListDBEntries {
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-    for(ANode resource : root.children()) {
+/*    for(ANode resource : root.children()) {
       String type = name(resource);
       System.out.println("- " + value(resource) + " (" + type + "):");
 
@@ -104,7 +109,19 @@ public class ListDBEntries {
       case "directory":
         break;
       }
-    }
+    }*/
+
+        for(ANode resource : root.children()) {
+            String databaseEntry = value(resource);
+            tList.add(databaseEntry);
+            JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+        }
+        for(ANode resource : root.children()) {
+            String type = name(resource);
+            tList.add(type);
+            JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+        }
+    this.result = tList;
   }
 
 
@@ -149,5 +166,8 @@ public class ListDBEntries {
     return Token.string(node.attribute(name));
   }
 
+  public ArrayList<String> getResult(){
+    return this.result;
+  }
 
 }

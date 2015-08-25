@@ -3,15 +3,13 @@ package de.axxepta.oxygen.tree;
 import de.axxepta.oxygen.rest.BasexWrapper;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
+import javax.swing.event.*;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.event.TreeSelectionEvent;
 
+import de.axxepta.oxygen.rest.ListDBEntries;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import java.awt.*;
@@ -103,7 +101,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
             //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
             try {
-                newNodes = this._basexWrapper.listDBEntries(db, db_path);
+                //newNodes = this._basexWrapper.listDBEntries(db, db_path);
+                //newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
+                ListDBEntries newEntries = new ListDBEntries();
+                newNodes = newEntries.getResult();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
