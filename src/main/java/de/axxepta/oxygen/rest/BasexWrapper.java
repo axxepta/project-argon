@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class BasexWrapper extends RestWrapper{
     // BaseX database context
-    Context ctx = new Context();
+    //Context ctx = new Context();
     public ArrayList<String> tempList = new ArrayList<String>();
     String user;
     String pass;
@@ -246,8 +246,8 @@ public class BasexWrapper extends RestWrapper{
         String result = Token.string(new IOStream(conn.getInputStream()).read());
         JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
         // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
-        ANode root = (ANode) query(result, null);
-        JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+/*        ANode root = (ANode) query(result, null);
+        JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);*/
 
         // this demonstrates how you can loop through the children of the root element
 /*        for(ANode resource : root.children()) {
@@ -323,38 +323,38 @@ public class BasexWrapper extends RestWrapper{
      * @return name of element
      * @throws QueryException query exception
      */
-    Value query(String query, Value item) throws QueryException {
+/*    Value query(String query, Value item) throws QueryException {
         final QueryProcessor qp = new QueryProcessor(query, ctx);
         if(item != null) qp.context(item);
         return qp.value();
     }
 
-    /**
+    *//**
      * Convenience method for returning the name of an XML node.
      * @param node node
      * @return name of element
-     */
+     *//*
     String name(ANode node) {
         return Token.string(node.name());
     }
 
-    /**
+    *//**
      * Convenience method for returning the string value of an XML node.
      * @param node node
      * @return string value
-     */
+     *//*
     String value(ANode node) {
         return Token.string(node.string());
     }
 
-    /**
+    *//**
      * Convenience method for returning the attribute value of an XML element.
      * @param node element
      * @param name name of attribute
      * @return attribute value
-     */
+     *//*
     String attribute(ANode node, String name) throws Exception {
         return Token.string(node.attribute(name));
-    }
+    }*/
 
 }

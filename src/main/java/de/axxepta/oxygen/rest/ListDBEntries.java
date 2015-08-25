@@ -65,7 +65,7 @@ public class ListDBEntries {
     String path = "./dba";
     tb.add(new IOFile(qFile).read());
 
-    if (queryType.equals("xquery/list-db-entries.xq"))
+    if (queryType.equals("D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq"))
     {
       tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     } else {
@@ -77,7 +77,8 @@ public class ListDBEntries {
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
     URL url = new URL("http://" + host + ':' + port + "/rest");
     // will always be HttpURLConnection if URL starts with "http://"
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
     conn.setRequestProperty("Authorization", basicAuth);
     conn.setRequestMethod("POST");
     conn.setDoOutput(true);
@@ -87,11 +88,10 @@ public class ListDBEntries {
     ANode root = (ANode) query(result, null);
 
     JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-    JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-/*    for(ANode resource : root.children()) {
+    for(ANode resource : root.children()) {
       String type = name(resource);
       System.out.println("- " + value(resource) + " (" + type + "):");
 
@@ -109,18 +109,18 @@ public class ListDBEntries {
       case "directory":
         break;
       }
-    }*/
+    }
 
-        for(ANode resource : root.children()) {
-            String databaseEntry = value(resource);
-            tList.add(databaseEntry);
-            JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        }
-        for(ANode resource : root.children()) {
-            String type = name(resource);
-            tList.add(type);
-            JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        }
+    for(ANode resource : root.children()) {
+      String databaseEntry = value(resource);
+      tList.add(databaseEntry);
+      JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    }
+    for(ANode resource : root.children()) {
+      String type = name(resource);
+      tList.add(type);
+      JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    }
     this.result = tList;
   }
 
