@@ -103,7 +103,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             try {
                 //newNodes = this._basexWrapper.listDBEntries(db, db_path);
                 //newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
-                ListDBEntries newEntries = new ListDBEntries();
+                ListDBEntries newEntries = new ListDBEntries(db, db_path);
                 newNodes = newEntries.getResult();
             } catch (Exception e1) {
                 e1.printStackTrace();
@@ -140,16 +140,21 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         System.out.println("-- double click --");
-/*        if (!this.node.getAllowsChildren()) {
+        String db_path = "argon:";
+        for (int i = 1; i < this.path.getPathCount(); i++) {
+            db_path = db_path + '/' + this.path.getPathComponent(i).toString();
+        }
+        System.out.println(db_path);
+        if (!this.node.getAllowsChildren()) {
             // open file
             URL argonURL = null;
             try {
-                argonURL = new URL("???");
+                argonURL = new URL(db_path);
             } catch (MalformedURLException e1) {
                 e1.printStackTrace();
             }
             this.wsa.open(argonURL);
-        }*/
+        }
     }
 
     private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
