@@ -101,10 +101,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
             //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
             try {
-                //newNodes = this._basexWrapper.listDBEntries(db, db_path);
+                newNodes = this._basexWrapper.listDBEntries(db, db_path);
                 //newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
-                ListDBEntries newEntries = new ListDBEntries();
-                newNodes = newEntries.getResult();
+//                ListDBEntries newEntries = new ListDBEntries();
+//                newNodes = newEntries.getResult();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
