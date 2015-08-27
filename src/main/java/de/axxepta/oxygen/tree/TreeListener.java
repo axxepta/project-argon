@@ -158,7 +158,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         System.out.println("-- double click --");
         String db_path = "argon:";
-        for (int i = 1; i < this.path.getPathCount(); i++) {
+        for (int i = 2; i < this.path.getPathCount(); i++) {
             db_path = db_path + '/' + this.path.getPathComponent(i).toString();
         }
         System.out.println(db_path);
