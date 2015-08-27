@@ -54,7 +54,14 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Database: localhost:1984" );
 
                     // Create some data to populate our tree.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Databases");
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode("BaseX Server");
+                    root.setAllowsChildren(true);
+                    DefaultMutableTreeNode databases = new DefaultMutableTreeNode("Databases");
+                    databases.setAllowsChildren(true);
+                    root.add(databases);
+                    DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode("Query Folder");
+                    queryFolder.setAllowsChildren(true);
+                    root.add(queryFolder);
 
                     BasexWrapper basexWrapper = new BasexWrapper();
                     basexWrapper.setRestApiClient();
@@ -76,7 +83,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     while (iterator.hasNext()) {
                         DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
                         dbNode.setAllowsChildren(true);
-                        root.add(dbNode);
+                        databases.add(dbNode);
                         iterator.next();
                         i++;
                     }

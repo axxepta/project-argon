@@ -1,14 +1,7 @@
 package de.axxepta.oxygen.rest;
 
 import com.sun.jersey.core.util.Base64;
-import org.basex.core.Context;
-import org.basex.io.IOFile;
 import org.basex.io.IOStream;
-import org.basex.query.QueryException;
-import org.basex.query.QueryProcessor;
-import org.basex.query.value.Value;
-import org.basex.query.value.item.Str;
-import org.basex.query.value.node.ANode;
 import org.basex.util.Token;
 import org.basex.util.TokenBuilder;
 import org.w3c.dom.NodeList;
@@ -196,74 +189,7 @@ public class BasexWrapper extends RestWrapper{
         conn.disconnect();
     }
 
-    // ToDo: check for optional parameters db and db_path!
-    public ArrayList<String> ListDBEntries(String reqType, String... paras) throws Exception {
-        ArrayList<String> tList = new ArrayList<String>();
-
-        String db, db_path;
-        File qFile;
-        // build POST request
-        TokenBuilder tb = new TokenBuilder();
-        tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
-
-        //Get file from resources folder
-        ClassLoader classLoader = getClass().getClassLoader();
-        if (reqType.equals("db-entries")) {
-
-            //reqType = "/xquery/list-db-entries.xq";
-            reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
-            db = paras[0];
-            db_path = paras[1];
-            try {
-                //qFile = new File(classLoader.getResource(reqType).getFile());
-                qFile = new File(reqType);
-                tb.add(new IOFile(qFile).read());
-            } catch (Exception e1){
-                e1.printStackTrace();
-                JOptionPane.showMessageDialog(null, "xq file not found", "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-            }
-            tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-            JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        } else {
-            reqType = "/xquery/list-restxq-entries.xq";
-            //reqType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-restxq-entries.xq";
-            qFile = new File(classLoader.getResource(reqType).getFile());
-            //qFile = new File(reqType);
-            tb.add(new IOFile(qFile).read());
-            tb.add("]]></text></query>");
-        }
-
-        // send request, receive response
-        //String basicAuth = getAuth();
-        //URL url = new URL(getURL()+'/'+paras[0]+paras[1]);
-        URL url = new URL(getURL());
-        // will always be HttpURLConnection if URL starts with "http://"
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization", getAuth());
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);
-        conn.getOutputStream().write(tb.finish());
-        String result = Token.string(new IOStream(conn.getInputStream()).read());
-        JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
-/*        ANode root = (ANode) query(result, null);
-        JOptionPane.showMessageDialog(null, root, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);*/
-
-        // this demonstrates how you can loop through the children of the root element
-/*        for(ANode resource : root.children()) {
-            String databaseEntry = value(resource);
-            tList.add(databaseEntry);
-            JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        }
-        for(ANode resource : root.children()) {
-            String type = name(resource);
-            tList.add(type);
-            JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-        }*/
-        return tList;
-    }
-
-    public ArrayList<String> listDBEntries(String db, String db_path) throws Exception {
+    public ArrayList<String> listDatabaseEntries(String db, String db_path) throws Exception {
         ArrayList<String> tList = new ArrayList<String>();
 
         // build POST request
@@ -315,46 +241,5 @@ public class BasexWrapper extends RestWrapper{
         }
         return tList;
     }
-
-    /**
-     * Convenience method for running an XQuery expression and returns the result.
-     * @param query query
-     * @param item initial context item (can be null)
-     * @return name of element
-     * @throws QueryException query exception
-     */
-/*    Value query(String query, Value item) throws QueryException {
-        final QueryProcessor qp = new QueryProcessor(query, ctx);
-        if(item != null) qp.context(item);
-        return qp.value();
-    }
-
-    *//**
-     * Convenience method for returning the name of an XML node.
-     * @param node node
-     * @return name of element
-     *//*
-    String name(ANode node) {
-        return Token.string(node.name());
-    }
-
-    *//**
-     * Convenience method for returning the string value of an XML node.
-     * @param node node
-     * @return string value
-     *//*
-    String value(ANode node) {
-        return Token.string(node.string());
-    }
-
-    *//**
-     * Convenience method for returning the attribute value of an XML element.
-     * @param node element
-     * @param name name of attribute
-     * @return attribute value
-     *//*
-    String attribute(ANode node, String name) throws Exception {
-        return Token.string(node.attribute(name));
-    }*/
 
 }

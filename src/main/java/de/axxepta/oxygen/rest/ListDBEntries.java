@@ -30,7 +30,7 @@ public class ListDBEntries {
   private ArrayList<String> result;
   public static void main(String... args){
     try {
-      ListDBEntries test = new ListDBEntries("test", "/");
+      ListDBEntries test = new ListDBEntries("restxq", "test", "/");
     }
     catch (Exception er){}
   }
@@ -40,7 +40,7 @@ public class ListDBEntries {
    * @throws Exception ignored (shouldn't be)
    */
 
-  public ListDBEntries(String db, String db_path) throws Exception {
+  public ListDBEntries(String queryType, String db, String db_path) throws Exception {
     ArrayList<String> tList = new ArrayList<String>();
 
     // login data
@@ -54,7 +54,12 @@ public class ListDBEntries {
     tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
     //Get file from resources folder
-    String queryType = "/list-db-entries.xq";
+    if (queryType.equals("db")) {
+        queryType = "/list-db-entries.xq";
+    } else {
+        queryType = "/list-restxq-entries.xq";
+    }
+
     //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
     //String queryType ="xquery/list-restxq-entries.xq";
 
@@ -107,7 +112,7 @@ public class ListDBEntries {
     {
       tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     } else {
-      tb.add("]]></text><variable name=\"path\" value=\"" + db + "\"/></query>");
+      tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     }
     //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
@@ -156,14 +161,13 @@ public class ListDBEntries {
     for(ANode resource : root.children()) {
       String databaseEntry = value(resource);
       tList.add(databaseEntry);
-     // JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
     for(ANode resource : root.children()) {
       String type = name(resource);
       tList.add(type);
-    //  JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
     this.result = tList;
+     //JOptionPane.showMessageDialog(null, tList, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
   }
 
 

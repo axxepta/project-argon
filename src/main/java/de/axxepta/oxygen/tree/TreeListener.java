@@ -90,34 +90,49 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 
         System.out.println("-- tree expansion -- id=");
-        if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren()) && this.newExpandEvent) {
-            ArrayList<String> newNodes = new ArrayList<>();
-            ArrayList<String> newTypes = new ArrayList<>();
-            ArrayList<String> newValues = new ArrayList<>();
-            String db = this.path.getPathComponent(1).toString();
-            String db_path = "/";
-            for (int i = 2; i < this.path.getPathCount(); i++) {
-                db_path = db_path + this.path.getPathComponent(i).toString() + '/';
-            }
-            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
-            try {
-                newNodes = this._basexWrapper.listDBEntries(db, db_path);
-                //newNodes = this._basexWrapper.ListDBEntries("db-entries", db, db_path);
-//                ListDBEntries newEntries = new ListDBEntries();
-//                newNodes = newEntries.getResult();
-                ListDBEntries newEntries = new ListDBEntries(db, db_path);
-                newNodes = newEntries.getResult();
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            if (newNodes.size() > 0) {
-                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
-                newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
-            }
 
-            if (updateExpandedNode(this.node, newValues, newTypes)) {
-                this.newExpandEvent = false;
-                this._Tree.expandPath(this.path);
+        if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren()) && this.newExpandEvent) {
+
+            if (!((this.path.getPathCount()==2) && (this.path.getPathComponent(1).toString().equals("Databases")))){
+
+                ArrayList<String> newNodes = new ArrayList<>();
+                ArrayList<String> newTypes = new ArrayList<>();
+                ArrayList<String> newValues = new ArrayList<>();
+                String db;
+                String queryType;
+                int folderDepth;
+
+                if (this.path.getPathComponent(1).toString().equals("Databases")){
+                    db = this.path.getPathComponent(2).toString();
+                    queryType = "db";
+                    folderDepth = 3;
+                } else {
+                    db = "";
+                    queryType = "restxq";
+                    folderDepth = 2;
+                }
+
+                String db_path = "/";
+                for (int i = folderDepth; i < this.path.getPathCount(); i++) {
+                    db_path = db_path + this.path.getPathComponent(i).toString() + '/';
+                }
+                //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+                try {
+                    ListDBEntries newEntries = new ListDBEntries(queryType, db, db_path);
+                    newNodes = newEntries.getResult();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                if (newNodes.size() > 0) {
+                    newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
+                    newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
+                }
+
+                if (updateExpandedNode(this.node, newValues, newTypes)) {
+                    this.newExpandEvent = false;
+                    this._Tree.expandPath(this.path);
+                }
+
             }
 
         }
