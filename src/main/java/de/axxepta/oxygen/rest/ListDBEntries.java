@@ -1,8 +1,12 @@
 package de.axxepta.oxygen.rest;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.File;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 
 import org.basex.core.Context;
@@ -29,7 +33,7 @@ public class ListDBEntries {
   private ArrayList<String> result;
   public static void main(String... args){
     try {
-      ListDBEntries test = new ListDBEntries();
+      ListDBEntries test = new ListDBEntries("test", "/");
     }
     catch (Exception er){}
   }
@@ -39,7 +43,7 @@ public class ListDBEntries {
    * @throws Exception ignored (shouldn't be)
    */
 
-  public ListDBEntries() throws Exception {
+  public ListDBEntries(String db, String db_path) throws Exception {
     ArrayList<String> tList = new ArrayList<String>();
 
     // login data
@@ -53,25 +57,38 @@ public class ListDBEntries {
     tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
     //Get file from resources folder
-    //String queryType = "xquery/list-db-entries.xq";
-    String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
+    String queryType = "/list-db-entries.xq";
+    //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
     //String queryType ="xquery/list-restxq-entries.xq";
     ClassLoader classLoader = getClass().getClassLoader();
     //File qFile = new File(classLoader.getResource(queryType).getFile());
-    File qFile = new File(queryType);
+    URL furl = ListDBEntries.class.getResource(queryType);
+    //System.out.println(furl.toURI());
+    //File qFile = new File(furl.toString());
 
-    String db = "test2";
-    String db_path = "/";
+    //TODO: waaaay to hacky...
+    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
+
+    int intValueOfChar;
+    String query = "";
+    while ((intValueOfChar = reader.read()) != -1) {
+      query += (char) intValueOfChar;
+    }
+    reader.close();
+
+    //String db = "test2";
+    //String db_path = "/";
     String path = "./dba";
-    tb.add(new IOFile(qFile).read());
+    //tb.add(new IOFile(qFile).read());
+    tb.add(query);
 
-    if (queryType.equals("D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq"))
+    if (queryType.equals("/list-db-entries.xq"))
     {
       tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     } else {
       tb.add("]]></text><variable name=\"path\" value=\"" + path + "\"/></query>");
     }
-    JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
     // send request, receive response
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
@@ -87,7 +104,7 @@ public class ListDBEntries {
     // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
     ANode root = (ANode) query(result, null);
 
-    JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    //JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
@@ -114,12 +131,12 @@ public class ListDBEntries {
     for(ANode resource : root.children()) {
       String databaseEntry = value(resource);
       tList.add(databaseEntry);
-      JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+     // JOptionPane.showMessageDialog(null, databaseEntry, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
     for(ANode resource : root.children()) {
       String type = name(resource);
       tList.add(type);
-      JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+    //  JOptionPane.showMessageDialog(null, type, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
     this.result = tList;
   }
