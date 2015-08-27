@@ -1,11 +1,8 @@
 package de.axxepta.oxygen.rest;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.io.File;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
 
@@ -60,14 +57,28 @@ public class ListDBEntries {
     String queryType = "/list-db-entries.xq";
     //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
     //String queryType ="xquery/list-restxq-entries.xq";
-    ClassLoader classLoader = getClass().getClassLoader();
+
+//////// throws exception, but works anyway!
+    //ClassLoader classLoader = getClass().getClassLoader();
     //File qFile = new File(classLoader.getResource(queryType).getFile());
-    URL furl = ListDBEntries.class.getResource(queryType);
+    //tb.add(new IOFile(qFile).read());
+//////////
+
+//////// throws path exception, but works anyway!
+    //File qFile = new File(ListDBEntries.class.getResource(queryType).getFile());
+    //tb.add(new IOFile(qFile).read());
+////////////
+
+////// doesn't work
+    //URL furl = ListDBEntries.class.getResource(queryType);
     //System.out.println(furl.toURI());
     //File qFile = new File(furl.toString());
+    //tb.add(new IOFile(qFile).read());
+////////
 
+///////// works, BUT...   --and throws an exception at first call
     //TODO: waaaay to hacky...
-    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
+/*    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
 
     int intValueOfChar;
     String query = "";
@@ -75,18 +86,28 @@ public class ListDBEntries {
       query += (char) intValueOfChar;
     }
     reader.close();
+    tb.add(query);*/
+////////
 
-    //String db = "test2";
-    //String db_path = "/";
-    String path = "./dba";
-    //tb.add(new IOFile(qFile).read());
-    tb.add(query);
+////////  works, but still a bit hacky--and throws an exception at first call
+    InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream(queryType));
+    BufferedReader br = new BufferedReader(isr);
+    StringBuffer sb = new StringBuffer();
+    String lineFromBuffer;
+    while ((lineFromBuffer = br.readLine()) != null)
+    {
+      sb.append(lineFromBuffer);
+    }
+      br.close();
+      isr.close();
+    tb.add(sb.toString());
+///////
 
     if (queryType.equals("/list-db-entries.xq"))
     {
       tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
     } else {
-      tb.add("]]></text><variable name=\"path\" value=\"" + path + "\"/></query>");
+      tb.add("]]></text><variable name=\"path\" value=\"" + db + "\"/></query>");
     }
     //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
 
@@ -94,17 +115,21 @@ public class ListDBEntries {
     String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
     URL url = new URL("http://" + host + ':' + port + "/rest");
     // will always be HttpURLConnection if URL starts with "http://"
-    //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    //sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
     conn.setRequestProperty("Authorization", basicAuth);
     conn.setRequestMethod("POST");
     conn.setDoOutput(true);
-    conn.getOutputStream().write(tb.finish());
+    //conn.getOutputStream().write(tb.finish());
+    OutputStream os = conn.getOutputStream();
+    os.write(tb.finish());
+    os.close();
+
     String result = Token.string(new IOStream(conn.getInputStream()).read());
     // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
     ANode root = (ANode) query(result, null);
 
-    //JOptionPane.showMessageDialog(null, result, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
+
     // this demonstrates how you can loop through the children of the root element
     // - similar to DOM, but more efficient and light-weight
     // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
