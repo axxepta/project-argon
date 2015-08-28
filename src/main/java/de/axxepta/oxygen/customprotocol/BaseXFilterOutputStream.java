@@ -104,7 +104,6 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
 		//String content = this.readFile(temp);
 	
 		String content = this.readFile(temp.getAbsolutePath());
-		System.out.println(content);
 		
 		// define input stream
 		InputStream bais = new ByteArrayInputStream(content.getBytes());
@@ -160,7 +159,7 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
 		boolean bool = false;
 		try {
 			// tries to delete the newly created file
-			//bool = temp.delete();
+			bool = temp.delete();
 			// print
 			System.out.println("File deleted: " + bool);
 
