@@ -2,7 +2,6 @@ package de.axxepta.oxygen.customprotocol;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,11 +24,12 @@ public class CustomProtocolHandler extends URLStreamHandler {
 	 * Connection class for file2
 	 */
 	private static class File2Connection extends URLConnection {
+
 		/**
 		 * Construct the connection
 		 * 
 		 * @param url
-		 *          The URL
+		 *            The URL
 		 */
 		protected File2Connection(URL url) {
 
@@ -37,6 +37,21 @@ public class CustomProtocolHandler extends URLStreamHandler {
 			// Allow output
 			setDoOutput(true);
 		}
+		
+		/*
+		public String readFile(String filename) {
+	            File f = new File(filename);
+	            try {
+	                byte[] bytes = Files.readAllBytes(f.toPath());
+	                return new String(bytes,"UTF-8");
+	            } catch (FileNotFoundException e) {
+	                e.printStackTrace();
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	            }
+	            return "";
+	    }
+	    */
 
 		/**
 		 * @see java.net.URLConnection#getURL()
@@ -45,15 +60,17 @@ public class CustomProtocolHandler extends URLStreamHandler {
 		public URL getURL() {
 			URL toReturn = super.getURL();
 			String content = toReturn.toString();
-			if(content.indexOf("?") != -1) {
-				//Remove the parameters part
-				if(content.indexOf("#") != -1) {
-					//But keep the anchor in place
-					content = content.substring(0, content.indexOf("?")) + content.substring(content.indexOf("#"), content.length());
+			if (content.indexOf("?") != -1) {
+				// Remove the parameters part
+				if (content.indexOf("#") != -1) {
+					// But keep the anchor in place
+					content = content.substring(0, content.indexOf("?"))
+							+ content.substring(content.indexOf("#"),
+									content.length());
 				} else {
 					content = content.substring(0, content.indexOf("?"));
 				}
-				
+
 			}
 			return toReturn;
 		}
@@ -66,6 +83,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
 		@Override
 		public InputStream getInputStream() throws IOException {
 			System.out.println("-- get Input Stream --: " + url.toString());
+			
 
 			// login data
 			String user = "admin";
@@ -74,19 +92,22 @@ public class CustomProtocolHandler extends URLStreamHandler {
 			int port = 8984;
 
 			// send request, receive response
-			String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
-			
+			String basicAuth = "Basic "
+					+ new String(Base64.encode(user + ':' + pass));
+
 			String argonUrlString = url.toString();
 			String[] parts = argonUrlString.split("argon:");
 			String restPath = parts[1];
-			
-			URL url = new URL("http://" + host + ':' + port + "/rest" + restPath);
+
+			URL url = new URL("http://" + host + ':' + port + "/rest"
+					+ restPath);
+
 			// will always be HttpURLConnection if URL starts with "http://"
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestProperty("Authorization", basicAuth);
 			conn.setRequestMethod("GET");
 			conn.setDoOutput(true);
-			
+
 			return conn.getInputStream();
 		}
 
@@ -97,38 +118,73 @@ public class CustomProtocolHandler extends URLStreamHandler {
 		 */
 		@Override
 		public OutputStream getOutputStream() throws IOException {
-			File file = getCanonicalFileFromFileUrl(url);
-			final FileOutputStream fos = new FileOutputStream(file);
-			OutputStream os = new FilterOutputStream(fos) {
-				/**
-				 * @see java.io.FilterOutputStream#write(byte[])
-				 */
-				@Override
-				public void write(byte[] b) throws IOException {
-					super.write(b);
-				}
-				/**
-				 * @see java.io.FilterOutputStream#write(byte[], int, int)
-				 */
-				@Override
-				public void write(byte[] b, int off, int len) throws IOException {
-					super.write(b, off, len);
-				}
-				/**
-				 * @see java.io.FilterOutputStream#write(int)
-				 */
-				@Override
-				public void write(int b) throws IOException {
-					super.write(b);
-				}
-			};
+
 			System.out.println("-- get Output Stream --");
+
+			// create a temp file
+			File temp = File.createTempFile("temp-file-name", ".xml");
+			System.out.println("Temp file : " + temp.getAbsolutePath());
+
+			final OutputStream fos = new FileOutputStream(temp);
+			
+			OutputStream os = new BaseXFilterOutputStream(fos, temp, url);
+			
+			/*
+			final BaseXClient session = new BaseXClient("localhost", 1984,"admin", "admin");
+		    
+			String content = this.readFile(temp.toString());
+			
+			// define input stream
+		    InputStream bais = new ByteArrayInputStream(content.getBytes());
+
+			String argonUrlPath = url.getPath();
+			argonUrlPath = argonUrlPath.replaceFirst("/", "");
+			String[] parts = argonUrlPath.split("/", 2);
+			String database = parts[0];
+			String path = parts[1];
+			
+			System.out.println("----------------------");
+			System.out.println("Database: " + database);
+			System.out.println("Path: " + path);
+			
+
+			session.execute(MessageFormat.format("open {0}", database));
+			System.out.println(session.info());
+
+			try {
+				// replace document
+				session.replace(path, bais);
+				System.out.println(session.info());
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
+			boolean bool = false;
+			try {
+				// tries to delete the newly created file
+				//bool = temp.delete();
+				// print
+				System.out.println("File deleted: " + bool);
+
+			} catch (Exception e) {
+				// if any error occurs
+				e.printStackTrace();
+			}
+			
+
+			session.close();
+			
+			*/
+			
 			return os;
 		}
-		
-		  /**
-		 * Opens a communications link to the resource referenced by this URL, if such a connection has
-		 * not already been established.
+
+		/**
+		 * Opens a communications link to the resource referenced by this URL,
+		 * if such a connection has not already been established.
 		 */
 		@Override
 		public void connect() throws IOException {
@@ -149,7 +205,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
 	 * Creates and opens the connection
 	 * 
 	 * @param u
-	 *          The URL
+	 *            The URL
 	 * @return The connection
 	 */
 	@Override
@@ -159,16 +215,18 @@ public class CustomProtocolHandler extends URLStreamHandler {
 	}
 
 	/**
-	 * On Windows names of files from network neighborhood must be corrected before open.
+	 * On Windows names of files from network neighborhood must be corrected
+	 * before open.
 	 * 
 	 * @param url
-	 *          The file URL.
+	 *            The file URL.
 	 * @return The cannonical or absolute file.
 	 * @throws IllegalArgumentException
-	 *           if the URL is not file.
+	 *             if the URL is not file.
 	 */
 	public static File getCanonicalFileFromFileUrl(URL url) {
 		File file = null;
+		
 		if (url == null) {
 			throw new NullPointerException("The URL cannot be null.");
 		}
