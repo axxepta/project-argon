@@ -17,11 +17,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * The custom protocol name.
    */
   private static final String ARGON = "argon";
-  
-  /**
-   * The file xml zip protocol name.
-   */
-  private static final String XMLZIP = "filexmlzip";
 
   /**
    * Gets the handler for the custom protocol
@@ -31,22 +26,17 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     if (protocol.equals(ARGON)) {
       URLStreamHandler handler = new CustomProtocolHandler();
       return handler;
-    } else 
-      // If the protocol is "filexmlzip" return its handler
-      if (protocol.equals(XMLZIP)) {
-        URLStreamHandler handler = new XMLZipHandler();
-        return handler;
-      }
+    }
     return null;
   }
-  
+
   /**
    * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#getLockHandler()
    */
   public LockHandler getLockHandler() {
     return null;
   }
-  
+
   /**
    * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#isLockingSupported(java.lang.String)
    */
@@ -66,6 +56,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
   public boolean isReadOnly(URL url) {
     //return !CustomProtocolHandler.getCanonicalFileFromFileUrl(url).canWrite();
-	return false;
+    return false;
   }
 }
