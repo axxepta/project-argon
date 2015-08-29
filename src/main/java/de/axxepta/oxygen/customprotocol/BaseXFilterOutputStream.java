@@ -76,9 +76,6 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
      */
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        System.out.println("b.length: " + b.length);
-        System.out.println("off: " + off);
-        System.out.println("len: " + len);
 
         //TODO use direct bytes array instead of making file operations
         /*
