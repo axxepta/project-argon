@@ -1,37 +1,42 @@
 package de.axxepta.oxygen.tree;
 
-import de.axxepta.oxygen.rest.BasexWrapper;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import de.axxepta.oxygen.rest.ListDBEntries;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.CryptoPrimitive;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
+import javax.swing.Timer;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import de.axxepta.oxygen.rest.BasexWrapper;
+import de.axxepta.oxygen.rest.ListDBEntries;
 
 /**
  * Created by daltiparmak on 14.04.15.
  */
 public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener{
+	
+	 // Define a static logger variable so that it references the
+    // Logger instance named "TreeListener".
+    private static final Logger logger = LogManager.getLogger(TreeListener.class);
+    
     private BasexTree _Tree;
     private DefaultTreeModel _treeModel;
-    private BasexWrapper _basexWrapper;
     private TreePath path;
     private DefaultMutableTreeNode node;
     private boolean newExpandEvent;
@@ -45,7 +50,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     	this.wsa = workspaceAccess;
         this._Tree = tree;
         this._treeModel = treeModel;
-        this._basexWrapper = bxWrapper;
         this.newExpandEvent = true;
         ActionListener actionListener = new ActionListener() {
 
@@ -57,7 +61,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     try {
                         doubleClickHandler(e);
                     } catch (ParseException ex) {
-                        Logger.getLogger(ex.getMessage());
+                        logger.error(ex);
                     }
                 }
             }
@@ -89,7 +93,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.path = event.getPath();
         this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 
-        System.out.println("-- tree expansion -- id=");
+        logger.info("-- tree expansion -- id=");
 
         if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren()) && this.newExpandEvent) {
 
@@ -121,7 +125,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     ListDBEntries newEntries = new ListDBEntries(queryType, db, db_path);
                     newNodes = newEntries.getResult();
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    logger.error(e1);
                 }
                 if (newNodes.size() > 0) {
                     newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
@@ -144,7 +148,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     private void singleClickHandler(ActionEvent e) {
-        System.out.println("-- single click --");
+        logger.debug("-- single click --");
 /*        URL argonURL = null;
 		try {
 			argonURL = new URL("argon:/tmp/tmp.xml");
@@ -156,19 +160,19 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
-        System.out.println("-- double click --");
+        logger.debug("-- double click --");
         String db_path = "argon:";
         for (int i = 2; i < this.path.getPathCount(); i++) {
             db_path = db_path + '/' + this.path.getPathComponent(i).toString();
         }
-        System.out.println(db_path);
+        logger.info("DbPath: " + db_path);
         if (!this.node.getAllowsChildren()) {
             // open file
             URL argonURL = null;
             try {
                 argonURL = new URL(db_path);
             } catch (MalformedURLException e1) {
-                e1.printStackTrace();
+                logger.error(e1);
             }
             this.wsa.open(argonURL);
         }

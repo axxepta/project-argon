@@ -14,6 +14,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.axxepta.oxygen.api.BaseXClient;
 
 /**
@@ -22,6 +25,10 @@ import de.axxepta.oxygen.api.BaseXClient;
  *
  */
 public class BaseXFilterOutputStream extends FilterOutputStream {
+	
+	 // Define a static logger variable so that it references the
+    // Logger instance named "CustomProtocolHandler".
+    private static final Logger logger = LogManager.getLogger(BaseXFilterOutputStream.class);
 
     //private ArrayList<Byte> bytes = new ArrayList<Byte>();
     private URL url;
@@ -117,13 +124,12 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         String database = parts[0];
         String path = parts[1];
 
-        System.out.println("----------------------");
-        System.out.println("Database: " + database);
-        System.out.println("Path: " + path);
+        logger.info("Database: " + database);
+        logger.info("Path: " + path);
 
         // open BaseX database
         session.execute(MessageFormat.format("open {0}", database));
-        System.out.println(session.info());
+        logger.info(session.info());
 
         /*
          * byte[] primitive = new byte[this.bytes.size()];
@@ -153,11 +159,11 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         try {
             // replace document
             session.replace(path, bais);
-            System.out.println(session.info());
+            logger.info(session.info());
 
         } catch (Exception e1) {
             // TODO Auto-generated catch block
-            e1.printStackTrace();
+        	logger.error(e1);
         }
 
         boolean bool = false;
@@ -165,11 +171,11 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
             // tries to delete the newly created file
             bool = temp.delete();
             // print
-            System.out.println("File deleted: " + bool);
+            logger.info("File deleted: " + bool);
 
         } catch (Exception e) {
             // if any error occurs
-            e.printStackTrace();
+            logger.error(e);
         }
         session.close();
 

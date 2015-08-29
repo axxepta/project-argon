@@ -14,11 +14,18 @@ import java.net.URLStreamHandler;
 
 import org.basex.util.Base64;
 
+//Import log4j classes.
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * Handler for the file2 protocol
  */
 public class CustomProtocolHandler extends URLStreamHandler {
-
+	
+	 // Define a static logger variable so that it references the
+    // Logger instance named "CustomProtocolHandler".
+    private static final Logger logger = LogManager.getLogger(CustomProtocolHandler.class);
 
     /**
      * Connection class for file2
@@ -82,9 +89,8 @@ public class CustomProtocolHandler extends URLStreamHandler {
          */
         @Override
         public InputStream getInputStream() throws IOException {
-            System.out.println("-- get Input Stream --: " + url.toString());
-
-
+            logger.info("-- get Input Stream --: " + url.toString());
+            
             // login data
             String user = "admin";
             String pass = "admin";
@@ -119,11 +125,11 @@ public class CustomProtocolHandler extends URLStreamHandler {
         @Override
         public OutputStream getOutputStream() throws IOException {
 
-            System.out.println("-- get Output Stream --");
+            logger.info("-- get Output Stream --");
 
             // create a temp file
             File temp = File.createTempFile("temp-file-name", ".xml");
-            System.out.println("Temp file : " + temp.getAbsolutePath());
+            logger.debug("Temp file : " + temp.getAbsolutePath());
 
             final OutputStream fos = new FileOutputStream(temp);
 
