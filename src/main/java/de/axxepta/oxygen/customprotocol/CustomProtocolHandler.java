@@ -1,17 +1,15 @@
 package de.axxepta.oxygen.customprotocol;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.text.MessageFormat;
 
+import de.axxepta.oxygen.api.BaseXClient;
 import org.basex.util.Base64;
 
 //Import log4j classes.
@@ -128,6 +126,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
             logger.info("-- get Output Stream --");
 
             // create a temp file
+            /*
             File temp = File.createTempFile("temp-file-name", ".xml");
             logger.debug("Temp file : " + temp.getAbsolutePath());
 
@@ -136,6 +135,50 @@ public class CustomProtocolHandler extends URLStreamHandler {
             OutputStream os = new BaseXFilterOutputStream(fos, temp, url);
 
             return os;
+            */
+
+            return new ByteArrayOutputStream() {
+                /**
+                 * @see java.io.ByteArrayOutputStream#close()
+                 */
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                    byte[] savedBytes = toByteArray();
+                    //TODO And now ship the saved bytes to the server
+
+                    final BaseXClient session = new BaseXClient("localhost", 1984, "admin","admin");
+                    InputStream bais = new ByteArrayInputStream(savedBytes);
+
+                    String argonUrlPath = url.getPath();
+                    argonUrlPath = argonUrlPath.replaceFirst("/", "");
+                    String[] parts = argonUrlPath.split("/", 2);
+                    String database = parts[0];
+                    String path = parts[1];
+
+                    logger.info("Database: " + database);
+                    logger.info("Path: " + path);
+
+                    // open BaseX database
+                    session.execute(MessageFormat.format("open {0}", database));
+                    logger.info(session.info());
+
+                    try {
+                        // replace document
+                        session.replace(path, bais);
+                        logger.info(session.info());
+
+                    } catch (Exception e1) {
+                        // TODO Auto-generated catch block
+                        logger.error(e1);
+                    } finally {
+                        session.close();
+                    }
+
+
+
+                }
+            };
         }
 
         /**
