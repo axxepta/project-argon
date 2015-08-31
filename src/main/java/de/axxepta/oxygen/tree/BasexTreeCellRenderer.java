@@ -6,10 +6,13 @@ package de.axxepta.oxygen.tree;
 
 import java.awt.Component;
 
-import javax.swing.Icon;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ro.sync.ui.Icons;
 
 /**
  * TreeCellRenderer with alternating colored rows.
@@ -19,14 +22,10 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	// Define a static logger variable so that it references the
+	// Logger instance named "CustomProtocolHandler".
+	private static final Logger logger = LogManager.getLogger(BasexTreeCellRenderer.class);
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
-	Icon xmlIcon, txtIcon, fileIcon;
-
-	public BasexTreeCellRenderer(Icon xIcon, Icon tIcon, Icon fIcon) {
-		xmlIcon = xIcon;
-		txtIcon = tIcon;
-		fileIcon = fIcon;
-	}
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree aTree, Object aValue,
@@ -53,16 +52,7 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, aLeaf, aRow, aHasFocus);
 			String thisLeafFileType = fileType(aValue);
-			switch (thisLeafFileType) {
-			case "xml":
-				setIcon(this.xmlIcon);
-				break;
-			case "txt":
-				setIcon(this.txtIcon);
-				break;
-			default:
-				setIcon(this.fileIcon);
-			}
+			setIcon(getOxygenIcon(thisLeafFileType));
 			return this;
 		}
 
@@ -90,4 +80,104 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 		} else
 			return "";
 	}
+
+	private static javax.swing.Icon getOxygenIcon(String extension) {
+		javax.swing.Icon icon = null;
+		if (extension.equalsIgnoreCase("xml")
+				|| extension.equalsIgnoreCase("dita")
+				|| extension.equalsIgnoreCase("ditaval")
+				|| extension.equalsIgnoreCase("ditacontrol")
+				|| extension.equalsIgnoreCase("xhtml")
+				|| extension.equalsIgnoreCase("opf")
+				|| extension.equalsIgnoreCase("ncx")
+				|| extension.equalsIgnoreCase("xlf")
+				) {
+			icon = ro.sync.ui.Icons.getIcon(Icons.XML_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("ditamap")) {
+			icon = Icons.getIcon(Icons.DITAMAP_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("epub")) {
+			icon = Icons.getIcon(Icons.EPUB_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("cat")) {
+			icon = Icons.getIcon(Icons.XML_TEMPLATE);
+		} else if(extension.equalsIgnoreCase("wsdl")) {
+			icon = Icons.getIcon(Icons.WSDL_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xsl")) {
+			icon = Icons.getIcon(Icons.XSL_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xsd")) {
+			icon = Icons.getIcon(Icons.XSD_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("rng")) {
+			icon = Icons.getIcon(Icons.RNG_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("rnc")) {
+			icon = Icons.getIcon(Icons.RNC_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("nvdl")) {
+			icon = Icons.getIcon(Icons.NVDL_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("dtd")) {
+			icon = Icons.getIcon(Icons.DTD_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("mod")) {
+			icon = Icons.getIcon(Icons.DTD_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("ent")) {
+			icon = Icons.getIcon(Icons.DTD_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xpl")) {
+			icon = Icons.getIcon(Icons.XPROC_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xpr")) {
+			icon = Icons.getIcon(Icons.XPR_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("css")) {
+			icon = Icons.getIcon(Icons.CSS_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xquery")
+				|| extension.equalsIgnoreCase("xq")
+				|| extension.equalsIgnoreCase("xql")
+				|| extension.equalsIgnoreCase("xqm")
+				|| extension.equalsIgnoreCase("xqy")
+				|| extension.equalsIgnoreCase("xu")) {
+			icon = Icons.getIcon(Icons.XQUERY_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("html")) {
+			icon = Icons.getIcon(Icons.HTML_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("sch")) {
+			icon = Icons.getIcon(Icons.SCH_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("fo")) {
+			icon = Icons.getIcon(Icons.FO_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("txt")) {
+			icon = Icons.getIcon(Icons.TXT_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("json")) {
+			icon = Icons.getIcon(Icons.JSON_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("js")) {
+			icon = Icons.getIcon(Icons.JS_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("sql")) {
+			icon = Icons.getIcon(Icons.SQL_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("php")) {
+			icon = Icons.getIcon(Icons.PHP_TEMPLATE);
+		} else if (extension.equalsIgnoreCase("xspec")) {
+			icon = Icons.getIcon(Icons.XSPEC_TEMPLATE);
+		} else {
+			icon = createImageIcon(getIconFile(extension));
+		}
+		return icon;
+	}
+
+	private static String getIconFile(String fileType) {
+		switch (fileType) {
+			case "XML":
+				return "/xml16.png";
+			case "TXT":
+				return "/txt16.png";
+			case "FILE":
+				return "/file16.png";
+			default:
+				return "/file16.png";
+		}
+
+	}
+
+	private static ImageIcon createImageIcon(String path) {
+		java.net.URL imgURL = BasexTree.class.getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL);
+		} else {
+			logger.error("Couldn't find file: " + path);
+			JOptionPane.showMessageDialog(null, "Couldn't find file: " + path,
+					"createImageIcon", JOptionPane.PLAIN_MESSAGE);
+			return null;
+		}
+	}
+
 }
