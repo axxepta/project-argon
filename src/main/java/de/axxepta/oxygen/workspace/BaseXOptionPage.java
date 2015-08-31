@@ -23,7 +23,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 /**
  * Plugin option page extension Custom Workspace Access Plugin Extension.
  */
-public class CustomWorkspaceAccessOptionPagePluginExtension extends OptionPagePluginExtension {
+public class BaseXOptionPage extends OptionPagePluginExtension {
 
     /**
      * The option key describing the temporary location for the saved files.

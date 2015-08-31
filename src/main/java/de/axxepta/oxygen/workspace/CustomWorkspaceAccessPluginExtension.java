@@ -20,7 +20,6 @@ import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import com.jidesoft.swing.JideScrollPane;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
 import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
@@ -124,7 +123,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
                 File currentFileContext = null;
                 // Create temporary file
                 String defaultCheckOutDirString = pluginWorkspaceAccess.getOptionsStorage().getOption(
-                        CustomWorkspaceAccessOptionPagePluginExtension.KEY_DEFAULT_CHECKOUT_LOCATION,
+                        BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
                         null);
                 if (defaultCheckOutDirString != null) {
                     currentFileContext = new File(defaultCheckOutDirString);
@@ -775,7 +774,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
         // Create temporary file
         String tmpDirString = pluginWorkspaceAccess.getOptionsStorage().getOption(
-                CustomWorkspaceAccessOptionPagePluginExtension.KEY_SAVE_TEMPORARY_FILES_LOCATION,
+                BaseXOptionPage.KEY_SAVE_TEMPORARY_FILES_LOCATION,
                 null);
         File tmpDir = checkedOutFile.getParentFile();
         if (tmpDirString != null) {

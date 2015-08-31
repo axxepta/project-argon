@@ -124,61 +124,8 @@ public class CustomProtocolHandler extends URLStreamHandler {
         public OutputStream getOutputStream() throws IOException {
 
             logger.info("-- get Output Stream --");
-
-            // create a temp file
-            /*
-            File temp = File.createTempFile("temp-file-name", ".xml");
-            logger.debug("Temp file : " + temp.getAbsolutePath());
-
-            final OutputStream fos = new FileOutputStream(temp);
-
-            OutputStream os = new BaseXFilterOutputStream(fos, temp, url);
-
-            return os;
-            */
-
-            return new ByteArrayOutputStream() {
-                /**
-                 * @see java.io.ByteArrayOutputStream#close()
-                 */
-                @Override
-                public void close() throws IOException {
-                    super.close();
-                    byte[] savedBytes = toByteArray();
-                    //TODO And now ship the saved bytes to the server
-
-                    final BaseXClient session = new BaseXClient("localhost", 1984, "admin","admin");
-                    InputStream bais = new ByteArrayInputStream(savedBytes);
-
-                    String argonUrlPath = url.getPath();
-                    argonUrlPath = argonUrlPath.replaceFirst("/", "");
-                    String[] parts = argonUrlPath.split("/", 2);
-                    String database = parts[0];
-                    String path = parts[1];
-
-                    logger.info("Database: " + database);
-                    logger.info("Path: " + path);
-
-                    // open BaseX database
-                    session.execute(MessageFormat.format("open {0}", database));
-                    logger.info(session.info());
-
-                    try {
-                        // replace document
-                        session.replace(path, bais);
-                        logger.info(session.info());
-
-                    } catch (Exception e1) {
-                        // TODO Auto-generated catch block
-                        logger.error(e1);
-                    } finally {
-                        session.close();
-                    }
-
-
-
-                }
-            };
+            ByteArrayOutputStream baos = new BaseXByteArrayOutputStream(url);
+            return baos;
         }
 
         /**
