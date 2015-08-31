@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
     // Logger instance named "CustomProtocolHandler".
     private static final Logger logger = LogManager.getLogger(BaseXFilterOutputStream.class);
 
-    //private ArrayList<Byte> bytes = new ArrayList<Byte>();
+    private ArrayList<Byte> bytes = new ArrayList<Byte>();
     private URL url;
     private File temp;
 
@@ -41,7 +42,8 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         File f = new File(filename);
         try {
             byte[] bytes = Files.readAllBytes(f.toPath());
-            return new String(bytes, "UTF-8");
+            //return new String(bytes, "UTF-8");
+            return new String(bytes);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -75,7 +77,9 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
      */
     @Override
     public void write(byte[] b) throws IOException {
+
         super.write(b);
+        logger.debug(String.format("Write bytes (no offset): %d ", b.length));
     }
 
     /**
@@ -87,12 +91,13 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         //TODO use direct bytes array instead of making file operations
         /*
          * @TODO
-         *
+         */
         for (int i = 0; i < b.length; i++) {
             this.bytes.add(b[i]);
         }
-        */
-        super.write(b, off, len);
+
+        //super.write(b, off, len);
+       logger.debug(String.format("Write bytes: %d  at offset %d", len, off));
     }
 
     /**
@@ -112,10 +117,17 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         final BaseXClient session = new BaseXClient("localhost", 1984, "admin","admin");
 
         // get content from temporary file
-        String content = this.readFile(temp.getAbsolutePath());
+        //String content = this.readFile(temp.getAbsolutePath());
+        //InputStream bais = content.getBytes("UTF-8"));
+
+        byte[] primitive = new byte[this.bytes.size()];
+
+        for (int i = 0; i < this.bytes.size(); i++) {
+            primitive[i] = this.bytes.get(i);
+        }
 
         // define input stream
-        InputStream bais = new ByteArrayInputStream(content.getBytes());
+        InputStream bais = new ByteArrayInputStream(primitive);
 
         // split up url string into important parts
         String argonUrlPath = this.url.getPath();
@@ -169,9 +181,9 @@ public class BaseXFilterOutputStream extends FilterOutputStream {
         boolean bool = false;
         try {
             // tries to delete the newly created file
-            bool = temp.delete();
+           // bool = temp.delete();
             // print
-            logger.info("File deleted: " + bool);
+           // logger.info("File deleted: " + bool);
 
         } catch (Exception e) {
             // if any error occurs

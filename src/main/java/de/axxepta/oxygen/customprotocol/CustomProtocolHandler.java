@@ -26,7 +26,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
 	 // Define a static logger variable so that it references the
     // Logger instance named "CustomProtocolHandler".
     private static final Logger logger = LogManager.getLogger(CustomProtocolHandler.class);
-
+    private int length;
     /**
      * Connection class for file2
      */
@@ -152,8 +152,11 @@ public class CustomProtocolHandler extends URLStreamHandler {
          */
         @Override
         public int getContentLength() {
+        /*
             File file = getCanonicalFileFromFileUrl(url);
+            logger.debug(String.format("ContentLength %d", + file.length()));
             return (int) file.length();
+        */ return -1;
         }
     }
 
@@ -189,6 +192,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
         try {
             URI uri = new URI(url.toString().replace("argon", "file"));
             file = new File(uri);
+            logger.debug("URI: " + url.toString());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
