@@ -29,6 +29,9 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private final URL url;
 
 
+    /**
+     * constructor
+     */
     public BaseXByteArrayOutputStream(URL url) {
         super();
         this.url = url;
@@ -41,26 +44,20 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         byte[] savedBytes = toByteArray();
 
         String host = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_HOST,
                 null);
-        String tcpPort = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
-                null);
+        int tcpPort = Integer.parseInt(pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_BASEX_TCP_PORT,
+                null));
         String username = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_USERNAME,
                 null);
         String password = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_PASSWORD,
                 null);
 
 
-        logger.debug("Host: " + host);
-        logger.debug("TCP: " + tcpPort);
-        logger.debug("User: " + username);
-        logger.debug("Password: " + password);
-
-
-        final BaseXClient session = new BaseXClient("localhost", 1984, "admin", "admin");
+        final BaseXClient session = new BaseXClient(host, tcpPort, username, password);
         InputStream bais = new ByteArrayInputStream(savedBytes);
 
         String argonUrlPath = this.url.getPath();
