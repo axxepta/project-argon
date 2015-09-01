@@ -16,9 +16,8 @@
     <extension type="URLChooser" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     <extension type="URLChooserToolbar" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     -->
-    <!--
-    <extension type="OptionPage" class="de.axxepta.oxygen.workspace.CustomWorkspaceAccessOptionPagePluginExtension"></extension>
-    -->
+
+    <extension type="OptionPage" class="de.axxepta.oxygen.workspace.BaseXOptionPage"></extension>
     <!--The sample view which will present messages from the sample plugin.-->
     <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0" />
     <!--The sample toolbar which will present messages from the sample plugin.-->
