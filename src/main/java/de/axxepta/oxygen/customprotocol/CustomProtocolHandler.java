@@ -40,7 +40,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
         }
 
         private PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
-        
+
 
         /**
          * Returns an input stream that reads from this open connection.
