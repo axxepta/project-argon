@@ -81,6 +81,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             session.replace(path, bais);
             logger.info(session.info());
 
+
         } catch (Exception e1) {
             // TODO Auto-generated catch block
             logger.error(e1);

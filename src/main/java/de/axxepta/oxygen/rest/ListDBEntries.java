@@ -25,151 +25,134 @@ import javax.swing.*;
  * @author Christian Gruen, 2015
  */
 public class ListDBEntries {
-  // BaseX database context
-  Context ctx = new Context();
-  private ArrayList<String> result;
-  public static void main(String... args){
-    try {
-      ListDBEntries test = new ListDBEntries("restxq", "test", "/");
-    }
-    catch (Exception er){}
-  }
-
-  /**
-   * Example code.
-   * @throws Exception ignored (shouldn't be)
-   */
-
-  public ListDBEntries(String queryType, String db, String db_path) throws Exception {
-    ArrayList<String> tList = new ArrayList<String>();
-
+    // BaseX database context
+    Context ctx = new Context();
+    private ArrayList<String> result;
     // login data
     String user = "admin";
     String pass = "admin";
     String host = "localhost";
     int port = 8984;
-    
-    // build POST request
-    TokenBuilder tb = new TokenBuilder();
-    tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
-    //Get file from resources folder
-    if (queryType.equals("db")) {
-        queryType = "/list-db-entries.xq";
-    } else {
-        queryType = "/list-restxq-entries.xq";
+    public static void main(String... args) {
+        try {
+            ListDBEntries test = new ListDBEntries("restxq", "test", "/");
+        } catch (Exception er) {
+        }
     }
 
-    //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
-    //String queryType ="xquery/list-restxq-entries.xq";
+    public ListDBEntries(String queryType, String db, String db_path) throws Exception {
+        ArrayList<String> tList = new ArrayList<String>();
 
-//////// throws exception, but works anyway!
-    //ClassLoader classLoader = getClass().getClassLoader();
-    //File qFile = new File(classLoader.getResource(queryType).getFile());
-    //tb.add(new IOFile(qFile).read());
-//////////
+        // build POST request
+        TokenBuilder tb;
+        tb = getFileQuery(queryType, db, db_path);
 
-//////// throws path exception, but works anyway!
-    //File qFile = new File(ListDBEntries.class.getResource(queryType).getFile());
-    //tb.add(new IOFile(qFile).read());
-////////////
+        // send request, receive response
+        String result = postRequest(tb);
 
-////// doesn't work
-    //URL furl = ListDBEntries.class.getResource(queryType);
-    //System.out.println(furl.toURI());
-    //File qFile = new File(furl.toString());
-    //tb.add(new IOFile(qFile).read());
-////////
+        // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
+        ANode root = (ANode) query(result, null);
 
-///////// works, BUT...   --and throws an exception at first call
-    //TODO: waaaay to hacky...
-/*    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
-
-    int intValueOfChar;
-    String query = "";
-    while ((intValueOfChar = reader.read()) != -1) {
-      query += (char) intValueOfChar;
-    }
-    reader.close();
-    tb.add(query);*/
-////////
-
-////////  works, but still a bit hacky--and throws an exception at first call
-    InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream(queryType));
-    BufferedReader br = new BufferedReader(isr);
-    StringBuffer sb = new StringBuffer();
-    String lineFromBuffer;
-    while ((lineFromBuffer = br.readLine()) != null)
-    {
-      sb.append(lineFromBuffer);
-    }
-      br.close();
-      isr.close();
-    tb.add(sb.toString());
-///////
-
-    if (queryType.equals("/list-db-entries.xq"))
-    {
-      tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-    } else {
-      tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-    }
-    //JOptionPane.showMessageDialog(null, tb, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-
-    // send request, receive response
-    String basicAuth = "Basic " + new String(Base64.encode(user + ':' + pass));
-    URL url = new URL("http://" + host + ':' + port + "/rest");
-    // will always be HttpURLConnection if URL starts with "http://"
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    //sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
-    conn.setRequestProperty("Authorization", basicAuth);
-    conn.setRequestMethod("POST");
-    conn.setDoOutput(true);
-    //conn.getOutputStream().write(tb.finish());
-    OutputStream os = conn.getOutputStream();
-    os.write(tb.finish());
-    os.close();
-
-    String result = Token.string(new IOStream(conn.getInputStream()).read());
-    // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
-    ANode root = (ANode) query(result, null);
-
-
-    // this demonstrates how you can loop through the children of the root element
-    // - similar to DOM, but more efficient and light-weight
-    // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-    for(ANode resource : root.children()) {
-      String type = name(resource);
-      System.out.println("- " + value(resource) + " (" + type + "):");
-
-      // output different results, depending on resource type
-      switch(type) {
-      case "document":
-        // most efficient approach (directly access node attributes):
-        System.out.println("  nodes: " + attribute(resource, "nodes"));
-        // the XQuery approach:
-        System.out.println("  nodes: " + query("@nodes/number", resource));
-        break;
-      case "binary":
-        System.out.println("  size: " + attribute(resource, "size"));
-        break;
-      case "directory":
-        break;
-      }
+        // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
+        for (ANode resource : root.children()) {
+            String databaseEntry = value(resource);
+            tList.add(databaseEntry);
+        }
+        for (ANode resource : root.children()) {
+            String type = name(resource);
+            tList.add(type);
+        }
+        this.result = tList;
+        //JOptionPane.showMessageDialog(null, tList, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
 
-    for(ANode resource : root.children()) {
-      String databaseEntry = value(resource);
-      tList.add(databaseEntry);
-    }
-    for(ANode resource : root.children()) {
-      String type = name(resource);
-      tList.add(type);
-    }
-    this.result = tList;
-     //JOptionPane.showMessageDialog(null, tList, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
-  }
 
+    private TokenBuilder getFileQuery(String qType, String db, String db_path) throws Exception {
+        // build POST request
+        TokenBuilder tb = new TokenBuilder();
+        tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
+
+        //Get file from resources folder
+        if(qType.equals("db"))
+        {
+            qType = "/list-db-entries.xq";
+        }
+        else
+        {
+            qType = "/list-restxq-entries.xq";
+        }
+
+        //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
+        //String queryType ="xquery/list-restxq-entries.xq";
+
+    //////// throws exception, but works anyway!
+        //ClassLoader classLoader = getClass().getClassLoader();
+        //File qFile = new File(classLoader.getResource(queryType).getFile());
+        //tb.add(new IOFile(qFile).read());
+    //////////
+
+    //////// throws path exception, but works anyway!
+        //File qFile = new File(ListDBEntries.class.getResource(queryType).getFile());
+        //tb.add(new IOFile(qFile).read());
+    ////////////
+
+    ////// doesn't work
+        //URL furl = ListDBEntries.class.getResource(queryType);
+        //System.out.println(furl.toURI());
+        //File qFile = new File(furl.toString());
+        //tb.add(new IOFile(qFile).read());
+    ////////
+
+    ///////// works, BUT...   --and throws an exception at first call
+        //TODO: waaaay to hacky...
+    /*    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
+
+        int intValueOfChar;
+        String query = "";
+        while ((intValueOfChar = reader.read()) != -1) {
+          query += (char) intValueOfChar;
+        }
+        reader.close();
+        tb.add(query);*/
+    ////////
+
+    ////////  works, but still a bit hacky--and throws an exception at first call
+        InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream(qType));
+        BufferedReader br = new BufferedReader(isr);
+        StringBuffer sb = new StringBuffer();
+        String lineFromBuffer;
+        while((lineFromBuffer=br.readLine())!=null)
+        {
+            sb.append(lineFromBuffer);
+        }
+        br.close();
+        isr.close();
+        tb.add(sb.toString());
+    //////
+
+        if (qType.equals("/list-db-entries.xq")) {
+            tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
+        } else {
+            tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
+        }
+
+        return tb;
+    }
+
+    private String postRequest(TokenBuilder tb) throws Exception {
+        String basicAuth = "Basic " + new String(Base64.encode(this.user + ':' + this.pass));
+        URL url = new URL("http://" + this.host + ':' + this.port + "/rest");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("Authorization", basicAuth);
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        OutputStream os = conn.getOutputStream();
+        os.write(tb.finish());
+        os.close();
+        String res = Token.string(new IOStream(conn.getInputStream()).read());
+        return res;
+    }
 
   /**
    * Convenience method for running an XQuery expression and returns the result.
