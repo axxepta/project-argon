@@ -180,34 +180,20 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
         DefaultMutableTreeNode newChild;
+        ArrayList<String> oldChildren = new ArrayList<>();
+        String oldChild;
         boolean treeChanged = false;
 
-        if ((children.size() > 0) && (children.size() != node.getChildCount())) {
-            for (int i=0; i<children.size(); i++){
-                newChild = new DefaultMutableTreeNode(children.get(i));
-                if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
-                else newChild.setAllowsChildren(false);
-                this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
-            }
-            treeChanged = true;
-        }
-
-/*        // check whether old children are in new list and vice versa
+        // check whether old children are in new list and vice versa
         if (node.getChildCount() > 0) {
             boolean[] inNewList = new boolean[node.getChildCount()];
             if (children.size() > 0){
-                ArrayList<String> oldChildren = new ArrayList<>();
                 for (int i=0; i<node.getChildCount(); i++){
-                    DefaultMutableTreeNode currChild = (DefaultMutableTreeNode)node.getChildAt(i);
-                    oldChildren.add((String)currChild.getUserObject());
-                    for (int j=0; i<children.size(); i++){
-                        if (currChild.getUserObject().equals(children.get(j))) {
-                            inNewList[j] = true;
-                            break;
-                        }
-                    }
+                    DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)node.getChildAt(i);
+                    oldChild = currNode.getUserObject().toString();
+                    oldChildren.add(oldChild);
+                    if (children.contains(oldChild)) inNewList[i] = true;
                 }
-                if children.removeAll(oldChildren) {}
             }
             for (int i=node.getChildCount()-1; i>-1; i--){
                 if (!inNewList[i]) {
@@ -218,13 +204,15 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
         }
         for (int i=0; i<children.size(); i++){
-            newChild = new DefaultMutableTreeNode(children.get(i));
-            if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
+            if (!oldChildren.contains(children.get(i))) {
+                newChild = new DefaultMutableTreeNode(children.get(i));
+                if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
                 else newChild.setAllowsChildren(false);
-            //ToDo: check whether new child is directory and node has already files as children -> adapt insert pos
-            this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
-            treeChanged = true;
-        }*/
+                //ToDo: check whether new child is directory and node has already files as children -> adapt insert pos
+                this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
+                treeChanged = true;
+            }
+        }
 
         return treeChanged;
     }
