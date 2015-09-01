@@ -205,7 +205,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXLogfileTextFieldLbl = new JLabel("BaseX Logfile:");
+        JLabel baseXLogfileTextFieldLbl = new JLabel("Argon Logfile:");
         panel.add(baseXLogfileTextFieldLbl, c);
 
         baseXLogfileTextField = new JTextField();
@@ -228,7 +228,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
             public void actionPerformed(ActionEvent e) {
                 File dir = pluginWorkspace.chooseDirectory();
                 if (dir != null) {
-                    baseXHostTextField.setText(dir.getAbsolutePath() + "/argon.log");
+                    baseXLogfileTextField.setText(dir.getAbsolutePath() + "/argon.log");
                 }
             }
         });
