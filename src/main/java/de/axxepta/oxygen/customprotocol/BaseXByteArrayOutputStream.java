@@ -5,6 +5,7 @@ package de.axxepta.oxygen.customprotocol;
 
 
 import de.axxepta.oxygen.api.BaseXClient;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,6 +78,8 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             // replace document
             session.replace(path, bais);
             logger.info(session.info());
+
+            TopicHolder.saveFile.postMessage(argonUrlPath);
 
         } catch (Exception e1) {
             // TODO Auto-generated catch block

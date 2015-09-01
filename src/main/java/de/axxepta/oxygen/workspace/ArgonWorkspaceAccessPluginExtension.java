@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BasexWrapper;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
@@ -101,6 +102,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     tree.addTreeWillExpandListener(tListener);
                     tree.addMouseListener(tListener);
                     tree.addTreeSelectionListener(tListener);
+
+                    TopicHolder.saveFile.register(tListener);
 
                     //JOptionPane.showMessageDialog(null, "This language just gets better and better!");
 

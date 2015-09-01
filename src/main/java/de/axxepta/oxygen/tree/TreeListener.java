@@ -19,6 +19,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 
+import de.axxepta.oxygen.core.ObserverInterface;
+import de.axxepta.oxygen.core.SubjectInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +31,7 @@ import de.axxepta.oxygen.rest.ListDBEntries;
 /**
  * Created by daltiparmak on 14.04.15.
  */
-public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener{
+public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener, ObserverInterface{
 	
 	 // Define a static logger variable so that it references the
     // Logger instance named "TreeListener".
@@ -216,4 +218,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         return treeChanged;
     }
+
+    @Override
+    public void update(String message) {
+        logger.info("Tree needs to update: " + message);
+    }
+
 }
