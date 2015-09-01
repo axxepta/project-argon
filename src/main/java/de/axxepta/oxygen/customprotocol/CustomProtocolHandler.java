@@ -1,20 +1,13 @@
 package de.axxepta.oxygen.customprotocol;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.text.MessageFormat;
-
-import de.axxepta.oxygen.api.BaseXClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.basex.util.Base64;
 
+import java.io.*;
+import java.net.*;
+
 //Import log4j classes.
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Handler for the file2 protocol
@@ -30,6 +23,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
      */
     private static class BaseXConnection extends URLConnection {
 
+
         /**
          * Construct the connection
          *
@@ -43,20 +37,6 @@ public class CustomProtocolHandler extends URLStreamHandler {
             setDoOutput(true);
         }
 
-        /*
-        public String readFile(String filename) {
-                File f = new File(filename);
-                try {
-                    byte[] bytes = Files.readAllBytes(f.toPath());
-                    return new String(bytes,"UTF-8");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return "";
-        }
-        */
 
         /**
          * @see java.net.URLConnection#getURL()

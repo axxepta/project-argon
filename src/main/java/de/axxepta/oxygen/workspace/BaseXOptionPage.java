@@ -25,36 +25,57 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
  */
 public class BaseXOptionPage extends OptionPagePluginExtension {
 
+
     /**
-     * The option key describing the temporary location for the saved files.
+     * BaseX Keys
      */
     public static final String KEY_SAVE_TEMPORARY_FILES_LOCATION = "save.tmp.location";
-
-    /**
-     * The option key describing the default checkout location for the directory chooser.
-     */
     public static final String KEY_DEFAULT_CHECKOUT_LOCATION = "default.checkout.location";
 
-    /**
-     * The text filed for the temporary location of the saved files.
-     */
-    private JTextField saveTmpLocationTextField;
+    public static final String KEY_BASEX_HOST = "localhost";
+    public static final String KEY_BASEX_HTTP_PORT = "8984";
+    public static final String KEY_BASEX_TCP_PORT = "1984";
+    public static final String KEY_BASEX_USERNAME = "admin";
+    public static final String KEY_BASEX_PASSWORD = "admin";
+    public static final String KEY_BASEX_LOGFILE = "/tmp/argon.log";
+
 
     /**
-     * The text field for the default checkout location of the directory chooser.
+     * BaseX JTextFields
      */
-    private JTextField defaultCheckoutLocationTextField;
+    private JTextField baseXHostTextField;
+    private JTextField baseXHttpPortTextField;
+    private JTextField baseXTcpPortTextField;
+    private JTextField baseXUsernameTextField;
+    private JTextField baseXPasswordTextField;
+    private JTextField baseXLogfileTextField;
 
     /**
      * @see ro.sync.exml.plugin.option.OptionPagePluginExtension#apply(ro.sync.exml.workspace.api.PluginWorkspace)
      */
     @Override
     public void apply(PluginWorkspace pluginWorkspace) {
-        // Save the new locations in the option storage.
-        pluginWorkspace.getOptionsStorage().setOption(KEY_SAVE_TEMPORARY_FILES_LOCATION,
-                !"".equals(saveTmpLocationTextField.getText()) ? saveTmpLocationTextField.getText() : null);
-        pluginWorkspace.getOptionsStorage().setOption(KEY_DEFAULT_CHECKOUT_LOCATION,
-                !"".equals(defaultCheckoutLocationTextField.getText()) ? defaultCheckoutLocationTextField.getText() : null);
+
+        // save BaseX configs in the option storage
+
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HOST,
+                !"".equals(baseXHostTextField.getText()) ? baseXHostTextField.getText() : null);
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HTTP_PORT,
+                !"".equals(baseXHttpPortTextField.getText()) ? baseXHttpPortTextField.getText() : null);
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_TCP_PORT,
+                !"".equals(baseXTcpPortTextField.getText()) ? baseXTcpPortTextField.getText() : null);
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_USERNAME,
+                !"".equals(baseXUsernameTextField.getText()) ? baseXUsernameTextField.getText() : null);
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_PASSWORD,
+                !"".equals(baseXPasswordTextField.getText()) ? baseXPasswordTextField.getText() : null);
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
+                !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);
     }
 
     /**
@@ -63,8 +84,12 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     @Override
     public void restoreDefaults() {
         // Reset the text fields values. Empty string is used to map the <null> default values of the options.
-        saveTmpLocationTextField.setText("");
-        defaultCheckoutLocationTextField.setText("");
+        baseXHostTextField.setText("localhost");
+        baseXHttpPortTextField.setText("8984");
+        baseXTcpPortTextField.setText("1984");
+        baseXUsernameTextField.setText("admin");
+        baseXPasswordTextField.setText("admin");
+        baseXLogfileTextField.setText("logs/argon.log");
     }
 
     /**
@@ -94,81 +119,159 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.anchor = GridBagConstraints.WEST;
         panel.add(saveTmpLocationLbl, c);
 
-        /*
 
-        saveTmpLocationTextField = new JTextField();
-        c.gridx ++;
+        /**
+         * BaseX Hostname
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXHostTextFieldLbl = new JLabel("BaseX Hostname:");
+        panel.add(baseXHostTextFieldLbl, c);
+
+        baseXHostTextField = new JTextField();
+        c.gridx++;
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
-        panel.add(saveTmpLocationTextField, c);
+        panel.add(baseXHostTextField, c);
 
-        JButton chooseSaveTmpLocatioBtn = new JButton("Choose");
+
+        /**
+         * BaseX Http Port
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXHttpPortTextFieldLbl = new JLabel("BaseX HTTP Port:");
+        panel.add(baseXHttpPortTextFieldLbl, c);
+
+        baseXHttpPortTextField = new JTextField();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXHttpPortTextField, c);
+
+
+        /**
+         * BaseX TCP Port
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXTcpPortTextFieldLbl = new JLabel("BaseX TCP Port:");
+        panel.add(baseXTcpPortTextFieldLbl, c);
+
+        baseXTcpPortTextField = new JTextField();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXTcpPortTextField, c);
+
+
+        /**
+         * BaseX Username
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXUsernameTextFieldLbl = new JLabel("BaseX Username:");
+        panel.add(baseXUsernameTextFieldLbl, c);
+
+        baseXUsernameTextField = new JTextField();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXUsernameTextField, c);
+
+
+        /**
+         * BaseX Password
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXPasswordTextFieldLbl = new JLabel("BaseX Password:");
+        panel.add(baseXPasswordTextFieldLbl, c);
+
+        baseXPasswordTextField = new JTextField();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXPasswordTextField, c);
+
+
+        /**
+         * BaseX Logfile
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXLogfileTextFieldLbl = new JLabel("BaseX Logfile:");
+        panel.add(baseXLogfileTextFieldLbl, c);
+
+        baseXLogfileTextField = new JTextField();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXLogfileTextField, c);
+
+
+        JButton chooseBaseXLogfileBtn = new JButton("Choose");
         c.gridx ++;
         c.weightx = 0;
         c.insets = new Insets(0, 0, 0, 0);
         c.fill = GridBagConstraints.NONE;
-        panel.add(chooseSaveTmpLocatioBtn, c);
+        panel.add(chooseBaseXLogfileBtn, c);
 
-        chooseSaveTmpLocatioBtn.addActionListener(new ActionListener() {
+        chooseBaseXLogfileBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 File dir = pluginWorkspace.chooseDirectory();
                 if (dir != null) {
-                    saveTmpLocationTextField.setText(dir.getAbsolutePath());
+                    baseXHostTextField.setText(dir.getAbsolutePath() + "/argon.log");
                 }
             }
         });
 
-        c.gridx = 0;
-        c.gridy ++;
-        JLabel defaultCheckOutLocationLbl = new JLabel("Default checkout location:");
-        panel.add(defaultCheckOutLocationLbl, c);
-
-        defaultCheckoutLocationTextField = new JTextField();
-        c.gridx ++;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(0, 5, 0, 5);
-        panel.add(defaultCheckoutLocationTextField, c);
-
-        JButton chooseDefaultCheckOutLocatioBtn = new JButton("Choose");
-        c.gridx ++;
-        c.weightx = 0;
-        c.insets = new Insets(0, 0, 0, 0);
-        c.fill = GridBagConstraints.NONE;
-        panel.add(chooseDefaultCheckOutLocatioBtn, c);
-
-        chooseDefaultCheckOutLocatioBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File dir = pluginWorkspace.chooseDirectory();
-                if (dir != null) {
-                    defaultCheckoutLocationTextField.setText(dir.getAbsolutePath());
-                }
-            }
-        });
 
         c.gridx = 0;
-        c.gridy ++;
+        c.gridy++;
         c.gridwidth = 3;
         c.weightx = 1;
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
         panel.add(new JPanel(), c);
 
-        String saveTmpLocation = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_SAVE_TEMPORARY_FILES_LOCATION,
+        /**
+         * BaseX Strings
+         */
+        String baseXHost = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_HOST,
                 null);
-
-        String defaultCheckOutLocation = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_DEFAULT_CHECKOUT_LOCATION,
+        String baseXHttpPort = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_HTTP_PORT,
+                null);
+        String baseXTcpPort = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_TCP_PORT,
+                null);
+        String baseXUsername = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_USERNAME,
+                null);
+        String baseXPassword = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_PASSWORD,
+                null);
+        String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_LOGFILE,
                 null);
 
         // Initialize the text fields with the stored options.
-        saveTmpLocationTextField.setText(saveTmpLocation != null ? saveTmpLocation : "");
-        defaultCheckoutLocationTextField.setText(defaultCheckOutLocation != null ? defaultCheckOutLocation : "");
-        */
+
+        baseXHostTextField.setText(baseXHost != null ? baseXHost : "");
+        baseXHttpPortTextField.setText(baseXHttpPort != null ? baseXHttpPort : "");
+        baseXTcpPortTextField.setText(baseXTcpPort != null ? baseXTcpPort : "");
+        baseXUsernameTextField.setText(baseXUsername != null ? baseXUsername : "");
+        baseXPasswordTextField.setText(baseXPassword != null ? baseXPassword : "");
+        baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");
 
         return panel;
     }

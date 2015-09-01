@@ -4,6 +4,12 @@
 package de.axxepta.oxygen.customprotocol;
 
 
+import de.axxepta.oxygen.api.BaseXClient;
+import de.axxepta.oxygen.workspace.BaseXOptionPage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,19 +17,17 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 
-import de.axxepta.oxygen.api.BaseXClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author Daniel Altiparmak
- *
- *
  */
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
+    private static PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
+
     private final URL url;
+
 
     public BaseXByteArrayOutputStream(URL url) {
         super();
@@ -34,10 +38,29 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     public void close() throws IOException {
         super.close();
 
-
         byte[] savedBytes = toByteArray();
 
-        final BaseXClient session = new BaseXClient("localhost", 1984, "admin","admin");
+        String host = pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                null);
+        String tcpPort = pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                null);
+        String username = pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                null);
+        String password = pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                null);
+
+
+        logger.debug("Host: " + host);
+        logger.debug("TCP: " + tcpPort);
+        logger.debug("User: " + username);
+        logger.debug("Password: " + password);
+
+
+        final BaseXClient session = new BaseXClient("localhost", 1984, "admin", "admin");
         InputStream bais = new ByteArrayInputStream(savedBytes);
 
         String argonUrlPath = this.url.getPath();
