@@ -208,7 +208,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 newChild = new DefaultMutableTreeNode(children.get(i));
                 if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
                 else newChild.setAllowsChildren(false);
-                //ToDo: check whether new child is directory and node has already files as children -> adapt insert pos
+                //ToDo: adapt insert pos lexically (and directories before files)
                 this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
                 treeChanged = true;
             }

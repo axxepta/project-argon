@@ -28,6 +28,7 @@ public class ListDBEntries {
     // BaseX database context
     Context ctx = new Context();
     private ArrayList<String> result;
+    private String answer;
     // login data
     String user = "admin";
     String pass = "admin";
@@ -36,7 +37,11 @@ public class ListDBEntries {
 
     public static void main(String... args) {
         try {
-            ListDBEntries test = new ListDBEntries("restxq", "test", "/");
+            //ListDBEntries test = new ListDBEntries("restxq", "test", "/");
+            //ListDBEntries test = new ListDBEntries("db", "test1", "/");
+            //System.out.println(test.getResult());
+            ListDBEntries test = new ListDBEntries("queryTest", "t", "");
+            System.out.println(test.getAnswer());
         } catch (Exception er) {
         }
     }
@@ -46,65 +51,81 @@ public class ListDBEntries {
 
         // build POST request
         TokenBuilder tb;
-        tb = getFileQuery(queryType, db, db_path);
+        tb = buildQuery(queryType, db, db_path);
 
         // send request, receive response
         String result = postRequest(tb);
 
-        // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
-        ANode root = (ANode) query(result, null);
+        if (queryType.equals("queryTest")) {
+            this.answer = result;
+        } else {
+            // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
+            ANode root = (ANode) query(result, null);
 
-        // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
-        for (ANode resource : root.children()) {
-            String databaseEntry = value(resource);
-            tList.add(databaseEntry);
+            // - strings are usually represented as UTF8 byte arrays (BaseX term: "tokens")
+            for (ANode resource : root.children()) {
+                String databaseEntry = value(resource);
+                tList.add(databaseEntry);
+            }
+            for (ANode resource : root.children()) {
+                String type = name(resource);
+                tList.add(type);
+            }
+            this.result = tList;
         }
-        for (ANode resource : root.children()) {
-            String type = name(resource);
-            tList.add(type);
-        }
-        this.result = tList;
-        //JOptionPane.showMessageDialog(null, tList, "ListDBEntries", JOptionPane.PLAIN_MESSAGE);
     }
 
 
-    private TokenBuilder getFileQuery(String qType, String db, String db_path) throws Exception {
+    private TokenBuilder buildQuery(String qType, String db, String db_path) throws Exception {
         // build POST request
         TokenBuilder tb = new TokenBuilder();
-        tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
 
         //Get file from resources folder
         if(qType.equals("db"))
         {
             qType = "/list-db-entries.xq";
+            tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
+            tb.add(getFileQuery(qType));
+            tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
         }
-        else
-        {
+        else if (qType.equals("restxq")) {
             qType = "/list-restxq-entries.xq";
+            tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
+            tb.add(getFileQuery(qType));
+            tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
+        } else {
+            tb.add("<query xmlns='http://basex.org/rest'>");
+            tb.add("<text>1+</text>");
+            tb.add("<option name='runquery' value='false'/>");
+            tb.add("</query>");
         }
 
+        return tb;
+    }
+
+    private String getFileQuery(String qType) throws Exception {
         //String queryType = "D:\\cygwin\\home\\Markus\\code\\java\\project-argon\\src\\main\\resources\\xquery\\list-db-entries.xq";
         //String queryType ="xquery/list-restxq-entries.xq";
 
-    //////// throws exception, but works anyway!
+        //////// throws exception, but works anyway!
         //ClassLoader classLoader = getClass().getClassLoader();
         //File qFile = new File(classLoader.getResource(queryType).getFile());
-        //tb.add(new IOFile(qFile).read());
-    //////////
+        //return (new IOFile(qFile).read());
+        //////////
 
-    //////// throws path exception, but works anyway!
+        //////// throws path exception, but works anyway!
         //File qFile = new File(ListDBEntries.class.getResource(queryType).getFile());
-        //tb.add(new IOFile(qFile).read());
-    ////////////
+        //return (new IOFile(qFile).read());
+        ////////////
 
-    ////// doesn't work
+        ////// doesn't work
         //URL furl = ListDBEntries.class.getResource(queryType);
         //System.out.println(furl.toURI());
         //File qFile = new File(furl.toString());
-        //tb.add(new IOFile(qFile).read());
-    ////////
+        // return (new IOFile(qFile).read());
+        ////////
 
-    ///////// works, BUT...   --and throws an exception at first call
+        ///////// works, BUT...   --and throws an exception at first call
         //TODO: waaaay to hacky...
     /*    Reader reader = new InputStreamReader(getClass().getResourceAsStream(queryType));
 
@@ -114,10 +135,10 @@ public class ListDBEntries {
           query += (char) intValueOfChar;
         }
         reader.close();
-        tb.add(query);*/
-    ////////
+        return query;*/
+        ////////
 
-    ////////  works, but still a bit hacky--and throws an exception at first call
+        ////////  works, but still a bit hacky--and throws an exception at first call
         InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream(qType));
         BufferedReader br = new BufferedReader(isr);
         StringBuffer sb = new StringBuffer();
@@ -128,16 +149,9 @@ public class ListDBEntries {
         }
         br.close();
         isr.close();
-        tb.add(sb.toString());
-    //////
+        ////////
 
-        if (qType.equals("/list-db-entries.xq")) {
-            tb.add("]]></text><variable name=\"db\" value=\"" + db + "\"/><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-        } else {
-            tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-        }
-
-        return tb;
+        return sb.toString();
     }
 
     private String postRequest(TokenBuilder tb) throws Exception {
@@ -150,7 +164,12 @@ public class ListDBEntries {
         OutputStream os = conn.getOutputStream();
         os.write(tb.finish());
         os.close();
-        String res = Token.string(new IOStream(conn.getInputStream()).read());
+        String res;
+        if (conn.getResponseCode() >= 400) {
+            res = Token.string(new IOStream(conn.getErrorStream()).read());
+        } else {
+            res = Token.string(new IOStream(conn.getInputStream()).read());
+        }
         return res;
     }
 
@@ -199,4 +218,7 @@ public class ListDBEntries {
     return this.result;
   }
 
+   public String getAnswer(){
+        return this.answer;
+   }
 }
