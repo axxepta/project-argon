@@ -5,6 +5,7 @@ package de.axxepta.oxygen.customprotocol;
 
 
 import de.axxepta.oxygen.api.BaseXClient;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,11 +25,14 @@ import java.text.MessageFormat;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    private static PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
+    private PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
 
     private final URL url;
 
 
+    /**
+     * constructor
+     */
     public BaseXByteArrayOutputStream(URL url) {
         super();
         this.url = url;
@@ -41,26 +45,20 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         byte[] savedBytes = toByteArray();
 
         String host = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_HOST,
                 null);
-        String tcpPort = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
-                null);
+        int tcpPort = Integer.parseInt(pluginWorkspace.getOptionsStorage().getOption(
+                BaseXOptionPage.KEY_BASEX_TCP_PORT,
+                null));
         String username = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_USERNAME,
                 null);
         String password = pluginWorkspace.getOptionsStorage().getOption(
-                BaseXOptionPage.KEY_DEFAULT_CHECKOUT_LOCATION,
+                BaseXOptionPage.KEY_BASEX_PASSWORD,
                 null);
 
 
-        logger.debug("Host: " + host);
-        logger.debug("TCP: " + tcpPort);
-        logger.debug("User: " + username);
-        logger.debug("Password: " + password);
-
-
-        final BaseXClient session = new BaseXClient("localhost", 1984, "admin", "admin");
+        final BaseXClient session = new BaseXClient(host, tcpPort, username, password);
         InputStream bais = new ByteArrayInputStream(savedBytes);
 
         String argonUrlPath = this.url.getPath();
@@ -81,6 +79,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             session.replace(path, bais);
             logger.info(session.info());
 
+            TopicHolder.saveFile.postMessage(argonUrlPath);
 
         } catch (Exception e1) {
             // TODO Auto-generated catch block

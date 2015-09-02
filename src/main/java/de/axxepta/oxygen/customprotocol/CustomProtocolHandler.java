@@ -1,8 +1,10 @@
 package de.axxepta.oxygen.customprotocol;
 
+import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.Base64;
+import ro.sync.exml.workspace.api.PluginWorkspace;
 
 import java.io.*;
 import java.net.*;
@@ -17,7 +19,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
 	 // Define a static logger variable so that it references the
     // Logger instance named "CustomProtocolHandler".
     private static final Logger logger = LogManager.getLogger(CustomProtocolHandler.class);
-    private int length;
+
     /**
      * Connection class for file2
      */
@@ -37,28 +39,8 @@ public class CustomProtocolHandler extends URLStreamHandler {
             setDoOutput(true);
         }
 
+        private PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
 
-        /**
-         * @see java.net.URLConnection#getURL()
-         */
-        @Override
-        public URL getURL() {
-            URL toReturn = super.getURL();
-            String content = toReturn.toString();
-            if (content.indexOf("?") != -1) {
-                // Remove the parameters part
-                if (content.indexOf("#") != -1) {
-                    // But keep the anchor in place
-                    content = content.substring(0, content.indexOf("?"))
-                            + content.substring(content.indexOf("#"),
-                                    content.length());
-                } else {
-                    content = content.substring(0, content.indexOf("?"));
-                }
-
-            }
-            return toReturn;
-        }
 
         /**
          * Returns an input stream that reads from this open connection.
@@ -68,22 +50,29 @@ public class CustomProtocolHandler extends URLStreamHandler {
         @Override
         public InputStream getInputStream() throws IOException {
             logger.info("-- get Input Stream --: " + url.toString());
-            
-            // login data
-            String user = "admin";
-            String pass = "admin";
-            String host = "localhost";
-            int port = 8984;
+
+            String host = pluginWorkspace.getOptionsStorage().getOption(
+                    BaseXOptionPage.KEY_BASEX_HOST,
+                    null);
+            int httpPort = Integer.parseInt(pluginWorkspace.getOptionsStorage().getOption(
+                    BaseXOptionPage.KEY_BASEX_HTTP_PORT,
+                    null));
+            String username = pluginWorkspace.getOptionsStorage().getOption(
+                    BaseXOptionPage.KEY_BASEX_USERNAME,
+                    null);
+            String password = pluginWorkspace.getOptionsStorage().getOption(
+                    BaseXOptionPage.KEY_BASEX_PASSWORD,
+                    null);
 
             // send request, receive response
             String basicAuth = "Basic "
-                    + new String(Base64.encode(user + ':' + pass));
+                    + Base64.encode(username + ':' + password);
 
             String argonUrlString = url.toString();
             String[] parts = argonUrlString.split("argon:");
             String restPath = parts[1];
 
-            URL url = new URL("http://" + host + ':' + port + "/rest"
+            URL url = new URL("http://" + host + ':' + httpPort + "/rest"
                     + restPath);
 
             // will always be HttpURLConnection if URL starts with "http://"
@@ -104,8 +93,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
         public OutputStream getOutputStream() throws IOException {
 
             logger.info("-- get Output Stream --");
-            ByteArrayOutputStream baos = new BaseXByteArrayOutputStream(url);
-            return baos;
+            return new BaseXByteArrayOutputStream(url);
         }
 
         /**
@@ -139,33 +127,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
      */
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
-        URLConnection connection = new BaseXConnection(u);
-        return connection;
+        return new BaseXConnection(u);
     }
 
-    /**
-     * On Windows names of files from network neighborhood must be corrected
-     * before open.
-     *
-     * @param url
-     *            The file URL.
-     * @return The cannonical or absolute file.
-     * @throws IllegalArgumentException
-     *             if the URL is not file.
-     */
-    public static File getCanonicalFileFromFileUrl(URL url) {
-        File file = null;
-
-        if (url == null) {
-            throw new NullPointerException("The URL cannot be null.");
-        }
-        try {
-            URI uri = new URI(url.toString().replace("argon", "file"));
-            file = new File(uri);
-            logger.debug("URI: " + url.toString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
 }
