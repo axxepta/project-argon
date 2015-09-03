@@ -8,19 +8,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Timer;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
+import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -205,14 +204,20 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 }
             }
         }
-        for (int i=0; i<children.size(); i++){
-            if (!oldChildren.contains(children.get(i))) {
+        if (node.getChildCount() == 0) {  // if old list was empty skip lexicographic insert (faster)
+            for (int i=0; i<children.size(); i++){
                 newChild = new DefaultMutableTreeNode(children.get(i));
                 if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
                 else newChild.setAllowsChildren(false);
-                //ToDo: adapt insert pos lexically (and directories before files)
                 this._treeModel.insertNodeInto(newChild, node, node.getChildCount());
                 treeChanged = true;
+            }
+        } else {
+            for (int i=0; i<children.size(); i++){
+                if (!oldChildren.contains(children.get(i))) {
+                    insertStrAsNodeLexi(children.get(i), node, !(chTypes.get(i).equals("directory")));
+                    treeChanged = true;
+                }
             }
         }
 
@@ -221,7 +226,79 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     @Override
     public void update(String message) {
+        DefaultMutableTreeNode currNode;
+        TreePath currPath;
+
         logger.info("Tree needs to update: " + message);
+        String[] path = message.split("/");
+        currPath = new TreePath(this._treeModel.getRoot());
+        // ToDo: define string constants static somewhere
+        currPath = pathByAddingChildAsStr(currPath, "Databases");
+        currPath = pathByAddingChildAsStr(currPath, path[0]);
+        currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
+        boolean expanded = false;
+        Boolean isFile;
+        for (int i=0; i<path.length-1; i++){
+            if (this._Tree.isExpanded(currPath)) expanded = true;
+            if (expanded || (i == path.length-2)) { // update tree now only if file is in visible path
+                if (isNodeAsStrChild(currNode, path[i + 1])) {
+                } else {
+                    if (i + 2 == path.length) {
+                        isFile = true;
+                    } else {
+                        isFile = false;
+                    }
+                    insertStrAsNodeLexi(path[i + 1], currNode, isFile);
+                    this.newExpandEvent = false;
+                    this._Tree.expandPath(currPath);
+                    this._Tree.fireTreeExpanded(currPath);
+                }
+                currPath = pathByAddingChildAsStr(currPath, path[i + 1]);
+                currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
+            } else {
+                break;
+            }
+        }
+    }
+
+    private static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
+        // returns TreePath to child given by String, if child doesn't exist returns null!
+        DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
+        for (int i=0; i<currNode.getChildCount(); i++) {
+            if (((DefaultMutableTreeNode)currNode.getChildAt(i)).getUserObject().toString().equals(child)) {
+                return new TreePath(((DefaultMutableTreeNode) currNode.getChildAt(i)).getPath());
+            }
+        }
+        return null;
+    }
+
+    private static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
+        for (int i=0; i<parent.getChildCount(); i++) {
+            if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void insertStrAsNodeLexi(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+        DefaultMutableTreeNode currNode;
+        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
+        if (childIsFile) childNode.setAllowsChildren(false);
+            else childNode.setAllowsChildren(true);
+        Boolean parentIsFile;
+        boolean inserted = false;
+        for (int i=0; i<parent.getChildCount(); i++) {
+            currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
+            parentIsFile = !currNode.getAllowsChildren();
+            if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
+                    (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
+                this._treeModel.insertNodeInto(childNode, parent, i);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) this._treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
 }

@@ -87,6 +87,5 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         } finally {
             session.close();
         }
-
     }
 }
