@@ -95,7 +95,9 @@ public class ListDBEntries {
             tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
         } else {
             tb.add("<query xmlns='http://basex.org/rest'>");
-            tb.add("<text>1+</text>");
+            tb.add("<text>");
+            tb.add(db);
+            tb.add("</text>");
             tb.add("<option name='runquery' value='false'/>");
             tb.add("</query>");
         }

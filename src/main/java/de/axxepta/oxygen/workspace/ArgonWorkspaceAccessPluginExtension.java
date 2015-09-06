@@ -2,10 +2,19 @@ package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BasexWrapper;
+import de.axxepta.oxygen.rest.ListDBEntries;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
+import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
+import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -18,8 +27,13 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by daltiparmak on 10.04.15.
@@ -31,6 +45,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      */
     private JTextArea cmsMessagesArea;
 
+    private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
 
     @java.lang.Override
     public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
@@ -90,6 +105,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     }
 
                     // Create a new tree control
+                    // explicit tree model necessary to use allowsChildren for definition of leafs
                     DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
                     BasexTree tree = new BasexTree(treeModel);
@@ -120,6 +136,59 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 }
             }
         });
+
+        pluginWorkspaceAccess.addEditorChangeListener(new WSEditorChangeListener() {
+            /**
+             * @see ro.sync.exml.workspace.api.listeners.WSEditorChangeListener#editorOpened(java.net.URL)
+             */
+            @Override
+            public void editorOpened(URL editorLocation) {
+                final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+                //TODO: define string static somewhere
+                boolean isArgon = editorLocation.toString().startsWith("argon");
+                boolean isXquery = (editorLocation.toString().endsWith("xqm") ||
+                                    editorLocation.toString().endsWith("XQM"));
+                if (isArgon && isXquery)
+                    editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
+                    /**
+                     * @see ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter#filterValidationProblems(ro.sync.exml.workspace.api.editor.validation.ValidationProblems)
+                     */
+                    @Override
+                    public void filterValidationProblems(ValidationProblems validationProblems) {
+                        // get content of editor window
+                        String editorContent;
+                        try {
+                            InputStream editorStream = editorAccess.createContentInputStream();
+/*                            StringWriter writer = new StringWriter();
+                            org.apache.commons.io.IOUtils.copy(editorStream, writer, "UTF-8");
+                            editorContent = writer.toString();*/
+                            Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
+                            editorContent = s.hasNext() ? s.next() : "";
+                            editorStream.close();
+                        } catch (IOException er) {
+                            logger.error(er);
+                            editorContent = "";
+                        }
+                        // pass content of editor window to ListDBEntries with queryTest
+                        ArrayList<String> valProbStr;
+                        try {
+                            ListDBEntries testQuery = new ListDBEntries("queryTest", editorContent, "");
+                            valProbStr = testQuery.getResult();
+                        } catch (Exception er) {
+                            logger.error("query to BaseX failed");
+                            valProbStr = new ArrayList<String>();
+                        }
+                        // build DocumentPositionedInfo list from query return;
+                        List<DocumentPositionedInfo> problemList;
+                        //TODO
+                        //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
+                        //  public DocumentPositionedInfo(int severity, String message, String systemID, int line, int column, int length)
+                        //validationProblems.setProblemsList(problemList);
+                        super.filterValidationProblems(validationProblems);
+                    }
+                    });
+            }
+        }, PluginWorkspace.MAIN_EDITING_AREA);
     }
 
     public static void setTreeState(JTree tree, TreePath path, boolean expanded) {

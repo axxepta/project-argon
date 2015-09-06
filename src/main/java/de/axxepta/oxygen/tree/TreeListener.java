@@ -226,6 +226,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     @Override
     public void update(String message) {
+        // is notified as observer when a file is saved to database
+        // updates the tree if necessary
         DefaultMutableTreeNode currNode;
         TreePath currPath;
 
@@ -261,6 +263,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
     }
 
+    //ToDo: Move to a BaseXTreeModel class
     private static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
         // returns TreePath to child given by String, if child doesn't exist returns null!
         DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
@@ -272,6 +275,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         return null;
     }
 
+    //ToDo: Move to a BaseXTreeNode class
     private static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
         for (int i=0; i<parent.getChildCount(); i++) {
             if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
