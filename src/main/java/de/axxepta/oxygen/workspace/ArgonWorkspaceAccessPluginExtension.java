@@ -147,7 +147,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 //TODO: define string static somewhere
                 boolean isArgon = editorLocation.toString().startsWith("argon");
                 boolean isXquery = (editorLocation.toString().endsWith("xqm") ||
-                                    editorLocation.toString().endsWith("XQM"));
+                                    editorLocation.toString().endsWith("XQM") ||
+                                    editorLocation.toString().endsWith("xquery"));
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
                     /**
@@ -177,13 +178,21 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         } catch (Exception er) {
                             logger.error("query to BaseX failed");
                             valProbStr = new ArrayList<String>();
+                            valProbStr.add("1");
+                            valProbStr.add("1");
+                            valProbStr.add("Fatal BaseX request error.");
                         }
                         // build DocumentPositionedInfo list from query return;
-                        List<DocumentPositionedInfo> problemList;
-                        //TODO
+                        List<DocumentPositionedInfo> problemList = new ArrayList<DocumentPositionedInfo>();
+                        if (valProbStr.size()>0) {
+                            DocumentPositionedInfo dpi =
+                                    new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
+                                            Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 1);
+                            problemList.add(dpi);
+                        }
                         //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
                         //  public DocumentPositionedInfo(int severity, String message, String systemID, int line, int column, int length)
-                        //validationProblems.setProblemsList(problemList);
+                        validationProblems.setProblemsList(problemList);
                         super.filterValidationProblems(validationProblems);
                     }
                     });

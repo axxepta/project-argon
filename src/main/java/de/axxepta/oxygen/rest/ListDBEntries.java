@@ -39,14 +39,27 @@ public class ListDBEntries {
         try {
             //ListDBEntries test = new ListDBEntries("restxq", "test", "/");
             //ListDBEntries test = new ListDBEntries("db", "test1", "/");
-            //System.out.println(test.getResult());
-            ListDBEntries test = new ListDBEntries("queryTest", "t", "");
+
+            String x = "<rest:database xmlns:rest=\"http://basex.org/rest\" name=\"test1\" resources=\"0\"/>\\n1+";
+            //String x = "1+";
+            ListDBEntries test = new ListDBEntries("queryTest", x, "");
             System.out.println(test.getAnswer());
+
+            System.out.println(test.getResult());
         } catch (Exception er) {
+            System.out.println("uups");
         }
     }
 
     public ListDBEntries(String queryType, String db, String db_path) throws Exception {
+        // can be called for different request:
+        // a) with queryType = "db": list contents of path db_path in database db into the result field,
+        //      where the list of file and directory names is followed by the list of types (file/dir)
+        // b) with queryType = "restxq" list contents of path db_path in the restxq folder into...
+        // c) with queryType = "queryTest" check the content of the query text db for execution error--
+        //     if an error occurs, line, row and error type are stored into the first three elements of
+        //     the field result
+
         ArrayList<String> tList = new ArrayList<String>();
 
         // build POST request
@@ -58,6 +71,15 @@ public class ListDBEntries {
 
         if (queryType.equals("queryTest")) {
             this.answer = result;
+            if (!result.equals("")) {
+                String[] lines = result.split("\r?\n|\r");
+                int pos2 = (lines[0]).indexOf("/");
+                int pos1 = (lines[0]).lastIndexOf(" ");
+                tList.add(lines[0].substring(pos1+1, pos2));
+                tList.add(lines[0].substring(pos2+1, lines[0].length()-1));
+                pos1 = lines[1].indexOf("]");
+                tList.add(lines[1].substring(pos1+2));
+            }
         } else {
             // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
             ANode root = (ANode) query(result, null);
@@ -71,8 +93,8 @@ public class ListDBEntries {
                 String type = name(resource);
                 tList.add(type);
             }
-            this.result = tList;
         }
+        this.result = tList;
     }
 
 
@@ -95,9 +117,9 @@ public class ListDBEntries {
             tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
         } else {
             tb.add("<query xmlns='http://basex.org/rest'>");
-            tb.add("<text>");
+            tb.add("<text><![CDATA[");
             tb.add(db);
-            tb.add("</text>");
+            tb.add("]]></text>");
             tb.add("<option name='runquery' value='false'/>");
             tb.add("</query>");
         }
@@ -159,13 +181,15 @@ public class ListDBEntries {
     private String postRequest(TokenBuilder tb) throws Exception {
         String basicAuth = "Basic " + new String(Base64.encode(this.user + ':' + this.pass));
         URL url = new URL("http://" + this.host + ':' + this.port + "/rest");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        //HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(url, null);
         conn.setRequestProperty("Authorization", basicAuth);
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
         OutputStream os = conn.getOutputStream();
         os.write(tb.finish());
         os.close();
+
         String res;
         if (conn.getResponseCode() >= 400) {
             res = Token.string(new IOStream(conn.getErrorStream()).read());
