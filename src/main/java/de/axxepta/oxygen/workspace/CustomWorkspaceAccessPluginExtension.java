@@ -532,7 +532,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
             @Override
             public void customizeToolbar(ToolbarInfo toolbarInfo) {
                 //The toolbar ID is defined in the "plugin.xml"
-                if ("SampleWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
+                if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
                     List<JComponent> comps = new ArrayList<JComponent>();
                     JComponent[] initialComponents = toolbarInfo.getComponents();
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;

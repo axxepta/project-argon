@@ -15,9 +15,8 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
-import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.exml.workspace.api.standalone.*;
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
@@ -26,14 +25,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by daltiparmak on 10.04.15.
@@ -147,22 +144,73 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 //TODO: define string static somewhere
                 boolean isArgon = editorLocation.toString().startsWith("argon");
                 boolean isXquery = (editorLocation.toString().endsWith("xqm") ||
-                                    editorLocation.toString().endsWith("XQM") ||
-                                    editorLocation.toString().endsWith("xquery"));
+                        editorLocation.toString().endsWith("XQM") ||
+                        editorLocation.toString().endsWith("xquery"));
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
-                    /**
-                     * @see ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter#filterValidationProblems(ro.sync.exml.workspace.api.editor.validation.ValidationProblems)
-                     */
-                    @Override
-                    public void filterValidationProblems(ValidationProblems validationProblems) {
-                        // get content of editor window
-                        String editorContent;
-                        try {
-                            InputStream editorStream = editorAccess.createContentInputStream();
+                        /**
+                         * @see ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter#filterValidationProblems(ro.sync.exml.workspace.api.editor.validation.ValidationProblems)
+                         */
+                        @Override
+                        public void filterValidationProblems(ValidationProblems validationProblems) {
+                            // get content of editor window
+                            String editorContent;
+                            try {
+                                InputStream editorStream = editorAccess.createContentInputStream();
 /*                            StringWriter writer = new StringWriter();
                             org.apache.commons.io.IOUtils.copy(editorStream, writer, "UTF-8");
                             editorContent = writer.toString();*/
+                                Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
+                                editorContent = s.hasNext() ? s.next() : "";
+                                editorStream.close();
+                            } catch (IOException er) {
+                                logger.error(er);
+                                editorContent = "";
+                            }
+                            // pass content of editor window to ListDBEntries with queryTest
+                            ArrayList<String> valProbStr;
+                            try {
+                                ListDBEntries testQuery = new ListDBEntries("queryTest", editorContent, "");
+                                valProbStr = testQuery.getResult();
+                            } catch (Exception er) {
+                                logger.error("query to BaseX failed");
+                                valProbStr = new ArrayList<String>();
+                                valProbStr.add("1");
+                                valProbStr.add("1");
+                                valProbStr.add("Fatal BaseX request error.");
+                            }
+                            // build DocumentPositionedInfo list from query return;
+                            List<DocumentPositionedInfo> problemList = new ArrayList<DocumentPositionedInfo>();
+                            if (valProbStr.size() > 0) {
+                                DocumentPositionedInfo dpi =
+                                        new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
+                                                Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
+                                problemList.add(dpi);
+                            }
+                            //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
+                            //  public DocumentPositionedInfo(int severity, String message, String systemID, int line, int column, int length)
+                            validationProblems.setProblemsList(problemList);
+                            super.filterValidationProblems(validationProblems);
+                        }
+                    });
+            }
+        }, PluginWorkspace.MAIN_EDITING_AREA);
+
+        final Action runBaseXQueryAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
+
+                if (editorAccess != null) {
+                    URL editorUrl = editorAccess.getEditorLocation();
+                    boolean isXquery = (editorUrl.toString().endsWith("xqm") ||
+                            editorUrl.toString().endsWith("XQM") ||
+                            editorUrl.toString().endsWith("xquery"));
+                    if (isXquery) {
+                        // get content of current editor window
+                        String editorContent;
+                        try {
+                            InputStream editorStream = editorAccess.createContentInputStream();
                             Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
                             editorContent = s.hasNext() ? s.next() : "";
                             editorStream.close();
@@ -170,34 +218,82 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             logger.error(er);
                             editorContent = "";
                         }
-                        // pass content of editor window to ListDBEntries with queryTest
-                        ArrayList<String> valProbStr;
+                        // pass content of editor window to ListDBEntries with queryRun
+                        String queryRes;
                         try {
-                            ListDBEntries testQuery = new ListDBEntries("queryTest", editorContent, "");
-                            valProbStr = testQuery.getResult();
+                            ListDBEntries testQuery = new ListDBEntries("queryRun", editorContent, "");
+                            queryRes = testQuery.getAnswer();
                         } catch (Exception er) {
                             logger.error("query to BaseX failed");
-                            valProbStr = new ArrayList<String>();
-                            valProbStr.add("1");
-                            valProbStr.add("1");
-                            valProbStr.add("Fatal BaseX request error.");
+                            queryRes = "";
                         }
-                        // build DocumentPositionedInfo list from query return;
-                        List<DocumentPositionedInfo> problemList = new ArrayList<DocumentPositionedInfo>();
-                        if (valProbStr.size()>0) {
-                            DocumentPositionedInfo dpi =
-                                    new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
-                                            Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
-                            problemList.add(dpi);
-                        }
-                        //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
-                        //  public DocumentPositionedInfo(int severity, String message, String systemID, int line, int column, int length)
-                        validationProblems.setProblemsList(problemList);
-                        super.filterValidationProblems(validationProblems);
+                        // display result of query in a new info window
+                        JOptionPane.showMessageDialog(null, queryRes, "runBaseXQueryAction", JOptionPane.PLAIN_MESSAGE);
+                        //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessID", true);
+                    } else {
+                        pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
                     }
-                    });
+
+                } else {
+                    pluginWorkspaceAccess.showInformationMessage("No editor window opened!");
+                }
             }
-        }, PluginWorkspace.MAIN_EDITING_AREA);
+        };
+
+        pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
+            /**
+             * @see ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer#customizeToolbar(ro.sync.exml.workspace.api.standalone.ToolbarInfo)
+             */
+            @SuppressWarnings("serial")
+            @Override
+            public void customizeToolbar(ToolbarInfo toolbarInfo) {
+                //The toolbar ID is defined in the "plugin.xml"
+                if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
+                    List<JComponent> comps = new ArrayList<JComponent>();
+                    JComponent[] initialComponents = toolbarInfo.getComponents();
+                    boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
+                    if (hasInitialComponents) {
+                        // Add initial toolbar components
+                        for (JComponent toolbarItem : initialComponents) {
+                            comps.add(toolbarItem);
+                        }
+                    }
+
+                    // Check In
+                    ToolbarButton checkInButton = new ToolbarButton(runBaseXQueryAction, true);
+                    checkInButton.setText("Run BaseX Query");
+
+                    // Add in toolbar
+                    comps.add(checkInButton);
+                    toolbarInfo.setComponents(comps.toArray(new JComponent[0]));
+
+                    // Set title
+                    String initialTitle = toolbarInfo.getTitle();
+                    String title = "";
+                    if (hasInitialComponents && initialTitle != null && initialTitle.trim().length() > 0) {
+                        // Include initial tile
+                        title += initialTitle + " | ";
+                    }
+                    title += "BaseX DB";
+                    toolbarInfo.setTitle(title);
+                } else if ("Author_custom_actions1".equals(toolbarInfo.getToolbarID())) {
+                    //Contribute a new action directly in the Author toolbar which was dynamically created from the document type
+                    //associated to the XML file. You can add a new action or remove an existing one.
+                    //See the Javadoc for:
+                    //ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace.addToolbarComponentsCustomizer(ToolbarComponentsCustomizer)
+                    List<JComponent> comps = new ArrayList<JComponent>(Arrays.asList(toolbarInfo.getComponents()));
+                    comps.add(new ToolbarButton(new AbstractAction("MY ACTION") {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            //You can obtain the current editor, get access to its WSAuthorPage and modify it using the API.
+                            System.err.println("Perform action on " + pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation());
+                        }
+                    }, true));
+                    toolbarInfo.setComponents(comps.toArray(new JComponent[0]));
+                }
+            }
+        });
+
     }
 
     public static void setTreeState(JTree tree, TreePath path, boolean expanded) {

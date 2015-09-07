@@ -59,6 +59,7 @@ public class ListDBEntries {
         // c) with queryType = "queryTest" check the content of the query text db for execution error--
         //     if an error occurs, line, row and error type are stored into the first three elements of
         //     the field result
+        // d) with queryType = "queryRun" run the content of the query text db and store into field result
 
         ArrayList<String> tList = new ArrayList<String>();
 
@@ -80,6 +81,8 @@ public class ListDBEntries {
                 pos1 = lines[1].indexOf("]");
                 tList.add(lines[1].substring(pos1+2));
             }
+        } else if (queryType.equals("queryRun")) {
+            this.answer = result;
         } else {
             // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
             ANode root = (ANode) query(result, null);
@@ -115,12 +118,19 @@ public class ListDBEntries {
             tb.add("<query xmlns='http://basex.org/rest'><text><![CDATA[");
             tb.add(getFileQuery(qType));
             tb.add("]]></text><variable name=\"path\" value=\"" + db_path + "\"/></query>");
-        } else {
+        } else if (qType.equals("queryTest")) {
             tb.add("<query xmlns='http://basex.org/rest'>");
             tb.add("<text><![CDATA[");
             tb.add(db);
             tb.add("]]></text>");
             tb.add("<option name='runquery' value='false'/>");
+            tb.add("</query>");
+        } else {
+            tb.add("<query xmlns='http://basex.org/rest'>");
+            tb.add("<text><![CDATA[");
+            tb.add(db);
+            tb.add("]]></text>");
+            tb.add("<option name='runquery' value='true'/>");
             tb.add("</query>");
         }
 
