@@ -187,7 +187,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         if (valProbStr.size()>0) {
                             DocumentPositionedInfo dpi =
                                     new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
-                                            Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 1);
+                                            Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
                             problemList.add(dpi);
                         }
                         //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
