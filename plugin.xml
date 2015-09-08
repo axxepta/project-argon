@@ -18,8 +18,10 @@
     -->
 
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.BaseXOptionPage"></extension>
-    <!--The sample view which will present messages from the sample plugin.-->
+    <!-- The view for BaseX Database Tree-->
     <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0" />
-    <!--The sample toolbar which will present messages from the sample plugin.-->
+    <!-- The view which will present messages from the plugin.-->
+    <view id="ArgonWorkspaceAccessOutputID" initialSide="EAST" initialRow="0" />
+    <!-- The toolbar which will contain action buttons of the plugin. -->
     <toolbar id="ArgonWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1" />
 </plugin>

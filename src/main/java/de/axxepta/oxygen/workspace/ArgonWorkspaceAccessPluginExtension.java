@@ -41,6 +41,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      * The CMS messages area.
      */
     private JTextArea cmsMessagesArea;
+    private JTextArea argonOutputArea;
 
     private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
 
@@ -127,6 +128,11 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     viewInfo.setTitle("BaseX Db Connection");
                     viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
+                } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
+                    argonOutputArea = new JTextArea();
+                    JScrollPane scrollPane = new JScrollPane(argonOutputArea);
+                    viewInfo.setComponent(scrollPane);
+                    viewInfo.setTitle("Argon BaseX Query Output");
                 } else if("Project".equals(viewInfo.getViewID())) {
                     // Change the 'Project' view title.
                     viewInfo.setTitle("CMS Project");
@@ -229,7 +235,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                         // display result of query in a new info window
                         JOptionPane.showMessageDialog(null, queryRes, "runBaseXQueryAction", JOptionPane.PLAIN_MESSAGE);
-                        //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessID", true);
+                        pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
                     } else {
                         pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
                     }
@@ -259,12 +265,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     }
 
-                    // Check In
-                    ToolbarButton checkInButton = new ToolbarButton(runBaseXQueryAction, true);
-                    checkInButton.setText("Run BaseX Query");
+                    // run query in current editor window
+                    ToolbarButton runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
+                    runQueryButton.setText("Run BaseX Query");
 
                     // Add in toolbar
-                    comps.add(checkInButton);
+                    comps.add(runQueryButton);
                     toolbarInfo.setComponents(comps.toArray(new JComponent[0]));
 
                     // Set title
@@ -276,20 +282,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     }
                     title += "BaseX DB";
                     toolbarInfo.setTitle(title);
-                } else if ("Author_custom_actions1".equals(toolbarInfo.getToolbarID())) {
-                    //Contribute a new action directly in the Author toolbar which was dynamically created from the document type
-                    //associated to the XML file. You can add a new action or remove an existing one.
-                    //See the Javadoc for:
-                    //ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace.addToolbarComponentsCustomizer(ToolbarComponentsCustomizer)
-                    List<JComponent> comps = new ArrayList<JComponent>(Arrays.asList(toolbarInfo.getComponents()));
-                    comps.add(new ToolbarButton(new AbstractAction("MY ACTION") {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            //You can obtain the current editor, get access to its WSAuthorPage and modify it using the API.
-                            System.err.println("Perform action on " + pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation());
-                        }
-                    }, true));
-                    toolbarInfo.setComponents(comps.toArray(new JComponent[0]));
                 }
             }
         });
