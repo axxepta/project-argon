@@ -72,9 +72,10 @@ public class ListDBEntries {
 
         if (queryType.equals("queryTest")) {
             this.answer = result;
+            System.out.println(result);
             if (!result.equals("")) {
                 String[] lines = result.split("\r?\n|\r");
-                int pos2 = (lines[0]).indexOf("/");
+                int pos2 = (lines[0]).lastIndexOf("/");
                 int pos1 = (lines[0]).lastIndexOf(" ");
                 tList.add(lines[0].substring(pos1+1, pos2));
                 tList.add(lines[0].substring(pos2+1, lines[0].length()-1));
@@ -127,7 +128,7 @@ public class ListDBEntries {
             tb.add("</query>");
         } else {
             tb.add("<query xmlns='http://basex.org/rest'>");
-            tb.add("<text><![CDATA[");
+            tb.add("<text><![");
             tb.add(db);
             tb.add("]]></text>");
             tb.add("<option name='runquery' value='true'/>");

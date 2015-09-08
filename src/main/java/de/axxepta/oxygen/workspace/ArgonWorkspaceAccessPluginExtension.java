@@ -183,7 +183,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                 valProbStr = new ArrayList<String>();
                                 valProbStr.add("1");
                                 valProbStr.add("1");
-                                valProbStr.add("Fatal BaseX request error.");
+                                valProbStr.add("Fatal BaseX request error: "+er.getMessage());
                             }
                             // build DocumentPositionedInfo list from query return;
                             List<DocumentPositionedInfo> problemList = new ArrayList<DocumentPositionedInfo>();
@@ -234,7 +234,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             queryRes = "";
                         }
                         // display result of query in a new info window
-                        JOptionPane.showMessageDialog(null, queryRes, "runBaseXQueryAction", JOptionPane.PLAIN_MESSAGE);
+                        argonOutputArea.setText(queryRes);
                         pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
                     } else {
                         pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
