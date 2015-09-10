@@ -26,9 +26,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -233,9 +231,17 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             logger.error("query to BaseX failed");
                             queryRes = "";
                         }
-                        // display result of query in a new info window
-                        argonOutputArea.setText(queryRes);
-                        pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
+                        //+ display result of query in a new info window
+                        //argonOutputArea.setText(queryRes);
+                        //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
+
+                        //+ display result of query in a new editor window
+                        // A) pass string directly into new win - oXy doesn't accept all types of content
+                        //URL newEditor = pluginWorkspaceAccess.createNewEditor("text","text/text",queryRes);
+                        // B) push string into new win - same problem
+                        URL newEditor = pluginWorkspaceAccess.createNewEditor("xml","text/xml","");
+                        Reader queryReader = new StringReader(queryRes);
+                        (pluginWorkspaceAccess.getEditorAccess(newEditor,PluginWorkspace.MAIN_EDITING_AREA)).reloadContent(queryReader);
                     } else {
                         pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
                     }
