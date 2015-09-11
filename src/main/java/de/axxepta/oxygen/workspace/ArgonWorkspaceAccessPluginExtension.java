@@ -9,8 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.editor.ContentTypes;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.Workspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
@@ -237,11 +239,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                         //+ display result of query in a new editor window
                         // A) pass string directly into new win - oXy doesn't accept all types of content
-                        //URL newEditor = pluginWorkspaceAccess.createNewEditor("text","text/text",queryRes);
-                        // B) push string into new win - same problem
-                        URL newEditor = pluginWorkspaceAccess.createNewEditor("xml","text/xml","");
-                        Reader queryReader = new StringReader(queryRes);
-                        (pluginWorkspaceAccess.getEditorAccess(newEditor,PluginWorkspace.MAIN_EDITING_AREA)).reloadContent(queryReader);
+                        URL newEditor = pluginWorkspaceAccess.createNewEditor("txt",ContentTypes.PLAIN_TEXT_CONTENT_TYPE,queryRes);
+
                     } else {
                         pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
                     }

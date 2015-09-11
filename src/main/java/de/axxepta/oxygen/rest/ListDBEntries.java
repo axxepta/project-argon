@@ -128,7 +128,7 @@ public class ListDBEntries {
             tb.add("</query>");
         } else {
             tb.add("<query xmlns='http://basex.org/rest'>");
-            tb.add("<text><![");
+            tb.add("<text><![CDATA[");
             tb.add(db);
             tb.add("]]></text>");
             tb.add("<option name='runquery' value='true'/>");
