@@ -176,7 +176,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             // pass content of editor window to ListDBEntries with queryTest
                             ArrayList<String> valProbStr;
                             try {
-                                ListDBEntries testQuery = new ListDBEntries("queryTest", editorContent, "");
+                                ListDBEntries testQuery = new ListDBEntries("queryTest", "", editorContent);
                                 valProbStr = testQuery.getResult();
                             } catch (Exception er) {
                                 logger.error("query to BaseX failed");
@@ -224,10 +224,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             logger.error(er);
                             editorContent = "";
                         }
+                        // get database name of current editor window
+                        int startInd = editorUrl.toString().indexOf(":");
+                        int stopInd = editorUrl.toString().indexOf("/", startInd+2);
+                        //ToDo: catch unexpected error that argon URL is malformed
+                        String db_name = editorUrl.toString().substring(startInd+1, stopInd);
                         // pass content of editor window to ListDBEntries with queryRun
                         String queryRes;
                         try {
-                            ListDBEntries testQuery = new ListDBEntries("queryRun", editorContent, "");
+                            ListDBEntries testQuery = new ListDBEntries("queryRun", db_name, editorContent);
                             queryRes = testQuery.getAnswer();
                         } catch (Exception er) {
                             logger.error("query to BaseX failed");
@@ -238,7 +243,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
 
                         //+ display result of query in a new editor window
-                        // A) pass string directly into new win - oXy doesn't accept all types of content
                         URL newEditor = pluginWorkspaceAccess.createNewEditor("txt",ContentTypes.PLAIN_TEXT_CONTENT_TYPE,queryRes);
 
                     } else {

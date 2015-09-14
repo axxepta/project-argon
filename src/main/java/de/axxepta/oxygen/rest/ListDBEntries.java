@@ -4,8 +4,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import de.axxepta.oxygen.api.BaseXClient;
+import org.basex.api.client.ClientSession;
+import org.basex.api.client.ClientQuery;
 import org.basex.core.Context;
 import org.basex.io.IOFile;
 import org.basex.io.IOStream;
@@ -34,6 +38,7 @@ public class ListDBEntries {
     String pass = "admin";
     String host = "localhost";
     int port = 8984;
+    int tcpport = 1984;
 
     public static void main(String... args) {
         try {
@@ -63,12 +68,26 @@ public class ListDBEntries {
 
         ArrayList<String> tList = new ArrayList<String>();
 
+/*        //++ using HTTP client
         // build POST request
         TokenBuilder tb;
         tb = buildQuery(queryType, db, db_path);
 
         // send request, receive response
-        String result = postRequest(tb);
+        //String result = postRequest(tb);*/
+
+        //++ using BaseXClient
+        // get query
+        String qu = queryBuilder(queryType, db_path);
+        // execute query
+        String result;
+        try {
+            result = runRequest(qu, queryType, db, db_path);
+        } catch (Exception er) {
+            er.printStackTrace();
+            result = "";
+        }
+
 
         if (queryType.equals("queryTest")) {
             this.answer = result;
@@ -101,6 +120,54 @@ public class ListDBEntries {
         this.result = tList;
     }
 
+    private String queryBuilder(String qType, String quString) throws Exception {
+        String query;
+
+        if(qType.equals("db"))
+        {
+            qType = "/list-db-entries.xq";
+            query = getFileQuery(qType);
+        }
+        else if (qType.equals("restxq")) {
+            qType = "/list-restxq-entries.xq";
+            query = getFileQuery(qType);
+        } else if (qType.equals("queryTest")) {
+
+/*            query = "<query xmlns='http://basex.org/rest'>";
+            query += "<text><![CDATA[";
+            query += quString;
+            query += "]]></text>";
+            query += "<option name='runquery' value='false'/>";
+            query += "</query>";*/
+
+            //query = "<xquery>\n";
+            query = "declare option db:runquery 'false';\n";
+            query += quString + "\n";
+            //query += "<option name='runquery' value='false'/>";
+            //query += "</xquery>";
+        } else {
+            query = quString;
+        }
+        return query;
+    }
+
+    private String runRequest(String queryString, String qType, String db, String db_path) throws Exception {
+        final BaseXClient session = new BaseXClient(host, tcpport, "admin", "admin");
+        //session.execute(MessageFormat.format("open {0}", db));
+        BaseXClient.Query query = session.query(queryString);
+        if (qType.equals("db")) {
+            query.bind("$db", db, "");
+            query.bind("$path", db_path, "");
+        } else if (qType.equals("restxq")) {
+            query.bind("$path", db_path, "");
+        }
+        //session.execute("set queryinfo on");
+        String result = query.execute();
+        //String info = query.info();
+        //query.close();
+        session.close();
+        return result;
+    }
 
     private TokenBuilder buildQuery(String qType, String db, String db_path) throws Exception {
         // build POST request
