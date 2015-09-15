@@ -8,6 +8,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import de.axxepta.oxygen.api.BaseXClient;
+import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.basex.api.client.ClientSession;
 import org.basex.api.client.ClientQuery;
 import org.basex.core.Context;
@@ -34,11 +35,12 @@ public class ListDBEntries {
     private ArrayList<String> result;
     private String answer;
     // login data
-    String user = "admin";
-    String pass = "admin";
-    String host = "localhost";
-    int port = 8984;
-    int tcpport = 1984;
+    //toDo: replace by set options (declare own constants class)
+    String user = BaseXOptionPage.KEY_BASEX_USERNAME;
+    String pass = BaseXOptionPage.KEY_BASEX_PASSWORD;
+    String host = BaseXOptionPage.KEY_BASEX_HOST;
+    int port = Integer.parseInt(BaseXOptionPage.KEY_BASEX_HTTP_PORT) ;
+    int tcpport = Integer.parseInt(BaseXOptionPage.KEY_BASEX_TCP_PORT);
 
     public static void main(String... args) {
         try {
@@ -50,7 +52,7 @@ public class ListDBEntries {
             //ListDBEntries test = new ListDBEntries("queryTest", x, "");
             //System.out.println(test.getAnswer());
 
-            ListDBEntries test = new ListDBEntries("/testing.xq", "test1", "/etc/~w3-catalog_2copy.xml");
+            ListDBEntries test = new ListDBEntries("testing", "test1", "/etc2/w3-catalog.xml");
             System.out.println(test.getAnswer());
 
             System.out.println(test.getResult());
@@ -128,50 +130,56 @@ public class ListDBEntries {
     private String queryBuilder(String qType, String quString) throws Exception {
         String query;
 
-        if(qType.equals("db"))
-        {
-            qType = "/list-db-entries.xq";
-            query = getFileQuery(qType);
-        }
-        else if (qType.equals("restxq")) {
-            qType = "/list-restxq-entries.xq";
-            query = getFileQuery(qType);
-        } else if (qType.equals("queryTest")) {
+        switch (qType) {
+            case "db": qType = "/list-db-entries.xq";
+                query = getFileQuery(qType);
+                break;
+            case "restxq": qType = "/list-db-entries.xq";
+                query = getFileQuery(qType);
+                break;
+            case "queryTest": /* query = "<query xmlns='http://basex.org/rest'>";
+                query += "<text><![CDATA[";
+                query += quString;
+                query += "]]></text>";
+                query += "<option name='runquery' value='false'/>";
+                query += "</query>";*/
 
-/*            query = "<query xmlns='http://basex.org/rest'>";
-            query += "<text><![CDATA[";
-            query += quString;
-            query += "]]></text>";
-            query += "<option name='runquery' value='false'/>";
-            query += "</query>";*/
-
-            //query = "<xquery>\n";
-            //query = "declare option db:runquery 'false';\n";
-            query = quString;
-            //query += "<option name='runquery' value='false'/>";
-            //query += "</xquery>";
-        } else if (qType.equals("queryRun")) {
-            query = quString;
-        } else {
-            query = getFileQuery(qType);
+                //query = "<xquery>\n";
+                //query = "declare option db:runquery 'false';\n";
+                query = quString;
+                //query += "<option name='runquery' value='false'/>";
+                //query += "</xquery>";
+            case "queryRun": query = quString;
+                break;
+            default: qType = "/"+qType+".xq";
+                query = getFileQuery(qType);
         }
         return query;
     }
 
     private String runRequest(String queryString, String qType, String db, String db_path) throws Exception {
-        final BaseXClient session = new BaseXClient(host, tcpport, "admin", "admin");
-        //session.execute(MessageFormat.format("open {0}", db));
-        BaseXClient.Query query = session.query(queryString);
-        if (qType.equals("db")) {
-            query.bind("$db", db, "");
-            query.bind("$path", db_path, "");
-        } else if (qType.equals("restxq")) {
-            query.bind("$path", db_path, "");
-        } else if (qType.equals("queryRun") || qType.equals("queryTest")) {
 
-        } else {
-            query.bind("$db", db, "");
-            query.bind("$path", db_path, "");
+        final BaseXClient session = new BaseXClient(host, tcpport, user, pass);
+        BaseXClient.Query query = session.query(queryString);
+
+        switch (qType) {
+            case "db": query.bind("$db", db, "");
+                query.bind("$path", db_path, "");
+                break;
+            case "restxq": query.bind("$path", db_path, "");
+                break;
+            case "queryRun": break;
+            case "queryTest": break;
+            case "lock": query.bind("$db", db, "");
+                query.bind("$path", db_path, "");
+                query.bind("$user", user, "");
+                break;
+            case "locked": query.bind("$db", db, "");
+                query.bind("$path", db_path, "");
+                query.bind("$user", user, "");
+                break;
+            default: query.bind("$db", db, "");
+                query.bind("$path", db_path, "");
         }
         String result = query.execute();
         query.close();

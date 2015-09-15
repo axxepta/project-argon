@@ -1,3 +1,5 @@
 declare variable $db   external := 'test1';
 declare variable $path external := '/';
-db:replace($db, $path, <a/>)
+declare variable $content external := '<a/>';
+
+db:replace($db, $path, $content)

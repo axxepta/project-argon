@@ -43,7 +43,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
             public void unlock(URL url) throws LockException {
                 ArrayList<String> dbPath = tempFile(url);
                 try {
-                    ListDBEntries fileDummy = new ListDBEntries("/delete.xq", dbPath.get(0), dbPath.get(1));
+                    ListDBEntries fileDummy = new ListDBEntries("delete", dbPath.get(0), dbPath.get(1));
                 } catch (Exception er) {
                     er.printStackTrace();
                 }
@@ -54,7 +54,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 // add url to locked file list
                 ArrayList<String> dbPath = tempFile(url);
                 try {
-                    ListDBEntries fileDummy = new ListDBEntries("/replace.xq", dbPath.get(0), dbPath.get(1));
+                    ListDBEntries fileDummy = new ListDBEntries("lock", dbPath.get(0), dbPath.get(1));
                 } catch (Exception er) {
                     er.printStackTrace();
                 }
@@ -74,8 +74,8 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#canCheckReadOnly(java.lang.String)
    */
     public boolean canCheckReadOnly(String protocol) {
-        return false;
-        //return protocol.equals(ARGON);
+        //return false;
+        return protocol.equals(ARGON);
     }
 
   /**
@@ -84,7 +84,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     public boolean isReadOnly(URL url) {
         ArrayList<String> dbPath = tempFile(url);
         try {
-            ListDBEntries isOpened = new ListDBEntries("/exists.xq", dbPath.get(0), dbPath.get(1));
+            ListDBEntries isOpened = new ListDBEntries("locked", dbPath.get(0), dbPath.get(1));
+            System.out.println("file locked:");
+            System.out.println(isOpened.getAnswer().equals("true"));
             return (isOpened.getAnswer().equals("true"));
         } catch (Exception er) {
             return false;
