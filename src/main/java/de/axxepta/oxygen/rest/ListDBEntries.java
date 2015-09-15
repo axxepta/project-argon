@@ -45,9 +45,12 @@ public class ListDBEntries {
             //ListDBEntries test = new ListDBEntries("restxq", "test", "/");
             //ListDBEntries test = new ListDBEntries("db", "test1", "/");
 
-            String x = "<rest:database xmlns:rest=\"http://basex.org/rest\" name=\"test1\" resources=\"0\"/>\\n1+";
+            //String x = "<rest:database xmlns:rest=\"http://basex.org/rest\" name=\"test1\" resources=\"0\"/>\\n1+";
             //String x = "1+";
-            ListDBEntries test = new ListDBEntries("queryTest", x, "");
+            //ListDBEntries test = new ListDBEntries("queryTest", x, "");
+            //System.out.println(test.getAnswer());
+
+            ListDBEntries test = new ListDBEntries("/testing.xq", "test1", "/etc/~w3-catalog_2copy.xml");
             System.out.println(test.getAnswer());
 
             System.out.println(test.getResult());
@@ -103,7 +106,7 @@ public class ListDBEntries {
             }
         } else if (queryType.equals("queryRun")) {
             this.answer = result;
-        } else {
+        } else if (queryType.equals("db") || queryType.equals("restxq")) {
             // short-cut to convert result to BaseX XML node (-> interpret result as XQuery)
             ANode root = (ANode) query(result, null);
 
@@ -116,6 +119,8 @@ public class ListDBEntries {
                 String type = name(resource);
                 tList.add(type);
             }
+        } else {
+            this.answer = result;
         }
         this.result = tList;
     }
@@ -141,12 +146,14 @@ public class ListDBEntries {
             query += "</query>";*/
 
             //query = "<xquery>\n";
-            query = "declare option db:runquery 'false';\n";
-            query += quString + "\n";
+            //query = "declare option db:runquery 'false';\n";
+            query = quString;
             //query += "<option name='runquery' value='false'/>";
             //query += "</xquery>";
-        } else {
+        } else if (qType.equals("queryRun")) {
             query = quString;
+        } else {
+            query = getFileQuery(qType);
         }
         return query;
     }
@@ -160,11 +167,14 @@ public class ListDBEntries {
             query.bind("$path", db_path, "");
         } else if (qType.equals("restxq")) {
             query.bind("$path", db_path, "");
+        } else if (qType.equals("queryRun") || qType.equals("queryTest")) {
+
+        } else {
+            query.bind("$db", db, "");
+            query.bind("$path", db_path, "");
         }
-        //session.execute("set queryinfo on");
         String result = query.execute();
-        //String info = query.info();
-        //query.close();
+        query.close();
         session.close();
         return result;
     }
