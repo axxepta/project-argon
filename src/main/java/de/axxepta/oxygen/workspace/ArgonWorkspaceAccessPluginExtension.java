@@ -28,7 +28,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -106,21 +109,60 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // explicit tree model necessary to use allowsChildren for definition of leafs
                     DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
-                    BasexTree tree = new BasexTree(treeModel);
+                    final BasexTree tree = new BasexTree(treeModel);
                     tree.setEditable(true);
                     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                     setTreeState(tree, new TreePath(root), false);
 
+                    // Add context menu
+                    JPopupMenu contextMenu = new JPopupMenu();
+                    Action checkOut = new AbstractAction("Check Out") {
+                        public void actionPerformed(ActionEvent e) {
+                            TreePath path = tree.getPath();
+                            logger.debug("-- double click --");
+                            String db_path = BasexTree.urlStringFromTreePath(path);
+                            logger.info("DbPath: " + db_path);
+                            if (!tree.getNode().getAllowsChildren()) {
+                                // open file
+                                URL argonURL = null;
+                                try {
+                                    argonURL = new URL(db_path);
+                                } catch (MalformedURLException e1) {
+                                    logger.error(e1);
+                                }
+                                pluginWorkspaceAccess.open(argonURL);
+                            }
+                        }
+                    };
+                    contextMenu.add(checkOut);
+                    Action checkIn = new AbstractAction("Check In") {
+                        public void actionPerformed(ActionEvent e) {
+                        }
+                    };
+                    contextMenu.add(checkIn);
+                    contextMenu.addSeparator();
+                    Action delete = new AbstractAction("Delete") {
+                        public void actionPerformed(ActionEvent e) {
+                            //
+                        }
+                    };
+                    contextMenu.add(delete);
+                    Action add = new AbstractAction("Add") {
+                        public void actionPerformed(ActionEvent e) {
+                            //
+                        }
+                    };
+                    contextMenu.add(add);
+                    tree.add(contextMenu);
+
                     // Add Tree Listener
-                    TreeListener tListener = new TreeListener(tree, treeModel, pluginWorkspaceAccess, basexWrapper);
+                    TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess, basexWrapper);
                     tree.addTreeWillExpandListener(tListener);
                     tree.addMouseListener(tListener);
                     tree.addTreeSelectionListener(tListener);
-
                     TopicHolder.saveFile.register(tListener);
 
-                    //JOptionPane.showMessageDialog(null, "This language just gets better and better!");
-
+                    //
                     cmsMessagesArea = new JTextArea("CMS Session History:");
                     JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
                     scrollPane.getViewport().add(tree);

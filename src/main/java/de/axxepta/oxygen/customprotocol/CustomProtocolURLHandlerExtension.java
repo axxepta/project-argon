@@ -85,8 +85,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         ArrayList<String> dbPath = tempFile(url);
         try {
             ListDBEntries isOpened = new ListDBEntries("locked", dbPath.get(0), dbPath.get(1));
-            System.out.println("file locked:");
-            System.out.println(isOpened.getAnswer().equals("true"));
             return (isOpened.getAnswer().equals("true"));
         } catch (Exception er) {
             return false;
@@ -94,6 +92,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         //return false;
     }
 
+    /**
+     * returns ArrayList containing db name and path of file (with tilde added at file name begiining) in db
+     */
     private ArrayList<String> tempFile(URL url) {
         ArrayList<String> dbFile = new ArrayList<String>();
         String urlString = url.toString();

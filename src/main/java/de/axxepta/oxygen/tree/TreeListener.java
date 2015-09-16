@@ -10,7 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -19,6 +19,7 @@ import javax.swing.tree.*;
 
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
+import de.axxepta.oxygen.tree.BasexTree;
 import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,14 +45,16 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private boolean singleClick  = true;
     private int doubleClickDelay = 300;
     private Timer timer;
+    private final JPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, StandalonePluginWorkspace workspaceAccess, BasexWrapper bxWrapper)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, JPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess, BasexWrapper bxWrapper)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
         this._treeModel = treeModel;
         this.newExpandEvent = true;
+        this.contextMenu = contextMenu;
         ActionListener actionListener = new ActionListener() {
 
             public void actionPerformed(ActionEvent e ) {
@@ -80,10 +83,21 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
     }
 
+    @Override public void mouseReleased( MouseEvent e ) {
+        this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
+        this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+        this._Tree.setPath(this.path);
+        this._Tree.setNode(this.node);
+        if ( e.isPopupTrigger() )
+            contextMenu.show( e.getComponent(), e.getX(), e.getY() );
+    }
+
     @Override
     public void valueChanged( TreeSelectionEvent e ) {
         this.path = e.getNewLeadSelectionPath();
         this.node = (DefaultMutableTreeNode)this._Tree.getLastSelectedPathComponent();
+        this._Tree.setPath(this.path);
+        this._Tree.setNode(this.node);
     }
 
     @Override
@@ -93,6 +107,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         this.path = event.getPath();
         this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+        this._Tree.setPath(this.path);
+        this._Tree.setNode(this.node);
 
         logger.info("-- tree expansion -- id=");
 
@@ -162,10 +178,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");
-        String db_path = "argon:";
-        for (int i = 2; i < this.path.getPathCount(); i++) {
-            db_path = db_path + '/' + this.path.getPathComponent(i).toString();
-        }
+        String db_path = BasexTree.urlStringFromTreePath(this.path);
         logger.info("DbPath: " + db_path);
         if (!this.node.getAllowsChildren()) {
             // open file
