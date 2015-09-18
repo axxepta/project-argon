@@ -20,7 +20,7 @@ import javax.swing.tree.*;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
 import de.axxepta.oxygen.tree.BasexTree;
-import javafx.scene.control.TreeCell;
+//import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
