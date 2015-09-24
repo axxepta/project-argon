@@ -277,7 +277,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     //ToDo: Move to a BaseXTreeModel class
-    private static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
+    public static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
         // returns TreePath to child given by String, if child doesn't exist returns null!
         DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
         for (int i=0; i<currNode.getChildCount(); i++) {

@@ -110,11 +110,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     Action checkOut = new AbstractAction("Check Out") {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tree.getPath();
-                            logger.debug("-- double click --");
                             String db_path = BasexTree.urlStringFromTreePath(path);
-                            logger.info("DbPath: " + db_path);
                             if (!tree.getNode().getAllowsChildren()) {
-                                // open file
                                 URL argonURL = null;
                                 try {
                                     argonURL = new URL(db_path);
@@ -134,13 +131,40 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     contextMenu.addSeparator();
                     Action delete = new AbstractAction("Delete") {
                         public void actionPerformed(ActionEvent e) {
-                            //
+                            TreePath path = tree.getPath();
+                            String db = BasexTree.dbStringFromTreePath(path);
+                            String db_path = BasexTree.pathStringFromTreePath(path);
+                            if (!db.equals("")) {
+                                if (!db_path.equals("")) {
+                                    try {
+                                        ListDBEntries fileDummy = new ListDBEntries("delete", db, db_path);
+                                    } catch (Exception er) {
+                                        er.printStackTrace();
+                                    }
+                                    String parent = path.getParentPath().getLastPathComponent().toString();
+                                    TreePath grannyPath = path.getParentPath().getParentPath();
+                                    tree.collapsePath(path.getParentPath());
+                                    tree.expandPath(path.getParentPath());
+                                    tree.collapsePath(grannyPath);
+                                    tree.expandPath(grannyPath);
+                                    TreePath parentPath = TreeListener.pathByAddingChildAsStr(grannyPath, parent);
+                                    tree.expandPath(parentPath);
+                                }
+                            }
                         }
                     };
                     contextMenu.add(delete);
                     Action add = new AbstractAction("Add") {
                         public void actionPerformed(ActionEvent e) {
-                            //
+/*                            TreePath path = tree.getPath();
+                            String db_path = BasexTree.urlStringFromTreePath(path);
+                            if (tree.getNode().getAllowsChildren()) {
+                                try {
+                                    ListDBEntries fileDummy = new ListDBEntries("add", db_path, db_path);
+                                } catch (Exception er) {
+                                    er.printStackTrace();
+                                }
+                            }*/
                         }
                     };
                     contextMenu.add(add);

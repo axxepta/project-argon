@@ -178,6 +178,10 @@ public class ListDBEntries {
                 query.bind("$path", db_path, "");
                 query.bind("$user", user, "");
                 break;
+/*            case "add": query.bind("$db", db, "");
+                query.bind("$path", db_path, "");
+                query.bind("$content", content, "");
+                break;*/
             default: query.bind("$db", db, "");
                 query.bind("$path", db_path, "");
         }
