@@ -22,15 +22,6 @@ public class BasexTree extends JTree {
 
 	private static final long serialVersionUID = 1L;
 
-	public BasexTree(TreeNode root) {
-		super(root);
-		// Use our custom cell renderer.
-		this.setCellRenderer(new BasexTreeCellRenderer());
-		// Use our custom tree UI.
-		this.setUI(new BasexTreeUI());
-		path = null;
-	}
-
 	public BasexTree(DefaultTreeModel root) {
 		super(root);
 		// Use our custom cell renderer.

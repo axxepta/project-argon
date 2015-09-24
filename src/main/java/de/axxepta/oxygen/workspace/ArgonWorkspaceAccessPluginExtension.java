@@ -28,8 +28,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,7 +50,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
-        StandalonePluginWorkspace pluginWorkspaceAccess1 = pluginWorkspaceAccess;
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
             /**
@@ -61,14 +58,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void customizeView(ViewInfo viewInfo) {
 
-                Iterator<String> iterator = null;
+                Iterator<String> iterator;
 
-                if(
+                if("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                     //The view ID defined in the "plugin.xml"
-                    "ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
-
-                    // Create data for the tree
-                    // DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Database: localhost:1984" );
 
                     // Create some data to populate our tree.
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode("BaseX Server");
@@ -94,15 +87,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         e.printStackTrace();
                     }
 
-                    iterator = databaseList.iterator();
-
-                    int i = 0;
-                    while (iterator.hasNext()) {
-                        DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
-                        dbNode.setAllowsChildren(true);
-                        databases.add(dbNode);
-                        iterator.next();
-                        i++;
+                    if (databaseList != null) {
+                        iterator = databaseList.iterator();
+                        while (iterator.hasNext()) {
+                            DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(iterator.next());
+                            dbNode.setAllowsChildren(true);
+                            databases.add(dbNode);
+                        }
                     }
 
                     // Create a new tree control
@@ -156,7 +147,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     tree.add(contextMenu);
 
                     // Add Tree Listener
-                    TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess, basexWrapper);
+                    TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
                     tree.addTreeWillExpandListener(tListener);
                     tree.addMouseListener(tListener);
                     tree.addTreeSelectionListener(tListener);
@@ -222,13 +213,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                 valProbStr = testQuery.getResult();
                             } catch (Exception er) {
                                 logger.error("query to BaseX failed");
-                                valProbStr = new ArrayList<String>();
+                                valProbStr = new ArrayList<>();
                                 valProbStr.add("1");
                                 valProbStr.add("1");
                                 valProbStr.add("Fatal BaseX request error: "+er.getMessage());
                             }
                             // build DocumentPositionedInfo list from query return;
-                            List<DocumentPositionedInfo> problemList = new ArrayList<DocumentPositionedInfo>();
+                            List<DocumentPositionedInfo> problemList = new ArrayList<>();
                             if (valProbStr.size() > 0) {
                                 DocumentPositionedInfo dpi =
                                         new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
@@ -306,7 +297,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             public void customizeToolbar(ToolbarInfo toolbarInfo) {
                 //The toolbar ID is defined in the "plugin.xml"
                 if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
-                    List<JComponent> comps = new ArrayList<JComponent>();
+                    List<JComponent> comps = new ArrayList<>();
                     JComponent[] initialComponents = toolbarInfo.getComponents();
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
                     if (hasInitialComponents) {

@@ -48,7 +48,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private final JPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, JPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess, BasexWrapper bxWrapper)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, JPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
@@ -85,7 +85,11 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     @Override public void mouseReleased( MouseEvent e ) {
         this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
-        this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+        try {
+            this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+        } catch (NullPointerException er) {
+            this.node = this._Tree.getNode();
+        }
         this._Tree.setPath(this.path);
         this._Tree.setNode(this.node);
         if ( e.isPopupTrigger() )
@@ -258,11 +262,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             if (expanded || (i == path.length-2)) { // update tree now only if file is in visible path
                 if (isNodeAsStrChild(currNode, path[i + 1])) {
                 } else {
-                    if (i + 2 == path.length) {
-                        isFile = true;
-                    } else {
-                        isFile = false;
-                    }
+                    isFile = (i + 2 == path.length);
                     insertStrAsNodeLexi(path[i + 1], currNode, isFile);
                     this.newExpandEvent = false;
                     this._Tree.expandPath(currPath);
