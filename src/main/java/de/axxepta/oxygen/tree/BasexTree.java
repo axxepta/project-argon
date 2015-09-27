@@ -17,9 +17,6 @@ import java.awt.event.ActionEvent;
  */
 public class BasexTree extends JTree {
 
-	private TreePath path;
-	private DefaultMutableTreeNode node;
-
 	private static final long serialVersionUID = 1L;
 
 	public BasexTree(DefaultTreeModel root) {
@@ -28,7 +25,6 @@ public class BasexTree extends JTree {
 		this.setCellRenderer(new BasexTreeCellRenderer());
 		// Use our custom tree UI.
 		this.setUI(new BasexTreeUI());
-		path = null;
 	}
 
 	public static String urlStringFromTreePath(TreePath path) {
@@ -69,22 +65,6 @@ public class BasexTree extends JTree {
 			}
 		}
 		return db_path;
-	}
-
-	protected void setPath(TreePath path) {
-		this.path = path;
-	}
-
-	public TreePath getPath() {
-		return this.path;
-	}
-
-	protected void setNode(DefaultMutableTreeNode node) {
-		this.node = node;
-	}
-
-	public DefaultMutableTreeNode getNode() {
-		return this.node;
 	}
 
 }

@@ -101,17 +101,32 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
                     final BasexTree tree = new BasexTree(treeModel);
+/*                    try {
+                        UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+                        //UIManager.setLookAndFeel("javax.swing.plaf.motif.MotifLookAndFeel");
+                        //UIManager.setLookAndFeel("javax.swing.plaf.gtk.GTKLookAndFeel");
+                        tree.putClientProperty("JTree.lineStyle", "None");
+                    } catch (Exception er) {}*/
                     tree.setEditable(true);
                     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add context menu
                     JPopupMenu contextMenu = new JPopupMenu();
+
+                    // Add Tree Listener
+                    final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
+                    tree.addTreeWillExpandListener(tListener);
+                    tree.addMouseListener(tListener);
+                    tree.addTreeSelectionListener(tListener);
+                    TopicHolder.saveFile.register(tListener);
+                    TopicHolder.deleteFile.register(tListener);
+
+                    // Populate context menu
                     Action checkOut = new AbstractAction("Check Out") {
                         public void actionPerformed(ActionEvent e) {
-                            TreePath path = tree.getPath();
-                            String db_path = BasexTree.urlStringFromTreePath(path);
-                            if (!tree.getNode().getAllowsChildren()) {
+                            String db_path = BasexTree.urlStringFromTreePath(tListener.getPath());
+                            if (!tListener.getNode().getAllowsChildren()) {
                                 URL argonURL = null;
                                 try {
                                     argonURL = new URL(db_path);
@@ -131,7 +146,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     contextMenu.addSeparator();
                     Action delete = new AbstractAction("Delete") {
                         public void actionPerformed(ActionEvent e) {
-                            TreePath path = tree.getPath();
+                            TreePath path = tListener.getPath();
                             String db = BasexTree.dbStringFromTreePath(path);
                             String db_path = BasexTree.pathStringFromTreePath(path);
                             if (!db.equals("")) {
@@ -141,14 +156,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                     } catch (Exception er) {
                                         er.printStackTrace();
                                     }
-                                    String parent = path.getParentPath().getLastPathComponent().toString();
-                                    TreePath grannyPath = path.getParentPath().getParentPath();
-                                    tree.collapsePath(path.getParentPath());
-                                    tree.expandPath(path.getParentPath());
-                                    tree.collapsePath(grannyPath);
-                                    tree.expandPath(grannyPath);
-                                    TreePath parentPath = TreeListener.pathByAddingChildAsStr(grannyPath, parent);
-                                    tree.expandPath(parentPath);
+                                    TopicHolder.deleteFile.postMessage(db + '/' + db_path);
                                 }
                             }
                         }
@@ -156,9 +164,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     contextMenu.add(delete);
                     Action add = new AbstractAction("Add") {
                         public void actionPerformed(ActionEvent e) {
-/*                            TreePath path = tree.getPath();
+/*                            TreePath path = tListener.getPath();
                             String db_path = BasexTree.urlStringFromTreePath(path);
-                            if (tree.getNode().getAllowsChildren()) {
+                            if (tListener.getNode().getAllowsChildren()) {
                                 try {
                                     ListDBEntries fileDummy = new ListDBEntries("add", db_path, db_path);
                                 } catch (Exception er) {
@@ -169,13 +177,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(add);
                     tree.add(contextMenu);
-
-                    // Add Tree Listener
-                    TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
-                    tree.addTreeWillExpandListener(tListener);
-                    tree.addMouseListener(tListener);
-                    tree.addTreeSelectionListener(tListener);
-                    TopicHolder.saveFile.register(tListener);
 
                     //
                     cmsMessagesArea = new JTextArea("CMS Session History:");

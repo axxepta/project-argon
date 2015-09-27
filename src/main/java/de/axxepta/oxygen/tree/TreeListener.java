@@ -87,11 +87,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
         try {
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-        } catch (NullPointerException er) {
-            this.node = this._Tree.getNode();
-        }
-        this._Tree.setPath(this.path);
-        this._Tree.setNode(this.node);
+        } catch (NullPointerException er) {}
         if ( e.isPopupTrigger() )
             contextMenu.show( e.getComponent(), e.getX(), e.getY() );
     }
@@ -100,8 +96,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     public void valueChanged( TreeSelectionEvent e ) {
         this.path = e.getNewLeadSelectionPath();
         this.node = (DefaultMutableTreeNode)this._Tree.getLastSelectedPathComponent();
-        this._Tree.setPath(this.path);
-        this._Tree.setNode(this.node);
     }
 
     @Override
@@ -111,8 +105,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         this.path = event.getPath();
         this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-        this._Tree.setPath(this.path);
-        this._Tree.setNode(this.node);
 
         logger.info("-- tree expansion -- id=");
 
@@ -242,38 +234,60 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     @Override
-    public void update(String message) {
-        // is notified as observer when a file is saved to database
+    public void update(String type, String message) {
+        // is notified as observer when changes have been made to the database file structure
         // updates the tree if necessary
         DefaultMutableTreeNode currNode;
         TreePath currPath;
 
         logger.info("Tree needs to update: " + message);
-        String[] path = message.split("/");
-        currPath = new TreePath(this._treeModel.getRoot());
-        // ToDo: define string constants static somewhere
-        currPath = pathByAddingChildAsStr(currPath, "Databases");
-        currPath = pathByAddingChildAsStr(currPath, path[0]);
-        currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
-        boolean expanded = false;
-        Boolean isFile;
-        for (int i=0; i<path.length-1; i++){
-            if (this._Tree.isExpanded(currPath)) expanded = true;
-            if (expanded || (i == path.length-2)) { // update tree now only if file is in visible path
-                if (isNodeAsStrChild(currNode, path[i + 1])) {
+
+        if (type.equals("SAVE_FILE")) {
+            String[] path = message.split("/");
+            currPath = new TreePath(this._treeModel.getRoot());
+            // ToDo: define string constants static somewhere
+            currPath = pathByAddingChildAsStr(currPath, "Databases");
+            currPath = pathByAddingChildAsStr(currPath, path[0]);
+            currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
+            boolean expanded = false;
+            Boolean isFile;
+            for (int i = 0; i < path.length - 1; i++) {
+                if (this._Tree.isExpanded(currPath)) expanded = true;
+                if (expanded || (i == path.length - 2)) { // update tree now only if file is in visible path
+                    if (isNodeAsStrChild(currNode, path[i + 1])) {
+                    } else {
+                        isFile = (i + 2 == path.length);
+                        insertStrAsNodeLexi(path[i + 1], currNode, isFile);
+                        this.newExpandEvent = false;
+                        this._Tree.expandPath(currPath);
+                        this._Tree.fireTreeExpanded(currPath);
+                    }
+                    currPath = pathByAddingChildAsStr(currPath, path[i + 1]);
+                    currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
                 } else {
-                    isFile = (i + 2 == path.length);
-                    insertStrAsNodeLexi(path[i + 1], currNode, isFile);
-                    this.newExpandEvent = false;
-                    this._Tree.expandPath(currPath);
-                    this._Tree.fireTreeExpanded(currPath);
+                    break;
                 }
-                currPath = pathByAddingChildAsStr(currPath, path[i + 1]);
-                currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
-            } else {
-                break;
             }
         }
+
+        if (type.equals("DELETE_FILE")) {
+            // this is necessary because for some reason the parent node is first removed from tree???
+            String parent = this.path.getParentPath().getLastPathComponent().toString();
+            TreePath grannyPath = this.path.getParentPath().getParentPath();
+            this._Tree.collapsePath(this.path.getParentPath());
+            this._Tree.expandPath(this.path.getParentPath());
+            this._Tree.collapsePath(grannyPath);
+            this._Tree.expandPath(grannyPath);
+            this._Tree.expandPath(TreeListener.pathByAddingChildAsStr(grannyPath, parent));
+        }
+    }
+
+    public TreePath getPath() {
+        return this.path;
+    }
+
+    public DefaultMutableTreeNode getNode() {
+        return this.node;
     }
 
     //ToDo: Move to a BaseXTreeModel class

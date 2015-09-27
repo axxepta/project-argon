@@ -7,10 +7,10 @@ public class TopicHolder {
 
     /* File related */
 
-    public static MsgTopic openFile = new MsgTopic();
-    public static MsgTopic changeFile = new MsgTopic();
-    public static MsgTopic saveFile = new MsgTopic();
-
+    public static MsgTopic openFile = new MsgTopic("OPEN_FILE");
+    public static MsgTopic changeFile = new MsgTopic("CHANGE_FILE");
+    public static MsgTopic saveFile = new MsgTopic("SAVE_FILE");
+    public static MsgTopic deleteFile = new MsgTopic("DELETE_FILE");
 
 
 }

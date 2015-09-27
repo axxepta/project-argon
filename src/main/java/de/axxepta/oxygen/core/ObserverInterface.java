@@ -7,7 +7,7 @@ public interface ObserverInterface {
 
 
         //method to update the observer, used by subject
-        public void update(String message);
+        public void update(String type, String message);
 
         //attach with subject to observe
        //public void setSubject(SubjectInterface sub);

@@ -13,11 +13,13 @@ public class MsgTopic implements SubjectInterface {
 
     private List<ObserverInterface> observers;
     private String message;
+    private String type;
     private boolean changed;
     private final Object MUTEX= new Object();
 
-    public MsgTopic(){
+    public MsgTopic(String msgType){
         this.observers=new ArrayList<>();
+        this.type = msgType;
     }
     @Override
     public void register(ObserverInterface obj) {
@@ -45,7 +47,7 @@ public class MsgTopic implements SubjectInterface {
             this.changed=false;
         }
         for (ObserverInterface obj : observersLocal) {
-            obj.update(this.message);
+            obj.update(this.type, this.message);
         }
 
     }
@@ -57,7 +59,7 @@ public class MsgTopic implements SubjectInterface {
 
     //method to post message to the topic
     public void postMessage(String msg){
-        System.out.println("Message Posted to Topic:"+msg);
+        System.out.println("Message Posted to Topic: "+msg);
         this.message=msg;
         this.changed=true;
         notifyObservers();
