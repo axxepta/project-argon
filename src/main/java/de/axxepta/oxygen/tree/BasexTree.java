@@ -8,6 +8,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.standalone.ui.Tree;
 import ro.sync.ui.Icons;
 
 import java.awt.event.ActionEvent;
@@ -15,7 +16,9 @@ import java.awt.event.ActionEvent;
 /**
  * Created by daltiparmak on 14.04.15.
  */
-public class BasexTree extends JTree {
+
+//public class BasexTree extends JTree {
+public class BasexTree extends Tree {
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,7 +27,7 @@ public class BasexTree extends JTree {
 		// Use our custom cell renderer.
 		this.setCellRenderer(new BasexTreeCellRenderer());
 		// Use our custom tree UI.
-		this.setUI(new BasexTreeUI());
+		//this.setUI(new BasexTreeUI());
 	}
 
 	public static String urlStringFromTreePath(TreePath path) {

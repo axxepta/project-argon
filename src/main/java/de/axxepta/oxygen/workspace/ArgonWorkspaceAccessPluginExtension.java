@@ -4,6 +4,7 @@ import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BasexWrapper;
 import de.axxepta.oxygen.rest.ListDBEntries;
 import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.*;
+import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
@@ -112,7 +114,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add context menu
-                    JPopupMenu contextMenu = new JPopupMenu();
+                    PopupMenu contextMenu = new PopupMenu();
+                    //JPopupMenu contextMenu = new JPopupMenu();
 
                     // Add Tree Listener
                     final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
@@ -123,7 +126,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.deleteFile.register(tListener);
 
                     // Populate context menu
-                    Action checkOut = new AbstractAction("Check Out") {
+                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = BasexTree.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {

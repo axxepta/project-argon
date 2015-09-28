@@ -12,12 +12,15 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 import ro.sync.ui.Icons;
 
 /**
  * TreeCellRenderer with alternating colored rows.
  */
-public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
+
+//public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
+public class BasexTreeCellRenderer extends TreeCellRenderer {
 	/**
 	 * 
 	 */
@@ -25,7 +28,8 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 	// Define a static logger variable so that it references the
 	// Logger instance named "CustomProtocolHandler".
 	private static final Logger logger = LogManager.getLogger(BasexTreeCellRenderer.class);
-	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
+	TreeCellRenderer defaultRenderer = new TreeCellRenderer();
+	//DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree aTree, Object aValue,
@@ -168,14 +172,13 @@ public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 
 	}
 
-	private static ImageIcon createImageIcon(String path) {
+	// ToDo: move to separate class if also used in Workspace
+	public static ImageIcon createImageIcon(String path) {
 		java.net.URL imgURL = BasexTree.class.getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL);
 		} else {
 			logger.error("Couldn't find file: " + path);
-			JOptionPane.showMessageDialog(null, "Couldn't find file: " + path,
-					"createImageIcon", JOptionPane.PLAIN_MESSAGE);
 			return null;
 		}
 	}
