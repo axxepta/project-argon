@@ -126,7 +126,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.deleteFile.register(tListener);
 
                     // Populate context menu
-                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.png")) {
+                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = BasexTree.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
@@ -141,13 +141,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     };
                     contextMenu.add(checkOut);
-                    Action checkIn = new AbstractAction("Check In") {
+                    Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
                     contextMenu.add(checkIn);
                     contextMenu.addSeparator();
-                    Action delete = new AbstractAction("Delete") {
+                    Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/Remove16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tListener.getPath();
                             String db = BasexTree.dbStringFromTreePath(path);
@@ -165,7 +165,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     };
                     contextMenu.add(delete);
-                    Action add = new AbstractAction("Add") {
+                    Action add = new AbstractAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
 /*                            TreePath path = tListener.getPath();
                             String db_path = BasexTree.urlStringFromTreePath(path);
@@ -179,6 +179,23 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     };
                     contextMenu.add(add);
+                    Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
+                        public void actionPerformed(ActionEvent e) {
+                        }
+                    };
+                    contextMenu.add(refresh);
+                    contextMenu.addSeparator();
+                    Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
+                        public void actionPerformed(ActionEvent e) {
+                        }
+                    };
+                    contextMenu.add(searchInPath);
+                    Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
+                        public void actionPerformed(ActionEvent e) {
+                        }
+                    };
+                    contextMenu.add(searchInFiles);
+
                     tree.add(contextMenu);
 
                     //
