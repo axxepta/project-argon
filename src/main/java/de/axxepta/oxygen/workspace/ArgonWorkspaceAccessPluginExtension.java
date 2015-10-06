@@ -1,6 +1,8 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.rest.BasexWrapper;
 import de.axxepta.oxygen.rest.ListDBEntries;
 import de.axxepta.oxygen.tree.BasexTree;
@@ -74,28 +76,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode("Query Folder");
                     queryFolder.setAllowsChildren(true);
                     root.add(queryFolder);
+                    DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode("Repo Folder");
+                    queryFolder.setAllowsChildren(true);
+                    root.add(repoFolder);
 
-                    BasexWrapper basexWrapper = new BasexWrapper();
-                    basexWrapper.setRestApiClient();
-
-                    List<String> databaseList = null;
-                    try {
-                        databaseList = basexWrapper.getResources();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    } catch (ParserConfigurationException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (databaseList != null) {
-                        iterator = databaseList.iterator();
-                        while (iterator.hasNext()) {
-                            DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(iterator.next());
-                            dbNode.setAllowsChildren(true);
-                            databases.add(dbNode);
-                        }
+                    ArrayList<String> databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
+                    for (int i=0; i<(databaseList.size()/2); i++) {
+                        DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
+                        dbNode.setAllowsChildren(true);
+                        databases.add(dbNode);
                     }
 
                     // Create a new tree control
@@ -103,12 +92,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
                     final BasexTree tree = new BasexTree(treeModel);
-/*                    try {
-                        UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-                        //UIManager.setLookAndFeel("javax.swing.plaf.motif.MotifLookAndFeel");
-                        //UIManager.setLookAndFeel("javax.swing.plaf.gtk.GTKLookAndFeel");
-                        tree.putClientProperty("JTree.lineStyle", "None");
-                    } catch (Exception er) {}*/
                     tree.setEditable(true);
                     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                     setTreeState(tree, new TreePath(root), false);

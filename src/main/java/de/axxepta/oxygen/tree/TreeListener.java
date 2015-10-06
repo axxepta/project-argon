@@ -17,8 +17,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
+import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
+import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.BasexTree;
 //import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
@@ -112,34 +114,28 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
             if (!((this.path.getPathCount()==2) && (this.path.getPathComponent(1).toString().equals("Databases")))){
 
-                ArrayList<String> newNodes = new ArrayList<>();
+                ArrayList<String> newNodes;
                 ArrayList<String> newTypes = new ArrayList<>();
                 ArrayList<String> newValues = new ArrayList<>();
-                String db;
-                String queryType;
-                int folderDepth;
+                BaseXSource queryType;
+                String db_path;
 
                 if (this.path.getPathComponent(1).toString().equals("Databases")){
-                    db = this.path.getPathComponent(2).toString();
-                    queryType = "db";
-                    folderDepth = 3;
+                    queryType = BaseXSource.DATABASE;
+                    db_path = "";
+                } else if (this.path.getPathComponent(1).toString().equals("Query Folder")) {
+                    queryType = BaseXSource.RESTXQ;
+                    db_path = "/";
                 } else {
-                    db = "";
-                    queryType = "restxq";
-                    folderDepth = 2;
+                    queryType = BaseXSource.REPO;
+                    db_path = "/";
                 }
 
-                String db_path = "/";
-                for (int i = folderDepth; i < this.path.getPathCount(); i++) {
+                for (int i = 2; i < this.path.getPathCount(); i++) {
                     db_path = db_path + this.path.getPathComponent(i).toString() + '/';
                 }
                 //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
-                try {
-                    ListDBEntries newEntries = new ListDBEntries(queryType, db, db_path);
-                    newNodes = newEntries.getResult();
-                } catch (Exception e1) {
-                    logger.error(e1);
-                }
+                newNodes = (new BaseXRequest("list", queryType, db_path)).getResult();
                 if (newNodes.size() > 0) {
                     newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
                     newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
