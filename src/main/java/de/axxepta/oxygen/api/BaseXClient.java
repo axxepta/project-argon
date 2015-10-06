@@ -7,12 +7,10 @@ import java.security.*;
 import java.util.*;
 
 /**
- * Java client for BaseX.
- * Works with BaseX 7.0 and later
- *
+ * Java client for BaseX. Works with BaseX 7.0 and later
  * Documentation: http://docs.basex.org/wiki/Clients
  *
- * (C) BaseX Team 2005-15, BSD License
+ * @author Christian Gruen, BaseX Team 2005-15, BSD License
  */
 public final class BaseXClient {
     /** UTF-8 charset. */
@@ -347,6 +345,21 @@ public final class BaseXClient {
          */
         public String execute() throws IOException {
             return exec(5, id);
+        }
+
+        /**
+         * Returns the query result as binary. Added for the Argon API.
+         * @return query result
+         * @throws IOException I/O Exception
+         */
+        public byte[] binary() throws IOException {
+            out.write(5);
+            send(id);
+
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            receive(in, os);
+            if(!ok()) throw new IOException(receive());
+            return os.toByteArray();
         }
 
         /**
