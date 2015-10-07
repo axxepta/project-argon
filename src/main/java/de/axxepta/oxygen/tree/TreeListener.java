@@ -112,40 +112,34 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         if ((this.path.getPathCount() > 1) && (this.node.getAllowsChildren()) && this.newExpandEvent) {
 
-            if (!((this.path.getPathCount()==2) && (this.path.getPathComponent(1).toString().equals("Databases")))){
+            ArrayList<String> newNodes;
+            ArrayList<String> newTypes = new ArrayList<>();
+            ArrayList<String> newValues = new ArrayList<>();
+            BaseXSource queryType;
+            StringBuilder db_path = new StringBuilder("");
 
-                ArrayList<String> newNodes;
-                ArrayList<String> newTypes = new ArrayList<>();
-                ArrayList<String> newValues = new ArrayList<>();
-                BaseXSource queryType;
-                String db_path;
+            if (this.path.getPathComponent(1).toString().equals("Databases")){
+                queryType = BaseXSource.DATABASE;
+            } else if (this.path.getPathComponent(1).toString().equals("Query Folder")) {
+                queryType = BaseXSource.RESTXQ;
+            } else {
+                queryType = BaseXSource.REPO;
+            }
 
-                if (this.path.getPathComponent(1).toString().equals("Databases")){
-                    queryType = BaseXSource.DATABASE;
-                    db_path = "";
-                } else if (this.path.getPathComponent(1).toString().equals("Query Folder")) {
-                    queryType = BaseXSource.RESTXQ;
-                    db_path = "/";
-                } else {
-                    queryType = BaseXSource.REPO;
-                    db_path = "/";
-                }
+            for (int i = 2; i < this.path.getPathCount(); i++) {
+                db_path.append(this.path.getPathComponent(i).toString());
+                db_path.append('/');
+            }
+            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
+            newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
+            if (newNodes.size() > 0) {
+                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
+                newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
+            }
 
-                for (int i = 2; i < this.path.getPathCount(); i++) {
-                    db_path = db_path + this.path.getPathComponent(i).toString() + '/';
-                }
-                //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
-                newNodes = (new BaseXRequest("list", queryType, db_path)).getResult();
-                if (newNodes.size() > 0) {
-                    newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
-                    newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
-                }
-
-                if (updateExpandedNode(this.node, newValues, newTypes)) {
-                    this.newExpandEvent = false;
-                    this._Tree.expandPath(this.path);
-                }
-
+            if (updateExpandedNode(this.node, newValues, newTypes)) {
+                this.newExpandEvent = false;
+                this._Tree.expandPath(this.path);
             }
 
         }
@@ -266,13 +260,27 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
         }
 
+        // ToDo: if delete is called from someplace else than tree context menu, adjust path handling!
         if (type.equals("DELETE_FILE")) {
-            // this is necessary because for some reason the parent node is first removed from tree???
+            // this is necessary because for some (inexplicable?) reason the parent node is first removed from tree???
             String parent = this.path.getParentPath().getLastPathComponent().toString();
+            int depth = this.path.getPathCount();
             TreePath grannyPath = this.path.getParentPath().getParentPath();
             this._Tree.collapsePath(this.path.getParentPath());
             this._Tree.expandPath(this.path.getParentPath());
             this._Tree.collapsePath(grannyPath);
+            if ((depth == 3) && (!this.path.getPathComponent(1).equals("Databases"))) {
+                switch (parent) {
+                    case "Query Folder": DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode("Query Folder");
+                        queryFolder.setAllowsChildren(true);
+                        this._treeModel.insertNodeInto(queryFolder, (DefaultMutableTreeNode)this._treeModel.getRoot(), 1);
+                        break;
+                    case "Repo Folder": DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode("Repo Folder");
+                        repoFolder.setAllowsChildren(true);
+                        this._treeModel.insertNodeInto(repoFolder, (DefaultMutableTreeNode)this._treeModel.getRoot(), 2);
+                        break;
+                }
+            }
             this._Tree.expandPath(grannyPath);
             this._Tree.expandPath(TreeListener.pathByAddingChildAsStr(grannyPath, parent));
         }

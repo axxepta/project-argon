@@ -6,6 +6,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import de.axxepta.oxygen.api.BaseXSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
@@ -68,6 +69,34 @@ public class BasexTree extends Tree {
 			}
 		}
 		return db_path;
+	}
+
+	public static BaseXSource sourceFromTreePath(TreePath path) {
+		if (path.getPathCount() > 1) {
+			String sourceStr = path.getPathComponent(1).toString();
+			// ToDo: use extra class for constant strings
+			switch (sourceStr) {
+				case "Databases": return BaseXSource.DATABASE;
+				case "Query Folder": return BaseXSource.RESTXQ;
+				case "Repo Folder": return BaseXSource.REPO;
+				default: return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public static String resourceFromTreePath(TreePath path) {
+		StringBuilder resource = new StringBuilder("");
+		if (path.getPathCount() > 1) {
+			for (int i = 2; i < path.getPathCount(); i++) {
+				if (i>2) {
+					resource.append('/');
+				}
+				resource.append(path.getPathComponent(i).toString());
+			}
+		}
+		return resource.toString();
 	}
 
 }

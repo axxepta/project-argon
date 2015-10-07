@@ -124,18 +124,40 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     };
                     contextMenu.add(checkOut);
+
                     Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
                     contextMenu.add(checkIn);
+
                     contextMenu.addSeparator();
+
                     Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/Remove16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tListener.getPath();
-                            String db = BasexTree.dbStringFromTreePath(path);
-                            String db_path = BasexTree.pathStringFromTreePath(path);
-                            if (!db.equals("")) {
+
+                            //String db = BasexTree.dbStringFromTreePath(path);
+                            //String db_path = BasexTree.pathStringFromTreePath(path);
+
+                            BaseXSource source = BasexTree.sourceFromTreePath(path);
+                            String db_path = BasexTree.resourceFromTreePath(path);
+
+                            if ((source != null) && (!db_path.equals(""))) {
+                                // don't try to delete databases!
+                                if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
+                                    BaseXRequest killer = new BaseXRequest("delete", source, db_path);
+                                    if (killer.isCheck()) {
+                                        TopicHolder.deleteFile.postMessage(db_path);
+                                    } else {
+                                        JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Error", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "You cannot delete databases!", "BaseX Error", JOptionPane.PLAIN_MESSAGE);
+                                }
+                            }
+
+/*                            if (!db.equals("")) {
                                 if (!db_path.equals("")) {
                                     try {
                                         ListDBEntries fileDummy = new ListDBEntries("delete", db, db_path);
@@ -144,10 +166,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                     }
                                     TopicHolder.deleteFile.postMessage(db + '/' + db_path);
                                 }
-                            }
+                            }*/
+
                         }
                     };
                     contextMenu.add(delete);
+
                     Action add = new AbstractAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
 /*                            TreePath path = tListener.getPath();
@@ -162,17 +186,21 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     };
                     contextMenu.add(add);
+
                     Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
                     contextMenu.add(refresh);
+
                     contextMenu.addSeparator();
+
                     Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
                     contextMenu.add(searchInPath);
+
                     Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }

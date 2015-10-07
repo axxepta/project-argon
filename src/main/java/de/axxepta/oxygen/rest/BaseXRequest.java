@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class BaseXRequest {
     private ArrayList<String> result;
     private String answer;
+    private boolean check;
 
     public BaseXRequest(final String request, final BaseXSource source, final String path) {
         Connection connection = (new BaseXConnectionWrapper()).getConnection();
@@ -31,17 +32,21 @@ public class BaseXRequest {
                             String type = resources[i].type.toString();
                             result.add(type);
                         }
+                        check = true;
                     } catch (IOException er) {
                         result = new ArrayList<String>();
                         er.printStackTrace();
+                        check = false;
                     }
                     answer = "";
                     break;
                 case "delete":
                     try {
                         connection.delete(source, path);
+                        check = true;
                     } catch (IOException er) {
                         er.printStackTrace();
+                        check = false;
                     }
                     result = new ArrayList<String>();
                     answer = "";
@@ -49,8 +54,10 @@ public class BaseXRequest {
                 case "parse":
                     try {
                         connection.parse(source, path);
+                        check = true;
                     } catch (IOException er) {
                         er.printStackTrace();
+                        check = false;
                     }
                     result = new ArrayList<String>();
                     answer = "";
@@ -58,14 +65,17 @@ public class BaseXRequest {
                 case "unlock":
                     try {
                         connection.delete(source, path);
+                        check = true;
                     } catch (IOException er) {
                         er.printStackTrace();
+                        check = false;
                     }
                     result = new ArrayList<String>();
                     answer = "";
                     break;
                 default: result = new ArrayList<String>();
                     answer = "";
+                    check = false;
             }
             try {
                 connection.close();
@@ -84,5 +94,9 @@ public class BaseXRequest {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public boolean isCheck() {
+        return check;
     }
 }
