@@ -27,7 +27,7 @@ public final class ConnectionUtils {
      * @return string
      * @throws IOException I/O exception
      */
-    static String getQuery(final String path) throws IOException {
+    public static String getQuery(final String path) throws IOException {
         final String resource = "/api/" + path + ".xq";
         final InputStream is = ConnectionUtils.class.getResourceAsStream(resource);
         if(is == null) throw new IOException("Resource not found: " + resource);

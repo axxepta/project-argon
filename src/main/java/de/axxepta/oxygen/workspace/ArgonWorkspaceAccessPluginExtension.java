@@ -80,7 +80,14 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     queryFolder.setAllowsChildren(true);
                     root.add(repoFolder);
 
-                    ArrayList<String> databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
+                    ArrayList<String> databaseList;
+                    try {
+                        databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
+                    } catch (IOException er) {
+                        JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
+                                , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+                        databaseList = new ArrayList<>();
+                    }
                     for (int i=0; i<(databaseList.size()/2); i++) {
                         DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
                         dbNode.setAllowsChildren(true);
@@ -89,7 +96,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     // Create a new tree control
                     // explicit tree model necessary to use allowsChildren for definition of leafs
-                    DefaultTreeModel treeModel = new DefaultTreeModel(root);
+                    final DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
                     final BasexTree tree = new BasexTree(treeModel);
                     tree.setEditable(true);
@@ -136,38 +143,21 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/Remove16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tListener.getPath();
-
-                            //String db = BasexTree.dbStringFromTreePath(path);
-                            //String db_path = BasexTree.pathStringFromTreePath(path);
-
                             BaseXSource source = BasexTree.sourceFromTreePath(path);
                             String db_path = BasexTree.resourceFromTreePath(path);
-
                             if ((source != null) && (!db_path.equals(""))) {
                                 // don't try to delete databases!
                                 if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
-                                    BaseXRequest killer = new BaseXRequest("delete", source, db_path);
-                                    if (killer.isCheck()) {
+                                    try {
+                                        new BaseXRequest("delete", source, db_path);
                                         TopicHolder.deleteFile.postMessage(db_path);
-                                    } else {
-                                        JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Error", JOptionPane.PLAIN_MESSAGE);
+                                    } catch (IOException er) {
+                                        JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 } else {
                                     JOptionPane.showMessageDialog(null, "You cannot delete databases!", "BaseX Error", JOptionPane.PLAIN_MESSAGE);
                                 }
                             }
-
-/*                            if (!db.equals("")) {
-                                if (!db_path.equals("")) {
-                                    try {
-                                        ListDBEntries fileDummy = new ListDBEntries("delete", db, db_path);
-                                    } catch (Exception er) {
-                                        er.printStackTrace();
-                                    }
-                                    TopicHolder.deleteFile.postMessage(db + '/' + db_path);
-                                }
-                            }*/
-
                         }
                     };
                     contextMenu.add(delete);
@@ -187,7 +177,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(add);
 
-                    Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
+                    final Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -195,8 +185,70 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
+                    final Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
+                            TreePath path = tListener.getPath();
+                            if (path.getPathCount() == 1) {
+                                JOptionPane.showMessageDialog(null, "Please select source to search in (Databases/RestXQ/Repo).",
+                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
+                                return;
+                            }
+                            // ToDo: own class...
+                            if ((path.getPathCount() == 2) && (path.getPathComponent(1).toString().equals("Databases"))) {
+                                JOptionPane.showMessageDialog(null, "Please select specific database to search in.",
+                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
+                                return;
+                            }
+                            if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
+                                String pathStr;
+                                BaseXSource source;
+                                switch (path.getPathComponent(1).toString()) {
+                                    case "Databases":
+                                        if (path.getPathCount() == 2) {
+                                            pathStr = path.getPathComponent(1).toString();
+                                        } else {
+                                            pathStr = "argon:" + BasexTree.resourceFromTreePath(path);
+                                        }
+                                        source = BaseXSource.DATABASE;
+                                        break;
+                                    case "Query Folder":
+                                        if (path.getPathCount() == 2) {
+                                            pathStr = path.getPathComponent(1).toString();
+                                        } else {
+                                            pathStr = "argon_restxq:" + BasexTree.resourceFromTreePath(path);
+                                        }
+                                        source = BaseXSource.RESTXQ;
+                                        pathStr = "argon_restxq:" + BasexTree.resourceFromTreePath(path);
+                                        break;
+                                    default:
+                                        if (path.getPathCount() == 2) {
+                                            pathStr = path.getPathComponent(1).toString();
+                                        } else {
+                                            pathStr = "argon_repo:" + BasexTree.resourceFromTreePath(path);
+                                        }
+                                        source = BaseXSource.REPO;
+
+                                }
+                                String resource = JOptionPane.showInputDialog(null, "Find resource in path\n" +
+                                        pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
+                                if ((resource != null) && (!resource.equals(""))) {
+                                    // ToDo: add filter in query or here
+                                    String query = BasexTree.resourceFromTreePath(path);
+                                    String allResources;
+                                    try {
+                                        BaseXRequest search = new BaseXRequest("look", source, query);
+                                        allResources = search.getAnswer();
+
+                                    } catch (IOException er) {
+                                        JOptionPane.showMessageDialog(null, "Failed to search for BaseX resources.\n Check if server ist still running.",
+                                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                                        allResources = "";
+                                    }
+                                    // ToDo: expand branches
+                                    JOptionPane.showMessageDialog(null, allResources,
+                                            "Search in BaseX", JOptionPane.PLAIN_MESSAGE);
+                                }
+                            }
                         }
                     };
                     contextMenu.add(searchInPath);

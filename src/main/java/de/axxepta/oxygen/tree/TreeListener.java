@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -131,7 +132,14 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 db_path.append('/');
             }
             //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
-            newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
+            try {
+                newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
+            } catch (IOException er) {
+                newNodes = new ArrayList<>();
+                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX. Check whether server is still running!",
+                        "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+            }
+
             if (newNodes.size() > 0) {
                 newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
                 newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
