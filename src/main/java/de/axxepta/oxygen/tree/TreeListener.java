@@ -134,9 +134,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
             try {
                 newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
-            } catch (IOException er) {
+            } catch (Exception er) {
                 newNodes = new ArrayList<>();
-                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX. Check whether server is still running!",
+                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX.\n Check whether server is still running!",
                         "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
             }
 

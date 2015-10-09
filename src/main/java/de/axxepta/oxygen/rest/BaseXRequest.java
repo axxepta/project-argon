@@ -18,7 +18,7 @@ public class BaseXRequest {
     private boolean check;
 
     public BaseXRequest(final String request, final BaseXSource source, final String path,
-                        final String... params) throws IOException {
+                        final String... params) throws Exception {
         Connection connection = (new BaseXConnectionWrapper()).getConnection();
         if (connection != null) {
             switch (request) {

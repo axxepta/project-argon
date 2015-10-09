@@ -1,5 +1,7 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.actions.BaseXRunQueryAction;
+import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BaseXRequest;
@@ -83,7 +85,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     ArrayList<String> databaseList;
                     try {
                         databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
-                    } catch (IOException er) {
+                    } catch (Exception er) {
                         JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
                                 , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
                         databaseList = new ArrayList<>();
@@ -151,7 +153,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                     try {
                                         new BaseXRequest("delete", source, db_path);
                                         TopicHolder.deleteFile.postMessage(db_path);
-                                    } catch (IOException er) {
+                                    } catch (Exception er) {
                                         JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 } else {
@@ -239,7 +241,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         BaseXRequest search = new BaseXRequest("look", source, query);
                                         allResources = search.getAnswer();
 
-                                    } catch (IOException er) {
+                                    } catch (Exception er) {
                                         JOptionPane.showMessageDialog(null, "Failed to search for BaseX resources.\n Check if server ist still running.",
                                                 "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                         allResources = "";
@@ -343,58 +345,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             }
         }, PluginWorkspace.MAIN_EDITING_AREA);
 
-        final Action runBaseXQueryAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
-
-                if (editorAccess != null) {
-                    URL editorUrl = editorAccess.getEditorLocation();
-                    boolean isXquery = (editorUrl.toString().endsWith("xqm") ||
-                            editorUrl.toString().endsWith("XQM") ||
-                            editorUrl.toString().endsWith("xquery"));
-                    if (isXquery) {
-                        // get content of current editor window
-                        String editorContent;
-                        try {
-                            InputStream editorStream = editorAccess.createContentInputStream();
-                            Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
-                            editorContent = s.hasNext() ? s.next() : "";
-                            editorStream.close();
-                        } catch (IOException er) {
-                            logger.error(er);
-                            editorContent = "";
-                        }
-                        // get database name of current editor window
-                        int startInd = editorUrl.toString().indexOf(":");
-                        int stopInd = editorUrl.toString().indexOf("/", startInd+2);
-                        //ToDo: catch unexpected error that argon URL is malformed
-                        String db_name = editorUrl.toString().substring(startInd+1, stopInd);
-                        // pass content of editor window to ListDBEntries with queryRun
-                        String queryRes;
-                        try {
-                            ListDBEntries testQuery = new ListDBEntries("queryRun", db_name, editorContent);
-                            queryRes = testQuery.getAnswer();
-                        } catch (Exception er) {
-                            logger.error("query to BaseX failed");
-                            queryRes = "";
-                        }
-                        //+ display result of query in a new info window
-                        //argonOutputArea.setText(queryRes);
-                        //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
-
-                        //+ display result of query in a new editor window
-                        URL newEditor = pluginWorkspaceAccess.createNewEditor("txt",ContentTypes.PLAIN_TEXT_CONTENT_TYPE,queryRes);
-
-                    } else {
-                        pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
-                    }
-
-                } else {
-                    pluginWorkspaceAccess.showInformationMessage("No editor window opened!");
-                }
-            }
-        };
+        // create actions for Toolbars
+        final Action runBaseXQueryAction = new BaseXRunQueryAction(pluginWorkspaceAccess);
+        final Action replyToAuthorComment = new ReplyAuthorCommentAction(pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**
@@ -415,13 +368,18 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         }
                     }
 
+                    // Add toolbar buttons
                     // run query in current editor window
                     ToolbarButton runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
                     runQueryButton.setText("Run BaseX Query");
+                    // run query in current editor window
+                    ToolbarButton replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
+                    replyCommentButton.setText("Reply Author Comment");
 
                     // Add in toolbar
                     comps.add(runQueryButton);
-                    toolbarInfo.setComponents(comps.toArray(new JComponent[0]));
+                    comps.add(replyCommentButton);
+                    toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
 
                     // Set title
                     String initialTitle = toolbarInfo.getTitle();
@@ -433,6 +391,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     title += "BaseX DB";
                     toolbarInfo.setTitle(title);
                 }
+
+                if ("ReviewToolbarID".equals(toolbarInfo.getToolbarID())) {
+                }
+
             }
         });
 
