@@ -59,7 +59,7 @@ public class ReplyAuthorCommentAction extends AbstractAction {
                     // identify position of end of comment attribute in processing instruction
                     int endCommentEnd = docStr.indexOf("comment=", commentStart);
                     endCommentEnd = docStr.indexOf("\"", endCommentEnd+9);
-                    // add response to comment, hiding that you're in working in text mode
+                    // add response to comment, hiding that you're working in text mode
                     editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
                     String reply = JOptionPane.showInputDialog(null, "Reply to comment:", "Review", JOptionPane.PLAIN_MESSAGE);
                     editorAccess.changePage(EditorPageConstants.PAGE_TEXT);

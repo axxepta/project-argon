@@ -73,15 +73,15 @@ public class ListDBEntries {
 
         ArrayList<String> tList = new ArrayList<String>();
 
-/*        //++ using HTTP client
+        //++ using HTTP client
         // build POST request
         TokenBuilder tb;
         tb = buildQuery(queryType, db, db_path);
 
         // send request, receive response
-        //String result = postRequest(tb);*/
+        String result = postRequest(tb);
 
-        //++ using BaseXClient
+/*        //++ using BaseXClient
         // get query
         String qu = queryBuilder(queryType, db_path);
         // execute query
@@ -91,7 +91,7 @@ public class ListDBEntries {
         } catch (Exception er) {
             er.printStackTrace();
             result = "";
-        }
+        }*/
 
 
         if (queryType.equals("queryTest")) {

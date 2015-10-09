@@ -42,6 +42,12 @@ public class BaseXRequest {
                     check = false;
                     connection.delete(source, path);
                     break;
+                case "query":
+                    result = new ArrayList<>();
+                    answer = "";
+                    check = false;
+                    answer = connection.xquery(path);
+                    break;
                 case "parse":
                     result = new ArrayList<>();
                     answer = "";

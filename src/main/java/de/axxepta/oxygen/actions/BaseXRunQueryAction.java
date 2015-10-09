@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.rest.ListDBEntries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -54,13 +56,22 @@ public class BaseXRunQueryAction extends AbstractAction {
                 String db_name = editorUrl.toString().substring(startInd+1, stopInd);
                 // pass content of editor window to ListDBEntries with queryRun
                 String queryRes;
+
                 try {
+                    queryRes = (new BaseXRequest("query", null, editorContent)).getAnswer();
+                } catch (Exception er) {
+                    logger.error("query to BaseX failed");
+                    queryRes = "";
+                }
+
+/*                try {
                     ListDBEntries testQuery = new ListDBEntries("queryRun", db_name, editorContent);
                     queryRes = testQuery.getAnswer();
                 } catch (Exception er) {
                     logger.error("query to BaseX failed");
                     queryRes = "";
-                }
+                }*/
+
                 //+ display result of query in a new info window
                 //argonOutputArea.setText(queryRes);
                 //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
