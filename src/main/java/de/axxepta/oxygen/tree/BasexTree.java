@@ -31,14 +31,6 @@ public class BasexTree extends Tree {
 		//this.setUI(new BasexTreeUI());
 	}
 
-	public static String urlStringFromTreePath(TreePath path) {
-		String db_path = "argon:";
-		for (int i = 2; i < path.getPathCount(); i++) {
-			db_path = db_path + '/' + path.getPathComponent(i).toString();
-		}
-		return db_path;
-	}
-
 	/**
 	returns database name of passed TreePath, empty string, if TreePath is in restxq branch or length <2
 	 */
@@ -69,34 +61,6 @@ public class BasexTree extends Tree {
 			}
 		}
 		return db_path;
-	}
-
-	public static BaseXSource sourceFromTreePath(TreePath path) {
-		if (path.getPathCount() > 1) {
-			String sourceStr = path.getPathComponent(1).toString();
-			// ToDo: use extra class for constant strings
-			switch (sourceStr) {
-				case "Databases": return BaseXSource.DATABASE;
-				case "Query Folder": return BaseXSource.RESTXQ;
-				case "Repo Folder": return BaseXSource.REPO;
-				default: return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	public static String resourceFromTreePath(TreePath path) {
-		StringBuilder resource = new StringBuilder("");
-		if (path.getPathCount() > 1) {
-			for (int i = 2; i < path.getPathCount(); i++) {
-				if (i>2) {
-					resource.append('/');
-				}
-				resource.append(path.getPathComponent(i).toString());
-			}
-		}
-		return resource.toString();
 	}
 
 }

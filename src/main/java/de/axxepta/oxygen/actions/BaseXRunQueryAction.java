@@ -1,7 +1,6 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.rest.ListDBEntries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.editor.ContentTypes;

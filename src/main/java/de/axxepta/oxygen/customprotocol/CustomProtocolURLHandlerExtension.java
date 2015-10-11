@@ -48,14 +48,18 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
         return (new LockHandler() {
 
-/*            @Override
-            public void unlock(URL url) throws LockException {
-                BaseXRequest unlocking = new BaseXRequest("unlock", BaseXSource.DATABASE, pathFromURL(url));
-                if (!unlocking.isCheck())
-                    JOptionPane.showMessageDialog(null, "Unlocking of file failed!", "BaseX Message", JOptionPane.PLAIN_MESSAGE);
-            }*/
+            @Override
+             public void unlock(URL url) throws LockException {
+                try {
+                    new BaseXRequest("unlock", BaseXSource.DATABASE, pathFromURL(url));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Failed to unlock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                }
 
-/*            @Override
+            }
+
+            @Override
             public void updateLock(URL url, int i) throws LockException {
                 Connection connection = (new BaseXConnectionWrapper()).getConnection();
                 if (connection != null) {
@@ -65,9 +69,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                         er.printStackTrace();
                     }
                 }
-            }*/
+            }
 
-            @Override
+/*            @Override
             public void unlock(URL url) throws LockException {
                 ArrayList<String> dbPath = tempFile(url);
                 try {
@@ -86,7 +90,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 } catch (Exception er) {
                     er.printStackTrace();
                 }
-            }
+            }*/
 
         });
     }
@@ -111,7 +115,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
    */
     public boolean isReadOnly(URL url) {
-/*        try {
+        try {
             Connection connection = (new BaseXConnectionWrapper()).getConnection();
             if (connection != null) {
                 return connection.locked(BaseXSource.DATABASE, pathFromURL(url));
@@ -120,15 +124,15 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
             }
         } catch (Exception er) {
             return false;
-        }*/
+        }
 
-        ArrayList<String> dbPath = tempFile(url);
+/*        ArrayList<String> dbPath = tempFile(url);
         try {
             ListDBEntries isOpened = new ListDBEntries("locked", dbPath.get(0), dbPath.get(1));
             return (isOpened.getAnswer().equals("true"));
         } catch (Exception er) {
             return false;
-        }
+        }*/
 
         //return false;
     }

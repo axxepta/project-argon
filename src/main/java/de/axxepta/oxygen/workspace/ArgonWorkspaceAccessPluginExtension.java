@@ -10,6 +10,7 @@ import de.axxepta.oxygen.rest.ListDBEntries;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
+import de.axxepta.oxygen.tree.TreeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -120,7 +121,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // Populate context menu
                     Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
-                            String db_path = BasexTree.urlStringFromTreePath(tListener.getPath());
+                            String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
                                 URL argonURL = null;
                                 try {
@@ -145,14 +146,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/Remove16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tListener.getPath();
-                            BaseXSource source = BasexTree.sourceFromTreePath(path);
-                            String db_path = BasexTree.resourceFromTreePath(path);
+                            BaseXSource source = TreeUtils.sourceFromTreePath(path);
+                            String db_path = TreeUtils.resourceFromTreePath(path);
                             if ((source != null) && (!db_path.equals(""))) {
                                 // don't try to delete databases!
                                 if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
                                     try {
                                         new BaseXRequest("delete", source, db_path);
-                                        TopicHolder.deleteFile.postMessage(db_path);
+                                        treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+                                        //TopicHolder.deleteFile.postMessage(db_path);
                                     } catch (Exception er) {
                                         JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -209,7 +211,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         if (path.getPathCount() == 2) {
                                             pathStr = path.getPathComponent(1).toString();
                                         } else {
-                                            pathStr = "argon:" + BasexTree.resourceFromTreePath(path);
+                                            pathStr = "argon:" + TreeUtils.resourceFromTreePath(path);
                                         }
                                         source = BaseXSource.DATABASE;
                                         break;
@@ -217,16 +219,16 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         if (path.getPathCount() == 2) {
                                             pathStr = path.getPathComponent(1).toString();
                                         } else {
-                                            pathStr = "argon_restxq:" + BasexTree.resourceFromTreePath(path);
+                                            pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
                                         }
                                         source = BaseXSource.RESTXQ;
-                                        pathStr = "argon_restxq:" + BasexTree.resourceFromTreePath(path);
+                                        pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
                                         break;
                                     default:
                                         if (path.getPathCount() == 2) {
                                             pathStr = path.getPathComponent(1).toString();
                                         } else {
-                                            pathStr = "argon_repo:" + BasexTree.resourceFromTreePath(path);
+                                            pathStr = "argon_repo:" + TreeUtils.resourceFromTreePath(path);
                                         }
                                         source = BaseXSource.REPO;
 
@@ -235,7 +237,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
                                 if ((resource != null) && (!resource.equals(""))) {
                                     // ToDo: add filter in query or here
-                                    String query = BasexTree.resourceFromTreePath(path);
+                                    String query = TreeUtils.resourceFromTreePath(path);
                                     String allResources;
                                     try {
                                         BaseXRequest search = new BaseXRequest("look", source, query);
