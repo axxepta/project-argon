@@ -4,8 +4,8 @@
 package de.axxepta.oxygen.customprotocol;
 
 
-import de.axxepta.oxygen.api.BaseXClient;
-import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,10 +25,10 @@ import java.text.MessageFormat;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    private PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
+    //private PluginWorkspace pluginWorkspace = ro.sync.exml.workspace.api.PluginWorkspaceProvider.getPluginWorkspace();
 
     private final URL url;
-
+    private BaseXSource source;
 
     /**
      * constructor
@@ -38,8 +38,28 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.url = url;
     }
 
+    public BaseXByteArrayOutputStream(BaseXSource source, URL url) {
+        super();
+        this.url = url;
+        this.source = source;
+    }
+
     @Override
     public void close() throws IOException {
+        super.close();
+        byte[] savedBytes = toByteArray();
+        try {
+            Connection connection = (new BaseXConnectionWrapper()).getConnection();
+            connection.put(this.source,
+                    CustomProtocolURLHandlerExtension.pathFromURL(this.url), savedBytes);
+            TopicHolder.saveFile.postMessage(this.url.getProtocol() + ":" + this.url.getPath());
+            connection.close();
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
+    }
+
+/*    public void close() throws IOException {
         super.close();
 
         byte[] savedBytes = toByteArray();
@@ -87,5 +107,6 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         } finally {
             session.close();
         }
-    }
+    }*/
+
 }

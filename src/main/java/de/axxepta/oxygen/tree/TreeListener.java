@@ -172,10 +172,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");
+        // open file
         String db_path = TreeUtils.urlStringFromTreePath(this.path);
         logger.info("DbPath: " + db_path);
         if (!this.node.getAllowsChildren()) {
-            // open file
             URL argonURL = null;
             try {
                 argonURL = new URL(db_path);
@@ -241,23 +241,29 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         logger.info("Tree needs to update: " + message);
 
         if (type.equals("SAVE_FILE")) {
-            String[] path = message.split("/");
+            String[] protocol = message.split(":");
+            String[] path = protocol[1].substring(1).split("/");
             currPath = new TreePath(this._treeModel.getRoot());
             // ToDo: define string constants static somewhere
-            currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Databases");
-            currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[0]);
+            switch (protocol[0]) {
+                case "argonrepo": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
+                    break;
+                case "argonquery": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
+                    break;
+                default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Databases");
+            }
             currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
             boolean expanded = false;
             Boolean isFile;
-            for (int i = 0; i < path.length - 1; i++) {
+            for (int i = 0; i < path.length; i++) {
                 if (this._Tree.isExpanded(currPath)) expanded = true;
-                if (expanded || (i == path.length - 2)) { // update tree now only if file is in visible path
-                    if (!TreeUtils.isNodeAsStrChild(currNode, path[i + 1])) {
-                        isFile = (i + 2 == path.length);
-                        TreeUtils.insertStrAsNodeLexi(this._treeModel, path[i + 1], currNode, isFile);
+                if (expanded || (i == path.length - 1)) { // update tree now only if file is in visible path
+                    if (!TreeUtils.isNodeAsStrChild(currNode, path[i])) {
+                        isFile = (i + 1 == path.length);
+                        TreeUtils.insertStrAsNodeLexi(this._treeModel, path[i], currNode, isFile);
                         this._treeModel.reload(currNode);
                     }
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[i + 1]);
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[i]);
                     currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
                 } else {
                     break;

@@ -27,17 +27,27 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * The custom protocol name.
    */
     private static final String ARGON = "argon";
+    private static final String ARGON_XQ = "argonquery";
+    private static final String ARGON_REPO = "argonrepo";
 
   /**
    * Gets the handler for the custom protocol
    */
     public URLStreamHandler getURLStreamHandler(String protocol) {
-    // If the protocol is argon return its handler
-        if (protocol.equals(ARGON)) {
+        URLStreamHandler handler;
+        switch (protocol.toLowerCase()) {
+            case ARGON: handler = new ArgonProtocolHandler(BaseXSource.DATABASE);
+                return handler;
+            case ARGON_XQ: handler = new ArgonProtocolHandler(BaseXSource.RESTXQ);
+                return handler;
+            case ARGON_REPO: handler = new ArgonProtocolHandler(BaseXSource.REPO);
+                return handler;
+            default: return null;
+        }
+/*        if (protocol.toLowerCase().equals(ARGON)) {
             URLStreamHandler handler = new CustomProtocolHandler();
             return handler;
-        }
-        return null;
+        }*/
     }
 
   /**
@@ -71,27 +81,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 }
             }
 
-/*            @Override
-            public void unlock(URL url) throws LockException {
-                ArrayList<String> dbPath = tempFile(url);
-                try {
-                    ListDBEntries fileDummy = new ListDBEntries("delete", dbPath.get(0), dbPath.get(1));
-                } catch (Exception er) {
-                    er.printStackTrace();
-                }
-            }
-
-            @Override
-            public void updateLock(URL url, int i) throws LockException {
-                // add url to locked file list
-                ArrayList<String> dbPath = tempFile(url);
-                try {
-                    ListDBEntries fileDummy = new ListDBEntries("lock", dbPath.get(0), dbPath.get(1));
-                } catch (Exception er) {
-                    er.printStackTrace();
-                }
-            }*/
-
         });
     }
 
@@ -100,7 +89,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isLockingSupported(String protocol) {
         //return false;
-        return protocol.equals(ARGON);
+        return (protocol.toLowerCase().equals(ARGON) ||
+                protocol.toLowerCase().equals(ARGON_XQ) ||
+                protocol.toLowerCase().equals(ARGON_REPO));
     }
 
   /**
@@ -108,7 +99,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean canCheckReadOnly(String protocol) {
         //return false;
-        return protocol.equals(ARGON);
+        return (protocol.toLowerCase().equals(ARGON) ||
+                protocol.toLowerCase().equals(ARGON_XQ) ||
+                protocol.toLowerCase().equals(ARGON_REPO));
     }
 
   /**
@@ -125,33 +118,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         } catch (Exception er) {
             return false;
         }
-
-/*        ArrayList<String> dbPath = tempFile(url);
-        try {
-            ListDBEntries isOpened = new ListDBEntries("locked", dbPath.get(0), dbPath.get(1));
-            return (isOpened.getAnswer().equals("true"));
-        } catch (Exception er) {
-            return false;
-        }*/
-
-        //return false;
     }
 
-    /**
-     * returns ArrayList containing db name and path of file (with tilde added at file name beginning) in db
-     */
-    private ArrayList<String> tempFile(URL url) {
-        ArrayList<String> dbFile = new ArrayList<>();
-        String urlString = url.toString();
-        int ind1 = urlString.indexOf(":");
-        int ind2 = urlString.indexOf("/", ind1 + 2);
-        dbFile.add(urlString.substring(ind1 + 2, ind2));
-        ind1 = urlString.lastIndexOf("/");
-        dbFile.add(urlString.substring(ind2+1,ind1+1) + "~" + urlString.substring(ind1+1));
-        return dbFile;
-    }
-
-    private String pathFromURL(URL url) {
+    protected static String pathFromURL(URL url) {
         String urlString = url.toString();
         int ind1 = urlString.indexOf(":");
         return urlString.substring(ind1 + 2);

@@ -80,7 +80,14 @@ public class TreeUtils {
     }
 
     public static String urlStringFromTreePath(TreePath path) {
-        String db_path = "argon:";
+        String db_path;
+        switch (path.getPathComponent(1).toString()) {
+            case "Query Folder": db_path = "argonquery:";
+                    break;
+            case "Repo Folder": db_path = "argonrepo:";
+                    break;
+            default: db_path = "argon:";
+        }
         for (int i = 2; i < path.getPathCount(); i++) {
             db_path = db_path + '/' + path.getPathComponent(i).toString();
         }
