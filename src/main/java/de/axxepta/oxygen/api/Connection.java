@@ -57,6 +57,13 @@ public interface Connection extends Closeable {
 
     /**
      * Parses a query.
+     * @param xquery query text
+     * @throws IOException I/O exception
+     */
+    void parse(final String xquery) throws IOException;
+
+    /**
+     * Parses a query.
      * @param source data source
      * @param path path
      * @throws IOException I/O exception

@@ -76,6 +76,11 @@ public final class RestConnection implements Connection {
     }
 
     @Override
+    public void parse(final String xquery) throws IOException {
+        request(xquery, RUNQUERY, "false");
+    }
+
+    @Override
     public void parse(final BaseXSource source, final String path) throws IOException {
         request(getQuery("parse-" + source), PATH, path);
     }
@@ -121,7 +126,11 @@ public final class RestConnection implements Connection {
             tb.add("<query xmlns='http://basex.org/rest'>\n");
             tb.add("<text>").add(toEntities(body)).add("</text>\n");
             for(int b = 0, bl = bindings.length; b < bl; b += 2) {
-                tb.add("<variable name='").add(bindings[b]).add("' value='");
+                if (bindings[b].equals("runquery")) {
+                    tb.add("<option name='").add(bindings[b]).add("' value='");
+                } else {
+                    tb.add("<variable name='").add(bindings[b]).add("' value='");
+                }
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");

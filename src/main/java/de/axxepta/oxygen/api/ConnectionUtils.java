@@ -17,6 +17,10 @@ public final class ConnectionUtils {
     static final String SOURCE = "SOURCE";
     /** Resource variable. */
     static final String RESOURCE = "RESOURCE";
+    /** Query string variable */
+    static final String XQUERY = "XQUERY";
+    /** Option string variable for eval yes/no */
+    static final String RUNQUERY = "runquery";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

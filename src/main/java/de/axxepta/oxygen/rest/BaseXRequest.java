@@ -1,9 +1,6 @@
 package de.axxepta.oxygen.rest;
 
-import de.axxepta.oxygen.api.BaseXResource;
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.ConnectionUtils;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 
 import java.io.IOException;
@@ -52,7 +49,15 @@ public class BaseXRequest {
                     result = new ArrayList<>();
                     answer = "";
                     check = false;
-                    connection.parse(source, path);
+                    try {
+                        connection.parse(path);
+                    } catch(BaseXQueryException ex) {
+                        result.add(Integer.toString(ex.getLine()));
+                        result.add(Integer.toString(ex.getColumn()));
+                        result.add(ex.getInfo());
+                        break;
+                    }
+                    check = true;
                     break;
                 case "unlock":
                     result = new ArrayList<>();

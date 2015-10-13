@@ -82,6 +82,17 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public void parse(final String xquery) throws IOException {
+        final Query query = client.query(getQuery("parse"));
+        query.bind(XQUERY, xquery, "");
+        try {
+            query.execute();
+        } catch(final IOException ex) {
+            throw BaseXQueryException.get(ex);
+        }
+    }
+
+    @Override
     public void parse(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("parse-" + source));
         query.bind(PATH, path, "");

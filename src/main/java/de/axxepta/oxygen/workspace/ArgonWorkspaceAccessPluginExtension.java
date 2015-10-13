@@ -293,9 +293,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             public void editorOpened(URL editorLocation) {
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 //TODO: define string static somewhere
-                boolean isArgon = editorLocation.toString().startsWith("argon");
-                boolean isXquery = (editorLocation.toString().endsWith("xqm") ||
-                        editorLocation.toString().endsWith("XQM") ||
+                boolean isArgon = (editorLocation.toString().startsWith("argon"));
+                boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
+                        editorLocation.toString().toLowerCase().endsWith("xq") ||
                         editorLocation.toString().endsWith("xquery"));
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
@@ -321,7 +321,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             // pass content of editor window to ListDBEntries with queryTest
                             ArrayList<String> valProbStr;
                             try {
-                                ListDBEntries testQuery = new ListDBEntries("queryTest", "", editorContent);
+                                //ListDBEntries testQuery = new ListDBEntries("queryTest", "", editorContent);
+                                //valProbStr = testQuery.getResult();
+                                BaseXRequest testQuery = new BaseXRequest("parse",
+                                        BaseXSource.DATABASE, editorContent);
                                 valProbStr = testQuery.getResult();
                             } catch (Exception er) {
                                 logger.error("query to BaseX failed");
@@ -329,6 +332,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                 valProbStr.add("1");
                                 valProbStr.add("1");
                                 valProbStr.add("Fatal BaseX request error: "+er.getMessage());
+                                er.printStackTrace();
                             }
                             // build DocumentPositionedInfo list from query return;
                             List<DocumentPositionedInfo> problemList = new ArrayList<>();
