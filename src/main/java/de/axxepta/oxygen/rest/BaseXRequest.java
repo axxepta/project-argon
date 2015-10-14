@@ -1,13 +1,12 @@
 package de.axxepta.oxygen.rest;
 
 import de.axxepta.oxygen.api.*;
-import de.axxepta.oxygen.workspace.BaseXOptionPage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Markus on 05.10.2015.
+ * Wrapper class for request to BaseX, connection details are "inherited" from the included connection
  */
 public class BaseXRequest {
     private ArrayList<String> result;
@@ -66,19 +65,10 @@ public class BaseXRequest {
                     connection.unlock(source, path);
                     break;
                 case "look":
-                    // ToDo: make connection.request public? use binding instead of compound query
                     result = new ArrayList<>();
+                    answer = "";
                     check = false;
-                    StringBuilder query;
-                    query = new StringBuilder("let $xpath := '" + path + "'\n");
-                    switch (source) {
-                        case DATABASE: query.append(ConnectionUtils.getQuery("search-database")) ;
-                            break;
-                        case RESTXQ: query.append(ConnectionUtils.getQuery("search-restxq"));
-                            break;
-                        default: query.append(ConnectionUtils.getQuery("search-repo"));
-                    }
-                    answer = connection.xquery(query.toString());
+                    result = connection.search(source, path, params[0]);
                     break;
                 default: result = new ArrayList<>();
                     answer = "";

@@ -67,6 +67,13 @@ public final class RestConnection implements Connection {
     }
 
     @Override
+    public ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException {
+        final String result = Token.string(request(getQuery("search-" + source), PATH, path, FILTER, filter));
+        String[] resultArr = result.isEmpty() ? new String[0] : result.split("\r?\n");
+        return new ArrayList(Arrays.asList(resultArr));
+    }
+
+    @Override
     public String xquery(final String query) throws IOException {
         try {
             return Token.string(request(query));

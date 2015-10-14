@@ -72,6 +72,16 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException {
+        final ArrayList<String> list = new ArrayList<>();
+        final Query query = client.query(getQuery("search-" + source));
+        query.bind(PATH, path, "");
+        query.bind(FILTER, filter, "");
+        while(query.more()) list.add(query.next());
+        return list;
+    }
+
+    @Override
     public String xquery(final String query) throws IOException {
         final Query qu = client.query(query);
         try {

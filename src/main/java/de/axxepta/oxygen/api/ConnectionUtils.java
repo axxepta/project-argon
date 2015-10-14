@@ -21,6 +21,8 @@ public final class ConnectionUtils {
     static final String XQUERY = "XQUERY";
     /** Option string variable for eval yes/no */
     static final String RUNQUERY = "runquery";
+    /** Search filter variable */
+    static final String FILTER = "FILTER";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

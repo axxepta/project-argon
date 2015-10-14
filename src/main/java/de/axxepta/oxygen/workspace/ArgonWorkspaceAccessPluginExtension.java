@@ -233,14 +233,14 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         source = BaseXSource.REPO;
 
                                 }
-                                String resource = JOptionPane.showInputDialog(null, "Find resource in path\n" +
+                                String filter = JOptionPane.showInputDialog(null, "Find resource in path\n" +
                                         pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                if ((resource != null) && (!resource.equals(""))) {
+                                if ((filter != null) && (!filter.equals(""))) {
                                     // ToDo: add filter in query or here
-                                    String query = TreeUtils.resourceFromTreePath(path);
+                                    String basePathStr = TreeUtils.resourceFromTreePath(path);
                                     String allResources;
                                     try {
-                                        BaseXRequest search = new BaseXRequest("look", source, query);
+                                        BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
                                         allResources = search.getAnswer();
 
                                     } catch (Exception er) {

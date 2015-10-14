@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.api;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import org.basex.util.*;
 
@@ -46,6 +47,15 @@ public interface Connection extends Closeable {
      * @throws IOException I/O exception
      */
     void delete(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Searches for resource containing a filter string in it's name.
+     * @param source data source
+     * @param path path
+     * @param filter search filter
+     * @throws IOException I/O exception
+     */
+    ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException;
 
     /**
      * Evaluates a query.
