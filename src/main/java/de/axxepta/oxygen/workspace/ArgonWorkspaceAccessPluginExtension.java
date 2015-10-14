@@ -5,21 +5,17 @@ import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.rest.BasexWrapper;
-import de.axxepta.oxygen.rest.ListDBEntries;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xml.sax.SAXException;
 import ro.sync.document.DocumentPositionedInfo;
-import ro.sync.exml.editor.ContentTypes;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.Workspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -29,11 +25,12 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -41,7 +38,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Created by daltiparmak on 10.04.15.
+ * Main plugin class, defining tree, context menu, and toolbar
  */
 public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPluginExtension {
 
@@ -183,6 +180,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     final Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
                         public void actionPerformed(ActionEvent e) {
+                            //treeModel.reload();
+                            // removes parent node from tree???
+                            // build structure copy of expanded tree, reload from root
                         }
                     };
                     contextMenu.add(refresh);
@@ -308,9 +308,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             String editorContent;
                             try {
                                 InputStream editorStream = editorAccess.createContentInputStream();
-/*                            StringWriter writer = new StringWriter();
-                            org.apache.commons.io.IOUtils.copy(editorStream, writer, "UTF-8");
-                            editorContent = writer.toString();*/
                                 Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
                                 editorContent = s.hasNext() ? s.next() : "";
                                 editorStream.close();
@@ -352,8 +349,11 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         }, PluginWorkspace.MAIN_EDITING_AREA);
 
         // create actions for Toolbars
-        final Action runBaseXQueryAction = new BaseXRunQueryAction(pluginWorkspaceAccess);
-        final Action replyToAuthorComment = new ReplyAuthorCommentAction(pluginWorkspaceAccess);
+        final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
+                BasexTreeCellRenderer.createImageIcon("/RunQuery.png"), pluginWorkspaceAccess);
+        final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
+                BasexTreeCellRenderer.createImageIcon("/ReplyComment.png"), pluginWorkspaceAccess);
+        //final Action replyToAuthorComment = new ReplyAuthorCommentAction(pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**
@@ -377,10 +377,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // Add toolbar buttons
                     // run query in current editor window
                     ToolbarButton runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
-                    runQueryButton.setText("Run BaseX Query");
+                    runQueryButton.setText("");
                     // run query in current editor window
                     ToolbarButton replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
-                    replyCommentButton.setText("Reply Author Comment");
+                    replyCommentButton.setText("");
 
                     // Add in toolbar
                     comps.add(runQueryButton);
@@ -398,7 +398,21 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     toolbarInfo.setTitle(title);
                 }
 
-                if ("ReviewToolbarID".equals(toolbarInfo.getToolbarID())) {
+                if ("ReviewID".equals(toolbarInfo.getToolbarID())) {
+                    List<JComponent> comps = new ArrayList<>();
+                    JComponent[] initialComponents = toolbarInfo.getComponents();
+                    boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
+                    if (hasInitialComponents) {
+                        // Add initial toolbar components
+                        for (JComponent toolbarItem : initialComponents) {
+                            comps.add(toolbarItem);
+                        }
+                    }
+                    // run query in current editor window
+                    ToolbarButton replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
+                    replyCommentButton.setText("");
+                    comps.add(replyCommentButton);
+                    toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
                 }
 
             }

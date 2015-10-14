@@ -8,7 +8,7 @@ import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import java.io.IOException;
 
 /**
- * Created by Markus on 05.10.2015.
+ * Wrapper class for connection with BaseX server, loading authentication data from Options
  */
 public final class BaseXConnectionWrapper {
     String user;
@@ -25,9 +25,9 @@ public final class BaseXConnectionWrapper {
         this.port = Integer.parseInt(BaseXOptionPage.KEY_BASEX_HTTP_PORT);
         this.tcpport = Integer.parseInt(BaseXOptionPage.KEY_BASEX_TCP_PORT);
 
-        String ConnType = "CLIENT";
+        String ConnType = "REST"; // "CLIENT" / "REST"
 
-        if (ConnType.equals("CLIENT")) {
+        if (ConnType.equals("REST")) {
             connection = new RestConnection(host, port, user, pass);
         } else {
             try {

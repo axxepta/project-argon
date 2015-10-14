@@ -21,13 +21,18 @@ import javax.swing.text.Document;
 import java.awt.event.ActionEvent;
 
 /**
- * Created by Markus on 08.10.2015.
+ * Action class for replying to comments in author mode
  */
 public class ReplyAuthorCommentAction extends AbstractAction {
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
 
     public ReplyAuthorCommentAction(final StandalonePluginWorkspace pluginWorkspaceAccess){
+        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+    }
+
+    public ReplyAuthorCommentAction(String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
+        super(name, icon);
         this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
@@ -64,11 +69,10 @@ public class ReplyAuthorCommentAction extends AbstractAction {
                     String reply = JOptionPane.showInputDialog(null, "Reply to comment:", "Review", JOptionPane.PLAIN_MESSAGE);
                     editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
                     if (reply != null) {
-                        // ToDo: add message?
                         try {
-                            doc.insertString(endCommentEnd, " --------------------------- "
+                            doc.insertString(endCommentEnd, " ----------------------------- "
                                     +"Response [" + System.getProperty("user.name") + "]: " + reply, null);
-                        } catch (BadLocationException ex) {/*ToDo? should be in safe range*/}
+                        } catch (BadLocationException ex) {/*ToDo? should be in safe range due to previous ifs*/}
                     }
                 }
             }

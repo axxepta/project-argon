@@ -4,12 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -20,16 +18,12 @@ import javax.swing.tree.*;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
-import de.axxepta.oxygen.core.SubjectInterface;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.BasexTree;
 //import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import de.axxepta.oxygen.rest.BasexWrapper;
-import de.axxepta.oxygen.rest.ListDBEntries;
 
 /**
  * Created by daltiparmak on 14.04.15.

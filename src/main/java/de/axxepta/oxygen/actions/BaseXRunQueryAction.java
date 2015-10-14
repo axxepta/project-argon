@@ -27,6 +27,11 @@ public class BaseXRunQueryAction extends AbstractAction {
         this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
+    public BaseXRunQueryAction (String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
+        super(name, icon);
+        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+    }
+
     @Override
     public void actionPerformed(ActionEvent arg0) {
         WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
