@@ -4,21 +4,16 @@ package de.axxepta.oxygen.workspace;
  * Created by daltiparmak on 02.04.15.
  */
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Plugin option page extension Custom Workspace Access Plugin Extension.
@@ -32,20 +27,21 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_SAVE_TEMPORARY_FILES_LOCATION = "save.tmp.location";
     public static final String KEY_DEFAULT_CHECKOUT_LOCATION = "default.checkout.location";
 
-/*    public static final String KEY_BASEX_HOST = "192.168.1.3";
-    public static final String KEY_BASEX_HTTP_PORT = "8984";
-    public static final String KEY_BASEX_TCP_PORT = "1984";
-    public static final String KEY_BASEX_USERNAME = "admin2";
-    public static final String KEY_BASEX_PASSWORD = "admin2";
-    public static final String KEY_BASEX_LOGFILE = "/tmp/argon.log";*/
+    public static final String KEY_BASEX_HOST = "KEY_BASEX_HOST";
+    public static final String KEY_BASEX_HTTP_PORT = "KEY_BASEX_HTTP_PORT";
+    public static final String KEY_BASEX_TCP_PORT = "KEY_BASEX_TCP_PORT";
+    public static final String KEY_BASEX_USERNAME = "KEY_BASEX_USERNAME";
+    public static final String KEY_BASEX_PASSWORD = "KEY_BASEX_PASSWORD";
+    public static final String KEY_BASEX_CONNECTION = "KEY_BASEX_CONNECTION";
+    public static final String KEY_BASEX_LOGFILE = "KEY_BASEX_LOGFILE";
 
-    public static final String KEY_BASEX_HOST = "localhost";
-    public static final String KEY_BASEX_HTTP_PORT = "8984";
-    public static final String KEY_BASEX_TCP_PORT = "1984";
-    public static final String KEY_BASEX_USERNAME = "admin";
-    public static final String KEY_BASEX_PASSWORD = "admin";
-    public static final String KEY_BASEX_LOGFILE = "/tmp/argon.log";
-
+    private static final String DEF_BASEX_HOST = "localhost";
+    private static final String DEF_BASEX_HTTP_PORT = "8984";
+    private static final String DEF_BASEX_TCP_PORT = "1984";
+    private static final String DEF_BASEX_USERNAME = "admin";
+    private static final String DEF_BASEX_PASSWORD = "admin";
+    private static final String DEF_BASEX_CONNECTION = "HTTP";
+    private static final String DEF_BASEX_LOGFILE = "/tmp/argon.log";
 
     /**
      * BaseX JTextFields
@@ -55,6 +51,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private JTextField baseXTcpPortTextField;
     private JTextField baseXUsernameTextField;
     private JTextField baseXPasswordTextField;
+    private JComboBox baseXConnectionTypeComboBox;
     private JTextField baseXLogfileTextField;
 
     /**
@@ -81,6 +78,9 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_PASSWORD,
                 !"".equals(baseXPasswordTextField.getText()) ? baseXPasswordTextField.getText() : null);
 
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION,
+                baseXConnectionTypeComboBox.getSelectedItem().toString());
+
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
                 !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);
     }
@@ -91,12 +91,13 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     @Override
     public void restoreDefaults() {
         // Reset the text fields values. Empty string is used to map the <null> default values of the options.
-        baseXHostTextField.setText("localhost");
-        baseXHttpPortTextField.setText("8984");
-        baseXTcpPortTextField.setText("1984");
-        baseXUsernameTextField.setText("admin");
-        baseXPasswordTextField.setText("admin");
-        baseXLogfileTextField.setText("logs/argon.log");
+        baseXHostTextField.setText(DEF_BASEX_HOST);
+        baseXHttpPortTextField.setText(DEF_BASEX_HTTP_PORT);
+        baseXTcpPortTextField.setText(DEF_BASEX_TCP_PORT);
+        baseXUsernameTextField.setText(DEF_BASEX_USERNAME);
+        baseXPasswordTextField.setText(DEF_BASEX_PASSWORD);
+        baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);
+        baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);
     }
 
     /**
@@ -116,8 +117,6 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         JPanel panel = new JPanel(new GridBagLayout());
         JLabel saveTmpLocationLbl = new JLabel("This Panel will be used to set BaseX DB configurations");
 
-        // Create a new tree control
-        //tree = new JTree();
 
         c.gridx = 0;
         c.gridy = 0;
@@ -208,6 +207,22 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 
 
         /**
+         * BaseX Connection type
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXConnectionTypeRadioFrameLbl = new JLabel("Connection type:");
+        panel.add(baseXConnectionTypeRadioFrameLbl, c);
+
+        String[] connectionTypes = { "HTTP" , "TCP" };
+        baseXConnectionTypeComboBox = new JComboBox(connectionTypes);
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXConnectionTypeComboBox, c);
+
+        /**
          * BaseX Logfile
          */
         c.gridx = 0;
@@ -267,6 +282,9 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         String baseXPassword = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_PASSWORD,
                 null);
+        String baseXConnection = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_CONNECTION,
+                null);
         String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_LOGFILE,
                 null);
@@ -278,9 +296,19 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         baseXTcpPortTextField.setText(baseXTcpPort != null ? baseXTcpPort : "");
         baseXUsernameTextField.setText(baseXUsername != null ? baseXUsername : "");
         baseXPasswordTextField.setText(baseXPassword != null ? baseXPassword : "");
+        if (baseXConnection.equals(connectionTypes[1])) {
+            baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[1]);
+        } else {
+            baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[0]);
+        }
         baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");
 
         return panel;
+    }
+
+    public static String getOption(String key) {
+        PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+        return pluginWorkspace.getOptionsStorage().getOption(key, null);
     }
 }
 

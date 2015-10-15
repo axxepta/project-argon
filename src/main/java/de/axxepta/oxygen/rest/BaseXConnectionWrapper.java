@@ -4,31 +4,38 @@ import de.axxepta.oxygen.api.ClientConnection;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Wrapper class for connection with BaseX server, loading authentication data from Options
  */
 public final class BaseXConnectionWrapper {
-    String user;
-    String pass;
-    String host;
-    int port;
-    int tcpport;
+
     Connection connection;
 
     public BaseXConnectionWrapper(){
-        this.host = BaseXOptionPage.KEY_BASEX_HOST;
-        this.user = BaseXOptionPage.KEY_BASEX_USERNAME;
-        this.pass = BaseXOptionPage.KEY_BASEX_PASSWORD;
-        this.port = Integer.parseInt(BaseXOptionPage.KEY_BASEX_HTTP_PORT);
-        this.tcpport = Integer.parseInt(BaseXOptionPage.KEY_BASEX_TCP_PORT);
-
-        String ConnType = "REST"; // "CLIENT" / "REST"
+        String host = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HOST);
+        String user = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_USERNAME);
+        String pass = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_PASSWORD);
+        int port = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
+        int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT));
+        String ConnType;
+        if (BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_CONNECTION).equals("HTTP")) {
+            ConnType = "REST";
+        } else {
+            ConnType = "CLIENT";
+        }
 
         if (ConnType.equals("REST")) {
-            connection = new RestConnection(host, port, user, pass);
+            try {
+                connection = new RestConnection(host, port, user, pass);
+            } catch (MalformedURLException er) {
+                connection = null;
+            }
         } else {
             try {
                 connection = new ClientConnection(host, tcpport, user, pass);

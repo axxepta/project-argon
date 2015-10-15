@@ -5,10 +5,12 @@ import static org.basex.util.http.HttpMethod.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.basex.io.*;
 import org.basex.util.*;
+import org.basex.util.Base64;
 import org.basex.util.http.*;
 
 /**
@@ -19,6 +21,8 @@ import org.basex.util.http.*;
 public final class RestConnection implements Connection {
     /** URI. */
     private final IOUrl url;
+    private URL j_url;
+    private final String basicAuth;
 
     /**
      * Constructor.
@@ -28,8 +32,11 @@ public final class RestConnection implements Connection {
      * @param password password string
      */
     public RestConnection(final String server, final int port, final String user,
-                          final String password) {
+                          final String password) throws MalformedURLException {
         url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
+        j_url = new URL("http://" + server + ":" + port + "/rest");
+        basicAuth = "Basic " + new String(Base64.encode(user + ':' + password));
+
     }
 
     @Override
@@ -85,7 +92,6 @@ public final class RestConnection implements Connection {
     @Override
     public void parse(final String xquery) throws IOException {
         request(getQuery("parse"), XQUERY, xquery);
-        //request(xquery, RUNQUERY, "false");
     }
 
     @Override
@@ -123,8 +129,11 @@ public final class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     private byte[] request(final String body, final String... bindings) throws IOException {
-        final HttpURLConnection conn = (HttpURLConnection) url.connection();
+        //final HttpURLConnection conn = (HttpURLConnection) url.connection();
+        sun.net.www.protocol.http.HttpURLConnection conn =
+                new sun.net.www.protocol.http.HttpURLConnection(j_url, null);
         try {
+            conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
             conn.setRequestMethod(POST.name());
             conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
@@ -140,17 +149,8 @@ public final class RestConnection implements Connection {
             tb.add("</query>");
 
             try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tb.toString().getBytes());
-                out.close();
+                out.write(tb.finish());
             }
-/*            byte[] ioStream;
-            if (conn.getResponseCode() >= 400) {
-                ioStream = new IOStream(conn.getErrorStream()).read();
-            } else {
-                ioStream = new IOStream(conn.getInputStream()).read();
-            }
-            System.out.println(Token.string(ioStream));
-            return ioStream;*/
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());

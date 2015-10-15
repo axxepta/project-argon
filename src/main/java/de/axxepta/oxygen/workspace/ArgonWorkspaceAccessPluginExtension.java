@@ -296,6 +296,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 boolean isArgon = (editorLocation.toString().startsWith("argon"));
                 boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
                         editorLocation.toString().toLowerCase().endsWith("xq") ||
+                        editorLocation.toString().toLowerCase().endsWith("xql") ||
                         editorLocation.toString().endsWith("xquery"));
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
