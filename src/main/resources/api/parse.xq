@@ -1,4 +1,4 @@
 (:~ Path to resource. :)
-declare variable $QUERY as xs:string external;
+declare variable $XQUERY as xs:string external;
 
-return xquery:parse($QUERY, map { 'plan': false() })
+xquery:parse($XQUERY, map { 'plan': false() })

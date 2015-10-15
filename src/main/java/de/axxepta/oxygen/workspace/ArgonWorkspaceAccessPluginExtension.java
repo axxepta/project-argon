@@ -398,7 +398,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     toolbarInfo.setTitle(title);
                 }
 
-                if ("ReviewID".equals(toolbarInfo.getToolbarID())) {
+                if ("toolbar.review".equals(toolbarInfo.getToolbarID())) {
                     List<JComponent> comps = new ArrayList<>();
                     JComponent[] initialComponents = toolbarInfo.getComponents();
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;

@@ -32,6 +32,13 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_SAVE_TEMPORARY_FILES_LOCATION = "save.tmp.location";
     public static final String KEY_DEFAULT_CHECKOUT_LOCATION = "default.checkout.location";
 
+/*    public static final String KEY_BASEX_HOST = "192.168.1.3";
+    public static final String KEY_BASEX_HTTP_PORT = "8984";
+    public static final String KEY_BASEX_TCP_PORT = "1984";
+    public static final String KEY_BASEX_USERNAME = "admin2";
+    public static final String KEY_BASEX_PASSWORD = "admin2";
+    public static final String KEY_BASEX_LOGFILE = "/tmp/argon.log";*/
+
     public static final String KEY_BASEX_HOST = "localhost";
     public static final String KEY_BASEX_HTTP_PORT = "8984";
     public static final String KEY_BASEX_TCP_PORT = "1984";

@@ -84,7 +84,8 @@ public final class RestConnection implements Connection {
 
     @Override
     public void parse(final String xquery) throws IOException {
-        request(xquery, RUNQUERY, "false");
+        request(getQuery("parse"), XQUERY, xquery);
+        //request(xquery, RUNQUERY, "false");
     }
 
     @Override
@@ -123,13 +124,14 @@ public final class RestConnection implements Connection {
      */
     private byte[] request(final String body, final String... bindings) throws IOException {
         final HttpURLConnection conn = (HttpURLConnection) url.connection();
+        final TokenBuilder tb = new TokenBuilder();
         try {
             conn.setDoOutput(true);
             conn.setRequestMethod(POST.name());
             conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
 
             // build and send query
-            final TokenBuilder tb = new TokenBuilder();
+
             tb.add("<query xmlns='http://basex.org/rest'>\n");
             tb.add("<text>").add(toEntities(body)).add("</text>\n");
             for(int b = 0, bl = bindings.length; b < bl; b += 2) {
@@ -143,9 +145,18 @@ public final class RestConnection implements Connection {
             tb.add("</query>");
 
             try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tb.finish());
+                out.write(tb.toString().getBytes());
+                out.close();
             }
+/*            byte[] ioStream;
+            if (conn.getResponseCode() >= 400) {
+                ioStream = new IOStream(conn.getErrorStream()).read();
+            } else {
+                ioStream = new IOStream(conn.getInputStream()).read();
+            }
+            System.out.println(Token.string(ioStream));*/
             return new IOStream(conn.getInputStream()).read();
+            //return ioStream;
         } catch(final IOException ex) {
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
             throw BaseXQueryException.get(msg);
