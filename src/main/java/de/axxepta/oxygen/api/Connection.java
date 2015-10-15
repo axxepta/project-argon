@@ -97,13 +97,22 @@ public interface Connection extends Closeable {
     void unlock(final BaseXSource source, final String path) throws IOException;
 
     /**
-     * Checks if the specified resource is locked.
+     * Checks if the specified resource is locked for asking user.
      * @param source data source
      * @param path path
      * @return result of check
      * @throws IOException I/O exception
      */
     boolean locked(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Checks if the specified resource is locked by asking user.
+     * @param source data source
+     * @param path path
+     * @return result of check
+     * @throws IOException I/O exception
+     */
+    boolean lockedByUser(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Returns active users (i.e., users who have currently locked any files).

@@ -116,6 +116,12 @@ public final class RestConnection implements Connection {
     }
 
     @Override
+    public boolean lockedByUser(final BaseXSource source, final String path) throws IOException {
+        final byte[] result = request(getQuery("lockedByUser"), SOURCE, source.toString(), PATH, path);
+        return Token.string(result).equals("true");
+    }
+
+    @Override
     public String[] users() throws IOException {
         final String result = Token.string(request(getQuery("users")));
         return result.isEmpty() ? new String[0] : result.split("\r?\n");

@@ -123,12 +123,21 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         try {
             Connection connection = (new BaseXConnectionWrapper()).getConnection();
             if (connection != null) {
-                return connection.locked(BaseXSource.DATABASE, pathFromURL(url));
+                boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
+                if (isLocked) {
+                    return true;
+                } else {
+                    // just got write access, lock resource for me now
+                    if (!connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url))) {
+                        getLockHandler().updateLock(url, 100);
+                    }
+                    return false;
+                }
             } else {
-                return false;
+                return true;
             }
         } catch (Exception er) {
-            return false;
+            return true;
         }
     }
 

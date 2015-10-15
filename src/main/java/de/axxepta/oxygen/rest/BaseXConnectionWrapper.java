@@ -23,14 +23,14 @@ public final class BaseXConnectionWrapper {
         String pass = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_PASSWORD);
         int port = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
         int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT));
-        String ConnType;
+        String connType;
         if (BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_CONNECTION).equals("HTTP")) {
-            ConnType = "REST";
+            connType = "REST";
         } else {
-            ConnType = "CLIENT";
+            connType = "CLIENT";
         }
 
-        if (ConnType.equals("REST")) {
+        if (connType.equals("REST")) {
             try {
                 connection = new RestConnection(host, port, user, pass);
             } catch (MalformedURLException er) {
