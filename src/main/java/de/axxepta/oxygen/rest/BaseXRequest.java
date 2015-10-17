@@ -65,7 +65,6 @@ public class BaseXRequest {
                     connection.unlock(source, path);
                     break;
                 case "look":
-                    result = new ArrayList<>();
                     answer = "";
                     check = false;
                     result = connection.search(source, path, params[0]);

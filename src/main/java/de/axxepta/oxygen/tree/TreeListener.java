@@ -18,6 +18,7 @@ import javax.swing.tree.*;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 //import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
@@ -238,11 +239,12 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             String[] protocol = message.split(":");
             String[] path = protocol[1].substring(1).split("/");
             currPath = new TreePath(this._treeModel.getRoot());
-            // ToDo: define string constants static somewhere
             switch (protocol[0]) {
-                case "argonrepo": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
+                case CustomProtocolURLHandlerExtension.ARGON_REPO:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
                     break;
-                case "argonquery": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
+                case CustomProtocolURLHandlerExtension.ARGON_XQ:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
                     break;
                 default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Databases");
             }

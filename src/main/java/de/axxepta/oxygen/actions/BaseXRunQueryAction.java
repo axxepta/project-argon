@@ -42,7 +42,7 @@ public class BaseXRunQueryAction extends AbstractAction {
                     editorUrl.toString().endsWith("xq") ||
                     editorUrl.toString().endsWith("xqm") ||
                     editorUrl.toString().endsWith("xql") ||
-                            editorUrl.toString().endsWith("xqy") ||
+                    editorUrl.toString().endsWith("xqy") ||
                     editorUrl.toString().endsWith("xquery"));
             if (isXquery) {
                 // get content of current editor window

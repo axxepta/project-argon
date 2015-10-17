@@ -26,9 +26,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
   /**
    * The custom protocol name.
    */
-    private static final String ARGON = "argon";
-    private static final String ARGON_XQ = "argonquery";
-    private static final String ARGON_REPO = "argonrepo";
+    public static final String ARGON = "argon";
+    public static final String ARGON_XQ = "argonquery";
+    public static final String ARGON_REPO = "argonrepo";
 
   /**
    * Gets the handler for the custom protocol

@@ -2,6 +2,7 @@ package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.actions.BaseXRunQueryAction;
 import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
+import de.axxepta.oxygen.actions.SearchInPathAction;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BaseXRequest;
@@ -151,7 +152,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                     try {
                                         new BaseXRequest("delete", source, db_path);
                                         treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
-                                        //TopicHolder.deleteFile.postMessage(db_path);
                                     } catch (Exception er) {
                                         JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -189,72 +189,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
-                        public void actionPerformed(ActionEvent e) {
-                            TreePath path = tListener.getPath();
-                            if (path.getPathCount() == 1) {
-                                JOptionPane.showMessageDialog(null, "Please select source to search in (Databases/RestXQ/Repo).",
-                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                return;
-                            }
-                            // ToDo: own class...
-                            if ((path.getPathCount() == 2) && (path.getPathComponent(1).toString().equals("Databases"))) {
-                                JOptionPane.showMessageDialog(null, "Please select specific database to search in.",
-                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                return;
-                            }
-                            if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
-                                String pathStr;
-                                BaseXSource source;
-                                switch (path.getPathComponent(1).toString()) {
-                                    case "Databases":
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.DATABASE;
-                                        break;
-                                    case "Query Folder":
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.RESTXQ;
-                                        pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
-                                        break;
-                                    default:
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon_repo:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.REPO;
-
-                                }
-                                String filter = JOptionPane.showInputDialog(null, "Find resource in path\n" +
-                                        pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                if ((filter != null) && (!filter.equals(""))) {
-                                    // ToDo: add filter in query or here
-                                    String basePathStr = TreeUtils.resourceFromTreePath(path);
-                                    String allResources;
-                                    try {
-                                        BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
-                                        allResources = search.getAnswer();
-
-                                    } catch (Exception er) {
-                                        JOptionPane.showMessageDialog(null, "Failed to search for BaseX resources.\n Check if server ist still running.",
-                                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                                        allResources = "";
-                                    }
-                                    // ToDo: expand branches
-                                    JOptionPane.showMessageDialog(null, allResources,
-                                            "Search in BaseX", JOptionPane.PLAIN_MESSAGE);
-                                }
-                            }
-                        }
-                    };
+                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png"), pluginWorkspaceAccess, tree);
                     contextMenu.add(searchInPath);
 
                     Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
@@ -297,6 +232,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
                         editorLocation.toString().toLowerCase().endsWith("xq") ||
                         editorLocation.toString().toLowerCase().endsWith("xql") ||
+                        editorLocation.toString().endsWith("xqy") ||
                         editorLocation.toString().endsWith("xquery"));
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
@@ -354,7 +290,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 BasexTreeCellRenderer.createImageIcon("/RunQuery.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 BasexTreeCellRenderer.createImageIcon("/ReplyComment.png"), pluginWorkspaceAccess);
-        //final Action replyToAuthorComment = new ReplyAuthorCommentAction(pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**
