@@ -44,17 +44,12 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 return handler;
             default: return null;
         }
-/*        if (protocol.toLowerCase().equals(ARGON)) {
-            URLStreamHandler handler = new CustomProtocolHandler();
-            return handler;
-        }*/
     }
 
   /**
    * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#getLockHandler()
    */
     public LockHandler getLockHandler() {
-        //return null;
 
         return (new LockHandler() {
 
