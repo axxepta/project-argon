@@ -13,18 +13,14 @@ import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.*;
-import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -61,8 +57,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
              */
             @Override
             public void customizeView(ViewInfo viewInfo) {
-
-                Iterator<String> iterator;
 
                 if("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                     //The view ID defined in the "plugin.xml"
@@ -328,9 +322,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
                     if (hasInitialComponents) {
                         // Add initial toolbar components
-                        for (JComponent toolbarItem : initialComponents) {
-                            comps.add(toolbarItem);
-                        }
+                        comps.addAll(Arrays.asList(initialComponents));
                     }
 
                     // Add toolbar buttons
@@ -359,9 +351,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
                     if (hasInitialComponents) {
                         // Add initial toolbar components
-                        for (JComponent toolbarItem : initialComponents) {
-                            comps.add(toolbarItem);
-                        }
+                        comps.addAll(Arrays.asList(initialComponents));
                     }
                     // reply to author comment
                     replyCommentButton = new ToolbarButton(replyToAuthorComment, true);

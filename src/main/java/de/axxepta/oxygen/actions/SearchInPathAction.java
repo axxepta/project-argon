@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by Markus on 17.10.2015.
+ * @author Markus on 17.10.2015.
  */
 public class SearchInPathAction extends AbstractAction {
 
@@ -153,8 +153,8 @@ public class SearchInPathAction extends AbstractAction {
             ArrayList selectedResources = new ArrayList();
             selectedResources.addAll(results.getSelectedValuesList());
 
-            for (int i=0; i<selectedResources.size(); i++) {
-                String db_path = TreeUtils.urlStringFromTreeString(selectedResources.get(i).toString());
+            for (Object resource : selectedResources) {
+                String db_path = TreeUtils.urlStringFromTreeString(resource.toString());
                 URL argonURL = null;
                 try {
                     argonURL = new URL(db_path);

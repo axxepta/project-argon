@@ -19,8 +19,6 @@ public final class ConnectionUtils {
     static final String RESOURCE = "RESOURCE";
     /** Query string variable */
     static final String XQUERY = "XQUERY";
-    /** Option string variable for eval yes/no */
-    static final String RUNQUERY = "runquery";
     /** Search filter variable */
     static final String FILTER = "FILTER";
 

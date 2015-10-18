@@ -12,20 +12,16 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Created by Markus on 08.10.2015.
+ * @author Markus on 08.10.2015.
  */
 public class BaseXRunQueryAction extends AbstractAction {
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
     private static final Logger logger = LogManager.getLogger(BaseXRunQueryAction.class);
 
-    public BaseXRunQueryAction (StandalonePluginWorkspace pluginWorkspaceAccess) {
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-    }
 
     public BaseXRunQueryAction (String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
         super(name, icon);
@@ -56,14 +52,9 @@ public class BaseXRunQueryAction extends AbstractAction {
                     logger.error(er);
                     editorContent = "";
                 }
-                // get database name of current editor window
-                int startInd = editorUrl.toString().indexOf(":");
-                int stopInd = editorUrl.toString().indexOf("/", startInd+2);
-                //ToDo: catch unexpected error that argon URL is malformed
-                String db_name = editorUrl.toString().substring(startInd+1, stopInd);
-                // pass content of editor window to ListDBEntries with queryRun
-                String queryRes;
 
+                // parse query
+                String queryRes;
                 try {
                     queryRes = (new BaseXRequest("query", null, editorContent)).getAnswer();
                 } catch (Exception er) {
@@ -71,13 +62,6 @@ public class BaseXRunQueryAction extends AbstractAction {
                     queryRes = "";
                 }
 
-/*                try {
-                    ListDBEntries testQuery = new ListDBEntries("queryRun", db_name, editorContent);
-                    queryRes = testQuery.getAnswer();
-                } catch (Exception er) {
-                    logger.error("query to BaseX failed");
-                    queryRes = "";
-                }*/
 
                 //+ display result of query in a new info window
                 //argonOutputArea.setText(queryRes);

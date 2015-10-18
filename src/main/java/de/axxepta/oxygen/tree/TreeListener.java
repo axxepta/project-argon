@@ -1,6 +1,5 @@
 package de.axxepta.oxygen.tree;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,18 +17,16 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
-//import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Created by daltiparmak on 14.04.15.
+ * Listener class observing all tree-related events
  */
 public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener, ObserverInterface{
 	
@@ -43,7 +40,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private DefaultMutableTreeNode node;
     private boolean newExpandEvent;
     private boolean singleClick  = true;
-    private int doubleClickDelay = 300;
     private Timer timer;
     private final BaseXPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
@@ -70,6 +66,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 }
             }
         };
+        int doubleClickDelay = 300;
         timer = new javax.swing.Timer(doubleClickDelay, actionListener);
         timer.setRepeats(false);
     }
@@ -87,11 +84,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
         try {
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-        } catch (NullPointerException er) {}
+        } catch (NullPointerException er) {er.printStackTrace();}
         if ( e.isPopupTrigger() )
             contextMenu.show(e.getComponent(), e.getX(), e.getY(), this.path);
-/*            prepareContextMenu();
-            contextMenu.show( e.getComponent(), e.getX(), e.getY() );*/
     }
 
     @Override
@@ -159,14 +154,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void singleClickHandler(ActionEvent e) {
         logger.debug("-- single click --");
-/*        URL argonURL = null;
-		try {
-			argonURL = new URL("argon:/tmp/tmp.xml");
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        this.wsa.open(argonURL);*/
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {

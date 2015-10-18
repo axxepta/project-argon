@@ -1,13 +1,13 @@
 package de.axxepta.oxygen.tree;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Created by Markus on 18.10.2015.
+ * PopupMenu class which holds extra ArrayLists for MenuItems and their names, providing access methods
+ *  for enabling the items via name keys.
  */
 public class BaseXPopupMenu extends ro.sync.exml.workspace.api.standalone.ui.PopupMenu {
 
@@ -77,6 +77,12 @@ public class BaseXPopupMenu extends ro.sync.exml.workspace.api.standalone.ui.Pop
             items.get(i).setEnabled(b);
         else
             throw new NullPointerException("Tried to access BaseXPopupMenu item number not in list");
+    }
+
+    public void setItemEnabled(String name, boolean b) {
+        if (this.itemNames.contains(name)) {
+            items.get(this.itemNames.indexOf(name)).setEnabled(b);
+        }
     }
 
 }

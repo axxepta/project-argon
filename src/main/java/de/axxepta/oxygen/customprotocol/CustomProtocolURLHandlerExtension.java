@@ -3,13 +3,11 @@ package de.axxepta.oxygen.customprotocol;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLStreamHandler;
-import java.util.ArrayList;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.rest.ListDBEntries;
 import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
 import ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension;

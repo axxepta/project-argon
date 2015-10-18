@@ -4,8 +4,6 @@ import de.axxepta.oxygen.api.ClientConnection;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

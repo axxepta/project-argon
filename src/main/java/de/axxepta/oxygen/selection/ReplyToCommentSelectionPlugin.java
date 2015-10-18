@@ -1,13 +1,11 @@
 package de.axxepta.oxygen.selection;
 
-import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.exml.plugin.selection.SelectionPluginExtension;
 import ro.sync.exml.plugin.selection.SelectionPluginResult;
 import ro.sync.exml.plugin.selection.SelectionPluginResultImpl;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 
 /**
  * Selection plugin to respond to comments in text mode - select whole comment and use context menu/plugin/argon

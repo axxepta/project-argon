@@ -23,12 +23,12 @@ public class BaseXRequest {
                     check = false;
                     result = new ArrayList<>();
                     BaseXResource[] resources = connection.list(source, path);
-                    for (int i=0; i< resources.length; i++) {
-                        String databaseEntry = resources[i].name;
+                    for (BaseXResource resource : resources) {
+                        String databaseEntry = resource.name;
                         result.add(databaseEntry);
                     }
-                    for (int i=0; i<resources.length; i++) {
-                        String type = resources[i].type.toString();
+                    for (BaseXResource resource : resources) {
+                        String type = resource.type.toString();
                         result.add(type);
                     }
                     break;

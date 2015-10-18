@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * Created by Markus on 15.10.2015.
+ * test class for parsing queries via keyboard
  */
 public class parseQuery {
 
@@ -15,7 +15,7 @@ public class parseQuery {
         String pass = "admin";
         String host = "localhost";
         int port = 8984;
-        Connection connection = new RestConnection(host, port, user, pass);;
+        Connection connection = new RestConnection(host, port, user, pass);
 
         System.out.print("Query text: ");
         String query = (new BufferedReader(new InputStreamReader(System.in))).readLine();
@@ -29,8 +29,8 @@ public class parseQuery {
             result.add(ex.getInfo());
         }
 
-        for (int i=0; i<result.size(); i++) {
-            System.out.println(result.get(i));
+        for (String res : result) {
+            System.out.println(res);
         }
 
 
