@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.tree;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -17,6 +18,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
@@ -43,10 +45,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private boolean singleClick  = true;
     private int doubleClickDelay = 300;
     private Timer timer;
-    private final JPopupMenu contextMenu;
+    private final BaseXPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, JPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, BaseXPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
@@ -87,7 +89,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         } catch (NullPointerException er) {}
         if ( e.isPopupTrigger() )
-            contextMenu.show( e.getComponent(), e.getX(), e.getY() );
+            contextMenu.show(e.getComponent(), e.getX(), e.getY(), this.path);
+/*            prepareContextMenu();
+            contextMenu.show( e.getComponent(), e.getX(), e.getY() );*/
     }
 
     @Override
@@ -265,6 +269,67 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     break;
                 }
             }
+        }
+    }
+
+    public static void prepareContextMenu(BaseXPopupMenu contextMenu, TreePath path){
+
+        // at what kind of node was the context menu invoked?
+        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        int pathCount = path.getPathCount();
+        // ToDo: use constant string class
+        boolean isFile = !clickedNode.getAllowsChildren();
+        boolean isDir = (clickedNode.getAllowsChildren() &&
+                            ( ((pathCount > 3) &&
+                                    (path.getPathComponent(1).toString().equals("Databases"))) ||
+                              ((pathCount > 2) &&
+                                      (!path.getPathComponent(1).toString().equals("Databases"))) ) );
+        boolean isDB = (pathCount == 3) &&
+                        (path.getPathComponent(1).toString().equals("Databases"));
+        boolean isSource = (pathCount == 2);
+        boolean isRoot = (pathCount == 1);
+        boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals("Databases"));
+
+        // check whether items apply to node
+        int itemCount = contextMenu.getItemCount();
+        // ToDo: use constant string class
+        for (int i=0; i<itemCount; i++){
+
+            if ( contextMenu.getItemName(i).equals("Check Out")) {
+                if (isFile)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Check In")) {
+                if ((isDir) || (isDB) || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Delete")) {
+                if (isFile || isDir)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Add")) {
+                if (isDir || isDB || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Search in Path")) {
+                if (isDir || isDB || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
         }
     }
 

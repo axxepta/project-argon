@@ -8,12 +8,10 @@ import de.axxepta.oxygen.tree.TreeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
-import ro.sync.exml.workspace.api.WorkspaceUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -80,11 +78,11 @@ public class SearchInPathAction extends AbstractAction {
                     source = BaseXSource.REPO;
 
             }
+            // get filter string
             String filter = JOptionPane.showInputDialog(null, "Find resource in path\n" +
                     pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
             if ((filter != null) && (!filter.equals(""))) {
                 // ToDo: add filter in query
-                // get filter string
                 String basePathStr = TreeUtils.resourceFromTreePath(path);
                 ArrayList<String> allResources;
                 try {
@@ -138,6 +136,7 @@ public class SearchInPathAction extends AbstractAction {
         }
     }
 
+
     private class OpenSelectedAction extends AbstractAction {
 
         JList results;
@@ -153,7 +152,6 @@ public class SearchInPathAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             ArrayList selectedResources = new ArrayList();
             selectedResources.addAll(results.getSelectedValuesList());
-            // ToDo: open resources
 
             for (int i=0; i<selectedResources.size(); i++) {
                 String db_path = TreeUtils.urlStringFromTreeString(selectedResources.get(i).toString());
@@ -165,11 +163,9 @@ public class SearchInPathAction extends AbstractAction {
                 }
                 this.wsa.open(argonURL);
             }
-
-/*            JOptionPane.showMessageDialog(null, selectedResources,
-                    "Search in BaseX", JOptionPane.PLAIN_MESSAGE);*/
         }
     }
+
 
     public class CloseDialogAction extends AbstractAction {
 

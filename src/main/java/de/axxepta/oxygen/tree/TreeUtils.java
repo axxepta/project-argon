@@ -8,7 +8,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * Created by Markus on 11.10.2015.
+ * Utility class for tree related operations
  */
 public class TreeUtils {
 
@@ -121,12 +121,6 @@ public class TreeUtils {
                     db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
             }
             db_path.append(treeString.substring(components[0].length()+components[1].length()+1));
-/*            for (int i = 2; i < components.length; i++) {
-                if (i>2) {
-                    db_path.append('/');
-                }
-                db_path.append(components[i]);
-            }*/
         } else {
             db_path = new StringBuilder("");
         }
