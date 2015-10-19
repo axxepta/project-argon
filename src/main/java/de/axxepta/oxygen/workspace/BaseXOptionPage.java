@@ -11,9 +11,11 @@ import java.io.File;
 
 import javax.swing.*;
 
+import ro.sync.ecss.extensions.api.OptionsStorage;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
 /**
  * Plugin option page extension Custom Workspace Access Plugin Extension.
@@ -308,7 +310,12 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 
     public static String getOption(String key) {
         PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-        return pluginWorkspace.getOptionsStorage().getOption(key, null);
+        if(pluginWorkspace != null){
+            WSOptionsStorage store = pluginWorkspace.getOptionsStorage();
+            if(store != null) return store.getOption(key, "empty option");
+            else return "no store";
+        }
+        else return "no plugin workspace";
     }
 }
 

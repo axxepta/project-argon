@@ -9,7 +9,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import java.io.*;
 import java.net.*;
 
-//Import log4j classes.
 
 /**
  * Handler for the file2 protocol
@@ -49,20 +48,20 @@ public class CustomProtocolHandler extends URLStreamHandler {
          */
         @Override
         public InputStream getInputStream() throws IOException {
-            logger.info("-- get Input Stream --: " + url.toString());
+            logger.debug("-- getInputStream --: " + url.toString());
 
             String host = pluginWorkspace.getOptionsStorage().getOption(
                     BaseXOptionPage.KEY_BASEX_HOST,
-                    null);
+                    "localhost");
             int httpPort = Integer.parseInt(pluginWorkspace.getOptionsStorage().getOption(
                     BaseXOptionPage.KEY_BASEX_HTTP_PORT,
-                    null));
+                    "8984"));
             String username = pluginWorkspace.getOptionsStorage().getOption(
                     BaseXOptionPage.KEY_BASEX_USERNAME,
-                    null);
+                    "admin");
             String password = pluginWorkspace.getOptionsStorage().getOption(
                     BaseXOptionPage.KEY_BASEX_PASSWORD,
-                    null);
+                    "admin");
 
             // send request, receive response
             String basicAuth = "Basic "
@@ -74,6 +73,8 @@ public class CustomProtocolHandler extends URLStreamHandler {
 
             URL url = new URL("http://" + host + ':' + httpPort + "/rest"
                     + restPath);
+
+            logger.debug("-- getInputStream URL(modified) --: " + url.toString());
 
             // will always be HttpURLConnection if URL starts with "http://"
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -92,7 +93,7 @@ public class CustomProtocolHandler extends URLStreamHandler {
         @Override
         public OutputStream getOutputStream() throws IOException {
 
-            logger.info("-- get Output Stream --");
+            logger.debug("-- get Output Stream --");
             return new BaseXByteArrayOutputStream(url);
         }
 
