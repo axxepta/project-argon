@@ -2,31 +2,25 @@ package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.actions.BaseXRunQueryAction;
 import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
+import de.axxepta.oxygen.actions.SearchInPathAction;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.BasexTree;
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
-import de.axxepta.oxygen.tree.TreeListener;
-import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.tree.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
 import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.*;
-import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -47,6 +41,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      */
     private JTextArea cmsMessagesArea;
     private JTextArea argonOutputArea;
+    private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
+    private ToolbarButton replyCommentButton;
 
     private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
 
@@ -61,8 +57,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
              */
             @Override
             public void customizeView(ViewInfo viewInfo) {
-
-                Iterator<String> iterator;
 
                 if("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                     //The view ID defined in the "plugin.xml"
@@ -104,7 +98,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     setTreeState(tree, new TreePath(root), false);
 
                     // Add context menu
-                    PopupMenu contextMenu = new PopupMenu();
+                    BaseXPopupMenu contextMenu = new BaseXPopupMenu();
                     //JPopupMenu contextMenu = new JPopupMenu();
 
                     // Add Tree Listener
@@ -116,6 +110,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.deleteFile.register(tListener);
 
                     // Populate context menu
+                    // ToDo: use constant string class
                     Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
@@ -130,13 +125,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             }
                         }
                     };
-                    contextMenu.add(checkOut);
+                    contextMenu.add(checkOut, "Check Out");
 
                     Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
-                    contextMenu.add(checkIn);
+                    contextMenu.add(checkIn, "Check In");
 
                     contextMenu.addSeparator();
 
@@ -148,10 +143,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             if ((source != null) && (!db_path.equals(""))) {
                                 // don't try to delete databases!
                                 if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
+                                    // ToDo: ask before delete non-empty directory
                                     try {
                                         new BaseXRequest("delete", source, db_path);
                                         treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
-                                        //TopicHolder.deleteFile.postMessage(db_path);
                                     } catch (Exception er) {
                                         JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -161,7 +156,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             }
                         }
                     };
-                    contextMenu.add(delete);
+                    contextMenu.add(delete, "Delete");
 
                     Action add = new AbstractAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
@@ -176,7 +171,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             }*/
                         }
                     };
-                    contextMenu.add(add);
+                    contextMenu.add(add,"Add");
 
                     final Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
                         public void actionPerformed(ActionEvent e) {
@@ -185,83 +180,18 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             // build structure copy of expanded tree, reload from root
                         }
                     };
-                    contextMenu.add(refresh);
+                    contextMenu.add(refresh, "Refresh");
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new AbstractAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
-                        public void actionPerformed(ActionEvent e) {
-                            TreePath path = tListener.getPath();
-                            if (path.getPathCount() == 1) {
-                                JOptionPane.showMessageDialog(null, "Please select source to search in (Databases/RestXQ/Repo).",
-                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                return;
-                            }
-                            // ToDo: own class...
-                            if ((path.getPathCount() == 2) && (path.getPathComponent(1).toString().equals("Databases"))) {
-                                JOptionPane.showMessageDialog(null, "Please select specific database to search in.",
-                                        "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                return;
-                            }
-                            if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
-                                String pathStr;
-                                BaseXSource source;
-                                switch (path.getPathComponent(1).toString()) {
-                                    case "Databases":
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.DATABASE;
-                                        break;
-                                    case "Query Folder":
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.RESTXQ;
-                                        pathStr = "argon_restxq:" + TreeUtils.resourceFromTreePath(path);
-                                        break;
-                                    default:
-                                        if (path.getPathCount() == 2) {
-                                            pathStr = path.getPathComponent(1).toString();
-                                        } else {
-                                            pathStr = "argon_repo:" + TreeUtils.resourceFromTreePath(path);
-                                        }
-                                        source = BaseXSource.REPO;
-
-                                }
-                                String filter = JOptionPane.showInputDialog(null, "Find resource in path\n" +
-                                        pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
-                                if ((filter != null) && (!filter.equals(""))) {
-                                    // ToDo: add filter in query or here
-                                    String basePathStr = TreeUtils.resourceFromTreePath(path);
-                                    String allResources;
-                                    try {
-                                        BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
-                                        allResources = search.getAnswer();
-
-                                    } catch (Exception er) {
-                                        JOptionPane.showMessageDialog(null, "Failed to search for BaseX resources.\n Check if server ist still running.",
-                                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                                        allResources = "";
-                                    }
-                                    // ToDo: expand branches
-                                    JOptionPane.showMessageDialog(null, allResources,
-                                            "Search in BaseX", JOptionPane.PLAIN_MESSAGE);
-                                }
-                            }
-                        }
-                    };
-                    contextMenu.add(searchInPath);
+                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png"), pluginWorkspaceAccess, tree);
+                    contextMenu.add(searchInPath, "Search In Path");
 
                     Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
-                    contextMenu.add(searchInFiles);
+                    contextMenu.add(searchInFiles, "Search In Files");
 
                     tree.add(contextMenu);
 
@@ -286,18 +216,41 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         });
 
         pluginWorkspaceAccess.addEditorChangeListener(new WSEditorChangeListener() {
-            /**
-             * @see ro.sync.exml.workspace.api.listeners.WSEditorChangeListener#editorOpened(java.net.URL)
-             */
+
+            @Override
+            public void editorPageChanged(URL editorLocation) {
+                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+            }
+
+            @Override
+            public void editorSelected(URL editorLocation) {
+                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+            }
+
+            @Override
+            public void editorActivated(URL editorLocation) {
+                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+            }
+
+            @Override
+            public void editorClosed(URL editorLocation) {
+                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+            }
+
             @Override
             public void editorOpened(URL editorLocation) {
+
+                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 //TODO: define string static somewhere
                 boolean isArgon = (editorLocation.toString().startsWith("argon"));
                 boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
                         editorLocation.toString().toLowerCase().endsWith("xq") ||
                         editorLocation.toString().toLowerCase().endsWith("xql") ||
+                        editorLocation.toString().endsWith("xqy") ||
                         editorLocation.toString().endsWith("xquery"));
+
                 if (isArgon && isXquery)
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
                         /**
@@ -354,7 +307,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 BasexTreeCellRenderer.createImageIcon("/RunQuery.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 BasexTreeCellRenderer.createImageIcon("/ReplyComment.png"), pluginWorkspaceAccess);
-        //final Action replyToAuthorComment = new ReplyAuthorCommentAction(pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**
@@ -370,22 +322,16 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
                     if (hasInitialComponents) {
                         // Add initial toolbar components
-                        for (JComponent toolbarItem : initialComponents) {
-                            comps.add(toolbarItem);
-                        }
+                        comps.addAll(Arrays.asList(initialComponents));
                     }
 
                     // Add toolbar buttons
                     // run query in current editor window
-                    ToolbarButton runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
+                    runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
                     runQueryButton.setText("");
-                    // run query in current editor window
-                    ToolbarButton replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
-                    replyCommentButton.setText("");
 
                     // Add in toolbar
                     comps.add(runQueryButton);
-                    comps.add(replyCommentButton);
                     toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
 
                     // Set title
@@ -405,12 +351,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
                     if (hasInitialComponents) {
                         // Add initial toolbar components
-                        for (JComponent toolbarItem : initialComponents) {
-                            comps.add(toolbarItem);
-                        }
+                        comps.addAll(Arrays.asList(initialComponents));
                     }
-                    // run query in current editor window
-                    ToolbarButton replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
+                    // reply to author comment
+                    replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
                     replyCommentButton.setText("");
                     comps.add(replyCommentButton);
                     toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
@@ -432,8 +376,26 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             tree.expandPath(path);
         else
             tree.collapsePath(path);
+    }
 
+    public void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
+        WSEditor currentEditor = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
 
+        if(currentEditor == null) {
+            runQueryButton.setEnabled(false);
+        } else {
+            String currentEditorURL = currentEditor.getEditorLocation().toString();
+            if((currentEditorURL.endsWith(".xq")) ||
+                    (currentEditorURL.endsWith(".xqm")) ||
+                    (currentEditorURL.endsWith(".xql")) ||
+                    (currentEditorURL.endsWith(".xqy")) ||
+                    (currentEditorURL.endsWith(".xquery")))
+            {
+                runQueryButton.setEnabled(true);
+            } else {
+                runQueryButton.setEnabled(false);
+            }
+        }
     }
 
     @java.lang.Override

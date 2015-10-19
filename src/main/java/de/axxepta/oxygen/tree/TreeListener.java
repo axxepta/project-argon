@@ -18,15 +18,15 @@ import javax.swing.tree.*;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
-//import javafx.scene.control.TreeCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Created by daltiparmak on 14.04.15.
+ * Listener class observing all tree-related events
  */
 public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener, ObserverInterface{
 	
@@ -40,12 +40,11 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private DefaultMutableTreeNode node;
     private boolean newExpandEvent;
     private boolean singleClick  = true;
-    private int doubleClickDelay = 300;
     private Timer timer;
-    private final JPopupMenu contextMenu;
+    private final BaseXPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, JPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, BaseXPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
@@ -67,6 +66,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 }
             }
         };
+        int doubleClickDelay = 300;
         timer = new javax.swing.Timer(doubleClickDelay, actionListener);
         timer.setRepeats(false);
     }
@@ -84,9 +84,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
         try {
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-        } catch (NullPointerException er) {}
+        } catch (NullPointerException er) {er.printStackTrace();}
         if ( e.isPopupTrigger() )
-            contextMenu.show( e.getComponent(), e.getX(), e.getY() );
+            contextMenu.show(e.getComponent(), e.getX(), e.getY(), this.path);
     }
 
     @Override
@@ -154,14 +154,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void singleClickHandler(ActionEvent e) {
         logger.debug("-- single click --");
-/*        URL argonURL = null;
-		try {
-			argonURL = new URL("argon:/tmp/tmp.xml");
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        this.wsa.open(argonURL);*/
     }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
@@ -238,11 +230,12 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             String[] protocol = message.split(":");
             String[] path = protocol[1].substring(1).split("/");
             currPath = new TreePath(this._treeModel.getRoot());
-            // ToDo: define string constants static somewhere
             switch (protocol[0]) {
-                case "argonrepo": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
+                case CustomProtocolURLHandlerExtension.ARGON_REPO:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
                     break;
-                case "argonquery": currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
+                case CustomProtocolURLHandlerExtension.ARGON_XQ:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
                     break;
                 default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Databases");
             }
@@ -263,6 +256,67 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     break;
                 }
             }
+        }
+    }
+
+    public static void prepareContextMenu(BaseXPopupMenu contextMenu, TreePath path){
+
+        // at what kind of node was the context menu invoked?
+        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        int pathCount = path.getPathCount();
+        // ToDo: use constant string class
+        boolean isFile = !clickedNode.getAllowsChildren();
+        boolean isDir = (clickedNode.getAllowsChildren() &&
+                            ( ((pathCount > 3) &&
+                                    (path.getPathComponent(1).toString().equals("Databases"))) ||
+                              ((pathCount > 2) &&
+                                      (!path.getPathComponent(1).toString().equals("Databases"))) ) );
+        boolean isDB = (pathCount == 3) &&
+                        (path.getPathComponent(1).toString().equals("Databases"));
+        boolean isSource = (pathCount == 2);
+        boolean isRoot = (pathCount == 1);
+        boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals("Databases"));
+
+        // check whether items apply to node
+        int itemCount = contextMenu.getItemCount();
+        // ToDo: use constant string class
+        for (int i=0; i<itemCount; i++){
+
+            if ( contextMenu.getItemName(i).equals("Check Out")) {
+                if (isFile)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Check In")) {
+                if ((isDir) || (isDB) || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Delete")) {
+                if (isFile || isDir)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Add")) {
+                if (isDir || isDB || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals("Search in Path")) {
+                if (isDir || isDB || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
         }
     }
 

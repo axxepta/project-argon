@@ -1,7 +1,7 @@
 package de.axxepta.oxygen.workspace;
 
 /**
- * Created by daltiparmak on 02.04.15.
+ * Class defines option page for argon plugin connection details
  */
 
 import java.awt.*;

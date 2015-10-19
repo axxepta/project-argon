@@ -1,7 +1,7 @@
 package de.axxepta.oxygen.api;
 
 /**
- * Created by Max on 01.09.2015.
+ * @author Max on 01.09.2015.
  */
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
@@ -29,16 +29,16 @@ public class MsgTopic implements SubjectInterface {
         }
     }
 
-    @Override
+/*    @Override
     public void unregister(ObserverInterface obj) {
         synchronized (MUTEX) {
             observers.remove(obj);
         }
-    }
+    }*/
 
     @Override
     public void notifyObservers() {
-        List<ObserverInterface> observersLocal = null;
+        List<ObserverInterface> observersLocal;
         //synchronization is used to make sure any observer registered after message is received is not notified
         synchronized (MUTEX) {
             if (!changed)

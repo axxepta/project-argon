@@ -1,7 +1,7 @@
 package de.axxepta.oxygen.tree;
 
 /**
- * Created by daltiparmak on 14.04.15.
+ * TreeCellRenderer using special icons
  */
 
 import java.awt.Component;
@@ -26,7 +26,7 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 	 */
 	private static final long serialVersionUID = 1L;
 	// Define a static logger variable so that it references the
-	// Logger instance named "CustomProtocolHandler".
+	// Logger instance named "BasexTreeCellRenderer".
 	private static final Logger logger = LogManager.getLogger(BasexTreeCellRenderer.class);
 	TreeCellRenderer defaultRenderer = new TreeCellRenderer();
 	//DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
@@ -54,7 +54,7 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			 */
 
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, aLeaf, aRow, aHasFocus);
+					aExpanded, true, aRow, aHasFocus);
 			String thisLeafFileType = fileType(aValue);
 			setIcon(getOxygenIcon(thisLeafFileType));
 			return this;
@@ -86,7 +86,7 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 	}
 
 	private static javax.swing.Icon getOxygenIcon(String extension) {
-		javax.swing.Icon icon = null;
+		javax.swing.Icon icon;
 		if (extension.equalsIgnoreCase("xml")
 				|| extension.equalsIgnoreCase("dita")
 				|| extension.equalsIgnoreCase("ditaval")

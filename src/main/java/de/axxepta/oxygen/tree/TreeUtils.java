@@ -1,13 +1,14 @@
 package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * Created by Markus on 11.10.2015.
+ * Utility class for tree related operations
  */
 public class TreeUtils {
 
@@ -81,17 +82,49 @@ public class TreeUtils {
 
     public static String urlStringFromTreePath(TreePath path) {
         String db_path;
+        // ToDo: use extra class for constant strings
         switch (path.getPathComponent(1).toString()) {
-            case "Query Folder": db_path = "argonquery:";
+            case "Query Folder": db_path = CustomProtocolURLHandlerExtension.ARGON_XQ + ":";
                     break;
-            case "Repo Folder": db_path = "argonrepo:";
+            case "Repo Folder": db_path = CustomProtocolURLHandlerExtension.ARGON_REPO + ":";
                     break;
-            default: db_path = "argon:";
+            default: db_path = CustomProtocolURLHandlerExtension.ARGON + ":";
         }
         for (int i = 2; i < path.getPathCount(); i++) {
             db_path = db_path + '/' + path.getPathComponent(i).toString();
         }
         return db_path;
+    }
+
+    public static String treeStringFromTreePath(TreePath path) {
+        StringBuilder db_path = new StringBuilder("BaseX Server");
+        for (int i = 1; i < path.getPathCount(); i++) {
+            db_path.append("/").append(path.getPathComponent(i).toString());
+        }
+        return db_path.toString();
+    }
+
+    public static String urlStringFromTreeString(String treeString) {
+        String[] components = treeString.split("/");
+        StringBuilder db_path;
+
+        if (components.length > 2) {
+            // ToDo: use extra class for constant strings
+            switch (components[1]) {
+                case "Query Folder":
+                    db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":");
+                    break;
+                case "Repo Folder":
+                    db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":");
+                    break;
+                default:
+                    db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
+            }
+            db_path.append(treeString.substring(components[0].length()+components[1].length()+1));
+        } else {
+            db_path = new StringBuilder("");
+        }
+        return db_path.toString();
     }
 
 }

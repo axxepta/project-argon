@@ -3,13 +3,11 @@ package de.axxepta.oxygen.customprotocol;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLStreamHandler;
-import java.util.ArrayList;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.rest.ListDBEntries;
 import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
 import ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension;
@@ -26,9 +24,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
   /**
    * The custom protocol name.
    */
-    private static final String ARGON = "argon";
-    private static final String ARGON_XQ = "argonquery";
-    private static final String ARGON_REPO = "argonrepo";
+    public static final String ARGON = "argon";
+    public static final String ARGON_XQ = "argonquery";
+    public static final String ARGON_REPO = "argonrepo";
 
   /**
    * Gets the handler for the custom protocol
@@ -44,17 +42,12 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 return handler;
             default: return null;
         }
-/*        if (protocol.toLowerCase().equals(ARGON)) {
-            URLStreamHandler handler = new CustomProtocolHandler();
-            return handler;
-        }*/
     }
 
   /**
    * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#getLockHandler()
    */
     public LockHandler getLockHandler() {
-        //return null;
 
         return (new LockHandler() {
 
