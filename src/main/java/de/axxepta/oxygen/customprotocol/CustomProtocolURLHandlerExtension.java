@@ -75,7 +75,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                         }
                         if (!isLocked) {
                             try {
-                                connection.lock(BaseXSource.DATABASE, pathFromURL(url));
+                                if (!connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url))) {
+                                    connection.lock(BaseXSource.DATABASE, pathFromURL(url));
+                                }
                             } catch (IOException er) {
                                 er.printStackTrace();
                             }
@@ -137,7 +139,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     protected static String pathFromURL(URL url) {
         String urlString = url.toString();
         int ind1 = urlString.indexOf(":");
-        //return urlString.substring(ind1 + 2);
         if (urlString.substring(ind1 + 1, ind1 + 2).equals("/"))
             return urlString.substring(ind1 + 2);
         else

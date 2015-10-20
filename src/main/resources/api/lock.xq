@@ -6,7 +6,7 @@ declare variable $PATH as xs:string external;
 (:~ Lock database. :)
 declare variable $LOCK-DB := '~argon';
 
-let $exists := db:exists($LOCK-DB)
+let $exists := db:exists($LOCK-DB, $LOCK-DB)
 let $locks := (
     if($exists)
     then db:open($LOCK-DB)
