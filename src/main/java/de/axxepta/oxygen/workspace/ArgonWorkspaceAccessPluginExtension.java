@@ -49,6 +49,14 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_TCP_PORT));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_USERNAME));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_PASSWORD));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_CONNECTION));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_LOGFILE));
+
         pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
             /**
              * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
