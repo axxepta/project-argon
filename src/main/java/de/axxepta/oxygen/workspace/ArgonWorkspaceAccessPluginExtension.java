@@ -1,8 +1,6 @@
 package de.axxepta.oxygen.workspace;
 
-import de.axxepta.oxygen.actions.BaseXRunQueryAction;
-import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
-import de.axxepta.oxygen.actions.SearchInPathAction;
+import de.axxepta.oxygen.actions.*;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.rest.BaseXRequest;
@@ -158,33 +156,17 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(delete, "Delete");
 
-                    Action add = new AbstractAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
-                        public void actionPerformed(ActionEvent e) {
-/*                            TreePath path = tListener.getPath();
-                            String db_path = BasexTree.urlStringFromTreePath(path);
-                            if (tListener.getNode().getAllowsChildren()) {
-                                try {
-                                    ListDBEntries fileDummy = new ListDBEntries("add", db_path, db_path);
-                                } catch (Exception er) {
-                                    er.printStackTrace();
-                                }
-                            }*/
-                        }
-                    };
+                    Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif"),
+                            pluginWorkspaceAccess, tree);
                     contextMenu.add(add,"Add");
 
-                    final Action refresh = new AbstractAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png")) {
-                        public void actionPerformed(ActionEvent e) {
-                            //treeModel.reload();
-                            // removes parent node from tree???
-                            // build structure copy of expanded tree, reload from root
-                        }
-                    };
+                    final Action refresh = new RefreshTreeAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png"), tree);
                     contextMenu.add(refresh, "Refresh");
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png"), pluginWorkspaceAccess, tree);
+                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png"),
+                            pluginWorkspaceAccess, tree);
                     contextMenu.add(searchInPath, "Search In Path");
 
                     Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {

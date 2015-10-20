@@ -191,7 +191,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
             for (int i=node.getChildCount()-1; i>-1; i--){
                 if (!inNewList[i]) {
-                    this._treeModel.removeNodeFromParent(node);
+                    this._treeModel.removeNodeFromParent((DefaultMutableTreeNode) node.getChildAt(i));
                     this._treeModel.nodeChanged(node);
                     treeChanged = true;
                 }

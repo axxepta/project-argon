@@ -106,7 +106,7 @@ public class SearchInPathAction extends AbstractAction {
                 resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
                 JPanel content = new JPanel(new BorderLayout());
-                JLabel foundLabel = new JLabel("Search for "+filter+" found "+allResources.size()+" resource(s).");
+                JLabel foundLabel = new JLabel("Search for " + filter + " found " + allResources.size() + " resource(s).");
                 content.add(foundLabel, BorderLayout.NORTH);
 
                 JList resultList = new JList(allResources.toArray());
