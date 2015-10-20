@@ -5,7 +5,7 @@ package de.axxepta.oxygen.customprotocol;
 
 
 import de.axxepta.oxygen.api.*;
-import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

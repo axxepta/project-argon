@@ -2,7 +2,7 @@ package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
