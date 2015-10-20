@@ -259,6 +259,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
     }
 
+    // ToDo:  implement this method as part of a listener class that is added to the contextMenu
     public static void prepareContextMenu(BaseXPopupMenu contextMenu, TreePath path){
 
         // at what kind of node was the context menu invoked?
