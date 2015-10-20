@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import ro.sync.exml.workspace.api.options.WSOptionChangedEvent;
 import ro.sync.exml.workspace.api.options.WSOptionListener;
 
@@ -16,7 +17,7 @@ public class BaseXOptionListener extends WSOptionListener {
 
     @Override
     public void optionValueChanged(WSOptionChangedEvent wsOptionChangedEvent) {
-        BaseXOptionPage.refreshFromOptions();
+        BaseXConnectionWrapper.refreshFromOptions();
     }
 
 }
