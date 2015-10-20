@@ -6,7 +6,7 @@ import java.net.URLStreamHandler;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.rest.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
