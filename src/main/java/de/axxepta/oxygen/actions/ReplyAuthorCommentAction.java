@@ -1,16 +1,10 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.selection.ReplyToCommentSelectionPlugin;
-import ro.sync.ecss.extensions.api.node.AuthorNode;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.editor.EditorPageConstants;
-import ro.sync.exml.plugin.selection.SelectionPluginContext;
-import ro.sync.exml.plugin.selection.SelectionPluginExtension;
-import ro.sync.exml.plugin.selection.SelectionPluginResult;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
-import ro.sync.exml.workspace.api.editor.page.WSTextBasedEditorPage;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -26,10 +20,6 @@ import java.awt.event.ActionEvent;
 public class ReplyAuthorCommentAction extends AbstractAction {
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
-
-    public ReplyAuthorCommentAction(final StandalonePluginWorkspace pluginWorkspaceAccess){
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-    }
 
     public ReplyAuthorCommentAction(String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
         super(name, icon);

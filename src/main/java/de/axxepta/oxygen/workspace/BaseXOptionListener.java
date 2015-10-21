@@ -4,7 +4,6 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import ro.sync.exml.workspace.api.options.WSOptionChangedEvent;
 import ro.sync.exml.workspace.api.options.WSOptionListener;
 
-import javax.swing.*;
 
 /**
  * @author Markus on 20.10.2015.

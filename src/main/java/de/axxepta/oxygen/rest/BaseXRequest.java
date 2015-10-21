@@ -15,7 +15,7 @@ public class BaseXRequest {
 
     public BaseXRequest(final String request, final BaseXSource source, final String path,
                         final String... params) throws Exception {
-        Connection connection = (new BaseXConnectionWrapper()).getConnection();
+        Connection connection = BaseXConnectionWrapper.getConnection();
         if (connection != null) {
             switch (request) {
                 case "list":

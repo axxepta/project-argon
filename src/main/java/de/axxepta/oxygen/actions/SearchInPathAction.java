@@ -166,20 +166,4 @@ public class SearchInPathAction extends AbstractAction {
         }
     }
 
-
-    public class CloseDialogAction extends AbstractAction {
-
-        JDialog dialog;
-
-        CloseDialogAction(String name, JDialog dialog){
-            super(name);
-            this.dialog = dialog;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            dialog.dispose();
-        }
-    }
-
 }

@@ -11,7 +11,6 @@ import java.io.File;
 
 import javax.swing.*;
 
-import ro.sync.ecss.extensions.api.OptionsStorage;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

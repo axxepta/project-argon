@@ -65,7 +65,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
             @Override
             public void updateLock(URL url, int i) throws LockException {
                 try {
-                    Connection connection = (new BaseXConnectionWrapper()).getConnection();
+                    Connection connection = BaseXConnectionWrapper.getConnection();
                     if (connection != null) {
                         boolean isLocked;
                         try {
@@ -116,7 +116,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isReadOnly(URL url) {
         try {
-            Connection connection = (new BaseXConnectionWrapper()).getConnection();
+            Connection connection = BaseXConnectionWrapper.getConnection();
             if (connection != null) {
                 boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
                 if (isLocked) {

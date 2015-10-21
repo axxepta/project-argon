@@ -26,7 +26,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     // Show the dialog and return the string from the text field
     //URL[] urls = urlChooser.selectURLs();
 	 
-	List<URL> selectedURLs = new ArrayList<URL>();
+	List<URL> selectedURLs = new ArrayList<>();
 	selectedURLs.clear();
 	
     String argonURL = "argon:/Users/daltiparmak/zilicon/develop/app/ionic/config.xml";

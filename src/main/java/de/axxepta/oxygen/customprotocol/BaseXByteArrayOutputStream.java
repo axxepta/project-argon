@@ -36,7 +36,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         super.close();
         byte[] savedBytes = toByteArray();
         try {
-            Connection connection = (new BaseXConnectionWrapper()).getConnection();
+            Connection connection = BaseXConnectionWrapper.getConnection();
             connection.put(this.source,
                     CustomProtocolURLHandlerExtension.pathFromURL(this.url), savedBytes);
             TopicHolder.saveFile.postMessage(this.url.getProtocol() + ":" + this.url.getPath());

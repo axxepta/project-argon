@@ -36,7 +36,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
         @Override
         public InputStream getInputStream() throws IOException {
-            Connection connection = (new BaseXConnectionWrapper()).getConnection();
+            Connection connection = BaseXConnectionWrapper.getConnection();
             return new ByteArrayInputStream(connection.get(source,
                     CustomProtocolURLHandlerExtension.pathFromURL(this.url)));
         }
