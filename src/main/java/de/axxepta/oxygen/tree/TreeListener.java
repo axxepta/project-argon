@@ -125,7 +125,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 db_path.append(this.path.getPathComponent(i).toString());
                 db_path.append('/');
             }
-            //JOptionPane.showMessageDialog(null, db+"\r\n"+ db_path, "doubleClickHandler", JOptionPane.PLAIN_MESSAGE);
             try {
                 newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
             } catch (Exception er) {
