@@ -16,47 +16,53 @@ import java.util.ArrayList;
 public class RefreshTreeAction extends AbstractAction {
 
     BasexTree tree;
+    DefaultTreeModel model;
 
     public RefreshTreeAction(String name, Icon icon, BasexTree tree) {
         super(name, icon);
         this.tree = tree;
+        this.model = (DefaultTreeModel) tree.getModel();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DefaultTreeModel treeModel = (DefaultTreeModel) this.tree.getModel();
-        TreePath rootPath = new TreePath(treeModel.getRoot());
+        TreePath rootPath = new TreePath(model.getRoot());
         DummyNode dummyTree = new DummyNode(rootPath.getPathComponent(0).toString(),
-                this.tree.isExpanded(rootPath));
-        buildDummyTree(dummyTree, this.tree, treeModel, rootPath);
-        //((DefaultTreeModel) this.tree.getModel()).reload();
-        expandTree(this.tree, dummyTree, rootPath);
+                tree.isExpanded(rootPath));
+        buildDummyTree(dummyTree, rootPath);
+        expandTree(dummyTree, rootPath);
     }
 
-    private void buildDummyTree(DummyNode node, JTree tree, DefaultTreeModel model,
-                                TreePath path) {
-        int childrenCount = model.getChildCount(path.getLastPathComponent());
-        for (int i=0; i<childrenCount; i++) {
+    private void buildDummyTree(DummyNode node, TreePath path) {
+        int childCount = model.getChildCount(path.getLastPathComponent());
+        for (int i=0; i<childCount; i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) model.getChild(path.getLastPathComponent(), i);
-            TreePath newPath = path.pathByAddingChild(model.getChild(child, i));
-            DummyNode newChild = new DummyNode(child.getUserObject().toString(),
-                    tree.isExpanded(newPath));
-            node.add(newChild);
-            if (child.getAllowsChildren())
-                buildDummyTree(node, tree, model, newPath);
+            if (child.getAllowsChildren()) {
+                TreePath newPath = path.pathByAddingChild(child);
+                DummyNode newChild = new DummyNode(child.getUserObject().toString(),
+                        tree.isExpanded(newPath));
+                node.add(newChild);
+                buildDummyTree(newChild, newPath);
+            }
         }
     }
 
-    private void expandTree(JTree tree, DummyNode node, TreePath path) {
+    private void expandTree(DummyNode node, TreePath path) {
         if (node.isExpanded()) {
+            tree.collapsePath(path);
             tree.expandPath(path);
+        } else {
+            tree.expandPath(path);
+            tree.collapsePath(path);
         }
-        for (int i=0; i<node.getChildCount(); i++) {
-            TreePath childPath = TreeUtils.pathByAddingChildAsStr(path, node.getName());
-            if (childPath !=null)
-                expandTree(tree, node, childPath);
+        int childCount = model.getChildCount(path.getLastPathComponent());
+        for (int i=0; i<childCount; i++) {
+            if (TreeUtils.isNodeAsStrChild((DefaultMutableTreeNode) path.getLastPathComponent(),
+                                            node.getChild(i).getName())) {
+                TreePath childPath = TreeUtils.pathByAddingChildAsStr(path, node.getChild(i).getName());
+                expandTree(node.getChild(i), childPath);
+            }
         }
-
     }
 
     private class DummyNode {
@@ -67,11 +73,15 @@ public class RefreshTreeAction extends AbstractAction {
         private DummyNode(String name, boolean expanded) {
             this.name = name;
             this.expanded = expanded;
-            children = new ArrayList<>();
+            this.children = new ArrayList<>();
         }
 
         private boolean isExpanded(){
             return this.expanded;
+        }
+
+        private DummyNode getChild(int i) {
+            return this.children.get(i);
         }
 
         private String getName() {
@@ -79,11 +89,11 @@ public class RefreshTreeAction extends AbstractAction {
         }
 
         private void add(DummyNode child) {
-            children.add(child);
+            this.children.add(child);
         }
 
         private int getChildCount(){
-            return children.size();
+            return this.children.size();
         }
 
     }

@@ -32,7 +32,7 @@ public class TreeUtils {
         if (!inserted) treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-    protected static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
+    public static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
         for (int i=0; i<parent.getChildCount(); i++) {
             if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
                 return true;
