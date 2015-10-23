@@ -83,7 +83,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     @Override public void mouseReleased( MouseEvent e ) {
         this.path = this._Tree.getPathForLocation(e.getX(), e.getY());
         try {
-            this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+            if (path != null)
+                this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         } catch (NullPointerException er) {er.printStackTrace();}
         if ( e.isPopupTrigger() )
             contextMenu.show(e.getComponent(), e.getX(), e.getY(), this.path);

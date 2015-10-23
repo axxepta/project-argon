@@ -67,6 +67,22 @@ public class TreeUtils {
         }
     }
 
+
+    public static String protocolFromTreePath(TreePath path) {
+        if (path.getPathCount() > 1) {
+            String sourceStr = path.getPathComponent(1).toString();
+            // ToDo: use extra class for constant strings
+            switch (sourceStr) {
+                case "Databases": return CustomProtocolURLHandlerExtension.ARGON;
+                case "Query Folder": return CustomProtocolURLHandlerExtension.ARGON_XQ;
+                case "Repo Folder": return CustomProtocolURLHandlerExtension.ARGON_REPO;
+                default: return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static String resourceFromTreePath(TreePath path) {
         StringBuilder resource = new StringBuilder("");
         if (path.getPathCount() > 1) {

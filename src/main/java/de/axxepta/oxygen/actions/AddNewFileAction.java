@@ -1,11 +1,11 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -13,6 +13,8 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class AddNewFileAction extends AbstractAction {
 
     StandalonePluginWorkspace wsa;
     BasexTree tree;
+    JDialog newFileDialog;
 
     JTextField newFileNameTextField;
     JComboBox newFileTypeComboBox;
@@ -37,11 +40,11 @@ public class AddNewFileAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
-        String db_path = TreeUtils.urlStringFromTreePath(path);
+        String db_path = TreeUtils.resourceFromTreePath(path);
         if (((TreeListener) tree.getTreeSelectionListeners()[0]).getNode().getAllowsChildren()) {
 
             // show dialog
-            JDialog newFileDialog = new JDialog(
+            newFileDialog = new JDialog(
                     (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame()),
                     "Add new File to BaseX Database path");
             newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -49,20 +52,20 @@ public class AddNewFileAction extends AbstractAction {
 
             JPanel content = new JPanel(new BorderLayout());
 
-            JPanel namePanel = new JPanel();
-            JLabel nameLabel = new JLabel("File Name");
-            namePanel.add(nameLabel, BorderLayout.WEST);
+            JPanel namePanel = new JPanel(new GridLayout());
+            JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
+            namePanel.add(nameLabel);
             newFileNameTextField = new JTextField();
-            namePanel.add(newFileNameTextField, BorderLayout.EAST);
+            namePanel.add(newFileNameTextField);
             content.add(namePanel, BorderLayout.NORTH);
 
-            JPanel extPanel = new JPanel();
-            JLabel extLabel = new JLabel("File Type");
-            extPanel.add(extLabel, BorderLayout.WEST);
+            JPanel extPanel = new JPanel(new GridLayout());
+            JLabel extLabel = new JLabel("File Type", JLabel.LEFT);
+            extPanel.add(extLabel);
             String[] fileTypes = {"XML Document (*.xml)", "XQuery (*.xquery)",
                     "XQuery Module (*.xqm)"};
             newFileTypeComboBox = new JComboBox(fileTypes);
-            extPanel.add(extLabel, BorderLayout.EAST);
+            extPanel.add(newFileTypeComboBox);
             content.add(extPanel, BorderLayout.CENTER);
 
             JPanel btnPanel = new JPanel();
@@ -72,14 +75,9 @@ public class AddNewFileAction extends AbstractAction {
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
-            // get template
-
-            // add file
-            try {
-                new BaseXRequest("add", TreeUtils.sourceFromTreePath(path), db_path);
-            } catch (Exception er) {
-                er.printStackTrace();
-            }
+            newFileDialog.setContentPane(content);
+            newFileDialog.pack();
+            newFileDialog.setVisible(true);
         }
     }
 
@@ -103,26 +101,32 @@ public class AddNewFileAction extends AbstractAction {
             int ind2 = ext.indexOf(')');
             ext = ext.substring(ind1+2, ind2);
             // get template
-            byte[] template;
+            final TokenBuilder template = new TokenBuilder();
             switch (ext) {
-                case ".xml" : template = "<a/>".getBytes();
+                case ".xml" : template.add("aaa");
                     break;
-                case ".xquery" : template = "xquery version \"3.0\";".getBytes();
+                case ".xquery" : template.add("xquery version \"3.0\";");
                     break;
-                case "xqm" : template = ("xquery version \"3.0\";\n module namespace " + name + " = \"" + name +"\";").getBytes();
+                case "xqm" : template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
                     break;
-                default: template = "<a/>".getBytes();
+                default: template.add("<a/>");
             }
             // add file
-            try {
-                Connection connection = BaseXConnectionWrapper.getConnection();
-                connection.put(TreeUtils.sourceFromTreePath(path), db_path + "/" + name + ext,
-                        template);
-                connection.close();
-            } catch (Exception er) {
+            String resource = db_path + "/" + name + ext;
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                connection.put(TreeUtils.sourceFromTreePath(path), resource, template.finish());
+                TopicHolder.saveFile.postMessage(TreeUtils.protocolFromTreePath(path) + ":" + resource);
+            } catch (BaseXQueryException er) {
                 er.printStackTrace();
+                JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
+                        JOptionPane.PLAIN_MESSAGE);
+            } catch (IOException er) {
+                er.printStackTrace();
+                JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
+                        JOptionPane.PLAIN_MESSAGE);
             }
 
+            newFileDialog.dispose();
         }
     }
 
