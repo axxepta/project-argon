@@ -161,13 +161,13 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 	private static String getIconFile(String fileType) {
 		switch (fileType) {
 			case "XML":
-				return "/xml16.png";
+				return "/images/xml16.png";
 			case "TXT":
-				return "/txt16.png";
+				return "/images/txt16.png";
 			case "FILE":
-				return "/file16.png";
+				return "/images/file16.png";
 			default:
-				return "/file16.png";
+				return "/images/file16.png";
 		}
 
 	}

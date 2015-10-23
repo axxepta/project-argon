@@ -119,7 +119,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     // Populate context menu
                     // ToDo: use constant string class
-                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/OpenURL16.gif")) {
+                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/images/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
@@ -135,7 +135,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(checkOut, "Check Out");
 
-                    Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif")) {
+                    Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -143,7 +143,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/Remove16.png")) {
+                    Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/images/Remove16.png")) {
                         public void actionPerformed(ActionEvent e) {
                             TreePath path = tListener.getPath();
                             BaseXSource source = TreeUtils.sourceFromTreePath(path);
@@ -156,30 +156,32 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                         new BaseXRequest("delete", source, db_path);
                                         treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
                                     } catch (Exception er) {
-                                        JOptionPane.showMessageDialog(null, "Failed to delete resource", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                                        JOptionPane.showMessageDialog(null, "Failed to delete resource",
+                                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 } else {
-                                    JOptionPane.showMessageDialog(null, "You cannot delete databases!", "BaseX Error", JOptionPane.PLAIN_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "You cannot delete databases!",
+                                            "BaseX Error", JOptionPane.PLAIN_MESSAGE);
                                 }
                             }
                         }
                     };
                     contextMenu.add(delete, "Delete");
 
-                    Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/AddFile16.gif"),
+                    Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(add,"Add");
 
-                    final Action refresh = new RefreshTreeAction("Refresh", BasexTreeCellRenderer.createImageIcon("/Refresh16.png"), tree);
+                    final Action refresh = new RefreshTreeAction("Refresh", BasexTreeCellRenderer.createImageIcon("/images/Refresh16.png"), tree);
                     contextMenu.add(refresh, "Refresh");
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png"),
+                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png"),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(searchInPath, "Search In Path");
 
-                    Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/SearchInPath16.png")) {
+                    Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -264,8 +266,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             // pass content of editor window to ListDBEntries with queryTest
                             ArrayList<String> valProbStr;
                             try {
-                                //ListDBEntries testQuery = new ListDBEntries("queryTest", "", editorContent);
-                                //valProbStr = testQuery.getResult();
                                 BaseXRequest testQuery = new BaseXRequest("parse",
                                         BaseXSource.DATABASE, editorContent);
                                 valProbStr = testQuery.getResult();
@@ -296,9 +296,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         // create actions for Toolbars
         final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
-                BasexTreeCellRenderer.createImageIcon("/RunQuery.png"), pluginWorkspaceAccess);
+                BasexTreeCellRenderer.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
-                BasexTreeCellRenderer.createImageIcon("/ReplyComment.png"), pluginWorkspaceAccess);
+                BasexTreeCellRenderer.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**
