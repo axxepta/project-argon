@@ -103,7 +103,7 @@ public class AddNewFileAction extends AbstractAction {
             // get template
             final TokenBuilder template = new TokenBuilder();
             switch (ext) {
-                case ".xml" : template.add("aaa");
+                case ".xml" : template.add("<a/>");
                     break;
                 case ".xquery" : template.add("xquery version \"3.0\";");
                     break;

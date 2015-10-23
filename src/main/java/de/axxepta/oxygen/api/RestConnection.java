@@ -156,6 +156,7 @@ public final class RestConnection implements Connection {
             try(final OutputStream out = conn.getOutputStream()) {
                 out.write(tb.finish());
             }
+            //conn.getHeaderFields();
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());

@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 /**
- * @ author Markus on 20.10.2015.
+ * @author Markus on 20.10.2015.
  */
 public class RefreshTreeAction extends AbstractAction {
 
