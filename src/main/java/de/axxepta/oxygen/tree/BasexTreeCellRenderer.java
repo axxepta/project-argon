@@ -9,6 +9,8 @@ import java.awt.Component;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,27 +38,39 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			boolean aSelected, boolean aExpanded, boolean aLeaf, int aRow,
 			boolean aHasFocus) {
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode)
-				&& aLeaf) {
-			/*
-			 * JPanel panel = new JPanel(); // Create a new panel where we will
-			 * show the data. String text =
-			 * (String)((DefaultMutableTreeNode)aValue).getUserObject();
-			 * 
-			 * String thisLeafFileType = fileType(aValue); switch
-			 * (thisLeafFileType) { case "xml": panel.add(new JLabel(text,
-			 * this.xmlIcon, LEFT)); break; case "txt": panel.add(new
-			 * JLabel(text, this.txtIcon, LEFT)); break; default: panel.add(new
-			 * JLabel(text, this.fileIcon, LEFT)); } if( aSelected ) {
-			 * panel.setBackground( Color.RED ); } else { if( aRow % 2 == 0 ) {
-			 * panel.setBackground( Color.WHITE ); } else { panel.setBackground(
-			 * new Color( 230, 230, 230 ) ); } } return panel;
-			 */
-
+		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && aLeaf) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
 			String thisLeafFileType = fileType(aValue);
 			setIcon(getOxygenIcon(thisLeafFileType));
+			return this;
+		}
+
+		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isRoot(aTree, aValue)) {
+			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
+					aExpanded, true, aRow, aHasFocus);
+			setIcon(createImageIcon("/images/DbConnection16.gif"));
+			return this;
+		}
+
+		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDatabase(aTree, aValue)) {
+			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
+					aExpanded, true, aRow, aHasFocus);
+			setIcon(createImageIcon("/images/DbCatalog16.gif"));
+			return this;
+		}
+
+		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDBSource(aTree, aValue)) {
+			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
+					aExpanded, true, aRow, aHasFocus);
+			setIcon(createImageIcon("/images/DBHttp16.png"));
+			return this;
+		}
+
+		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isSourceDir(aTree, aValue)) {
+			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
+					aExpanded, true, aRow, aHasFocus);
+			setIcon(createImageIcon("/images/DbFolder16.png"));
 			return this;
 		}
 
@@ -83,6 +97,34 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			return leafStr.substring(leafStr.lastIndexOf(".") + 1);
 		} else
 			return "";
+	}
+
+	protected boolean isRoot(JTree tree, Object value) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		return node.equals(root);
+	}
+
+	protected boolean isDatabase(JTree tree, Object value) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
+		return node.getParent().equals(db);
+	}
+
+	protected boolean isDBSource(JTree tree, Object value) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
+		return node.equals(db);
+	}
+
+	protected boolean isSourceDir(JTree tree, Object value) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		DefaultMutableTreeNode restxq = (DefaultMutableTreeNode) tree.getModel().getChild(root, 1);
+		DefaultMutableTreeNode repo = (DefaultMutableTreeNode) tree.getModel().getChild(root, 2);
+		return (node.equals(restxq) || node.equals(repo));
 	}
 
 	private static javax.swing.Icon getOxygenIcon(String extension) {
@@ -169,7 +211,6 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			default:
 				return "/images/file16.png";
 		}
-
 	}
 
 	// ToDo: move to separate class if also used in Workspace
