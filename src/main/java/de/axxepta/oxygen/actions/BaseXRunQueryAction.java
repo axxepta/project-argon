@@ -68,7 +68,7 @@ public class BaseXRunQueryAction extends AbstractAction {
                 //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
 
                 //+ display result of query in a new editor window
-                pluginWorkspaceAccess.createNewEditor("txt", ContentTypes.PLAIN_TEXT_CONTENT_TYPE,queryRes);
+                pluginWorkspaceAccess.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
 
             } else {
                 pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");

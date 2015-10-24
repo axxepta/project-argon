@@ -42,7 +42,7 @@ public class BaseXRequest {
                     result = new ArrayList<>();
                     answer = "";
                     check = false;
-                    answer = connection.xquery(path);
+                    answer = "<response>\n" + connection.xquery(path) + "\n</response>";
                     break;
                 case "parse":
                     result = new ArrayList<>();

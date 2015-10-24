@@ -103,13 +103,13 @@ public class AddNewFileAction extends AbstractAction {
             // get template
             final TokenBuilder template = new TokenBuilder();
             switch (ext) {
-                case ".xml" : template.add("<a/>");
+                case ".xml" : template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     break;
                 case ".xquery" : template.add("xquery version \"3.0\";");
                     break;
                 case "xqm" : template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
                     break;
-                default: template.add("<a/>");
+                default: template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             }
             // add file
             String resource = db_path + "/" + name + ext;
