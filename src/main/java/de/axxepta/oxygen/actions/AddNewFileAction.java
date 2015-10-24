@@ -1,7 +1,6 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
-import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
@@ -14,10 +13,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * @author Markus on 20.10.2015.
@@ -64,7 +59,7 @@ public class AddNewFileAction extends AbstractAction {
             extPanel.add(extLabel);
             String[] fileTypes = {"XML Document (*.xml)", "XQuery (*.xquery)",
                     "XQuery Module (*.xqm)"};
-            newFileTypeComboBox = new JComboBox(fileTypes);
+            newFileTypeComboBox = new JComboBox<>(fileTypes);
             extPanel.add(newFileTypeComboBox);
             content.add(extPanel, BorderLayout.CENTER);
 
@@ -116,10 +111,6 @@ public class AddNewFileAction extends AbstractAction {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 connection.put(TreeUtils.sourceFromTreePath(path), resource, template.finish());
                 TopicHolder.saveFile.postMessage(TreeUtils.protocolFromTreePath(path) + ":" + resource);
-            } catch (BaseXQueryException er) {
-                er.printStackTrace();
-                JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
-                        JOptionPane.PLAIN_MESSAGE);
             } catch (IOException er) {
                 er.printStackTrace();
                 JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",

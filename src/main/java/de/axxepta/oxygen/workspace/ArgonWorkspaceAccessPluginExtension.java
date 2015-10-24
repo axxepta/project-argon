@@ -107,7 +107,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     // Add context menu
                     BaseXPopupMenu contextMenu = new BaseXPopupMenu();
-                    //JPopupMenu contextMenu = new JPopupMenu();
 
                     // Add Tree Listener
                     final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
@@ -143,29 +142,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    Action delete = new AbstractAction("Delete", BasexTreeCellRenderer.createImageIcon("/images/Remove16.png")) {
-                        public void actionPerformed(ActionEvent e) {
-                            TreePath path = tListener.getPath();
-                            BaseXSource source = TreeUtils.sourceFromTreePath(path);
-                            String db_path = TreeUtils.resourceFromTreePath(path);
-                            if ((source != null) && (!db_path.equals(""))) {
-                                // don't try to delete databases!
-                                if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
-                                    // ToDo: ask before delete non-empty directory
-                                    try {
-                                        new BaseXRequest("delete", source, db_path);
-                                        treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
-                                    } catch (Exception er) {
-                                        JOptionPane.showMessageDialog(null, "Failed to delete resource",
-                                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                                    }
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "You cannot delete databases!",
-                                            "BaseX Error", JOptionPane.PLAIN_MESSAGE);
-                                }
-                            }
-                        }
-                    };
+                    Action delete = new DeleteAction("Delete", BasexTreeCellRenderer.createImageIcon("/images/Remove16.png"),
+                            tree, tListener);
                     contextMenu.add(delete, "Delete");
 
                     Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),

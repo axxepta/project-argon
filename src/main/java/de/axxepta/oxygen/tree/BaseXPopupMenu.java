@@ -5,11 +5,13 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 
+import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
+
 /**
  * PopupMenu class which holds extra ArrayLists for MenuItems and their names, providing access methods
  *  for enabling the items via name keys.
  */
-public class BaseXPopupMenu extends ro.sync.exml.workspace.api.standalone.ui.PopupMenu {
+public class BaseXPopupMenu extends PopupMenu {
 
     private ArrayList<String> itemNames;
     private ArrayList<JMenuItem> items;

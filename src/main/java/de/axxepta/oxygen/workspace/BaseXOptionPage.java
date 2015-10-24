@@ -25,8 +25,6 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     /**
      * BaseX Keys
      */
-    public static final String KEY_SAVE_TEMPORARY_FILES_LOCATION = "save.tmp.location";
-    public static final String KEY_DEFAULT_CHECKOUT_LOCATION = "default.checkout.location";
 
     public static final String KEY_BASEX_HOST = "KEY_BASEX_HOST";
     public static final String KEY_BASEX_HTTP_PORT = "KEY_BASEX_HTTP_PORT";
@@ -216,7 +214,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         panel.add(baseXConnectionTypeRadioFrameLbl, c);
 
         String[] connectionTypes = { "HTTP" , "TCP" };
-        baseXConnectionTypeComboBox = new JComboBox(connectionTypes);
+        baseXConnectionTypeComboBox = new JComboBox<>(connectionTypes);
         c.gridx++;
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
