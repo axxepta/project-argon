@@ -4,7 +4,7 @@ import ro.sync.exml.plugin.Plugin;
 import ro.sync.exml.plugin.PluginDescriptor;
 
 /**
- * Created by daltiparmak on 02.04.15.
+ * @author daltiparmak on 02.04.15.
  */
 
 /**

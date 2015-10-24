@@ -18,8 +18,6 @@ public class BasexTree extends Tree {
 		super(root);
 		// Use our custom cell renderer.
 		this.setCellRenderer(new BasexTreeCellRenderer());
-		// Use our custom tree UI.
-		//this.setUI(new BasexTreeUI());
 	}
 
 }

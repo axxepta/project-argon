@@ -38,7 +38,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
 	}
     
     
-    return selectedURLs.toArray(new URL[0]);
+    return selectedURLs.toArray(new URL[selectedURLs.size()]);
   }
 
   /**

@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
     JDialog dialog;
 
-    CloseDialogAction(String name, JDialog dialog){
+    protected CloseDialogAction(String name, JDialog dialog){
         super(name);
         this.dialog = dialog;
     }

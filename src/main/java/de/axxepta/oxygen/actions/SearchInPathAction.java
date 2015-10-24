@@ -85,12 +85,13 @@ public class SearchInPathAction extends AbstractAction {
                 // ToDo: add filter in query
                 String basePathStr = TreeUtils.resourceFromTreePath(path);
                 ArrayList<String> allResources;
+                JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
                 try {
                     BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
                     allResources = search.getResult();
 
                 } catch (Exception er) {
-                    JOptionPane.showMessageDialog(null, "Failed to search for BaseX resources.\n Check if server ist still running.",
+                    JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources.\n Check if server ist still running.",
                             "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                     allResources = new ArrayList<>();
                 }
@@ -100,16 +101,14 @@ public class SearchInPathAction extends AbstractAction {
                 }
 
                 // show found resources
-                JDialog resultsDialog = new JDialog(
-                        (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame()),
-                        "Open/Find Resources");
+                JDialog resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
                 resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
                 JPanel content = new JPanel(new BorderLayout());
                 JLabel foundLabel = new JLabel("Search for " + filter + " found " + allResources.size() + " resource(s).");
                 content.add(foundLabel, BorderLayout.NORTH);
 
-                JList resultList = new JList(allResources.toArray());
+                JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
 
                 JPanel buttonsPanel = new JPanel();
                 JButton openButton = new JButton(new OpenSelectedAction("Open Resource(s)", icon, this.wsa, resultList));
@@ -139,10 +138,10 @@ public class SearchInPathAction extends AbstractAction {
 
     private class OpenSelectedAction extends AbstractAction {
 
-        JList results;
+        JList<String> results;
         StandalonePluginWorkspace wsa;
 
-        OpenSelectedAction(String name, Icon icon, StandalonePluginWorkspace wsa, JList results) {
+        OpenSelectedAction(String name, Icon icon, StandalonePluginWorkspace wsa, JList<String> results) {
             super(name, icon);
             this.results = results;
             this.wsa = wsa;
@@ -150,7 +149,7 @@ public class SearchInPathAction extends AbstractAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ArrayList selectedResources = new ArrayList();
+            ArrayList<String> selectedResources = new ArrayList<>();
             selectedResources.addAll(results.getSelectedValuesList());
 
             for (Object resource : selectedResources) {

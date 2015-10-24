@@ -1,8 +1,5 @@
 package de.axxepta.oxygen.api;
 
-import de.axxepta.oxygen.api.ClientConnection;
-import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 
 import java.io.IOException;

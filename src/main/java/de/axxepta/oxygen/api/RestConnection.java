@@ -34,7 +34,7 @@ public final class RestConnection implements Connection {
                           final String password) throws MalformedURLException {
         url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
         j_url = new URL("http://" + server + ":" + port + "/rest");
-        basicAuth = "Basic " + new String(Base64.encode(user + ':' + password));
+        basicAuth = "Basic " + Base64.encode(user + ':' + password);
 
     }
 
@@ -76,7 +76,7 @@ public final class RestConnection implements Connection {
     public ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException {
         final String result = Token.string(request(getQuery("search-" + source), PATH, path, FILTER, filter));
         String[] resultArr = result.isEmpty() ? new String[0] : result.split("\r?\n");
-        return new ArrayList(Arrays.asList(resultArr));
+        return new ArrayList<>(Arrays.asList(resultArr));
     }
 
     @Override
