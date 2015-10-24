@@ -1,7 +1,6 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.tree.BasexTree;
-import de.axxepta.oxygen.tree.TreeUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,10 +56,10 @@ public class RefreshTreeAction extends AbstractAction {
         }
         int childCount = model.getChildCount(path.getLastPathComponent());
         for (int i=0; i<childCount; i++) {
-            if (TreeUtils.isNodeAsStrChild((DefaultMutableTreeNode) path.getLastPathComponent(),
-                                            node.getChild(i).getName())) {
-                TreePath childPath = TreeUtils.pathByAddingChildAsStr(path, node.getChild(i).getName());
-                expandTree(node.getChild(i), childPath);
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) model.getChild(path.getLastPathComponent(), i);
+            if (node.isNodeAsStringChild(currentNode.getUserObject().toString())) {
+                TreePath childPath = path.pathByAddingChild(currentNode);
+                expandTree(node.getChild(node.getIndex(currentNode.getUserObject().toString())), childPath);
             }
         }
     }
@@ -80,6 +79,22 @@ public class RefreshTreeAction extends AbstractAction {
             return this.expanded;
         }
 
+        private boolean isNodeAsStringChild(String childName) {
+            for (DummyNode child : children) {
+                if (child.getName().equals(childName))
+                    return true;
+            }
+            return false;
+        }
+
+        private int getIndex(String childName) {
+            for (int i=0; i<children.size(); i++) {
+                if (children.get(i).getName().equals(childName))
+                    return i;
+            }
+            return -1;
+        }
+
         private DummyNode getChild(int i) {
             return this.children.get(i);
         }
@@ -92,9 +107,9 @@ public class RefreshTreeAction extends AbstractAction {
             this.children.add(child);
         }
 
-        private int getChildCount(){
+        /*private int getChildCount(){
             return this.children.size();
-        }
+        }*/
 
     }
 
