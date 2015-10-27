@@ -124,7 +124,8 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 		return (node.equals(restxq) || node.equals(repo));
 	}
 
-	private static javax.swing.Icon getOxygenIcon(String extension) {
+	// ToDo: move to separate class
+	public static javax.swing.Icon getOxygenIcon(String extension) {
 		javax.swing.Icon icon;
 		if (extension.equalsIgnoreCase("xml")
 				|| extension.equalsIgnoreCase("dita")
@@ -197,6 +198,7 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 		return icon;
 	}
 
+	// ToDo: move to separate class
 	private static String getIconFile(String fileType) {
 		switch (fileType) {
 			case "XML":
@@ -210,7 +212,7 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 		}
 	}
 
-	// ToDo: move to separate class if also used in Workspace
+	// ToDo: move to separate class (same as getOxygenIcon)
 	public static ImageIcon createImageIcon(String path) {
 		java.net.URL imgURL = BasexTree.class.getResource(path);
 		if (imgURL != null) {

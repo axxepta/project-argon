@@ -60,6 +60,7 @@ public class AddNewFileAction extends AbstractAction {
             String[] fileTypes = {"XML Document (*.xml)", "XQuery (*.xquery)",
                     "XQuery Module (*.xqm)"};
             newFileTypeComboBox = new JComboBox<>(fileTypes);
+            newFileTypeComboBox.setRenderer(new NewFileListCellRenderer());
             extPanel.add(newFileTypeComboBox);
             content.add(extPanel, BorderLayout.CENTER);
 
