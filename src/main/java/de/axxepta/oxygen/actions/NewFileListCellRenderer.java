@@ -18,7 +18,6 @@ public class NewFileListCellRenderer extends DefaultListCellRenderer {
         int ind1 = fileType.indexOf("(");
         int ind2 = fileType.indexOf(")");
         String ext = fileType.substring(ind1+3, ind2);
-        System.out.println(ext);
         Icon icon = BasexTreeCellRenderer.getOxygenIcon(ext);
         label.setIcon(icon);
         return label;

@@ -45,7 +45,7 @@ public class AddNewFileAction extends AbstractAction {
             newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 
-            JPanel content = new JPanel(new BorderLayout());
+            JPanel content = new JPanel(new BorderLayout(10,10));
 
             JPanel namePanel = new JPanel(new GridLayout());
             JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
@@ -72,6 +72,7 @@ public class AddNewFileAction extends AbstractAction {
             content.add(btnPanel, BorderLayout.SOUTH);
 
             newFileDialog.setContentPane(content);
+            //newFileDialog.setSize(400,200);
             newFileDialog.pack();
             newFileDialog.setVisible(true);
         }
@@ -92,32 +93,37 @@ public class AddNewFileAction extends AbstractAction {
         public void actionPerformed (ActionEvent e){
 
             String name = newFileNameTextField.getText();
-            String ext = newFileTypeComboBox.getSelectedItem().toString();
-            int ind1 = ext.indexOf('(');
-            int ind2 = ext.indexOf(')');
-            ext = ext.substring(ind1+2, ind2);
-            // get template
-            final TokenBuilder template = new TokenBuilder();
-            switch (ext) {
-                case ".xml" : template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    break;
-                case ".xquery" : template.add("xquery version \"3.0\";");
-                    break;
-                case "xqm" : template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
-                    break;
-                default: template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            if (!name.equals("")) {
+                String ext = newFileTypeComboBox.getSelectedItem().toString();
+                int ind1 = ext.indexOf('(');
+                int ind2 = ext.indexOf(')');
+                ext = ext.substring(ind1 + 2, ind2);
+                // get template
+                final TokenBuilder template = new TokenBuilder();
+                switch (ext) {
+                    case ".xml":
+                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                        break;
+                    case ".xquery":
+                        template.add("xquery version \"3.0\";");
+                        break;
+                    case "xqm":
+                        template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
+                        break;
+                    default:
+                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                }
+                // add file
+                String resource = db_path + "/" + name + ext;
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    connection.put(TreeUtils.sourceFromTreePath(path), resource, template.finish());
+                    TopicHolder.saveFile.postMessage(TreeUtils.protocolFromTreePath(path) + ":" + resource);
+                } catch (IOException er) {
+                    er.printStackTrace();
+                    JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
+                            JOptionPane.PLAIN_MESSAGE);
+                }
             }
-            // add file
-            String resource = db_path + "/" + name + ext;
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                connection.put(TreeUtils.sourceFromTreePath(path), resource, template.finish());
-                TopicHolder.saveFile.postMessage(TreeUtils.protocolFromTreePath(path) + ":" + resource);
-            } catch (IOException er) {
-                er.printStackTrace();
-                JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
-                        JOptionPane.PLAIN_MESSAGE);
-            }
-
             newFileDialog.dispose();
         }
     }
