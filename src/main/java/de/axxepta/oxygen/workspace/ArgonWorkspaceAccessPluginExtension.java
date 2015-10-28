@@ -4,6 +4,8 @@ import de.axxepta.oxygen.actions.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.*;
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +52,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
+        // init connection
         BaseXConnectionWrapper.refreshFromOptions();
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
@@ -58,6 +61,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_PASSWORD));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_CONNECTION));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_LOGFILE));
+
+        ArgonEditorsWatchMap.init();
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
             /**
@@ -206,12 +211,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
             @Override
             public void editorClosed(URL editorLocation) {
+                if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
+                    ArgonEditorsWatchMap.removeURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
             }
 
             @Override
             public void editorOpened(URL editorLocation) {
-
+                if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
+                    ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);

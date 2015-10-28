@@ -43,6 +43,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
         @Override
         public OutputStream getOutputStream() throws IOException {
+            ArgonEditorsWatchMap.addURL(url);
             return new BaseXByteArrayOutputStream(this.source, url);
         }
 
