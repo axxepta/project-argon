@@ -53,7 +53,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
         // init connection
-        BaseXConnectionWrapper.refreshFromOptions();
+        BaseXConnectionWrapper.refreshFromOptions(false);
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_TCP_PORT));

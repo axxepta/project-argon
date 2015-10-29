@@ -12,16 +12,16 @@ public class BaseXConnectionWrapper {
 
     static Connection connection;
 
-    public static void refreshFromOptions(){
+    public static void refreshFromOptions(boolean defaults){
 
-        String host = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HOST);
-        String user = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_USERNAME);
-        String pass = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_PASSWORD);
-        int port = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
-        int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT));
+        String host = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HOST, defaults);
+        String user = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_USERNAME, defaults);
+        String pass = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_PASSWORD, defaults);
+        int port = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HTTP_PORT, defaults));
+        int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT, defaults));
 
         String connType;
-        if (BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_CONNECTION).equals("HTTP")) {
+        if (BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_CONNECTION, defaults).equals("HTTP")) {
             connType = "REST";
         } else {
             connType = "CLIENT";

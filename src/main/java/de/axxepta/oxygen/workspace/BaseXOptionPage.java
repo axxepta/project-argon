@@ -305,14 +305,27 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         return panel;
     }
 
-    public static String getOption(String key) {
-        PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-        if(pluginWorkspace != null){
-            WSOptionsStorage store = pluginWorkspace.getOptionsStorage();
-            if(store != null) return store.getOption(key, "empty option");
-            else return "no store";
+    public static String getOption(String key, boolean defaults) {
+        if (defaults) {
+            switch (key) {
+                case KEY_BASEX_HOST: return DEF_BASEX_HOST;
+                case KEY_BASEX_HTTP_PORT: return DEF_BASEX_HTTP_PORT;
+                case KEY_BASEX_TCP_PORT: return DEF_BASEX_TCP_PORT;
+                case KEY_BASEX_USERNAME: return DEF_BASEX_USERNAME;
+                case KEY_BASEX_PASSWORD: return DEF_BASEX_PASSWORD;
+                case KEY_BASEX_CONNECTION: return DEF_BASEX_CONNECTION;
+                case KEY_BASEX_LOGFILE: return DEF_BASEX_LOGFILE;
+                default: return "";
+            }
+        } else {
+            PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+            if (pluginWorkspace != null) {
+                WSOptionsStorage store = pluginWorkspace.getOptionsStorage();
+                if (store != null) return store.getOption(key, "empty option");
+                else return "no store";
+            } else return "no plugin workspace";
         }
-        else return "no plugin workspace";
     }
+
 }
 

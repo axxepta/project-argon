@@ -16,7 +16,7 @@ public class BaseXOptionListener extends WSOptionListener {
 
     @Override
     public void optionValueChanged(WSOptionChangedEvent wsOptionChangedEvent) {
-        BaseXConnectionWrapper.refreshFromOptions();
+        BaseXConnectionWrapper.refreshFromOptions(false);
     }
 
 }
