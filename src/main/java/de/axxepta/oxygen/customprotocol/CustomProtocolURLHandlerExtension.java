@@ -8,6 +8,8 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
 import ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension;
@@ -30,10 +32,12 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     public static final String ARGON_XQ = "argonquery";
     public static final String ARGON_REPO = "argonrepo";
 
+    private static final Logger logger = LogManager.getLogger(CustomProtocolURLHandlerExtension.class);
   /**
    * Gets the handler for the custom protocol
    */
     public URLStreamHandler getURLStreamHandler(String protocol) {
+        logger.info("Requested protocol: " + protocol);
         URLStreamHandler handler;
         switch (protocol.toLowerCase()) {
             case ARGON: handler = new ArgonProtocolHandler(BaseXSource.DATABASE);

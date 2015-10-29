@@ -3,6 +3,8 @@ package de.axxepta.oxygen.customprotocol;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.net.URLStreamHandler;
 public class ArgonProtocolHandler extends URLStreamHandler {
 
     BaseXSource source;
+    private static final Logger logger = LogManager.getLogger(ArgonProtocolHandler.class);
 
     public ArgonProtocolHandler(BaseXSource source) {
         this.source = source;
@@ -37,6 +40,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
         @Override
         public InputStream getInputStream() throws IOException {
             Connection connection = BaseXConnectionWrapper.getConnection();
+            logger.info("Requested input stream: " + url.toString());
             return new ByteArrayInputStream(connection.get(source,
                     CustomProtocolURLHandlerExtension.pathFromURL(this.url)));
         }
