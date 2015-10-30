@@ -37,6 +37,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * Gets the handler for the custom protocol
    */
     public URLStreamHandler getURLStreamHandler(String protocol) {
+        //BaseXConnectionWrapper.refreshDefaults();
         logger.info("Requested protocol: " + protocol);
         URLStreamHandler handler;
         switch (protocol.toLowerCase()) {

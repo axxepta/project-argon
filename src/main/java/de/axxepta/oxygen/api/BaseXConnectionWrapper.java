@@ -42,6 +42,14 @@ public class BaseXConnectionWrapper {
         }
     }
 
+    public static void refreshDefaults() {
+        try {
+            connection = new RestConnection("localhost", 8984, "admin", "admin");
+        } catch (MalformedURLException er) {
+            connection = null;
+        }
+    }
+
     public static Connection getConnection(){
         return connection;
     }
