@@ -3,6 +3,7 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,14 +39,15 @@ public class SearchInPathAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
+        JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
         if (path.getPathCount() == 1) {
-            JOptionPane.showMessageDialog(null, "Please select source to search in (Databases/RestXQ/Repo).",
+            JOptionPane.showMessageDialog(parentFrame, "Please select source to search in (Databases/RestXQ/Repo).",
                     "Search in Path", JOptionPane.PLAIN_MESSAGE);
             return;
         }
         // ToDo: own class...
         if ((path.getPathCount() == 2) && (path.getPathComponent(1).toString().equals("Databases"))) {
-            JOptionPane.showMessageDialog(null, "Please select specific database to search in.",
+            JOptionPane.showMessageDialog(parentFrame, "Please select specific database to search in.",
                     "Search in Path", JOptionPane.PLAIN_MESSAGE);
             return;
         }
@@ -79,13 +81,12 @@ public class SearchInPathAction extends AbstractAction {
 
             }
             // get filter string
-            String filter = JOptionPane.showInputDialog(null, "Find resource in path\n" +
+            String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in path\n" +
                     pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
             if ((filter != null) && (!filter.equals(""))) {
                 // ToDo: add filter in query
                 String basePathStr = TreeUtils.resourceFromTreePath(path);
                 ArrayList<String> allResources;
-                JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
                 try {
                     BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
                     allResources = search.getResult();
@@ -102,6 +103,7 @@ public class SearchInPathAction extends AbstractAction {
 
                 // show found resources
                 JDialog resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
+                resultsDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
                 resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
                 JPanel content = new JPanel(new BorderLayout());
@@ -125,10 +127,12 @@ public class SearchInPathAction extends AbstractAction {
                 resultPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 resultPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
                 resultsDialog.getContentPane().add(resultPane, BorderLayout.CENTER);
-
                 content.add(resultPane);
+
+                content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
                 resultsDialog.setContentPane(content);
                 resultsDialog.setSize(500,300);
+                resultsDialog.setLocationRelativeTo(parentFrame);
                 resultsDialog.setVisible(true);
 
             }

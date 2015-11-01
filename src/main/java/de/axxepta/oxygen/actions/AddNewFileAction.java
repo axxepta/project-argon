@@ -2,6 +2,7 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import org.basex.util.TokenBuilder;
@@ -9,6 +10,8 @@ import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +20,7 @@ import java.io.IOException;
 /**
  * @author Markus on 20.10.2015.
  */
-public class AddNewFileAction extends AbstractAction {
+public class AddNewFileAction extends AbstractAction implements DocumentListener {
 
     StandalonePluginWorkspace wsa;
     BasexTree tree;
@@ -25,6 +28,9 @@ public class AddNewFileAction extends AbstractAction {
 
     JTextField newFileNameTextField;
     JComboBox newFileTypeComboBox;
+    final String filenamechar = "\\w|_|-";
+    final String filenamechars = "(\\w|_|-)*";
+    boolean textFieldResetInProgress;
 
     public AddNewFileAction(String name, Icon icon, StandalonePluginWorkspace wsa, BasexTree tree){
         super(name, icon);
@@ -39,9 +45,9 @@ public class AddNewFileAction extends AbstractAction {
         if (((TreeListener) tree.getTreeSelectionListeners()[0]).getNode().getAllowsChildren()) {
 
             // show dialog
-            newFileDialog = new JDialog(
-                    (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame()),
-                    "Add new File to BaseX Database path");
+            JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
+            newFileDialog = new JDialog(parentFrame, "Add new File to BaseX Database path");
+            newFileDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
             newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 
@@ -51,6 +57,7 @@ public class AddNewFileAction extends AbstractAction {
             JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
             namePanel.add(nameLabel);
             newFileNameTextField = new JTextField();
+            newFileNameTextField.getDocument().addDocumentListener(this);
             namePanel.add(newFileNameTextField);
             content.add(namePanel, BorderLayout.NORTH);
 
@@ -71,11 +78,55 @@ public class AddNewFileAction extends AbstractAction {
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
+            content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
             newFileDialog.setContentPane(content);
-            //newFileDialog.setSize(400,200);
             newFileDialog.pack();
+            newFileDialog.setLocationRelativeTo(parentFrame);
+            //DialogTools.CenterDialogRelativeToParent(newFileDialog);
             newFileDialog.setVisible(true);
         }
+    }
+
+    // check input to filename field, only characters allowed in file names will be adopted
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        if (!textFieldResetInProgress) {
+            String name = newFileNameTextField.getText();
+            int pos = e.getOffset();
+            if (!name.substring(pos, pos + 1).matches(filenamechar)) {
+                textFieldResetInProgress = true;
+                resetTextField(new StringBuilder(name).deleteCharAt(pos).toString());
+                java.awt.Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+    }
+
+    // check paste to filename field, only inserts witch all characters allowed in file names will be adopted
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        if (!textFieldResetInProgress) {
+            String name = newFileNameTextField.getText();
+            int pos = e.getOffset();
+            int length = e.getLength();
+            if (!name.substring(pos, pos + length).matches(filenamechars)) {
+                textFieldResetInProgress = true;
+                resetTextField(new StringBuilder(name).delete(pos, pos + length).toString());
+                java.awt.Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+
+    public void resetTextField(final String name) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                newFileNameTextField.setText(name);
+                textFieldResetInProgress = false;
+            }
+        });
     }
 
     private class AddNewSpecFileAction extends AbstractAction {

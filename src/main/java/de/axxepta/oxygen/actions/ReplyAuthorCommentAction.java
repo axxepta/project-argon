@@ -1,6 +1,8 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import ro.sync.ecss.extensions.api.AuthorAccess;
+import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -56,7 +58,8 @@ public class ReplyAuthorCommentAction extends AbstractAction {
                     endCommentEnd = docStr.indexOf("\"", endCommentEnd+9);
                     // add response to comment, hiding that you're working in text mode
                     editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
-                    String reply = JOptionPane.showInputDialog(null, "Reply to comment:", "Review", JOptionPane.PLAIN_MESSAGE);
+                    JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+                    String reply = JOptionPane.showInputDialog(parentFrame, "Reply to comment:", "Review", JOptionPane.PLAIN_MESSAGE);
                     editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
                     if (reply != null) {
                         try {
