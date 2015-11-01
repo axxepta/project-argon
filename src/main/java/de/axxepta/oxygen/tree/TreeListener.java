@@ -227,12 +227,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         logger.info("Tree needs to update: " + message);
 
         if (type.equals("SAVE_FILE")) {
-            String[] protocol = message.split(":");
-            String[] path;
-            if (protocol[1].substring(0,1).equals("/"))
-                path = protocol[1].substring(1).split("/");
-            else
-                path = protocol[1].split("/");
+            String[] protocol = message.split(":/?");
+            String[] path = protocol[1].split("/");
             currPath = new TreePath(this._treeModel.getRoot());
             switch (protocol[0]) {
                 case CustomProtocolURLHandlerExtension.ARGON_REPO:

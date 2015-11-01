@@ -29,6 +29,7 @@ public class SearchInPathAction extends AbstractAction {
     Icon icon;
     StandalonePluginWorkspace wsa;
     private static final Logger logger = LogManager.getLogger(SearchInPathAction.class);
+    JDialog resultsDialog;
 
     public SearchInPathAction (String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree){
         super(name, icon);
@@ -84,30 +85,34 @@ public class SearchInPathAction extends AbstractAction {
             String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in path\n" +
                     pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
             if ((filter != null) && (!filter.equals(""))) {
-                // ToDo: add filter in query
+                ArrayList<String> allResources = new ArrayList<>();
                 String basePathStr = TreeUtils.resourceFromTreePath(path);
-                ArrayList<String> allResources;
                 try {
                     BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
-                    allResources = search.getResult();
+                    allResources.addAll(search.getResult());
 
                 } catch (Exception er) {
-                    JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources.\n Check if server ist still running.",
+                    JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources.\n" +
+                                    " Check if server ist still running.",
                             "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                    allResources = new ArrayList<>();
                 }
-                String searchRoot = TreeUtils.treeStringFromTreePath(path)+"/";
+                String searchRoot;
+                if (source.equals(BaseXSource.DATABASE))
+                    searchRoot = TreeUtils.treeStringFromTreePath(TreeUtils.pathToDepth(path,2))+"/";
+                else
+                    searchRoot = TreeUtils.treeStringFromTreePath(path)+"/";
                 for (int i=0; i<allResources.size(); i++) {
-                    allResources.set(i, searchRoot+allResources.get(i));
+                    allResources.set(i, searchRoot+allResources.get(i).replaceAll("\\\\","/"));
                 }
 
                 // show found resources
-                JDialog resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
+                resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
                 resultsDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
                 resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
                 JPanel content = new JPanel(new BorderLayout());
-                JLabel foundLabel = new JLabel("Search for " + filter + " found " + allResources.size() + " resource(s).");
+                JLabel foundLabel = new JLabel("Search for '" + filter + "' in '" + pathStr + "' found "
+                        + allResources.size() + " resource(s).");
                 content.add(foundLabel, BorderLayout.NORTH);
 
                 JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
@@ -166,6 +171,7 @@ public class SearchInPathAction extends AbstractAction {
                 }
                 this.wsa.open(argonURL);
             }
+            resultsDialog.dispose();
         }
     }
 

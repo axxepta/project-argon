@@ -1,6 +1,5 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.editor.EditorPageConstants;

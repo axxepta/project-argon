@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -141,6 +142,27 @@ public class TreeUtils {
             db_path = new StringBuilder("");
         }
         return db_path.toString();
+    }
+
+    public static String fileStringFromPathString(String path) {
+        if (path.equals("") || path.endsWith("/") || path.endsWith("\\")) {
+            return "";
+        } else {
+            String[] nodes = path.split("\\\\|/");
+            return nodes[nodes.length-1];
+        }
+    }
+
+    public static TreePath pathToDepth(TreePath path, int depth) {
+        TreePath returnPath = path;
+        if (path.getPathCount() < depth)
+            return new TreePath(new Object[0]);
+        else {
+            for (int i=path.getPathCount(); i>(depth+1); i--) {
+                returnPath = returnPath.getParentPath();
+            }
+        }
+        return returnPath;
     }
 
 }

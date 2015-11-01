@@ -42,11 +42,13 @@ public class AddNewFileAction extends AbstractAction implements DocumentListener
     public void actionPerformed(ActionEvent e) {
         TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
         String db_path = TreeUtils.resourceFromTreePath(path);
+        String pathString = TreeUtils.protocolFromTreePath(path) + ":/" + db_path;
+
         if (((TreeListener) tree.getTreeSelectionListeners()[0]).getNode().getAllowsChildren()) {
 
             // show dialog
             JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-            newFileDialog = new JDialog(parentFrame, "Add new File to BaseX Database path");
+            newFileDialog = new JDialog(parentFrame, "Add new File to " + pathString);
             newFileDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
             newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
