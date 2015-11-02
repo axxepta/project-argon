@@ -72,17 +72,6 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			return this;
 		}
 
-		/*
-		 * if (!aLeaf) { CustomTreeNode node = (CustomTreeNode) aValue;
-		 * //System.out.println(((Employee) node.getUserObject()).name);
-		 * 
-		 * if (node.getIcon() != null) {
-		 * System.out.println(node.getIcon().toString());
-		 * setClosedIcon(node.getIcon()); setOpenIcon(node.getIcon()); } else {
-		 * setClosedIcon(getDefaultClosedIcon());
-		 * setClosedIcon(getDefaultOpenIcon());
-		 * setOpenIcon(getDefaultOpenIcon()); } }
-		 */
 		// For everything else use default renderer.
 		return defaultRenderer.getTreeCellRendererComponent(aTree, aValue,
 				aSelected, aExpanded, aLeaf, aRow, aHasFocus);

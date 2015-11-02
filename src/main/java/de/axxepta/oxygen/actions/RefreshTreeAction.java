@@ -62,6 +62,9 @@ public class RefreshTreeAction extends AbstractAction {
                 expandTree(node.getChild(node.getIndex(currentNode.getUserObject().toString())), childPath);
             }
         }
+        if (!node.isExpanded())
+            tree.collapsePath(path);
+
     }
 
     private class DummyNode {

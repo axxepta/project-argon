@@ -9,6 +9,7 @@ import de.axxepta.oxygen.tree.TreeUtils;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -82,6 +83,9 @@ public class RenameAction extends AbstractAction {
                     new BaseXRequest("rename", source, db_path,
                             TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath);
                     treeModel.valueForPathChanged(path, newPath);
+/*                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                    node.setUserObject(newPath);
+                    treeModel.nodeChanged(node);*/
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Failed to rename resource",
                             "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
