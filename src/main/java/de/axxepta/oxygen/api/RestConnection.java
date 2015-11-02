@@ -73,6 +73,11 @@ public final class RestConnection implements Connection {
     }
 
     @Override
+    public void rename(final BaseXSource source, final String path, final String newPath) throws IOException {
+        request(getQuery("rename-" + source), PATH, path, NEWPATH, newPath);
+    }
+
+    @Override
     public ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException {
         final String result = Token.string(request(getQuery("search-" + source), PATH, path, FILTER, filter));
         String[] resultArr = result.isEmpty() ? new String[0] : result.split("\r?\n");
@@ -152,9 +157,10 @@ public final class RestConnection implements Connection {
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");
+            byte[] tbChar = tb.finish();
 
             try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tb.finish());
+                out.write(tbChar);
             }
             //conn.getHeaderFields();
             return new IOStream(conn.getInputStream()).read();

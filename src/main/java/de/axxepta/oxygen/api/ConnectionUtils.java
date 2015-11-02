@@ -13,6 +13,8 @@ import org.basex.util.*;
 public final class ConnectionUtils {
     /** Path variable. */
     static final String PATH = "PATH";
+    /** Path variable for moved/renamed resources. */
+    static final String NEWPATH = "NEWPATH";
     /** Source variable. */
     static final String SOURCE = "SOURCE";
     /** Resource variable. */

@@ -72,6 +72,14 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public void rename(final BaseXSource source, final String path, final String newPath) throws IOException {
+        final Query query = client.query(getQuery("rename-" + source));
+        query.bind(PATH, path, "");
+        query.bind(NEWPATH, newPath, "");
+        query.execute();
+    }
+
+    @Override
     public ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException {
         final ArrayList<String> list = new ArrayList<>();
         final Query query = client.query(getQuery("search-" + source));

@@ -106,7 +106,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     final DefaultTreeModel treeModel = new DefaultTreeModel(root);
                     treeModel.setAsksAllowsChildren(true);
                     final BasexTree tree = new BasexTree(treeModel);
-                    tree.setEditable(true);
                     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                     setTreeState(tree, new TreePath(root), false);
 
@@ -150,6 +149,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     Action delete = new DeleteAction("Delete", BasexTreeCellRenderer.createImageIcon("/images/Remove16.png"),
                             tree, tListener);
                     contextMenu.add(delete, "Delete");
+
+                    Action rename = new RenameAction("Rename", BasexTreeCellRenderer.createImageIcon("/images/Rename16.png"),
+                            tree, tListener);
+                    contextMenu.add(rename, "Rename");
 
                     Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),
                             pluginWorkspaceAccess, tree);

@@ -10,8 +10,6 @@ import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,7 +18,7 @@ import java.io.IOException;
 /**
  * @author Markus on 20.10.2015.
  */
-public class AddNewFileAction extends AbstractAction implements DocumentListener {
+public class AddNewFileAction extends AbstractAction {
 
     StandalonePluginWorkspace wsa;
     BasexTree tree;
@@ -28,9 +26,6 @@ public class AddNewFileAction extends AbstractAction implements DocumentListener
 
     JTextField newFileNameTextField;
     JComboBox newFileTypeComboBox;
-    final String filenamechar = "\\w|_|-";
-    final String filenamechars = "(\\w|_|-)*";
-    boolean textFieldResetInProgress;
 
     public AddNewFileAction(String name, Icon icon, StandalonePluginWorkspace wsa, BasexTree tree){
         super(name, icon);
@@ -59,7 +54,7 @@ public class AddNewFileAction extends AbstractAction implements DocumentListener
             JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
             namePanel.add(nameLabel);
             newFileNameTextField = new JTextField();
-            newFileNameTextField.getDocument().addDocumentListener(this);
+            newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, false));
             namePanel.add(newFileNameTextField);
             content.add(namePanel, BorderLayout.NORTH);
 
@@ -87,48 +82,6 @@ public class AddNewFileAction extends AbstractAction implements DocumentListener
             //DialogTools.CenterDialogRelativeToParent(newFileDialog);
             newFileDialog.setVisible(true);
         }
-    }
-
-    // check input to filename field, only characters allowed in file names will be adopted
-    @Override
-    public void insertUpdate(DocumentEvent e) {
-        if (!textFieldResetInProgress) {
-            String name = newFileNameTextField.getText();
-            int pos = e.getOffset();
-            if (!name.substring(pos, pos + 1).matches(filenamechar)) {
-                textFieldResetInProgress = true;
-                resetTextField(new StringBuilder(name).deleteCharAt(pos).toString());
-                java.awt.Toolkit.getDefaultToolkit().beep();
-            }
-        }
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e) {
-    }
-
-    // check paste to filename field, only inserts witch all characters allowed in file names will be adopted
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-        if (!textFieldResetInProgress) {
-            String name = newFileNameTextField.getText();
-            int pos = e.getOffset();
-            int length = e.getLength();
-            if (!name.substring(pos, pos + length).matches(filenamechars)) {
-                textFieldResetInProgress = true;
-                resetTextField(new StringBuilder(name).delete(pos, pos + length).toString());
-                java.awt.Toolkit.getDefaultToolkit().beep();
-            }
-        }
-    }
-
-    public void resetTextField(final String name) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                newFileNameTextField.setText(name);
-                textFieldResetInProgress = false;
-            }
-        });
     }
 
     private class AddNewSpecFileAction extends AbstractAction {

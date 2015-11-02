@@ -49,6 +49,15 @@ public interface Connection extends Closeable {
     void delete(final BaseXSource source, final String path) throws IOException;
 
     /**
+     * Deletes a resource.
+     * @param source data source
+     * @param path path
+     * @param newPath new path
+     * @throws IOException I/O exception
+     */
+    void rename(final BaseXSource source, final String path, final String newPath) throws IOException;
+
+    /**
      * Searches for resource containing a filter string in it's name.
      * @param source data source
      * @param path path

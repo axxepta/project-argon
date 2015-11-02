@@ -5,7 +5,6 @@ import de.axxepta.oxygen.tree.TreeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +40,12 @@ public class BaseXRequest {
                     answer = "";
                     check = false;
                     connection.delete(source, path);
+                    break;
+                case "rename":
+                    result = new ArrayList<>();
+                    answer = "";
+                    check = false;
+                    connection.rename(source, path, params[0]);
                     break;
                 case "query":
                     result = new ArrayList<>();
