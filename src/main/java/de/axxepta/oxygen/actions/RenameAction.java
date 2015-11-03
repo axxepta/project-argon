@@ -6,6 +6,8 @@ import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
@@ -20,6 +22,7 @@ import java.awt.event.ActionEvent;
  */
 public class RenameAction extends AbstractAction {
 
+    private static final Logger logger = LogManager.getLogger(RenameAction.class);
     final BasexTree tree;
     final DefaultTreeModel treeModel;
     final TreeListener treeListener;
@@ -42,7 +45,7 @@ public class RenameAction extends AbstractAction {
         source = TreeUtils.sourceFromTreePath(path);
         db_path = TreeUtils.resourceFromTreePath(path);
         if ((source != null) && (!db_path.equals(""))) {
-            JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+            Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
             renameDialog = new JDialog(parentFrame, "Rename Resource");
             renameDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
@@ -79,16 +82,18 @@ public class RenameAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             String newPath = newFileNameTextField.getText();
             if (!newPath.equals("")) {
+                String newPathString;
+                if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren())
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
+                else
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newPath;
                 try {
-                    new BaseXRequest("rename", source, db_path,
-                            TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath);
+                    new BaseXRequest("rename", source, db_path, newPathString);
                     treeModel.valueForPathChanged(path, newPath);
-/*                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                    node.setUserObject(newPath);
-                    treeModel.nodeChanged(node);*/
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Failed to rename resource",
                             "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                    logger.debug(ex.toString());
                 }
             }
             renameDialog.dispose();

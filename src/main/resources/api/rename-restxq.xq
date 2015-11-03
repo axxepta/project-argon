@@ -9,4 +9,4 @@ let $restxqpath := $system//restxqpath/string()
 let $path := file:resolve-path($restxqpath, file:resolve-path($webpath)) || $PATH
 let $newpath := file:resolve-path($restxqpath, file:resolve-path($webpath)) || $NEWPATH
 
-file:move($path, newpath)
+return file:move($path, $newpath)

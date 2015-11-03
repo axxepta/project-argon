@@ -6,4 +6,4 @@ declare variable $NEWPATH as xs:string external;
 let $path := db:system()//repopath || '/' || $PATH
 let $newpath := db:system()//repopath || '/' || $NEWPATH
 
-file:move($path, newpath)
+return file:move($path, $newpath)

@@ -157,10 +157,9 @@ public final class RestConnection implements Connection {
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");
-            byte[] tbChar = tb.finish();
 
             try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tbChar);
+                out.write(tb.finish());
             }
             //conn.getHeaderFields();
             return new IOStream(conn.getInputStream()).read();

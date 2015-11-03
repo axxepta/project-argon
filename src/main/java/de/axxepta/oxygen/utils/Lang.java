@@ -88,92 +88,10 @@ class Bundle {
         Reader inReader = new InputStreamReader(getClass().getResourceAsStream(propFile.toString()));
         bundleMap = new Properties();
         bundleMap.load(inReader);
+        inReader.close();
     }
 
     public String getString(String key) {
         return bundleMap.getProperty(key);
     }
 }
-
-/*public class Lang {
-
-    private static final Logger logger = LogManager.getLogger(Lang.class);
-
-    private static final String PATH = "/Argon";
-    private final Map<Locale, Bundle> availableResourceBundles = new HashMap<>();
-    private static final String MISSING_KEY = "?";
-    private static final String MISSING_RESOURCE = "??";
-
-    private Bundle currentBundle = null;
-
-    public Lang () {
-        init();
-        setLocale(Locale.UK);
-    }
-
-    public Lang (Locale locale) {
-        init();
-        setLocale(locale);
-    }
-
-    private void init() {
-        loadBundle(Locale.GERMANY);
-        loadBundle(Locale.UK);
-    }
-
-    private void loadBundle(final Locale locale) {
-        try
-        {
-            final Bundle bundle = new Bundle(PATH, locale);
-            availableResourceBundles.put(locale, bundle);
-        }
-        catch (final Exception ex)
-        {
-            logger.warn("Missing recource '" + PATH + "' for locale: '" + locale + "'", ex);
-        }
-    }
-
-    private void setLocale(Locale locale) {
-        if (locale.equals(Locale.GERMANY) || locale.equals(Locale.GERMAN))
-            currentBundle = availableResourceBundles.get(Locale.GERMANY);
-        else
-            currentBundle = availableResourceBundles.get(Locale.UK);
-    }
-
-    public String get(Keys key){
-        if (currentBundle != null) {
-            String val = currentBundle.getString(key.name());
-            if (val != null)
-                return val;
-            else
-                return MISSING_KEY + key;
-        } else {
-            return MISSING_RESOURCE + key;
-        }
-    }
-
-    public enum Keys {
-        tree_root, tree_DB, tree_repo, tree_restxq, cm_add, cm_delete, cm_search
-    }
-
-    private class Bundle {
-        private Properties bundleMap;
-
-        public Bundle (String path, Locale locale) throws IOException {
-            StringBuilder propFile = new StringBuilder(path);
-            if (locale.equals(Locale.GERMANY))
-                propFile.append("_de_DE");
-            else
-                propFile.append("_en_GB");
-            propFile.append(".properties");
-            Reader inReader = new InputStreamReader(getClass().getResourceAsStream(propFile.toString()));
-            bundleMap = new Properties();
-            bundleMap.load(inReader);
-        }
-
-        public String getString(String key) {
-            return bundleMap.getProperty(key);
-        }
-    }
-
-}*/
