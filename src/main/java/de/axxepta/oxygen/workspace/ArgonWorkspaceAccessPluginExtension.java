@@ -8,6 +8,7 @@ import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.*;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
@@ -52,6 +53,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
+        // init language pack
+        Lang.init(Locale.UK);
+
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
@@ -75,15 +79,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     //The view ID defined in the "plugin.xml"
 
                     // Create some data to populate our tree.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode("BaseX Server");
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_root));
                     root.setAllowsChildren(true);
-                    DefaultMutableTreeNode databases = new DefaultMutableTreeNode("Databases");
+                    DefaultMutableTreeNode databases = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_DB));
                     databases.setAllowsChildren(true);
                     root.add(databases);
-                    DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode("Query Folder");
+                    DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_restxq));
                     queryFolder.setAllowsChildren(true);
                     root.add(queryFolder);
-                    DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode("Repo Folder");
+                    DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_repo));
                     queryFolder.setAllowsChildren(true);
                     root.add(repoFolder);
 
@@ -121,8 +125,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.deleteFile.register(tListener);
 
                     // Populate context menu
-                    // ToDo: use constant string class
-                    Action checkOut = new AbstractAction("Check Out", BasexTreeCellRenderer.createImageIcon("/images/OpenURL16.gif")) {
+                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), BasexTreeCellRenderer.createImageIcon("/images/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
@@ -136,36 +139,36 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             }
                         }
                     };
-                    contextMenu.add(checkOut, "Check Out");
+                    contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
 
-                    Action checkIn = new AbstractAction("Check In", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif")) {
+                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
-                    contextMenu.add(checkIn, "Check In");
+                    contextMenu.add(checkIn, Lang.get(Lang.Keys.cm_checkin));
 
                     contextMenu.addSeparator();
 
-                    Action delete = new DeleteAction("Delete", BasexTreeCellRenderer.createImageIcon("/images/Remove16.png"),
+                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), BasexTreeCellRenderer.createImageIcon("/images/Remove16.png"),
                             tree, tListener);
-                    contextMenu.add(delete, "Delete");
+                    contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
 
-                    Action rename = new RenameAction("Rename", BasexTreeCellRenderer.createImageIcon("/images/Rename16.png"),
+                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), BasexTreeCellRenderer.createImageIcon("/images/Rename16.png"),
                             tree, tListener);
-                    contextMenu.add(rename, "Rename");
+                    contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-                    Action add = new AddNewFileAction("Add", BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),
+                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),
                             pluginWorkspaceAccess, tree);
-                    contextMenu.add(add,"Add");
+                    contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
 
-                    final Action refresh = new RefreshTreeAction("Refresh", BasexTreeCellRenderer.createImageIcon("/images/Refresh16.png"), tree);
-                    contextMenu.add(refresh, "Refresh");
+                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), BasexTreeCellRenderer.createImageIcon("/images/Refresh16.png"), tree);
+                    contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new SearchInPathAction("Search In Path", BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png"),
+                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png"),
                             pluginWorkspaceAccess, tree);
-                    contextMenu.add(searchInPath, "Search In Path");
+                    contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
                     Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
@@ -226,8 +229,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-                //TODO: define string static somewhere
-                boolean isArgon = (editorLocation.toString().startsWith("argon"));
+                boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
                 boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
                         editorLocation.toString().toLowerCase().endsWith("xq") ||
                         editorLocation.toString().toLowerCase().endsWith("xql") ||

@@ -20,6 +20,7 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +45,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private final BaseXPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, BaseXPopupMenu contextMenu, StandalonePluginWorkspace workspaceAccess)
+    public TreeListener(BasexTree tree, DefaultTreeModel treeModel, BaseXPopupMenu contextMenu,
+                        StandalonePluginWorkspace workspaceAccess)
     {
     	this.wsa = workspaceAccess;
         this._Tree = tree;
@@ -114,9 +116,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             BaseXSource queryType;
             StringBuilder db_path = new StringBuilder("");
 
-            if (this.path.getPathComponent(1).toString().equals("Databases")){
+            if (this.path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))){
                 queryType = BaseXSource.DATABASE;
-            } else if (this.path.getPathComponent(1).toString().equals("Query Folder")) {
+            } else if (this.path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq))) {
                 queryType = BaseXSource.RESTXQ;
             } else {
                 queryType = BaseXSource.REPO;
@@ -232,12 +234,12 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             currPath = new TreePath(this._treeModel.getRoot());
             switch (protocol[0]) {
                 case CustomProtocolURLHandlerExtension.ARGON_REPO:
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Repo Folder");
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_repo));
                     break;
                 case CustomProtocolURLHandlerExtension.ARGON_XQ:
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Query Folder");
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_restxq));
                     break;
-                default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, "Databases");
+                default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_DB));
             }
             currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
             boolean expanded = false;
@@ -265,60 +267,58 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         // at what kind of node was the context menu invoked?
         DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
         int pathCount = path.getPathCount();
-        // ToDo: use constant string class
         boolean isFile = !clickedNode.getAllowsChildren();
         boolean isDir = (clickedNode.getAllowsChildren() &&
                             ( ((pathCount > 3) &&
-                                    (path.getPathComponent(1).toString().equals("Databases"))) ||
+                                    (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ||
                               ((pathCount > 2) &&
-                                      (!path.getPathComponent(1).toString().equals("Databases"))) ) );
+                                      (!path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ) );
         boolean isDB = (pathCount == 3) &&
-                        (path.getPathComponent(1).toString().equals("Databases"));
+                        (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
         boolean isSource = (pathCount == 2);
         boolean isRoot = (pathCount == 1);
-        boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals("Databases"));
+        boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
 
         // check whether items apply to node
         int itemCount = contextMenu.getItemCount();
-        // ToDo: use constant string class
         for (int i=0; i<itemCount; i++){
 
-            if ( contextMenu.getItemName(i).equals("Check Out")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
                 if (isFile)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
             }
 
-            if ( contextMenu.getItemName(i).equals("Check In")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
                 if ((isDir) || (isDB) || isFileSource)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
             }
 
-            if ( contextMenu.getItemName(i).equals("Delete")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
                 if (isFile || isDir)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
             }
 
-            if ( contextMenu.getItemName(i).equals("Rename")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
                 if (isFile || isDir)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
             }
 
-            if ( contextMenu.getItemName(i).equals("Add")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
                 if (isDir || isDB || isFileSource)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
             }
 
-            if ( contextMenu.getItemName(i).equals("Search in Path")) {
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
                 if (isDir || isDB || isFileSource)
                     contextMenu.setItemEnabled(i, true);
                 else

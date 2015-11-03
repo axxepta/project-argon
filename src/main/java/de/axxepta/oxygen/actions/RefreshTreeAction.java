@@ -64,7 +64,6 @@ public class RefreshTreeAction extends AbstractAction {
         }
         if (!node.isExpanded())
             tree.collapsePath(path);
-
     }
 
     private class DummyNode {
