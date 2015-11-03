@@ -49,7 +49,7 @@ public interface Connection extends Closeable {
     void delete(final BaseXSource source, final String path) throws IOException;
 
     /**
-     * Deletes a resource.
+     * Renames a resource.
      * @param source data source
      * @param path path
      * @param newPath new path
