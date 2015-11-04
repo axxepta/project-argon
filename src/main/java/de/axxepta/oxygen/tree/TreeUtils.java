@@ -13,7 +13,7 @@ import javax.swing.tree.TreePath;
  */
 public class TreeUtils {
 
-    protected static void insertStrAsNodeLexi(DefaultTreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+    public static void insertStrAsNodeLexi(DefaultTreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
         if (childIsFile) childNode.setAllowsChildren(false);

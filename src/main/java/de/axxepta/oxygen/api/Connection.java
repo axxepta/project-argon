@@ -21,6 +21,13 @@ public interface Connection extends Closeable {
     BaseXResource[] list(final BaseXSource source, final String path) throws IOException;
 
     /**
+     * Creates a new database.
+     * @param database new database name
+     * @throws IOException I/O exception
+     */
+    void create(final String database) throws IOException;
+
+    /**
      * Returns a resource in its binary representation.
      * Texts are encoded as UTF-8 and can be converted via {@link Token#string(byte[])}.
      * @param source data source
@@ -58,10 +65,11 @@ public interface Connection extends Closeable {
     void rename(final BaseXSource source, final String path, final String newPath) throws IOException;
 
     /**
-     * Searches for resource containing a filter string in it's name.
+     * Searches for resources containing a filter string in it's name.
      * @param source data source
      * @param path path
      * @param filter search filter
+     * @return resources
      * @throws IOException I/O exception
      */
     ArrayList<String> search(final BaseXSource source, final String path, final String filter) throws IOException;

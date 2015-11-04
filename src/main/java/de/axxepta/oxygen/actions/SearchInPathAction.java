@@ -3,9 +3,9 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ImageUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -107,7 +107,7 @@ public class SearchInPathAction extends AbstractAction {
 
                 // show found resources
                 resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
-                resultsDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
+                resultsDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
                 resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
                 JPanel content = new JPanel(new BorderLayout());

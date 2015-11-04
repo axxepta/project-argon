@@ -8,6 +8,7 @@ import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.*;
+import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,7 +126,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.deleteFile.register(tListener);
 
                     // Populate context menu
-                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), BasexTreeCellRenderer.createImageIcon("/images/OpenURL16.gif")) {
+                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.createImageIcon("/images/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
@@ -141,7 +142,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
 
-                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif")) {
+                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.createImageIcon("/images/AddFile16.gif")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -149,28 +150,32 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), BasexTreeCellRenderer.createImageIcon("/images/Remove16.png"),
+                    Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.createImageIcon("/images/AddDb16.png"),
+                            treeModel, tListener);
+                    contextMenu.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
+
+                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.createImageIcon("/images/Remove16.png"),
                             tree, tListener);
                     contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
 
-                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), BasexTreeCellRenderer.createImageIcon("/images/Rename16.png"),
+                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.createImageIcon("/images/Rename16.png"),
                             tree, tListener);
                     contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), BasexTreeCellRenderer.createImageIcon("/images/AddFile16.gif"),
+                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.createImageIcon("/images/AddFile16.gif"),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
 
-                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), BasexTreeCellRenderer.createImageIcon("/images/Refresh16.png"), tree);
+                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.createImageIcon("/images/Refresh16.png"), tree);
                     contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png"),
+                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.createImageIcon("/images/SearchInPath16.png"),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
-                    Action searchInFiles = new AbstractAction("Search In Files", BasexTreeCellRenderer.createImageIcon("/images/SearchInPath16.png")) {
+                    Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.createImageIcon("/images/SearchInPath16.png")) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -287,9 +292,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         // create actions for Toolbars
         final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
-                BasexTreeCellRenderer.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
+                ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
-                BasexTreeCellRenderer.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
+                ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
 
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
             /**

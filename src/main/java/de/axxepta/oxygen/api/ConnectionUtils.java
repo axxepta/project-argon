@@ -11,6 +11,8 @@ import org.basex.util.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public final class ConnectionUtils {
+    /** Database variable. */
+    static final String DATABASE = "DB";
     /** Path variable. */
     static final String PATH = "PATH";
     /** Path variable for moved/renamed resources. */

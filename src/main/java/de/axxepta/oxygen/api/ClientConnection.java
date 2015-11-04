@@ -48,6 +48,13 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public void create(final String database) throws IOException {
+        final Query query = client.query(getQuery("create-database"));
+        query.bind(DATABASE, database, "");
+        query.execute();
+    }
+
+    @Override
     public byte[] get(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("get-" + source));
         query.bind(PATH, path, "");

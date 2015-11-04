@@ -3,15 +3,15 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.BasexTree;
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -47,8 +47,8 @@ public class RenameAction extends AbstractAction {
         if ((source != null) && (!db_path.equals(""))) {
             Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
-            renameDialog = new JDialog(parentFrame, "Rename Resource");
-            renameDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
+            renameDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_rename));
+            renameDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
             renameDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
             JPanel content = new JPanel(new BorderLayout(10,10));

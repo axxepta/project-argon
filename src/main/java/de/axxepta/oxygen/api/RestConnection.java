@@ -57,6 +57,11 @@ public final class RestConnection implements Connection {
     }
 
     @Override
+    public void create(String database) throws IOException {
+        request(getQuery("create-database"), DATABASE, database);
+    }
+
+    @Override
     public byte[] get(final BaseXSource source, final String path) throws IOException {
         return request(getQuery("get-" + source), PATH, path);
     }

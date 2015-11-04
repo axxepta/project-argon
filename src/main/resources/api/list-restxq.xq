@@ -1,4 +1,3 @@
-
 (:~ Path to resource. :)
 declare variable $PATH as xs:string external;
 

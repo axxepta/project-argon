@@ -2,9 +2,9 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.tree.BasexTree;
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ImageUtils;
 import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -44,7 +44,7 @@ public class AddNewFileAction extends AbstractAction {
             // show dialog
             JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
             newFileDialog = new JDialog(parentFrame, "Add new File to " + pathString);
-            newFileDialog.setIconImage(BasexTreeCellRenderer.createImage("/images/Oxygen16.png"));
+            newFileDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
             newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 

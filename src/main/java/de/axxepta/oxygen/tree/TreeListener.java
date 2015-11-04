@@ -294,7 +294,14 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
 
             if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
-                if ((isDir) || (isDB) || isFileSource)
+                if (isDir || isDB || isFileSource)
+                    contextMenu.setItemEnabled(i, true);
+                else
+                    contextMenu.setItemEnabled(i, false);
+            }
+
+            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
+                if (isSource && !isFileSource)
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);

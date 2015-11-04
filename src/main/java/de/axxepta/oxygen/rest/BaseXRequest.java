@@ -17,10 +17,15 @@ public class BaseXRequest {
     private boolean check;
 
     public BaseXRequest(final String request, final BaseXSource source, final String path,
-                        final String... params) throws Exception {
+                        final String... params) throws IOException {
         Connection connection = BaseXConnectionWrapper.getConnection();
         if (connection != null) {
             switch (request) {
+                case "create": result = new ArrayList<>();
+                    answer = "";
+                    check = false;
+                    connection.create(path);
+                    break;
                 case "list":
                     answer = "";
                     check = false;

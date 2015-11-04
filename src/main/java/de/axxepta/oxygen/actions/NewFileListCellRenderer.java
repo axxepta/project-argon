@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.tree.BasexTreeCellRenderer;
+import de.axxepta.oxygen.utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class NewFileListCellRenderer extends DefaultListCellRenderer {
         int ind1 = fileType.indexOf("(");
         int ind2 = fileType.indexOf(")");
         String ext = fileType.substring(ind1+3, ind2);
-        Icon icon = BasexTreeCellRenderer.getOxygenIcon(ext);
+        Icon icon = ImageUtils.getOxygenIcon(ext);
         label.setIcon(icon);
         return label;
     }
