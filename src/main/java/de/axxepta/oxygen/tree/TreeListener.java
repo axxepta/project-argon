@@ -278,6 +278,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         boolean isSource = (pathCount == 2);
         boolean isRoot = (pathCount == 1);
         boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+        boolean isWEBINF = (isDir && clickedNode.getUserObject().toString().equals("WEB-INF") &&
+                ( (pathCount == 3) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
+                 || ((pathCount == 5) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))))));
 
         // check whether items apply to node
         int itemCount = contextMenu.getItemCount();
@@ -305,7 +308,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
 
             if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
-                if (isFile || isDir)
+                if (isFile || (isDir && !isWEBINF))  // never! try to change the name of a WEB-INF folder
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);

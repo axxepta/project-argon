@@ -83,10 +83,12 @@ public class RenameAction extends AbstractAction {
             String newPath = newFileNameTextField.getText();
             if (!newPath.equals("")) {
                 String newPathString;
-                if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren())
-                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
-                else
+                if (path.getPathCount() == 2)
                     newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newPath;
+                else
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
+                System.out.println(db_path);
+                System.out.println(newPathString);
                 try {
                     new BaseXRequest("rename", source, db_path, newPathString);
                     treeModel.valueForPathChanged(path, newPath);
