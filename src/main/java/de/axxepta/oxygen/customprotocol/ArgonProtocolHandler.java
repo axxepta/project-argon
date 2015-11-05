@@ -41,13 +41,13 @@ public class ArgonProtocolHandler extends URLStreamHandler {
         public InputStream getInputStream() throws IOException {
             Connection connection = BaseXConnectionWrapper.getConnection();
             logger.info("Requested input stream: " + url.toString());
+            ArgonEditorsWatchMap.addURL(url);
             return new ByteArrayInputStream(connection.get(source,
                     CustomProtocolURLHandlerExtension.pathFromURL(this.url)));
         }
 
         @Override
         public OutputStream getOutputStream() throws IOException {
-            ArgonEditorsWatchMap.addURL(url);
             return new BaseXByteArrayOutputStream(this.source, url);
         }
 

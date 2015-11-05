@@ -125,6 +125,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     TopicHolder.saveFile.register(tListener);
                     TopicHolder.deleteFile.register(tListener);
 
+                    // Add transfer handler for DnD
+                    tree.setTransferHandler(new BaseXTreeTransferHandler());
+                    tree.setDropMode(DropMode.ON);
+
                     // Populate context menu
                     Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.createImageIcon("/images/OpenURL16.gif")) {
                         public void actionPerformed(ActionEvent e) {

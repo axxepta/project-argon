@@ -158,4 +158,52 @@ public class TreeUtils {
         return returnPath;
     }
 
+    public static boolean isFile(TreePath path) {
+        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        return (!clickedNode.getAllowsChildren());
+    }
+
+    public static boolean isDir(TreePath path) {
+        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        int pathCount = path.getPathCount();
+        return (clickedNode.getAllowsChildren() &&
+                ( ((pathCount > 3) &&
+                        (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ||
+                        ((pathCount > 2) &&
+                                (!path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ) );
+    }
+
+    public static boolean isDB(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount == 3) &&
+                (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+    }
+
+    public static boolean isSource(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount == 2);
+    }
+
+    public static boolean isRoot(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount == 1);
+    }
+
+    public static boolean isDbSource(TreePath path) {
+        int pathCount = path.getPathCount();
+        return ((pathCount == 2) && path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+    }
+
+    public static boolean isFileSource(TreePath path) {
+        return (TreeUtils.isSource(path) && !path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+    }
+
+    public static boolean isWEBINF(TreePath path) {
+        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        int pathCount = path.getPathCount();
+        return (TreeUtils.isDir(path) && clickedNode.getUserObject().toString().equals("WEB-INF") &&
+                ( (pathCount == 3) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
+                    || ((pathCount == 5) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))))));
+    }
+
 }

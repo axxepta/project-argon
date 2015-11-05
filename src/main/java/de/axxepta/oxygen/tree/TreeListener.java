@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import sun.reflect.generics.tree.Tree;
 
 /**
  * Listener class observing all tree-related events
@@ -265,22 +266,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     public static void prepareContextMenu(BaseXPopupMenu contextMenu, TreePath path){
 
         // at what kind of node was the context menu invoked?
-        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-        int pathCount = path.getPathCount();
-        boolean isFile = !clickedNode.getAllowsChildren();
-        boolean isDir = (clickedNode.getAllowsChildren() &&
-                            ( ((pathCount > 3) &&
-                                    (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ||
-                              ((pathCount > 2) &&
-                                      (!path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)))) ) );
-        boolean isDB = (pathCount == 3) &&
-                        (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
-        boolean isSource = (pathCount == 2);
-        boolean isRoot = (pathCount == 1);
-        boolean isFileSource = (isSource && !path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
-        boolean isWEBINF = (isDir && clickedNode.getUserObject().toString().equals("WEB-INF") &&
-                ( (pathCount == 3) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
-                 || ((pathCount == 5) && (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))))));
+        boolean isFile = TreeUtils.isFile(path);
+        boolean isDir = TreeUtils.isDir(path);
+        boolean isDB = TreeUtils.isDB(path);
+        boolean isFileSource = TreeUtils.isFileSource(path);
 
         // check whether items apply to node
         int itemCount = contextMenu.getItemCount();
@@ -301,7 +290,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
 
             if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
-                if (isSource && !isFileSource)
+                if (TreeUtils.isDbSource(path))
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
@@ -315,7 +304,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
 
             if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
-                if (isFile || (isDir && !isWEBINF))  // never! try to change the name of a WEB-INF folder
+                if (isFile || (isDir && !TreeUtils.isWEBINF(path)))  // never! try to change the name of a WEB-INF folder
                     contextMenu.setItemEnabled(i, true);
                 else
                     contextMenu.setItemEnabled(i, false);
