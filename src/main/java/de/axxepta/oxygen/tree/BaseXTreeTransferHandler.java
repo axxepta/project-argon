@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -50,13 +49,11 @@ public class BaseXTreeTransferHandler extends TransferHandler {
             return false;
         }
 
-        // Check for String flavor
         if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
             return false;
 
         JTree.DropLocation dropLocation = (JTree.DropLocation) info.getDropLocation();
         TreePath path = dropLocation.getPath();
-        DefaultTreeModel model = (DefaultTreeModel) ((JTree) info.getComponent()).getModel();
         if (!((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren())
             path = path.getParentPath();
 
@@ -65,7 +62,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
             List<File> transferList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
             ArrayList<File> transferData = new ArrayList<>(transferList.size());
             transferData.addAll(transferList);
-            if (transferData != null && transferData.size() > 0) {
+            if (transferData.size() > 0) {
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
 
                 ArrayList<String> pathList = new ArrayList<>();
