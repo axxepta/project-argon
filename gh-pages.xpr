@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="17.0">
+    <meta>
+        <filters directoryPatterns="" filePatterns="" positiveFilePatterns="" showHiddenFiles="false"/>
+        <options/>
+    </meta>
+    <projectTree name="gh-pages.xpr">
+        <folder path="images/"/>
+        <folder path="javascripts/"/>
+        <folder path="stylesheets/"/>
+        <file name="index.html"/>
+        <file name="params.json"/>
+    </projectTree>
+</project>
