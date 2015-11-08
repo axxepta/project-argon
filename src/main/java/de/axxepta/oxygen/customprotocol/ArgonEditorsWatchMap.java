@@ -30,6 +30,15 @@ public class ArgonEditorsWatchMap {
     }
 
     public static boolean askedForAccess(URL url) {
-        return URLMap.get(url);
+        if (URLMap.get(url) == null) {
+            return false;
+        } else {
+            return URLMap.get(url);
+        }
     }
+
+    public static boolean isURLInMap(URL url) {
+        return !(URLMap.get(url) == null);
+    }
+
 }

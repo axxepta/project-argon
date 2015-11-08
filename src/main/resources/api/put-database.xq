@@ -5,6 +5,7 @@ declare variable $RESOURCE as xs:string external;
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
 let $path := substring-after($PATH, '/')
+
 return if(starts-with($RESOURCE, '<')) then (
 (: first byte is angle bracket :)
 let $xml := try {

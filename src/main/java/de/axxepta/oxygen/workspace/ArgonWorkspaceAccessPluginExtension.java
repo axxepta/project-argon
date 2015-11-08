@@ -76,7 +76,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void customizeView(ViewInfo viewInfo) {
 
-                if("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
+                if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                     //The view ID defined in the "plugin.xml"
 
                     // Create some data to populate our tree.
@@ -100,7 +100,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                 , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
                         databaseList = new ArrayList<>();
                     }
-                    for (int i=0; i<(databaseList.size()/2); i++) {
+                    for (int i = 0; i < (databaseList.size() / 2); i++) {
                         DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
                         dbNode.setAllowsChildren(true);
                         databases.add(dbNode);
@@ -200,7 +200,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     JScrollPane scrollPane = new JScrollPane(argonOutputArea);
                     viewInfo.setComponent(scrollPane);
                     viewInfo.setTitle("Argon BaseX Query Output");
-                } else if("Project".equals(viewInfo.getViewID())) {
+                } else if ("Project".equals(viewInfo.getViewID())) {
                     // Change the 'Project' view title.
                     viewInfo.setTitle("CMS Project");
                 }

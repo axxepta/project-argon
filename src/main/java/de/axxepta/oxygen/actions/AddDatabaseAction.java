@@ -61,8 +61,6 @@ public class AddDatabaseAction extends AbstractAction {
         addDbDialog.pack();
         addDbDialog.setLocationRelativeTo(parentFrame);
         addDbDialog.setVisible(true);
-/*        String db;
-        BaseXRequest("create", BaseXSource.DATABASE, db);*/
     }
 
     private class AddDbAction extends AbstractAction {
@@ -74,14 +72,11 @@ public class AddDatabaseAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
             String db = newDbNameTextField.getText();
+            // ToDo: check, whether database already exists, otherwise duplicate node is inserted
             DefaultMutableTreeNode parentNode = listener.getNode();
             try {
                 new BaseXRequest("create", BaseXSource.DATABASE, db);
                 TreeUtils.insertStrAsNodeLexi(treeModel, db, parentNode, false);
-/*                DefaultMutableTreeNode newDb = new DefaultMutableTreeNode("db");
-                newDb.setAllowsChildren(true);
-                treeModel.insertNodeInto(newDb, parentNode, treeModel.getChildCount(parentNode));
-                treeModel.valueForPathChanged(new TreePath(treeModel.getPathToRoot(parentNode)), db);*/
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Failed to add new database",
                         "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
