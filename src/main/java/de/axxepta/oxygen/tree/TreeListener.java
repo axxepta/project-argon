@@ -25,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import sun.reflect.generics.tree.Tree;
 
 /**
  * Listener class observing all tree-related events

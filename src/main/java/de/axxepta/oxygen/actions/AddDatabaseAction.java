@@ -72,6 +72,7 @@ public class AddDatabaseAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
             String db = newDbNameTextField.getText();
+            // ToDo: check, whether database already exists, otherwise duplicate node is inserted
             DefaultMutableTreeNode parentNode = listener.getNode();
             try {
                 new BaseXRequest("create", BaseXSource.DATABASE, db);

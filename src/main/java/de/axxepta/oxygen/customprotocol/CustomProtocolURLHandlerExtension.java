@@ -144,15 +144,16 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                                 ArgonEditorsWatchMap.setAsked(url);
                                 return true;
                             }
-                        } else
+                        } else {
                             return false;
+                        }
                     }
                 }
             } else {
                 return true;
             }
         } catch (Exception er) {
-            return true;
+            return false;  // ToDO: CHECK, why this branch is met when a file is saved to URL!!
         }
     }
 
