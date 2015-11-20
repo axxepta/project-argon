@@ -57,6 +57,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // init language pack
         Lang.init(Locale.UK);
 
+        // init icon map
+        ImageUtils.init();
+
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
@@ -130,7 +133,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     tree.setDropMode(DropMode.ON);
 
                     // Populate context menu
-                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.createImageIcon("/images/OpenURL16.gif")) {
+                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
                         public void actionPerformed(ActionEvent e) {
                             String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
                             if (!tListener.getNode().getAllowsChildren()) {
@@ -146,7 +149,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     };
                     contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
 
-                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.createImageIcon("/images/AddFile16.gif")) {
+                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD)) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };
@@ -154,32 +157,32 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     contextMenu.addSeparator();
 
-                    Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.createImageIcon("/images/AddDb16.png"),
+                    Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD),
                             treeModel, tListener);
                     contextMenu.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
 
-                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.createImageIcon("/images/Remove16.png"),
+                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE),
                             tree, tListener);
                     contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
 
-                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.createImageIcon("/images/Rename16.png"),
+                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
                             tree, tListener);
                     contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.createImageIcon("/images/AddFile16.gif"),
+                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
 
-                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.createImageIcon("/images/Refresh16.png"), tree);
+                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
                     contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
 
                     contextMenu.addSeparator();
 
-                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.createImageIcon("/images/SearchInPath16.png"),
+                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
-                    Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.createImageIcon("/images/SearchInPath16.png")) {
+                    Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {
                         public void actionPerformed(ActionEvent e) {
                         }
                     };

@@ -48,6 +48,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             connection.close();
         } catch (IOException ex) {
             logger.error(ex);
+            throw(ex);
         }
     }
 
