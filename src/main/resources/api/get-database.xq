@@ -10,13 +10,13 @@ let $exists := db:exists($db, $path)
 return if($exists and db:is-xml($db, $path)) then (
 
     let $doctype := if(contains($path, 'ditamap')) then
-        (<output:doctype-public value="-//OASIS//DTD DITA Map//EN"/>, <output:doctype-system value="map.dtd"/>)
+        (<output:doctype-public value="-//OASIS//DTD DITA Map//EN"/>, <output:doctype-system value="http://docs.oasis-open.org/dita/v1.1/OS/dtd/map.dtd"/>)
                     else if(contains($path, 'c_')) then
-            (<output:doctype-public value="-//OASIS//DTD DITA Concept//EN"/>, <output:doctype-system value="concept.dtd"/>)
+            (<output:doctype-public value="-//OASIS//DTD DITA Concept//EN"/>, <output:doctype-system value="http://docs.oasis-open.org/dita/v1.1/OS/dtd/concept.dtd"/>)
                     else if(contains($path, 'r_')) then
-                (<output:doctype-public value="-//OASIS//DTD DITA Reference//EN"/>, <output:doctype-system value="reference.dtd"/>)
+                (<output:doctype-public value="-//OASIS//DTD DITA Reference//EN"/>, <output:doctype-system value="http://docs.oasis-open.org/dita/v1.1/OS/dtd/reference.dtd"/>)
                     else if(contains($path, 't_')) then
-                    (<output:doctype-public value="-//OASIS//DTD DITA Task//EN"/>, <output:doctype-system value="task.dtd"/>)
+                    (<output:doctype-public value="-//OASIS//DTD DITA Task//EN"/>, <output:doctype-system value="http://docs.oasis-open.org/dita/v1.1/OS/dtd/task.dtd"/>)
                     else ()
 
     let $params := <output:serialization-parameters>
