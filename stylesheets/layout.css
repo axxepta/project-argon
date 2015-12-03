@@ -28,8 +28,14 @@ header {
   border-bottom: solid 1px #275da1;
 }
 
+.banner{
+   background: #fff;
+   overflow:hidden;
+   border-bottom: solid 1px #275da1;
+   margin-bottom: 30px;
+}
+
 header h1 {
-  width: 540px;
   margin-top: 0;
   margin-bottom: 0.2em;
   font-size: 72px;
@@ -40,7 +46,6 @@ header h1 {
 }
 
 header h2 {
-  width: 540px;
   margin-top: 0;
   margin-bottom: 0;
   font-size: 26px;
@@ -57,7 +62,7 @@ header h2 {
 }
 
 #content-wrapper {
-  padding-top: 30px;
+  /* padding-top: 30px; */
   border-top: solid 1px #fff;
 }
 
@@ -355,7 +360,7 @@ footer a:hover {
     width: 740px;
   }
   header h1, header h2 {
-    width: 340px;
+    
   }
   header h1 {
     font-size: 60px;
