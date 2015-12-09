@@ -4,9 +4,11 @@
 package de.axxepta.oxygen.customprotocol;
 
 
+import de.axxepta.oxygen.actions.VersionRevisionUpdater;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.utils.URLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,18 +28,36 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private final URL url;
     private BaseXSource source;
-
+    private boolean revisionUpdated;
 
     public BaseXByteArrayOutputStream(BaseXSource source, URL url) {
         super();
         this.url = url;
         this.source = source;
+        this.revisionUpdated = false;
+    }
+
+    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean revisionUpdated) {
+        super();
+        this.url = url;
+        this.source = source;
+        this.revisionUpdated = true;
     }
 
     @Override
     public void close() throws IOException {
         super.close();
-        byte[] savedBytes = toByteArray();
+        byte[] savedBytes;
+        VersionRevisionUpdater updater;
+        if (revisionUpdated || !(URLUtils.isXML(url) || (URLUtils.isQuery(url)))) {
+            savedBytes = toByteArray();
+        } else {
+            if (URLUtils.isXML(url))
+                updater = new VersionRevisionUpdater(toByteArray(), "XML");
+            else
+                updater = new VersionRevisionUpdater(toByteArray(), "Query");
+            savedBytes = updater.updateRevision();
+        }
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         String backupPath = getBackupPath(path);
         try {
@@ -50,9 +70,13 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             logger.error(ex);
             throw(ex);
         }
+        if (!revisionUpdated) {
+            // ToDo: update editor window - check TransferHandler
+        }
     }
 
     private String getBackupPath(String path) throws IOException {
+        // ToDo: change databsase name
         StringBuilder backupPath = new StringBuilder(backupDB + "/");
         if (source.equals(BaseXSource.REPO))
             backupPath.append("~repo/");

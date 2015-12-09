@@ -45,6 +45,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     private JTextArea cmsMessagesArea;
     private JTextArea argonOutputArea;
     private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
+    private ToolbarButton newVersionButton;
     private ToolbarButton replyCommentButton;
 
     private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
@@ -168,6 +169,11 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
                             tree, tListener);
                     contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
+
+                    // ToDo: ICON
+                    Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.RENAME),
+                            tree, tListener);
+                    contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
                     Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                             pluginWorkspaceAccess, tree);
@@ -300,6 +306,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // create actions for Toolbars
         final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
                 ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
+        // ToDo: ICON
+        final Action newVersionAction = new NewVersionButtonAction("Increase File Version",
+                ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
 
@@ -324,6 +333,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     // run query in current editor window
                     runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
                     runQueryButton.setText("");
+                    // increase revision of document in current editor window
+                    newVersionButton = new ToolbarButton(newVersionAction, true);
+                    newVersionButton.setText("");
 
                     // Add in toolbar
                     comps.add(runQueryButton);
