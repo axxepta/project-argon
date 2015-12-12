@@ -87,7 +87,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                             isByte = new byte[l];
                             //noinspection ResultOfMethodCallIgnored
                             is.read(isByte);
-                            try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
+                            try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
                                 os.write(isByte);
                                 logger.info("Dropped file " + file.toString() + " to " + pathList.get(i));
                             } catch (IOException ex) {

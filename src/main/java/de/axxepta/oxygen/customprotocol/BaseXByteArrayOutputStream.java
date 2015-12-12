@@ -29,19 +29,32 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private final URL url;
     private BaseXSource source;
     private boolean revisionUpdated;
+    private boolean fromTransferHandler;
+    private long[] verRev = {1,1};
 
     public BaseXByteArrayOutputStream(BaseXSource source, URL url) {
         super();
         this.url = url;
         this.source = source;
         this.revisionUpdated = false;
+        this.fromTransferHandler = false;
     }
 
-    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean revisionUpdated) {
+    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean revisionUpdated, long[] verRev) {
         super();
         this.url = url;
         this.source = source;
-        this.revisionUpdated = true;
+        this.revisionUpdated = revisionUpdated;
+        this.verRev = verRev;
+        this.fromTransferHandler = false;
+    }
+
+    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean fromTransferHandler) {
+        super();
+        this.url = url;
+        this.source = source;
+        this.revisionUpdated = false;
+        this.fromTransferHandler = fromTransferHandler;
     }
 
     @Override
@@ -52,11 +65,13 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         if (revisionUpdated || !(URLUtils.isXML(url) || (URLUtils.isQuery(url)))) {
             savedBytes = toByteArray();
         } else {
-            if (URLUtils.isXML(url))
-                updater = new VersionRevisionUpdater(toByteArray(), "XML");
-            else
-                updater = new VersionRevisionUpdater(toByteArray(), "Query");
+            String fileType = URLUtils.isXML(url) ? VersionRevisionUpdater.XML : VersionRevisionUpdater.XQUERY;
+            if (fromTransferHandler)
+                updater = new VersionRevisionUpdater(toByteArray(), fileType);
+            else        // get document from current editor window for direct update (called by SAVE or SAVE TO URL commands)
+                updater = new VersionRevisionUpdater(fileType);
             savedBytes = updater.updateRevision();
+            this.verRev = updater.getVersionAndRevision();
         }
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         String backupPath = getBackupPath(path);
@@ -69,9 +84,6 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         } catch (IOException ex) {
             logger.error(ex);
             throw(ex);
-        }
-        if (!revisionUpdated) {
-            // ToDo: update editor window - check TransferHandler
         }
     }
 
