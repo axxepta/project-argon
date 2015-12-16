@@ -62,7 +62,7 @@ public class NewVersionContextAction extends AbstractAction {
             if (handlerExtension.canCheckReadOnly(protocol) && !handlerExtension.isReadOnly(url)) {
                 VersionRevisionUpdater updater;
                 boolean urlOpenedInEditor = false;
-                WSEditor editorAccess =                      // might change active editor
+                WSEditor editorAccess =                      // might change active editor (expected behavior?!)
                         pluginWorkspaceAccess.getEditorAccess(url, StandalonePluginWorkspace.MAIN_EDITING_AREA);
                 if (editorAccess == null) {     // get data from file
                     byte[] isByte;
@@ -102,7 +102,7 @@ public class NewVersionContextAction extends AbstractAction {
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Couldn't update version of file\n" + url.toString() +
+                JOptionPane.showMessageDialog(null, "Couldn't update version of file\n" + urlString +
                         ".\n File is locked by other user.", "Update Version Message", JOptionPane.PLAIN_MESSAGE);
             }
         }

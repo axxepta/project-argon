@@ -7,14 +7,26 @@ import java.net.URL;
  */
 public class URLUtils {
 
+    public static boolean isXML(String file) {
+        return (file.toLowerCase().endsWith(".xml") ||
+                file.toLowerCase().endsWith(".dita") ||
+                file.toLowerCase().endsWith(".ditamap") );
+    }
+
     public static boolean isXML(URL url) {
-        // ToDo
-        return true;
+        return isXML(url.toString());
+    }
+
+    public static boolean isQuery(String file) {
+        return (file.toLowerCase().endsWith(".xq") ||
+                file.toLowerCase().endsWith(".xqm") ||
+                file.toLowerCase().endsWith(".xql") ||
+                file.toLowerCase().endsWith(".xqy") ||
+                file.toLowerCase().endsWith(".xquery") );
     }
 
     public static boolean isQuery(URL url) {
-        // ToDo
-        return true;
+        return isQuery(url.toString());
     }
 
 }

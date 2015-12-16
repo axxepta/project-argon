@@ -14,14 +14,17 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Markus on 04.12.2015.
- * Argon type version and revision information can be updated in the passed object and returned as byte streams.
- * If the passed object is a WSEditor, as SIDE EFFECT the updating is also inserted into the document of the editor.
+ * Argon type version and revision information can be increased in the passed object and returned as byte streams.
+ * If the passed object is a WSEditor (when update is called from context menu, but URL is opened in editor),
+ * as SIDE EFFECT the updating is also inserted into the document of the editor.
  * The same is true, if no object is passed to the constructor. The document is then obtained from the current editor
- *  window.
- * For XML type files version/revision information is contained in processing instructions, for Xqueries in comments
+ *  window (to be used when Save or Save As are called).
+ * For XML type files version/revision information is contained in processing instructions, for Xqueries in comments,
+ * in the format <?argon_history version="x" revision="y"/> or (:  argon_history version="x" revision="y" :)
  */
 public class VersionRevisionUpdater {
 
@@ -31,10 +34,9 @@ public class VersionRevisionUpdater {
     public static final String XQUERY = "XQUERY";
 
     private Document doc = null;
-    private byte[] documentBuffer;
     private StringBuilder docBuilder;
     private String type;
-    private long[] verRev = {0,0};
+    private long[] verRev = {1,0};
     private boolean updated;
 
     private boolean fromDocument = false;
@@ -74,9 +76,8 @@ public class VersionRevisionUpdater {
     }
 
     public VersionRevisionUpdater(byte[] documentBuffer, String type) {
-        this.documentBuffer = documentBuffer;
         try {
-            this.docBuilder = new StringBuilder(new String(this.documentBuffer, "UTF-8"));
+            this.docBuilder = new StringBuilder(new String(documentBuffer, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             this.docBuilder = new StringBuilder("");
             logger.error(ex);
@@ -84,32 +85,65 @@ public class VersionRevisionUpdater {
         this.type = type;
     }
 
-    public byte[] updateVersion() {
+    /**
+     * Deliver byte array with increased revision (and version), if present changes are also made in doc field
+     * @param updateVersion flag whether updating version or only revision
+     * @return updated document as byte array
+     */
+    public byte[] update(boolean updateVersion) {
         if (!updated) {
             int[] historyTagPosition = obtainVersionAndRevision();
+            int oldTagLength = historyTagPosition[1]-historyTagPosition[0];
+            if (updateVersion)
+                verRev[0] = verRev[0] + 1;
+            verRev[1] = verRev[1] + 1;
+            String tag = getVersionRevisionTag();
+            int tagLength = tag.length();
+            if (oldTagLength == 0) {
+                if (historyTagPosition[0] == 0) {
+                    docBuilder.insert(historyTagPosition[0], tag);
+                    docBuilder.insert(historyTagPosition[0], "\n");
+                } else {
+                    docBuilder.insert(historyTagPosition[0], "\n");
+                    docBuilder.insert(historyTagPosition[0], tag);
+                }
+            } else {
+                docBuilder.replace(historyTagPosition[0], historyTagPosition[1], tag);
+            }
             if (fromDocument) {
-                // see ReplyAuthorCommentAction for how to change document
+                // ToDo: check whether numbers of characters correspond in Document and StringBuilder
+                if (tagLength != oldTagLength){
+                    currentOnset = currentOnset + tagLength - oldTagLength;
+                    currentOffset = currentOffset + tagLength - oldTagLength;
+                }
+                if (oldTagLength != 0) {
+                    try {
+                        doc.remove(historyTagPosition[0], oldTagLength);
+                    } catch (BadLocationException el) {
+                        logger.error(el);
+                    }
+                }
+                try {
+                    doc.insertString(historyTagPosition[0], tag, null);
+                } catch (BadLocationException el) {
+                    logger.error(el);
+                }
                 resetEditor();
             }
             updated = true;
         }
-        return documentBuffer;
-    }
-
-    public byte[] updateRevision() {
-        if (!updated) {
-
-            if (fromDocument) {
-                // see ReplyAuthorCommentAction for how to change document
-                resetEditor();
-            }
-            updated = true;
-        }
-        return documentBuffer;
+        return docBuilder.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     public long[] getVersionAndRevision() {
         return verRev;
+    }
+
+    private String getVersionRevisionTag() {
+        if (type.equals(XML))
+            return String.format("<?argon_history version=\"%s\" revision=\"%s\" ?>", verRev[0], verRev[1]);
+        else
+            return String.format("(: argon_history version=\"%s\" revision=\"%s\" :)", verRev[0], verRev[1]);
     }
 
     private Document getDocumentFromEditor() {
@@ -141,13 +175,26 @@ public class VersionRevisionUpdater {
         }
     }
 
+    /**
+     * Position of the Argon version/revision processing instruction is obtained from the docBuilder field
+     * @return start and end position, {0,0} if no valid tag and no valid XML declaration are found, position
+     *      after XML declaration if present (but no Argon tag present)
+     */
     private int[] getXMLHistoryTagPosition() {
-        int[] pos = new int[2];
-        pos[0] = docBuilder.indexOf("<?argon_history");
-        if (pos[0] == -1) {
-            // ToDo: identify position for insertion of non-existing processing instruction (after XML definition)
+        int[] pos = {0, 0};
+        int ind1 = docBuilder.indexOf("<?argon_history");
+        if (ind1 == -1) {     // after XML declaration or (if not present) in first line
+            ind1 = docBuilder.indexOf("<?xml");
+            if (ind1 != -1) {
+                ind1 = docBuilder.indexOf("?>", ind1 + 2);
+                if (ind1 != -1) {
+                    pos[0] = ind1 + 2;
+                    pos[1] = pos[0];
+                }
+            }
         } else {
-            pos[1] = docBuilder.indexOf(">", pos[0]);
+            pos[0] = ind1;
+            pos[1] = docBuilder.indexOf("?>", pos[0]);
             if (pos[1] < pos[0])
                 pos[1] = pos[0];
         }
@@ -173,8 +220,8 @@ public class VersionRevisionUpdater {
     private int[] getQueryHistoryTagPosition() {
         int[] pos = new int[2];
         pos[0] = docBuilder.indexOf("(: argon_history");
-        if (pos[0] == -1) {
-            // ToDO
+        if (pos[0] == -1) {     // first line in file
+            pos[0] = 0; pos[1] = 0;
         } else {
             pos[1] = docBuilder.indexOf(":)", pos[0]);
             if (pos[1] < pos[0])
@@ -183,6 +230,11 @@ public class VersionRevisionUpdater {
         return pos;
     }
 
+    /**
+     * Identifies position of the version/revision processing instruction tag (XML) or comment (XQuery) in the field
+     * docBuilder, extracts version and revision (if present) and stores them into the field verRev.
+     * @return diverging from what the name might let expect you the start and end position of the version/revision tag
+     */
     private int[] obtainVersionAndRevision() {
         int[] position;
         if (type.equals(XML))

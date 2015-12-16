@@ -10,6 +10,7 @@ import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.URLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
@@ -248,13 +249,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
-                boolean isXquery = (editorLocation.toString().toLowerCase().endsWith("xqm") ||
-                        editorLocation.toString().toLowerCase().endsWith("xq") ||
-                        editorLocation.toString().toLowerCase().endsWith("xql") ||
-                        editorLocation.toString().endsWith("xqy") ||
-                        editorLocation.toString().endsWith("xquery"));
 
-                if (isArgon && isXquery)
+                if (isArgon && URLUtils.isQuery(editorLocation))
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
                         /**
                          * @see ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter#filterValidationProblems(ro.sync.exml.workspace.api.editor.validation.ValidationProblems)
@@ -391,13 +387,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         if(currentEditor == null) {
             runQueryButton.setEnabled(false);
         } else {
-            String currentEditorURL = currentEditor.getEditorLocation().toString();
-            if((currentEditorURL.endsWith(".xq")) ||
-                    (currentEditorURL.endsWith(".xqm")) ||
-                    (currentEditorURL.endsWith(".xql")) ||
-                    (currentEditorURL.endsWith(".xqy")) ||
-                    (currentEditorURL.endsWith(".xquery")))
-            {
+            if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
                 runQueryButton.setEnabled(true);
             } else {
                 runQueryButton.setEnabled(false);

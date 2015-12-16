@@ -49,7 +49,7 @@ public class NewVersionButtonAction extends AbstractAction {
     }
 
     protected static void updateFile(VersionRevisionUpdater updater, BaseXSource source, URL url) {
-        byte[] outputArray = updater.updateVersion();
+        byte[] outputArray = updater.update(true);
         long[] verRev = updater.getVersionAndRevision();
 
         try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true, verRev)) {

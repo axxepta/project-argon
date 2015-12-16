@@ -24,7 +24,7 @@ import java.util.Date;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    private static final String backupDB = "~history";
+    private static final String backupDB = "~history_";
 
     private final URL url;
     private BaseXSource source;
@@ -70,7 +70,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
                 updater = new VersionRevisionUpdater(toByteArray(), fileType);
             else        // get document from current editor window for direct update (called by SAVE or SAVE TO URL commands)
                 updater = new VersionRevisionUpdater(fileType);
-            savedBytes = updater.updateRevision();
+            savedBytes = updater.update(false);
             this.verRev = updater.getVersionAndRevision();
         }
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
@@ -88,36 +88,38 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     private String getBackupPath(String path) throws IOException {
-        // ToDo: change databsase name
-        StringBuilder backupPath = new StringBuilder(backupDB + "/");
+        StringBuilder backupPath;
+        backupPath = new StringBuilder(backupDB);
         if (source.equals(BaseXSource.REPO))
             backupPath.append("~repo/");
         if (source.equals(BaseXSource.RESTXQ))
             backupPath.append("~restxq/");
         Date date = new Date();
-        StringBuilder dateStr = new StringBuilder("_");
-        dateStr.append(date.getYear()+1900);     dateStr.append("-");
+        StringBuilder dateRevisionStr = new StringBuilder("_");
+        dateRevisionStr.append(date.getYear()+1900);     dateRevisionStr.append("-");
         if ((date.getMonth()+1)<10)
-            dateStr.append("0");
-        dateStr.append(date.getMonth()+1);    dateStr.append("-");
+            dateRevisionStr.append("0");
+        dateRevisionStr.append(date.getMonth()+1);    dateRevisionStr.append("-");
         if ((date.getDate())<10)
-            dateStr.append("0");
-        dateStr.append(date.getDate());     dateStr.append("_");
+            dateRevisionStr.append("0");
+        dateRevisionStr.append(date.getDate());     dateRevisionStr.append("_");
         if ((date.getHours())<10)
-            dateStr.append("0");
-        dateStr.append(date.getHours());     dateStr.append("-");
+            dateRevisionStr.append("0");
+        dateRevisionStr.append(date.getHours());     dateRevisionStr.append("-");
         if ((date.getMinutes())<10)
-            dateStr.append("0");
-        dateStr.append(date.getMinutes());
+            dateRevisionStr.append("0");
+        dateRevisionStr.append(date.getMinutes());
+        dateRevisionStr.append("_v");               dateRevisionStr.append(this.verRev[0]);
+        dateRevisionStr.append("r");                dateRevisionStr.append(this.verRev[1]);
         if (path.contains(".")) {
             int fileSepPosition = path.lastIndexOf(".");
             backupPath.append(path.substring(0,fileSepPosition));
-            backupPath.append(dateStr);
+            backupPath.append(dateRevisionStr);
             backupPath.append(".");
             backupPath.append(path.substring(fileSepPosition+1, path.length()));
         } else {
             backupPath.append(path);
-            backupPath.append(dateStr);
+            backupPath.append(dateRevisionStr);
         }
         System.out.println(backupPath);
         // ToDo: insert create for non-existing databases in connection.put
