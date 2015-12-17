@@ -1,0 +1,26 @@
+image: mohamnag/gradle
+
+stages:
+  - test
+
+gradlebuld:
+  stage: test
+  script:
+   - gradle -q build
+  except:
+  - /^release-.*$/ # use regexp ;-)
+  tags:
+    - docker
+
+releasebuild:
+  stage: test
+  script:
+   - gradle -q build
+  only:
+  - /^release-.*$/ # use regexp ;-)
+  tags:
+    - docker
+  artifacts:
+    paths:
+    - ./build/libs
+    - ./plugin.xml
