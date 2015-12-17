@@ -45,7 +45,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.url = url;
         this.source = source;
         this.revisionUpdated = revisionUpdated;
-        this.verRev = verRev;
+        this.verRev[0] = verRev[0];     this.verRev[1] = verRev[1];
         this.fromTransferHandler = false;
     }
 
@@ -109,6 +109,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         if ((date.getMinutes())<10)
             dateRevisionStr.append("0");
         dateRevisionStr.append(date.getMinutes());
+        // ToDo: version and revision for non-XML/non-Query files??
         dateRevisionStr.append("_v");               dateRevisionStr.append(this.verRev[0]);
         dateRevisionStr.append("r");                dateRevisionStr.append(this.verRev[1]);
         if (path.contains(".")) {
