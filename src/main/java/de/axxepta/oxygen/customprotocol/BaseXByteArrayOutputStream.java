@@ -9,6 +9,7 @@ import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,7 +63,9 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         super.close();
         byte[] savedBytes;
         VersionRevisionUpdater updater;
-        if (revisionUpdated || !(URLUtils.isXML(url) || (URLUtils.isQuery(url)))) {
+        boolean useVersioning =
+                Boolean.parseBoolean(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_VERSIONING, false));
+        if (!useVersioning || revisionUpdated || !(URLUtils.isXML(url) || (URLUtils.isQuery(url)))) {
             savedBytes = toByteArray();
         } else {
             String fileType = URLUtils.isXML(url) ? VersionRevisionUpdater.XML : VersionRevisionUpdater.XQUERY;
@@ -74,13 +77,14 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             this.verRev = updater.getVersionAndRevision();
         }
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
-        String backupPath = getBackupPath(path);
-        try {
-            Connection connection = BaseXConnectionWrapper.getConnection();
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.put(this.source, path, savedBytes);
             TopicHolder.saveFile.postMessage(this.url.getProtocol() + ":" + this.url.getPath());
-            connection.put(BaseXSource.DATABASE, backupPath, savedBytes);
-            connection.close();
+            if (useVersioning) {
+                // ToDo: catch IOException for getBackupPath() independently
+                String backupPath = getBackupPath(path);
+                connection.put(BaseXSource.DATABASE, backupPath, savedBytes);
+            }
         } catch (IOException ex) {
             logger.error(ex);
             throw(ex);

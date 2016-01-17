@@ -32,6 +32,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_BASEX_USERNAME = "KEY_BASEX_USERNAME";
     public static final String KEY_BASEX_PASSWORD = "KEY_BASEX_PASSWORD";
     public static final String KEY_BASEX_CONNECTION = "KEY_BASEX_CONNECTION";
+    public static final String KEY_BASEX_VERSIONING = "KEY_BASEX_VERSIONING";
     public static final String KEY_BASEX_LOGFILE = "KEY_BASEX_LOGFILE";
 
     private static final String DEF_BASEX_HOST = "localhost";
@@ -40,6 +41,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_USERNAME = "admin";
     private static final String DEF_BASEX_PASSWORD = "admin";
     private static final String DEF_BASEX_CONNECTION = "HTTP";
+    private static final String DEF_BASEX_VERSIONING = "true";
     private static final String DEF_BASEX_LOGFILE = "/tmp/argon.log";
 
     /**
@@ -51,6 +53,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private JTextField baseXUsernameTextField;
     private JTextField baseXPasswordTextField;
     private JComboBox baseXConnectionTypeComboBox;
+    private JCheckBox baseXVersioningCheckBox;
     private JTextField baseXLogfileTextField;
 
     /**
@@ -80,6 +83,9 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION,
                 baseXConnectionTypeComboBox.getSelectedItem().toString());
 
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_VERSIONING,
+                baseXVersioningCheckBox.isSelected() ? "true" : "false");
+
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
                 !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);
     }
@@ -96,6 +102,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         baseXUsernameTextField.setText(DEF_BASEX_USERNAME);
         baseXPasswordTextField.setText(DEF_BASEX_PASSWORD);
         baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);
+        baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_VERSIONING));
         baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);
     }
 
@@ -222,6 +229,21 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         panel.add(baseXConnectionTypeComboBox, c);
 
         /**
+         * BaseX Versioning
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXVersioningCheckBoxLbl = new JLabel("Version Control:");
+        panel.add(baseXVersioningCheckBoxLbl, c);
+
+        baseXVersioningCheckBox = new JCheckBox();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXVersioningCheckBox, c);
+
+        /**
          * BaseX Logfile
          */
         c.gridx = 0;
@@ -284,11 +306,14 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         String baseXConnection = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_CONNECTION,
                 null);
+        String baseXVersioning = pluginWorkspace.getOptionsStorage().getOption(
+                KEY_BASEX_VERSIONING,
+                null);
         String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_LOGFILE,
                 null);
 
-        // Initialize the text fields with the stored options.
+        // Initialize the fields with the stored options.
 
         baseXHostTextField.setText(baseXHost != null ? baseXHost : "");
         baseXHttpPortTextField.setText(baseXHttpPort != null ? baseXHttpPort : "");
@@ -300,6 +325,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         } else {
             baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[0]);
         }
+        baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(baseXVersioning));
         baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");
 
         return panel;
@@ -314,6 +340,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
                 case KEY_BASEX_USERNAME: return DEF_BASEX_USERNAME;
                 case KEY_BASEX_PASSWORD: return DEF_BASEX_PASSWORD;
                 case KEY_BASEX_CONNECTION: return DEF_BASEX_CONNECTION;
+                case KEY_BASEX_VERSIONING: return DEF_BASEX_VERSIONING;
                 case KEY_BASEX_LOGFILE: return DEF_BASEX_LOGFILE;
                 default: return "";
             }
