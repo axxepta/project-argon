@@ -25,7 +25,7 @@ import java.util.Date;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    private static final String backupDB = "~history_";
+    private static final String backupDBBase = "~history_";
 
     private final URL url;
     private BaseXSource source;
@@ -93,7 +93,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private String getBackupPath(String path) throws IOException {
         StringBuilder backupPath;
-        backupPath = new StringBuilder(backupDB);
+        backupPath = new StringBuilder(backupDBBase);
         if (source.equals(BaseXSource.REPO))
             backupPath.append("~repo/");
         if (source.equals(BaseXSource.RESTXQ))
@@ -127,9 +127,10 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             backupPath.append(dateRevisionStr);
         }
         System.out.println(backupPath);
+        String backupDBPath = backupPath.toString();
         // ToDo: insert create for non-existing databases in connection.put
-        new BaseXRequest("create", BaseXSource.DATABASE, backupDB);
-        return backupPath.toString();
+        new BaseXRequest("create", BaseXSource.DATABASE, backupDBPath.substring(0,backupDBPath.indexOf("/")));
+        return backupDBPath;
     }
 
 }

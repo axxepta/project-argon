@@ -44,7 +44,7 @@ public class ReplyAuthorCommentAction extends AbstractAction {
             Document doc = textPage.getDocument();
             String docStr;
             try {
-                docStr = doc.getText(0,doc.getLength()-1);
+                docStr = doc.getText(0,doc.getLength());
             } catch (BadLocationException ex) {
                 docStr = "";
             }

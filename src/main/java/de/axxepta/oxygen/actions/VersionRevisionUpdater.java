@@ -54,7 +54,7 @@ public class VersionRevisionUpdater {
                 getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
         this.doc = getDocumentFromEditor();
         try {
-            this.docBuilder = new StringBuilder(this.doc.getText(0, doc.getLength()-1));
+            this.docBuilder = new StringBuilder(this.doc.getText(0, doc.getLength()));
         } catch (BadLocationException ex) {
             this.docBuilder = new StringBuilder("");
             logger.error(ex);
@@ -67,7 +67,7 @@ public class VersionRevisionUpdater {
         this.editorAccess = editorAccess;
         this.doc = getDocumentFromEditor();
         try {
-            this.docBuilder = new StringBuilder(this.doc.getText(0, doc.getLength()-1));
+            this.docBuilder = new StringBuilder(this.doc.getText(0, doc.getLength()));
         } catch (BadLocationException ex) {
             this.docBuilder = new StringBuilder("");
             logger.error(ex);
@@ -101,32 +101,46 @@ public class VersionRevisionUpdater {
             int tagLength = tag.length();
             if (oldTagLength == 0) {
                 if (historyTagPosition[0] == 0) {
-                    docBuilder.insert(historyTagPosition[0], tag);
                     docBuilder.insert(historyTagPosition[0], "\n");
+                    docBuilder.insert(historyTagPosition[0], tag);
                 } else {
-                    docBuilder.insert(historyTagPosition[0], "\n");
                     docBuilder.insert(historyTagPosition[0], tag);
+                    docBuilder.insert(historyTagPosition[0], "\n");
                 }
             } else {
-                docBuilder.replace(historyTagPosition[0], historyTagPosition[1], tag);
+                docBuilder.replace(historyTagPosition[0], historyTagPosition[1] + 1, tag);
             }
             if (fromDocument) {
                 // ToDo: check whether numbers of characters correspond in Document and StringBuilder
-                if (tagLength != oldTagLength){
-                    currentOnset = currentOnset + tagLength - oldTagLength;
-                    currentOffset = currentOffset + tagLength - oldTagLength;
+                if (tagLength != (oldTagLength + 1)){
+                    currentOnset = currentOnset + tagLength - oldTagLength - 1;
+                    currentOffset = currentOffset + tagLength - oldTagLength - 1;
                 }
                 if (oldTagLength != 0) {
                     try {
-                        doc.remove(historyTagPosition[0], oldTagLength);
+                        doc.remove(historyTagPosition[0], oldTagLength + 1);
                     } catch (BadLocationException el) {
                         logger.error(el);
                     }
-                }
-                try {
-                    doc.insertString(historyTagPosition[0], tag, null);
-                } catch (BadLocationException el) {
-                    logger.error(el);
+/*                    textPage.select(historyTagPosition[0], historyTagPosition[1] + 1);
+                    textPage.deleteSelection();*/
+                    try {
+                        doc.insertString(historyTagPosition[0], tag, null);
+                    } catch (BadLocationException el) {
+                        logger.error(el);
+                    }
+                } else {
+                    try {
+                        if (historyTagPosition[0] == 0) {
+                            doc.insertString(historyTagPosition[0], "\n", null);
+                            doc.insertString(historyTagPosition[0], tag, null);
+                        } else {
+                            doc.insertString(historyTagPosition[0], tag, null);
+                            doc.insertString(historyTagPosition[0], "\n", null);
+                        }
+                    } catch (BadLocationException el) {
+                        logger.error(el);
+                    }
                 }
                 resetEditor();
             }
@@ -173,6 +187,8 @@ public class VersionRevisionUpdater {
         } else {
             textPage.select(currentOnset, currentOffset);
         }
+        // ToDO: tell EditorChangeListener that no change has happened?!
+        editorAccess.setModified(false);
     }
 
     /**
@@ -194,7 +210,7 @@ public class VersionRevisionUpdater {
             }
         } else {
             pos[0] = ind1;
-            pos[1] = docBuilder.indexOf("?>", pos[0]);
+            pos[1] = docBuilder.indexOf("?>", pos[0]) + 1;
             if (pos[1] < pos[0])
                 pos[1] = pos[0];
         }
@@ -223,7 +239,7 @@ public class VersionRevisionUpdater {
         if (pos[0] == -1) {     // first line in file
             pos[0] = 0; pos[1] = 0;
         } else {
-            pos[1] = docBuilder.indexOf(":)", pos[0]);
+            pos[1] = docBuilder.indexOf(":)", pos[0]) + 1;
             if (pos[1] < pos[0])
                 pos[1] = pos[0];
         }
