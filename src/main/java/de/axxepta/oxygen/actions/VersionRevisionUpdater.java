@@ -11,9 +11,11 @@ import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -85,6 +87,7 @@ public class VersionRevisionUpdater {
         this.type = type;
     }
 
+    // ToDo: proper exception handling!
     /**
      * Deliver byte array with increased revision (and version), if present changes are also made in doc field
      * @param updateVersion flag whether updating version or only revision
@@ -92,15 +95,16 @@ public class VersionRevisionUpdater {
      */
     public byte[] update(boolean updateVersion) {
         if (!updated) {
-            int[] historyTagPosition = obtainVersionAndRevision();
-            int oldTagLength = historyTagPosition[1]-historyTagPosition[0];
+            final int[] historyTagPosition = obtainVersionAndRevision();
+            final int oldTagLength = historyTagPosition[1]-historyTagPosition[0];
             if (updateVersion)
                 verRev[0] = verRev[0] + 1;
             verRev[1] = verRev[1] + 1;
-            String tag = getVersionRevisionTag();
+            final String tag = getVersionRevisionTag();
             int tagLength = tag.length();
             if (oldTagLength == 0) {
                 if (historyTagPosition[0] == 0) {
+                    // ToDo: line end for Mac/Linux?
                     docBuilder.insert(historyTagPosition[0], "\n");
                     docBuilder.insert(historyTagPosition[0], tag);
                 } else {
@@ -111,35 +115,43 @@ public class VersionRevisionUpdater {
                 docBuilder.replace(historyTagPosition[0], historyTagPosition[1] + 1, tag);
             }
             if (fromDocument) {
-                // ToDo: check whether numbers of characters correspond in Document and StringBuilder
                 if (tagLength != (oldTagLength + 1)){
                     currentOnset = currentOnset + tagLength - oldTagLength - 1;
                     currentOffset = currentOffset + tagLength - oldTagLength - 1;
                 }
                 if (oldTagLength != 0) {
-                    try {
-                        doc.remove(historyTagPosition[0], oldTagLength + 1);
-                    } catch (BadLocationException el) {
-                        logger.error(el);
-                    }
-/*                    textPage.select(historyTagPosition[0], historyTagPosition[1] + 1);
-                    textPage.deleteSelection();*/
-                    try {
-                        doc.insertString(historyTagPosition[0], tag, null);
-                    } catch (BadLocationException el) {
-                        logger.error(el);
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        replaceTagInDoc(historyTagPosition[0], oldTagLength, tag);
+                    } else {
+                        try {
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                @Override
+                                public void run() {
+                                    replaceTagInDoc(historyTagPosition[0], oldTagLength, tag);
+                                }
+                            });
+                        } catch (InvocationTargetException ite) {
+                            logger.error(ite);
+                        } catch (InterruptedException ie) {
+                            logger.error(ie);
+                        }
                     }
                 } else {
-                    try {
-                        if (historyTagPosition[0] == 0) {
-                            doc.insertString(historyTagPosition[0], "\n", null);
-                            doc.insertString(historyTagPosition[0], tag, null);
-                        } else {
-                            doc.insertString(historyTagPosition[0], tag, null);
-                            doc.insertString(historyTagPosition[0], "\n", null);
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        insertTagInDoc(historyTagPosition[0], tag);
+                    } else {
+                        try {
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                @Override
+                                public void run() {
+                                    insertTagInDoc(historyTagPosition[0], tag);
+                                }
+                            });
+                        } catch (InvocationTargetException ite) {
+                            logger.error(ite);
+                        } catch (InterruptedException ie) {
+                            logger.error(ie);
                         }
-                    } catch (BadLocationException el) {
-                        logger.error(el);
                     }
                 }
                 resetEditor();
@@ -189,6 +201,33 @@ public class VersionRevisionUpdater {
         }
         // ToDO: tell EditorChangeListener that no change has happened?!
         editorAccess.setModified(false);
+    }
+
+    private void replaceTagInDoc(int historyTagPosition0, int oldTagLength, String tag) {
+        try {
+            doc.remove(historyTagPosition0, oldTagLength + 1);
+        } catch (BadLocationException el) {
+            logger.error(el);
+        }
+        try {
+            doc.insertString(historyTagPosition0, tag, null);
+        } catch (BadLocationException el) {
+            logger.error(el);
+        }
+    }
+
+    private void insertTagInDoc(int historyTagPosition0, String tag) {
+        try {
+            if (historyTagPosition0 == 0) {
+                doc.insertString(historyTagPosition0, "\n", null);
+                doc.insertString(historyTagPosition0, tag, null);
+            } else {
+                doc.insertString(historyTagPosition0, tag, null);
+                doc.insertString(historyTagPosition0, "\n", null);
+            }
+        } catch (BadLocationException el) {
+            logger.error(el);
+        }
     }
 
     /**
