@@ -25,7 +25,9 @@ import java.util.Date;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    private static final String backupDBBase = "~history_";
+    public static final String backupDBBase = "~history_";
+    public static final String backupRESTXYBase = "~history_~restxq/";
+    public static final String backupRepoBase = "~history_~repo/";
 
     private final URL url;
     private BaseXSource source;
@@ -94,10 +96,13 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private String getBackupPath(String path) throws IOException {
         StringBuilder backupPath;
         backupPath = new StringBuilder(backupDBBase);
-        if (source.equals(BaseXSource.REPO))
-            backupPath.append("~repo/");
-        if (source.equals(BaseXSource.RESTXQ))
-            backupPath.append("~restxq/");
+        if (source.equals(BaseXSource.REPO)) {
+            backupPath = new StringBuilder(backupRepoBase);
+        } else if (source.equals(BaseXSource.RESTXQ)) {
+            backupPath = new StringBuilder(backupRESTXYBase);
+        } else {
+            backupPath = new StringBuilder(backupDBBase);
+        }
         Date date = new Date();
         StringBuilder dateRevisionStr = new StringBuilder("_");
         dateRevisionStr.append(date.getYear()+1900);     dateRevisionStr.append("-");

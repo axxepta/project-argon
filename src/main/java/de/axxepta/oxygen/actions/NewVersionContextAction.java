@@ -46,18 +46,20 @@ public class NewVersionContextAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // ToDo: proper exception handling
         TreePath path = treeListener.getPath();
-        BaseXSource source = TreeUtils.sourceFromTreePath(path);
         String urlString = TreeUtils.urlStringFromTreePath(path);
-        URL url = null;
-        try {
-            url = new URL(urlString);
-        } catch (MalformedURLException e1) {
-            logger.error(e1);
-        }
-        if (URLUtils.isXML(url) || URLUtils.isQuery(url)) {
-            String fileType = URLUtils.isXML(url) ? VersionRevisionUpdater.XML : VersionRevisionUpdater.XQUERY;
+
+        if (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString)) {
+
+            String fileType = URLUtils.isXML(urlString) ? VersionRevisionUpdater.XML : VersionRevisionUpdater.XQUERY;
+            BaseXSource source = TreeUtils.sourceFromTreePath(path);
             String protocol = CustomProtocolURLHandlerExtension.protocolFromSource(source);
             CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+            URL url = null;
+            try {
+                url = new URL(urlString);
+            } catch (MalformedURLException e1) {
+                logger.error(e1);
+            }
 
             if (handlerExtension.canCheckReadOnly(protocol) && !handlerExtension.isReadOnly(url)) {
                 VersionRevisionUpdater updater;

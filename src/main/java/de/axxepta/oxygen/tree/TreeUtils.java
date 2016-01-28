@@ -112,6 +112,7 @@ public class TreeUtils {
     }
 
     public static String treeStringFromTreePath(TreePath path) {
+        // ToDo: use String constant
         StringBuilder db_path = new StringBuilder("BaseX Server");
         for (int i = 1; i < path.getPathCount(); i++) {
             db_path.append("/").append(path.getPathComponent(i).toString());
@@ -177,6 +178,24 @@ public class TreeUtils {
         int pathCount = path.getPathCount();
         return (pathCount == 3) &&
                 (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+    }
+
+    public static boolean isInDB(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount > 3) &&
+                (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
+    }
+
+    public static boolean isInRestXY(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount > 2) &&
+                (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)));
+    }
+
+    public static boolean isInRepo(TreePath path) {
+        int pathCount = path.getPathCount();
+        return (pathCount > 2) &&
+                (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_repo)));
     }
 
     public static boolean isSource(TreePath path) {

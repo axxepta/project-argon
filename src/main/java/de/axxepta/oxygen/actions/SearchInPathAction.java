@@ -85,25 +85,7 @@ public class SearchInPathAction extends AbstractAction {
             String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in path\n" +
                     pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
             if ((filter != null) && (!filter.equals(""))) {
-                ArrayList<String> allResources = new ArrayList<>();
-                String basePathStr = TreeUtils.resourceFromTreePath(path);
-                try {
-                    BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
-                    allResources.addAll(search.getResult());
-
-                } catch (Exception er) {
-                    JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources.\n" +
-                                    " Check if server ist still running.",
-                            "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                }
-                String searchRoot;
-                if (source.equals(BaseXSource.DATABASE))
-                    searchRoot = TreeUtils.treeStringFromTreePath(TreeUtils.pathToDepth(path,2))+"/";
-                else
-                    searchRoot = TreeUtils.treeStringFromTreePath(path)+"/";
-                for (int i=0; i<allResources.size(); i++) {
-                    allResources.set(i, searchRoot+allResources.get(i).replaceAll("\\\\","/"));
-                }
+                ArrayList<String> allResources = searchResourcesInPath(source, path, filter);
 
                 // show found resources
                 resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
@@ -142,6 +124,38 @@ public class SearchInPathAction extends AbstractAction {
 
             }
         }
+    }
+
+    protected static ArrayList<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
+        String basePathStr = TreeUtils.resourceFromTreePath(path);
+        ArrayList<String> allResources = searchResourcesInPathString(source, basePathStr, filter);
+        String searchRoot;
+        if (source.equals(BaseXSource.DATABASE))
+            searchRoot = TreeUtils.treeStringFromTreePath(TreeUtils.pathToDepth(path,2))+"/";
+        else
+            searchRoot = TreeUtils.treeStringFromTreePath(path)+"/";
+        for (int i=0; i<allResources.size(); i++) {
+            allResources.set(i, searchRoot+allResources.get(i));
+        }
+        return allResources;
+    }
+
+    protected static ArrayList<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
+        ArrayList<String> allResources = new ArrayList<>();
+        JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+        try {
+            BaseXRequest search = new BaseXRequest("look", source, basePathStr, filter);
+            allResources.addAll(search.getResult());
+
+        } catch (Exception er) {
+            JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources.\n" +
+                            " Check if server ist still running.",
+                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+        }
+        for (int i=0; i<allResources.size(); i++) {
+            allResources.set(i, allResources.get(i).replaceAll("\\\\","/"));
+        }
+        return allResources;
     }
 
 

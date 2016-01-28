@@ -176,6 +176,11 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                             tListener, pluginWorkspaceAccess);
                     contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
+                    // ToDo: ICON
+                    Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
+                            ImageUtils.getIcon(ImageUtils.RENAME), tListener, pluginWorkspaceAccess);
+                    contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
+
                     Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                             pluginWorkspaceAccess, tree);
                     contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
