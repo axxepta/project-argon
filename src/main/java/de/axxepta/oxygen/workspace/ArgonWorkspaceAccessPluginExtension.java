@@ -11,6 +11,8 @@ import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.versioncontrol.DateTableCellRenderer;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
@@ -25,6 +27,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -59,7 +62,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
         // init language pack
-        Lang.init(Locale.UK);
+        if (pluginWorkspaceAccess.getUserInterfaceLanguage().equals("de_DE"))
+            Lang.init(Locale.GERMAN);
+        else
+            Lang.init(Locale.UK);
 
         // init icon map
         ImageUtils.init();
@@ -264,8 +270,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         }
     }
 
-    public void setVersionHistoryTable(JTable table) {
-        this.versionHistoryTable = table;
+    public void setVersionHistoryTableModel(TableModel tableModel) {
+        versionHistoryTable.setModel(tableModel);
+        versionHistoryTable.setFillsViewportHeight(true);
+        versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
     }
 
     @java.lang.Override
@@ -413,7 +423,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 viewInfo.setTitle("BaseX DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                versionHistoryTable = new JTable();
+                versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
+                versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+                versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+                versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
                 JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
                 viewInfo.setComponent(scrollPane);
                 viewInfo.setTitle("BaseX Version History");

@@ -4,15 +4,14 @@ import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,10 +24,9 @@ import java.util.List;
 public final class VersionHistory {
     private static final VersionHistory ourInstance = new VersionHistory();
     private static final Logger logger = LogManager.getLogger(VersionHistory.class);
-    private List<HistoryEntry> historyList;
+    private List<VersionHistoryEntry> historyList;
 
-    private static String[] columnNames = {"Version", "Revision", "Date"};
-    private JTable table;
+    private TableModel tableModel;
     private ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
 
     public static VersionHistory getInstance() {
@@ -40,7 +38,6 @@ public final class VersionHistory {
     }
 
     public void update(String path, List<String> strEntries, ArgonWorkspaceAccessPluginExtension pluginWSAExtension) {
-//    public void update(String path, List<String> strEntries) {
         this.historyList = new ArrayList<>();
         this.pluginWSAExtension = pluginWSAExtension;
         for (String strEntry : strEntries) {
@@ -56,20 +53,15 @@ public final class VersionHistory {
             int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
             int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
             Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
-            HistoryEntry historyEntry = new HistoryEntry(url, version, revision, changeDate);
-            historyList.add(historyEntry);
+            VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
+            historyList.add(versionHistoryEntry);
         }
         show();
     }
 
     private void show() {
-        Object[][] data = new Object[historyList.size()][];
-        for (int i=0; i<historyList.size(); i++) {
-            data[i] = historyList.get(i).getDisplayVector();
-        }
-        table = new JTable(data, columnNames);
-        table.setFillsViewportHeight(true);
-        pluginWSAExtension.setVersionHistoryTable(table);
+        tableModel = new VersionHistoryTableModel(historyList);
+        pluginWSAExtension.setVersionHistoryTableModel(tableModel);
         StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
         pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
     }
@@ -84,23 +76,4 @@ public final class VersionHistory {
         return date;
     }
 
-    private class HistoryEntry {
-        private URL url;
-        private int version;
-        private int revision;
-        private Date changeDate;
-
-        private HistoryEntry(URL url, int version, int revision, Date changeDate) {
-            this.url = url;
-            this.version = version;
-            this.revision = revision;
-            this.changeDate = changeDate;
-        }
-
-        private Object[] getDisplayVector() {
-            Object[] displayVector = {version, revision, changeDate};
-            return displayVector;
-        }
-
-    }
 }
