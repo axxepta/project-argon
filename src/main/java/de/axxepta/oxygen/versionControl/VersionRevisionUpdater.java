@@ -1,4 +1,4 @@
-package de.axxepta.oxygen.actions;
+package de.axxepta.oxygen.versioncontrol;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

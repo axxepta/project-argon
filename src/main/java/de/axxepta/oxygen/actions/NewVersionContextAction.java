@@ -7,6 +7,7 @@ import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.versioncontrol.VersionRevisionUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.lock.LockException;

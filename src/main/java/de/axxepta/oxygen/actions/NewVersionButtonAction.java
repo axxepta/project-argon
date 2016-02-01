@@ -4,6 +4,7 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.versioncontrol.VersionRevisionUpdater;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 

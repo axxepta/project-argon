@@ -4,7 +4,7 @@
 package de.axxepta.oxygen.customprotocol;
 
 
-import de.axxepta.oxygen.actions.VersionRevisionUpdater;
+import de.axxepta.oxygen.versioncontrol.VersionRevisionUpdater;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.rest.BaseXRequest;

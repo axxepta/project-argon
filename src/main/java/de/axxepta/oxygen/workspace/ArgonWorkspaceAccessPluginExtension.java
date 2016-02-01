@@ -44,7 +44,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      * The CMS messages area.
      */
     private JTextArea cmsMessagesArea;
-    private JTextArea argonOutputArea;
+    private JTable versionHistoryTable;
     private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
     private ToolbarButton newVersionButton;
     private ToolbarButton replyCommentButton;
@@ -178,7 +178,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     // ToDo: ICON
                     Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                            ImageUtils.getIcon(ImageUtils.RENAME), tListener, pluginWorkspaceAccess);
+                            ImageUtils.getIcon(ImageUtils.RENAME), tListener);
+                    //Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
+                    //        ImageUtils.getIcon(ImageUtils.RENAME), tListener, this.versionHistoryTable);
                     contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
 
                     Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
@@ -211,8 +213,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     viewInfo.setTitle("BaseX Db Connection");
                     viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
                 } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                    argonOutputArea = new JTextArea();
-                    JScrollPane scrollPane = new JScrollPane(argonOutputArea);
+                    versionHistoryTable = new JTable();
+                    JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
                     viewInfo.setComponent(scrollPane);
                     viewInfo.setTitle("Argon BaseX Query Output");
                 } else if ("Project".equals(viewInfo.getViewID())) {
@@ -392,13 +394,24 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         if(currentEditor == null) {
             runQueryButton.setEnabled(false);
+            newVersionButton.setEnabled(false);
         } else {
             if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
                 runQueryButton.setEnabled(true);
+                newVersionButton.setEnabled(true);
             } else {
                 runQueryButton.setEnabled(false);
+                if (URLUtils.isXML(currentEditor.getEditorLocation())) {
+                    newVersionButton.setEnabled(true);
+                } else {
+                    newVersionButton.setEnabled(false);
+                }
             }
         }
+    }
+
+    public void setVersionHistoryTable(JTable table) {
+        this.versionHistoryTable = table;
     }
 
     @java.lang.Override
