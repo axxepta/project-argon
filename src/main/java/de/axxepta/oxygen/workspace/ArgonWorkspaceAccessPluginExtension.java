@@ -50,10 +50,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     private ToolbarButton replyCommentButton;
 
     private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
+    private StandalonePluginWorkspace pluginWorkspaceAccess;
 
     @java.lang.Override
     public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
+        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
         pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
         // init language pack
@@ -74,155 +76,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         ArgonEditorsWatchMap.init();
 
-        pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
-            /**
-             * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
-             */
-            @Override
-            public void customizeView(ViewInfo viewInfo) {
-
-                if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
-                    //The view ID defined in the "plugin.xml"
-
-                    // Create some data to populate our tree.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_root));
-                    root.setAllowsChildren(true);
-                    DefaultMutableTreeNode databases = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_DB));
-                    databases.setAllowsChildren(true);
-                    root.add(databases);
-                    DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_restxq));
-                    queryFolder.setAllowsChildren(true);
-                    root.add(queryFolder);
-                    DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_repo));
-                    queryFolder.setAllowsChildren(true);
-                    root.add(repoFolder);
-
-                    ArrayList<String> databaseList;
-                    try {
-                        databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
-                    } catch (Exception er) {
-                        JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
-                                , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
-                        databaseList = new ArrayList<>();
-                    }
-                    for (int i = 0; i < (databaseList.size() / 2); i++) {
-                        DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
-                        dbNode.setAllowsChildren(true);
-                        databases.add(dbNode);
-                    }
-
-                    // Create a new tree control
-                    // explicit tree model necessary to use allowsChildren for definition of leafs
-                    final DefaultTreeModel treeModel = new DefaultTreeModel(root);
-                    treeModel.setAsksAllowsChildren(true);
-                    final BasexTree tree = new BasexTree(treeModel);
-                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-                    setTreeState(tree, new TreePath(root), false);
-
-                    // Add context menu
-                    BaseXPopupMenu contextMenu = new BaseXPopupMenu();
-
-                    // Add Tree Listener
-                    final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
-                    tree.addTreeWillExpandListener(tListener);
-                    tree.addMouseListener(tListener);
-                    tree.addTreeSelectionListener(tListener);
-                    TopicHolder.saveFile.register(tListener);
-                    TopicHolder.deleteFile.register(tListener);
-
-                    // Add transfer handler for DnD
-                    tree.setTransferHandler(new BaseXTreeTransferHandler());
-                    tree.setDropMode(DropMode.ON);
-
-                    // Populate context menu
-                    Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
-                        public void actionPerformed(ActionEvent e) {
-                            String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
-                            if (!tListener.getNode().getAllowsChildren()) {
-                                URL argonURL = null;
-                                try {
-                                    argonURL = new URL(db_path);
-                                } catch (MalformedURLException e1) {
-                                    logger.error(e1);
-                                }
-                                pluginWorkspaceAccess.open(argonURL);
-                            }
-                        }
-                    };
-                    contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
-
-                    Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD)) {
-                        public void actionPerformed(ActionEvent e) {
-                        }
-                    };
-                    contextMenu.add(checkIn, Lang.get(Lang.Keys.cm_checkin));
-
-                    contextMenu.addSeparator();
-
-                    Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD),
-                            treeModel, tListener);
-                    contextMenu.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
-
-                    Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE),
-                            tree, tListener);
-                    contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
-
-                    Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
-                            tree, tListener);
-                    contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
-
-                    // ToDo: ICON
-                    Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.RENAME),
-                            tListener, pluginWorkspaceAccess);
-                    contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
-
-                    // ToDo: ICON
-                    Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                            ImageUtils.getIcon(ImageUtils.RENAME), tListener);
-                    //Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                    //        ImageUtils.getIcon(ImageUtils.RENAME), tListener, this.versionHistoryTable);
-                    contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
-
-                    Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
-                            pluginWorkspaceAccess, tree);
-                    contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
-
-                    final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
-                    contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
-
-                    contextMenu.addSeparator();
-
-                    final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH),
-                            pluginWorkspaceAccess, tree);
-                    contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
-
-                    Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {
-                        public void actionPerformed(ActionEvent e) {
-                        }
-                    };
-                    contextMenu.add(searchInFiles, "Search In Files");
-
-                    tree.add(contextMenu);
-
-                    //
-                    cmsMessagesArea = new JTextArea("CMS Session History:");
-                    JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
-                    scrollPane.getViewport().add(tree);
-                    viewInfo.setComponent(scrollPane);
-
-                    viewInfo.setTitle("BaseX Db Connection");
-                    viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
-                } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                    versionHistoryTable = new JTable();
-                    JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
-                    viewInfo.setComponent(scrollPane);
-                    viewInfo.setTitle("Argon BaseX Query Output");
-                } else if ("Project".equals(viewInfo.getViewID())) {
-                    // Change the 'Project' view title.
-                    viewInfo.setTitle("CMS Project");
-                }
-            }
-        });
+        pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 
         pluginWorkspaceAccess.addEditorChangeListener(new WSEditorChangeListener() {
 
@@ -418,4 +272,156 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     public boolean applicationClosing() {
         return true;
     }
+
+
+    private class BaseXViewComponentCustomizer implements ViewComponentCustomizer {
+        /**
+         * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
+         */
+        @Override
+        public void customizeView(ViewInfo viewInfo) {
+
+            if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
+                //The view ID defined in the "plugin.xml"
+
+                // Create some data to populate our tree.
+                DefaultMutableTreeNode root = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_root));
+                root.setAllowsChildren(true);
+                DefaultMutableTreeNode databases = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_DB));
+                databases.setAllowsChildren(true);
+                root.add(databases);
+                DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_restxq));
+                queryFolder.setAllowsChildren(true);
+                root.add(queryFolder);
+                DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_repo));
+                queryFolder.setAllowsChildren(true);
+                root.add(repoFolder);
+
+                ArrayList<String> databaseList;
+                try {
+                    databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
+                } catch (Exception er) {
+                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
+                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+                    databaseList = new ArrayList<>();
+                }
+                for (int i = 0; i < (databaseList.size() / 2); i++) {
+                    DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
+                    dbNode.setAllowsChildren(true);
+                    databases.add(dbNode);
+                }
+
+                // Create a new tree control
+                // explicit tree model necessary to use allowsChildren for definition of leafs
+                final DefaultTreeModel treeModel = new DefaultTreeModel(root);
+                treeModel.setAsksAllowsChildren(true);
+                final BasexTree tree = new BasexTree(treeModel);
+                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                setTreeState(tree, new TreePath(root), false);
+
+                // Add context menu
+                BaseXPopupMenu contextMenu = new BaseXPopupMenu();
+
+                // Add Tree Listener
+                final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
+                tree.addTreeWillExpandListener(tListener);
+                tree.addMouseListener(tListener);
+                tree.addTreeSelectionListener(tListener);
+                TopicHolder.saveFile.register(tListener);
+                TopicHolder.deleteFile.register(tListener);
+
+                // Add transfer handler for DnD
+                tree.setTransferHandler(new BaseXTreeTransferHandler());
+                tree.setDropMode(DropMode.ON);
+
+                // Populate context menu
+                Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
+                    public void actionPerformed(ActionEvent e) {
+                        String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
+                        if (!tListener.getNode().getAllowsChildren()) {
+                            URL argonURL = null;
+                            try {
+                                argonURL = new URL(db_path);
+                            } catch (MalformedURLException e1) {
+                                logger.error(e1);
+                            }
+                            pluginWorkspaceAccess.open(argonURL);
+                        }
+                    }
+                };
+                contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
+
+                Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD)) {
+                    public void actionPerformed(ActionEvent e) {
+                    }
+                };
+                contextMenu.add(checkIn, Lang.get(Lang.Keys.cm_checkin));
+
+                contextMenu.addSeparator();
+
+                Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD),
+                        treeModel, tListener);
+                contextMenu.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
+
+                Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE),
+                        tree, tListener);
+                contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
+
+                Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
+                        tree, tListener);
+                contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
+
+                // ToDo: ICON
+                Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.RENAME),
+                        tListener, pluginWorkspaceAccess);
+                contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
+
+                // ToDo: ICON
+                //Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
+                //        ImageUtils.getIcon(ImageUtils.RENAME), tListener);
+                Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
+                        ImageUtils.getIcon(ImageUtils.RENAME), tListener, ArgonWorkspaceAccessPluginExtension.this);
+                contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
+
+                Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
+                        pluginWorkspaceAccess, tree);
+                contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
+
+                final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
+                contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
+
+                contextMenu.addSeparator();
+
+                final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH),
+                        pluginWorkspaceAccess, tree);
+                contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
+
+                Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {
+                    public void actionPerformed(ActionEvent e) {
+                    }
+                };
+                contextMenu.add(searchInFiles, "Search In Files");
+
+                tree.add(contextMenu);
+
+                //
+                cmsMessagesArea = new JTextArea("CMS Session History:");
+                JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
+                scrollPane.getViewport().add(tree);
+                viewInfo.setComponent(scrollPane);
+
+                viewInfo.setTitle("BaseX DB Connection");
+                viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
+            } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
+                versionHistoryTable = new JTable();
+                JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
+                viewInfo.setComponent(scrollPane);
+                viewInfo.setTitle("BaseX Version History");
+            } else if ("Project".equals(viewInfo.getViewID())) {
+                // Change the 'Project' view title.
+                viewInfo.setTitle("CMS Project");
+            }
+        }
+    }
+
 }

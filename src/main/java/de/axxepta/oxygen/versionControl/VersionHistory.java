@@ -39,10 +39,10 @@ public final class VersionHistory {
         historyList = new ArrayList<>();
     }
 
-//    public void update(String path, List<String> strEntries, ArgonWorkspaceAccessPluginExtension pluginWSAExtension) {
-    public void update(String path, List<String> strEntries) {
+    public void update(String path, List<String> strEntries, ArgonWorkspaceAccessPluginExtension pluginWSAExtension) {
+//    public void update(String path, List<String> strEntries) {
         this.historyList = new ArrayList<>();
-        //this.pluginWSAExtension = pluginWSAExtension;
+        this.pluginWSAExtension = pluginWSAExtension;
         for (String strEntry : strEntries) {
             URL url = null;
             try {
@@ -53,8 +53,8 @@ public final class VersionHistory {
             int dotPos = strEntry.lastIndexOf(".");
             int revPos = strEntry.lastIndexOf("r", dotPos);
             int verPos = strEntry.lastIndexOf("v", dotPos);
-            int version = Integer.parseInt(strEntry.substring(verPos, revPos));
-            int revision = Integer.parseInt(strEntry.substring(revPos, dotPos));
+            int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
+            int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
             Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
             HistoryEntry historyEntry = new HistoryEntry(url, version, revision, changeDate);
             historyList.add(historyEntry);
@@ -69,14 +69,14 @@ public final class VersionHistory {
         }
         table = new JTable(data, columnNames);
         table.setFillsViewportHeight(true);
-        //pluginWSAExtension.setVersionHistoryTable(table);
+        pluginWSAExtension.setVersionHistoryTable(table);
         StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
         pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
     }
 
     private Date parseDate(String dateStr) {
-        int year = Integer.parseInt(dateStr.substring(0,4));
-        int month = Integer.parseInt(dateStr.substring(5,7));
+        int year = Integer.parseInt(dateStr.substring(0,4)) - 1900;
+        int month = Integer.parseInt(dateStr.substring(5,7)) - 1;
         int day = Integer.parseInt(dateStr.substring(8,10));
         int hour = Integer.parseInt(dateStr.substring(11,13));
         int min = Integer.parseInt(dateStr.substring(14));

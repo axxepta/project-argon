@@ -55,12 +55,7 @@ public class BaseXRunQueryAction extends AbstractAction {
                     queryRes = "";
                 }
 
-
-                //+ display result of query in a new info window
-                //argonOutputArea.setText(queryRes);
-                //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
-
-                //+ display result of query in a new editor window
+                // display result of query in a new editor window
                 pluginWorkspaceAccess.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
 
             } else {

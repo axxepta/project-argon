@@ -28,13 +28,13 @@ public class ShowVersionHistoryContextAction extends AbstractAction {
 
     final TreeListener treeListener;
 
-    //public ShowVersionHistoryContextAction(String name, Icon icon, TreeListener treeListener,
-    //                               final ArgonWorkspaceAccessPluginExtension pluginWorkspaceAccessExtension){
-    public ShowVersionHistoryContextAction(String name, Icon icon, TreeListener treeListener){
+    public ShowVersionHistoryContextAction(String name, Icon icon, TreeListener treeListener,
+                                   ArgonWorkspaceAccessPluginExtension pluginWorkspaceAccessExtension){
+//    public ShowVersionHistoryContextAction(String name, Icon icon, TreeListener treeListener){
         super(name, icon);
 
         this.treeListener = treeListener;
-        //this.pluginWorkspaceAccessExtension = pluginWorkspaceAccessExtension;
+        this.pluginWorkspaceAccessExtension = pluginWorkspaceAccessExtension;
     }
 
 
@@ -54,8 +54,8 @@ public class ShowVersionHistoryContextAction extends AbstractAction {
 
             if (allVersions.size() > 0) {
                 VersionHistory history = VersionHistory.getInstance();
-                //history.update(pathStr, allVersions, pluginWorkspaceAccessExtension);
-                history.update(pathStr, allVersions);
+                history.update(pathStr, allVersions, pluginWorkspaceAccessExtension);
+                //history.update(pathStr, allVersions);
             } else {
                 JOptionPane.showMessageDialog(null, "For this file no entries were found in version control.",
                         "Version History", JOptionPane.PLAIN_MESSAGE);
