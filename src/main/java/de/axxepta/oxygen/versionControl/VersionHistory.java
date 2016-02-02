@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ public final class VersionHistory {
     private static final Logger logger = LogManager.getLogger(VersionHistory.class);
     private List<VersionHistoryEntry> historyList;
 
-    private TableModel tableModel;
     private ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
 
     public static VersionHistory getInstance() {
@@ -60,8 +57,7 @@ public final class VersionHistory {
     }
 
     private void show() {
-        tableModel = new VersionHistoryTableModel(historyList);
-        pluginWSAExtension.setVersionHistoryTableModel(tableModel);
+        pluginWSAExtension.updateVersionHistory(historyList);
         StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
         pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
     }
@@ -72,8 +68,7 @@ public final class VersionHistory {
         int day = Integer.parseInt(dateStr.substring(8,10));
         int hour = Integer.parseInt(dateStr.substring(11,13));
         int min = Integer.parseInt(dateStr.substring(14));
-        Date date = new Date(year, month, day, hour, min);
-        return date;
+        return new Date(year, month, day, hour, min);
     }
 
 }

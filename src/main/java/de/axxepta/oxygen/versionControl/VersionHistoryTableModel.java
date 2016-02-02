@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.versioncontrol;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,18 +11,17 @@ public class VersionHistoryTableModel extends AbstractTableModel {
 
     public static final String[] COLUMN_NAMES = {"Version", "Revision", "Date"};
 
-    private final List<VersionHistoryEntry> data;
+    private List<VersionHistoryEntry> data;
 
     public VersionHistoryTableModel(List<VersionHistoryEntry> data) {
-        this.data = data;
+        this.data = new ArrayList<>();
+        if (data != null)
+            this.data.addAll(data);
     }
 
     @Override
     public int getRowCount() {
-        if (data != null)
-            return data.size();
-        else
-            return 0;
+        return data.size();
     }
 
     @Override
@@ -31,14 +31,17 @@ public class VersionHistoryTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (data != null)
-            return data.get(rowIndex).getDisplayVector()[columnIndex];
-        else
-            return "";
+        return data.get(rowIndex).getDisplayVector()[columnIndex];
     }
 
     @Override
     public String getColumnName(final int columnIndex) {
         return COLUMN_NAMES[columnIndex];
+    }
+
+    public void setNewContent(List<VersionHistoryEntry> newData) {
+        data.clear();
+        data.addAll(newData);
+        fireTableDataChanged();
     }
 }

@@ -6,13 +6,13 @@ import java.util.Date;
 /**
  * @author Markus on 01.02.2016.
  */
-class VersionHistoryEntry {
+public class VersionHistoryEntry {
     private URL url;
     private int version;
     private int revision;
     private Date changeDate;
 
-    protected VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
+    public VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
         this.url = url;
         this.version = version;
         this.revision = revision;

@@ -12,6 +12,7 @@ import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.versioncontrol.DateTableCellRenderer;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,11 +33,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 /**
  * Main plugin class, defining tree, context menu, and toolbar
@@ -270,8 +273,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         }
     }
 
-    public void setVersionHistoryTableModel(TableModel tableModel) {
-        versionHistoryTable.setModel(tableModel);
+    public void updateVersionHistory(List<VersionHistoryEntry> historyList) {
+        ((VersionHistoryTableModel) versionHistoryTable.getModel()).setNewContent(historyList);
         versionHistoryTable.setFillsViewportHeight(true);
         versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
         versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
@@ -423,12 +426,29 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 viewInfo.setTitle("BaseX DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
+                JButton compareRevisionsButton = new JButton("Compare");
+                JButton replaceRevisionButton = new JButton("Replace");
+                JPanel versionHistoryButtonPanel = new JPanel();
+                versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));
+                compareRevisionsButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+                versionHistoryButtonPanel.add(compareRevisionsButton);
+                versionHistoryButtonPanel.add(new Box.Filler(
+                        new Dimension(10,10), new Dimension(20,10), new Dimension(50,10)));
+                replaceRevisionButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+                versionHistoryButtonPanel.add(replaceRevisionButton);
                 versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
                 versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
                 versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
                 versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
+                versionHistoryTable.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
                 JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
-                viewInfo.setComponent(scrollPane);
+                JPanel versionHistoryPanel = new JPanel();
+                versionHistoryPanel.setLayout(new BoxLayout(versionHistoryPanel, BoxLayout.Y_AXIS));
+                versionHistoryButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                versionHistoryPanel.add(versionHistoryButtonPanel);
+                scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+                versionHistoryPanel.add(scrollPane);
+                viewInfo.setComponent(versionHistoryPanel);
                 viewInfo.setTitle("BaseX Version History");
             } else if ("Project".equals(viewInfo.getViewID())) {
                 // Change the 'Project' view title.
