@@ -8,7 +8,7 @@ sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
 group = 'de.axxepta'
-version = '0.0.1'
+version = '0.0.2'
 
 repositories {
     mavenCentral()

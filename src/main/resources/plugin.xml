@@ -4,7 +4,7 @@
         vendor="axxepta solutions GmbH" class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
         classLoaderType="preferReferencedResources">
     <runtime>
-        <library name="libs/argon-0.0.1.jar" />
+        <library name="libs/argon-0.0.2.jar" />
         <library name="libs/lib/jersey-core-1.9.jar" />
         <library name="libs/lib/jide-oss-3.6.7.jar" />
         <library name="libs/lib/jersey-client-1.9.jar" />
