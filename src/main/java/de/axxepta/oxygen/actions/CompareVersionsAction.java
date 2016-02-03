@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * @author Markus on 02.02.2016.
@@ -58,7 +59,7 @@ public class CompareVersionsAction extends AbstractAction {
                 Method getInstanceMethod = null;
                 Method invokerMethod = null;
                 for (Method method : methods) {
-                    if (method.getReturnType().toString().equals(clazz.toString()) ||
+                    if (method.getReturnType().toString().equals(clazz.toString()) &&
                             Modifier.toString(method.getModifiers()).contains("static"))
                     {
                         getInstanceMethod = method;
@@ -74,7 +75,7 @@ public class CompareVersionsAction extends AbstractAction {
                     getInstanceMethod.setAccessible(true);
                     invokerMethod.setAccessible(true);
                     try {
-                        Object fileDiffer = getInstanceMethod.invoke(null, null);
+                        Object fileDiffer = getInstanceMethod.invoke(null);
                         invokerMethod.invoke(fileDiffer, urls[0], urls[1]);
                     } catch(IllegalAccessException iae) {
                         logger.error("No access granted to getInstance method of File Differ!");
