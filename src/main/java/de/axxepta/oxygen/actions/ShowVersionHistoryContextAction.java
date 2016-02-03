@@ -6,10 +6,8 @@ import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.versioncontrol.VersionHistory;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -22,7 +20,6 @@ import java.util.List;
  */
 public class ShowVersionHistoryContextAction extends AbstractAction {
 
-    private static final Logger logger = LogManager.getLogger(ShowVersionHistoryContextAction.class);
     private ArgonWorkspaceAccessPluginExtension pluginWorkspaceAccessExtension;
 
     final TreeListener treeListener;
@@ -51,7 +48,7 @@ public class ShowVersionHistoryContextAction extends AbstractAction {
             List<String> allVersions = obtainFileVersions(pathStr, fileName, extension);
 
             if (allVersions.size() > 0) {
-                VersionHistory history = VersionHistory.getInstance();
+                VersionHistoryUpdater history = VersionHistoryUpdater.getInstance();
                 history.update(pathStr, allVersions, pluginWorkspaceAccessExtension);
             } else {
                 JOptionPane.showMessageDialog(null, "For this file no entries were found in version control.",

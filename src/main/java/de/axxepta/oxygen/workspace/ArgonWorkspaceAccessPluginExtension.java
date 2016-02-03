@@ -12,6 +12,7 @@ import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.versioncontrol.DateTableCellRenderer;
+import de.axxepta.oxygen.versioncontrol.VersionControlListSelectionListener;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,6 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -426,8 +426,17 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 viewInfo.setTitle("BaseX DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                JButton compareRevisionsButton = new JButton("Compare");
+                // Table (will be put in bottom Box)
+                versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
+                versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+                versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+                versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
+                versionHistoryTable.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+                // Two Buttons (with filler) in Pane in Top Box
+                JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
+                compareRevisionsButton.setEnabled(false);
                 JButton replaceRevisionButton = new JButton("Replace");
+                replaceRevisionButton.setEnabled(false);
                 JPanel versionHistoryButtonPanel = new JPanel();
                 versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));
                 compareRevisionsButton.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -436,11 +445,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         new Dimension(10,10), new Dimension(20,10), new Dimension(50,10)));
                 replaceRevisionButton.setAlignmentY(Component.CENTER_ALIGNMENT);
                 versionHistoryButtonPanel.add(replaceRevisionButton);
-                versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
-                versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-                versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
-                versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
-                versionHistoryTable.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+                // Table in ScrollPane in bottom Box
+                versionHistoryTable.getSelectionModel().addListSelectionListener(
+                        new VersionControlListSelectionListener(versionHistoryTable, compareRevisionsButton, replaceRevisionButton));
                 JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
                 JPanel versionHistoryPanel = new JPanel();
                 versionHistoryPanel.setLayout(new BoxLayout(versionHistoryPanel, BoxLayout.Y_AXIS));

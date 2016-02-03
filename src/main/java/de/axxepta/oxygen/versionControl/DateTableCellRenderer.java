@@ -1,6 +1,5 @@
 package de.axxepta.oxygen.versioncontrol;
 
-import de.axxepta.oxygen.utils.Lang;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;

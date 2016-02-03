@@ -19,18 +19,18 @@ import java.util.List;
 
 // ToDo: completely static instead of singleton? access to instance necessary?
 
-public final class VersionHistory {
-    private static final VersionHistory ourInstance = new VersionHistory();
-    private static final Logger logger = LogManager.getLogger(VersionHistory.class);
+public final class VersionHistoryUpdater {
+    private static final VersionHistoryUpdater ourInstance = new VersionHistoryUpdater();
+    private static final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
     private List<VersionHistoryEntry> historyList;
 
     private ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
 
-    public static VersionHistory getInstance() {
+    public static VersionHistoryUpdater getInstance() {
         return ourInstance;
     }
 
-    private VersionHistory() {
+    private VersionHistoryUpdater() {
         historyList = new ArrayList<>();
     }
 
@@ -40,7 +40,7 @@ public final class VersionHistory {
         for (String strEntry : strEntries) {
             URL url = null;
             try {
-                url = new URL(CustomProtocolURLHandlerExtension.ARGON + "://" + path + "/" + strEntry);
+                url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + path + "/" + strEntry);
             } catch (MalformedURLException e1) {
                 logger.error(e1);
             }

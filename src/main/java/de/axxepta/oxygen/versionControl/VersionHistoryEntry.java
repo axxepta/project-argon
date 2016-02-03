@@ -24,4 +24,8 @@ public class VersionHistoryEntry {
         return displayVector;
     }
 
+    protected URL getURL() {
+        return url;
+    }
+
 }

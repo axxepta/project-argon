@@ -8,9 +8,10 @@
         <library name="libs/lib/jersey-core-1.9.jar" />
         <library name="libs/lib/jide-oss-3.6.7.jar" />
         <library name="libs/lib/jersey-client-1.9.jar" />
-        <library name="libs/lib/basex-8.3.1-SNAPSHOT.jar" />
+        <library name="libs/lib/basex-8.4-SNAPSHOT.jar" />
         <library name="libs/lib/log4j-api-2.3.jar" />
         <library name="libs/lib/log4j-core-2.3.jar" />
+        <library name="libs/lib/org.reflections:reflections:0.9.10" />
     </runtime>
 
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
