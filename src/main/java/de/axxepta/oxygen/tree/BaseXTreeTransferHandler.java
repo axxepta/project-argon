@@ -1,7 +1,5 @@
 package de.axxepta.oxygen.tree;
 
-
-
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import org.apache.logging.log4j.LogManager;

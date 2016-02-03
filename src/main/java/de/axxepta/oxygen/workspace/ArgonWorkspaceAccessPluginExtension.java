@@ -138,7 +138,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                                 logger.error(er);
                                 editorContent = "";
                             }
-                            // pass content of editor window to ListDBEntries with queryTest
+                            // pass content of editor window to BaseXRequest with queryTest
                             ArrayList<String> valProbStr;
                             try {
                                 BaseXRequest testQuery = new BaseXRequest("parse",
@@ -172,9 +172,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // create actions for Toolbars
         final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
                 ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
-        // ToDo: ICON
         final Action newVersionAction = new NewVersionButtonAction("Increase File Version",
-                ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
+                ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
         final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
 
@@ -384,16 +383,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         tree, tListener);
                 contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-                // ToDo: ICON
-                Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.RENAME),
+                Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.INC_VER),
                         tListener, pluginWorkspaceAccess);
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
-                // ToDo: ICON
-                //Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                //        ImageUtils.getIcon(ImageUtils.RENAME), tListener);
                 Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                        ImageUtils.getIcon(ImageUtils.RENAME), tListener, ArgonWorkspaceAccessPluginExtension.this);
+                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener, ArgonWorkspaceAccessPluginExtension.this);
                 contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
 
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
