@@ -30,35 +30,35 @@ public class BasexTreeCellRenderer extends TreeCellRenderer {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
 			String thisLeafFileType = fileType(aValue);
-			setIcon(ImageUtils.getOxygenIcon(thisLeafFileType));
+			setIcon(ImageUtils.getIcon(thisLeafFileType));
 			return this;
 		}
 
 		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isRoot(aTree, aValue)) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.createImageIcon("/images/DbConnection16.gif"));
+			setIcon(ImageUtils.getIcon(ImageUtils.DB_CONNECTION));
 			return this;
 		}
 
 		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDatabase(aTree, aValue)) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.createImageIcon("/images/DbCatalog16.gif"));
+			setIcon(ImageUtils.getIcon(ImageUtils.DB_CATALOG));
 			return this;
 		}
 
 		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDBSource(aTree, aValue)) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.createImageIcon("/images/DBHttp16.png"));
+			setIcon(ImageUtils.getIcon(ImageUtils.DB_HTTP));
 			return this;
 		}
 
 		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isSourceDir(aTree, aValue)) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.createImageIcon("/images/DbFolder16.png"));
+			setIcon(ImageUtils.getIcon(ImageUtils.DB_FOLDER));
 			return this;
 		}
 

@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.utils.URLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.editor.ContentTypes;
@@ -11,7 +12,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Scanner;
 
 /**
@@ -33,14 +33,7 @@ public class BaseXRunQueryAction extends AbstractAction {
         WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
 
         if (editorAccess != null) {
-            URL editorUrl = editorAccess.getEditorLocation();
-            boolean isXquery = (
-                    editorUrl.toString().endsWith("xq") ||
-                    editorUrl.toString().endsWith("xqm") ||
-                    editorUrl.toString().endsWith("xql") ||
-                    editorUrl.toString().endsWith("xqy") ||
-                    editorUrl.toString().endsWith("xquery"));
-            if (isXquery) {
+            if (URLUtils.isQuery(editorAccess.getEditorLocation())) {
                 // get content of current editor window
                 String editorContent;
                 try {
@@ -62,12 +55,7 @@ public class BaseXRunQueryAction extends AbstractAction {
                     queryRes = "";
                 }
 
-
-                //+ display result of query in a new info window
-                //argonOutputArea.setText(queryRes);
-                //pluginWorkspaceAccess.showView("ArgonWorkspaceAccessOutputID", true);
-
-                //+ display result of query in a new editor window
+                // display result of query in a new editor window
                 pluginWorkspaceAccess.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
 
             } else {

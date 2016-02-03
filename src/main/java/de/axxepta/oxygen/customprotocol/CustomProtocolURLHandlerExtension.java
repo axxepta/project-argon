@@ -160,7 +160,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         }
     }
 
-    protected static String pathFromURL(URL url) {
+    public static String pathFromURL(URL url) {
         String urlString = url.toString();
         int ind1 = urlString.indexOf(":");
         if (urlString.substring(ind1 + 1, ind1 + 2).equals("/"))
@@ -168,4 +168,25 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         else
             return urlString.substring(ind1 + 1);
     }
+
+    public static String protocolFromSource(BaseXSource source) {
+        switch (source) {
+            case RESTXQ: return ARGON_XQ;
+            case REPO: return ARGON_REPO;
+            default: return ARGON;
+        }
+    }
+
+    public static BaseXSource sourceFromURL(URL url) {
+        String urlString = url.toString();
+        int ind1 = urlString.indexOf(":");
+        String protocol = urlString.substring(0, ind1);
+        switch (protocol) {
+            case ARGON_XQ: return BaseXSource.RESTXQ;
+            case ARGON_REPO: return BaseXSource.REPO;
+            case ARGON: return BaseXSource.DATABASE;
+            default: return null;
+        }
+    }
+
 }
