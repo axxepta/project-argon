@@ -16,11 +16,14 @@ releasebuild:
   stage: test
   script:
    - gradle -q build
+   - mkdir -p Argon
+   - cp -r build/libs Argon/
+   - cp -r build/resources Argon/
+   - cp build/resources/main/plugin.xml Argon/
   only:
   - /^release-.*$/ # use regexp ;-)
   tags:
     - docker
   artifacts:
     paths:
-    - ./build/libs
-    - ./plugin.xml
+    - Argon
