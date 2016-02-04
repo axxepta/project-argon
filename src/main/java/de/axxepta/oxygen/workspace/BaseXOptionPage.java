@@ -11,6 +11,8 @@ import java.io.File;
 
 import javax.swing.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -21,11 +23,11 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
  */
 public class BaseXOptionPage extends OptionPagePluginExtension {
 
+    private static final Logger logger = LogManager.getLogger(BaseXOptionPage.class);
 
     /**
      * BaseX Keys
      */
-
     public static final String KEY_BASEX_HOST = "KEY_BASEX_HOST";
     public static final String KEY_BASEX_HTTP_PORT = "KEY_BASEX_HTTP_PORT";
     public static final String KEY_BASEX_TCP_PORT = "KEY_BASEX_TCP_PORT";
@@ -332,25 +334,34 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     }
 
     public static String getOption(String key, boolean defaults) {
+        String defaultValue;
+        switch (key) {
+            case KEY_BASEX_HOST: defaultValue = DEF_BASEX_HOST; break;
+            case KEY_BASEX_HTTP_PORT: defaultValue = DEF_BASEX_HTTP_PORT; break;
+            case KEY_BASEX_TCP_PORT: defaultValue = DEF_BASEX_TCP_PORT; break;
+            case KEY_BASEX_USERNAME: defaultValue = DEF_BASEX_USERNAME; break;
+            case KEY_BASEX_PASSWORD: defaultValue = DEF_BASEX_PASSWORD; break;
+            case KEY_BASEX_CONNECTION: defaultValue = DEF_BASEX_CONNECTION; break;
+            case KEY_BASEX_VERSIONING: defaultValue = DEF_BASEX_VERSIONING; break;
+            case KEY_BASEX_LOGFILE: defaultValue = DEF_BASEX_LOGFILE; break;
+            default: defaultValue = "empty option";
+        }
         if (defaults) {
-            switch (key) {
-                case KEY_BASEX_HOST: return DEF_BASEX_HOST;
-                case KEY_BASEX_HTTP_PORT: return DEF_BASEX_HTTP_PORT;
-                case KEY_BASEX_TCP_PORT: return DEF_BASEX_TCP_PORT;
-                case KEY_BASEX_USERNAME: return DEF_BASEX_USERNAME;
-                case KEY_BASEX_PASSWORD: return DEF_BASEX_PASSWORD;
-                case KEY_BASEX_CONNECTION: return DEF_BASEX_CONNECTION;
-                case KEY_BASEX_VERSIONING: return DEF_BASEX_VERSIONING;
-                case KEY_BASEX_LOGFILE: return DEF_BASEX_LOGFILE;
-                default: return "";
-            }
+            return defaultValue;
         } else {
             PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
             if (pluginWorkspace != null) {
                 WSOptionsStorage store = pluginWorkspace.getOptionsStorage();
-                if (store != null) return store.getOption(key, "empty option");
-                else return "no store";
-            } else return "no plugin workspace";
+                if (store != null)
+                    return store.getOption(key, defaultValue);
+                else {
+                    logger.error("Plugin error - no option storage accessible");
+                    return defaultValue;
+                }
+            } else {
+                logger.error("Plugin error - no plugin workspace accessible");
+                return defaultValue;
+            }
         }
     }
 
