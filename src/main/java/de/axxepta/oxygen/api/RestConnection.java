@@ -31,7 +31,8 @@ public final class RestConnection implements Connection {
      */
     public RestConnection(final String server, final int port, final String user,
                           final String password) throws MalformedURLException {
-        url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
+        //url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
+        url = new IOUrl("http://" + user + ":" + password + "@" + server );
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
 
     }
