@@ -20,7 +20,6 @@ import org.basex.util.http.*;
 public final class RestConnection implements Connection {
     /** URI. */
     private final IOUrl url;
-    private URL j_url;
     private final String basicAuth;
 
     /**
@@ -33,7 +32,6 @@ public final class RestConnection implements Connection {
     public RestConnection(final String server, final int port, final String user,
                           final String password) throws MalformedURLException {
         url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
-        j_url = new URL("http://" + server + ":" + port + "/rest");
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
 
     }
@@ -144,9 +142,7 @@ public final class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     private byte[] request(final String body, final String... bindings) throws IOException {
-        //final HttpURLConnection conn = (HttpURLConnection) url.connection();
-        sun.net.www.protocol.http.HttpURLConnection conn =
-                new sun.net.www.protocol.http.HttpURLConnection(j_url, null);
+        final HttpURLConnection conn = (HttpURLConnection) url.connection();
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
@@ -165,8 +161,8 @@ public final class RestConnection implements Connection {
 
             try(final OutputStream out = conn.getOutputStream()) {
                 out.write(tb.finish());
+                out.close();
             }
-            //conn.getHeaderFields();
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
