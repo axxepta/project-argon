@@ -66,15 +66,14 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 
         // save BaseX configs in the option storage
 
-
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HOST,
                 !"".equals(baseXHostTextField.getText()) ? baseXHostTextField.getText() : null);
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HTTP_PORT,
+/*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HTTP_PORT,
                 !"".equals(baseXHttpPortTextField.getText()) ? baseXHttpPortTextField.getText() : null);
 
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_TCP_PORT,
-                !"".equals(baseXTcpPortTextField.getText()) ? baseXTcpPortTextField.getText() : null);
+                !"".equals(baseXTcpPortTextField.getText()) ? baseXTcpPortTextField.getText() : null);*/
 
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_USERNAME,
                 !"".equals(baseXUsernameTextField.getText()) ? baseXUsernameTextField.getText() : null);
@@ -82,14 +81,14 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_PASSWORD,
                 !"".equals(baseXPasswordTextField.getText()) ? baseXPasswordTextField.getText() : null);
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION,
-                baseXConnectionTypeComboBox.getSelectedItem().toString());
+/*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION,
+                baseXConnectionTypeComboBox.getSelectedItem().toString());*/
 
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_VERSIONING,
                 baseXVersioningCheckBox.isSelected() ? "true" : "false");
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
-                !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);
+/*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
+                !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);*/
     }
 
     /**
@@ -139,7 +138,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXHostTextFieldLbl = new JLabel("BaseX Hostname:");
+        JLabel baseXHostTextFieldLbl = new JLabel("BaseX Host:");
         panel.add(baseXHostTextFieldLbl, c);
 
         baseXHostTextField = new JTextField();
@@ -153,7 +152,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         /**
          * BaseX Http Port
          */
-        c.gridx = 0;
+/*        c.gridx = 0;
         c.gridy++;
         JLabel baseXHttpPortTextFieldLbl = new JLabel("BaseX HTTP Port:");
         panel.add(baseXHttpPortTextFieldLbl, c);
@@ -163,13 +162,13 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
-        panel.add(baseXHttpPortTextField, c);
+        panel.add(baseXHttpPortTextField, c);*/
 
 
         /**
          * BaseX TCP Port
          */
-        c.gridx = 0;
+/*        c.gridx = 0;
         c.gridy++;
         JLabel baseXTcpPortTextFieldLbl = new JLabel("BaseX TCP Port:");
         panel.add(baseXTcpPortTextFieldLbl, c);
@@ -179,7 +178,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
-        panel.add(baseXTcpPortTextField, c);
+        panel.add(baseXTcpPortTextField, c);*/
 
 
         /**
@@ -217,7 +216,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         /**
          * BaseX Connection type
          */
-        c.gridx = 0;
+/*        c.gridx = 0;
         c.gridy++;
         JLabel baseXConnectionTypeRadioFrameLbl = new JLabel("Connection type:");
         panel.add(baseXConnectionTypeRadioFrameLbl, c);
@@ -228,7 +227,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
-        panel.add(baseXConnectionTypeComboBox, c);
+        panel.add(baseXConnectionTypeComboBox, c);*/
 
         /**
          * BaseX Versioning
@@ -248,6 +247,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         /**
          * BaseX Logfile
          */
+/*
         c.gridx = 0;
         c.gridy++;
         JLabel baseXLogfileTextFieldLbl = new JLabel("Argon Logfile:");
@@ -277,6 +277,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
                 }
             }
         });
+*/
 
 
         c.gridx = 0;
@@ -293,42 +294,42 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         String baseXHost = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_HOST,
                 null);
-        String baseXHttpPort = pluginWorkspace.getOptionsStorage().getOption(
+/*        String baseXHttpPort = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_HTTP_PORT,
-                null);
-        String baseXTcpPort = pluginWorkspace.getOptionsStorage().getOption(
+                null);*/
+/*        String baseXTcpPort = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_TCP_PORT,
-                null);
+                null);*/
         String baseXUsername = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_USERNAME,
                 null);
         String baseXPassword = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_PASSWORD,
                 null);
-        String baseXConnection = pluginWorkspace.getOptionsStorage().getOption(
+/*        String baseXConnection = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_CONNECTION,
-                null);
+                null);*/
         String baseXVersioning = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_VERSIONING,
                 null);
-        String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
+/*        String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
                 KEY_BASEX_LOGFILE,
-                null);
+                null);*/
 
         // Initialize the fields with the stored options.
 
         baseXHostTextField.setText(baseXHost != null ? baseXHost : "");
-        baseXHttpPortTextField.setText(baseXHttpPort != null ? baseXHttpPort : "");
-        baseXTcpPortTextField.setText(baseXTcpPort != null ? baseXTcpPort : "");
+/*        baseXHttpPortTextField.setText(baseXHttpPort != null ? baseXHttpPort : "");*/
+/*        baseXTcpPortTextField.setText(baseXTcpPort != null ? baseXTcpPort : "");*/
         baseXUsernameTextField.setText(baseXUsername != null ? baseXUsername : "");
         baseXPasswordTextField.setText(baseXPassword != null ? baseXPassword : "");
-        if (baseXConnection.equals(connectionTypes[1])) {
+/*        if (baseXConnection.equals(connectionTypes[1])) {
             baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[1]);
         } else {
             baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[0]);
-        }
+        }*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(baseXVersioning));
-        baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");
+/*        baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");*/
 
         return panel;
     }

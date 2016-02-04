@@ -18,14 +18,15 @@ public class BaseXConnectionWrapper {
         String user = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_USERNAME, defaults);
         String pass = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_PASSWORD, defaults);
         int port = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_HTTP_PORT, defaults));
-        int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT, defaults));
+//        int tcpport = Integer.parseInt(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_TCP_PORT, defaults));
 
-        String connType;
+        String connType = "REST";
+/*        String connType;
         if (BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_CONNECTION, defaults).equals("HTTP")) {
             connType = "REST";
         } else {
             connType = "CLIENT";
-        }
+        }*/
 
         if (connType.equals("REST")) {
             try {
@@ -34,11 +35,11 @@ public class BaseXConnectionWrapper {
                 connection = null;
             }
         } else {
-            try {
+/*            try {
                 connection = new ClientConnection(host, tcpport, user, pass);
             } catch (IOException er) {
                 connection = null;
-            }
+            }*/
         }
     }
 
