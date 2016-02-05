@@ -63,8 +63,8 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 try {
                     new BaseXRequest("unlock", BaseXSource.DATABASE, pathFromURL(url));
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Failed to unlock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                    logger.debug(ex);
                 }
 
             }
@@ -91,6 +91,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Failed to lock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                    logger.debug(ex);
                 }
             }
 
@@ -121,6 +122,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
    */
     public boolean isReadOnly(URL url) {
+        //return false;
         try {
             Connection connection = BaseXConnectionWrapper.getConnection();
             if (connection != null) {

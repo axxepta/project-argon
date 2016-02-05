@@ -204,6 +204,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
                     // Add in toolbar
                     comps.add(runQueryButton);
+                    comps.add(new JSeparator(SwingConstants.VERTICAL));
                     comps.add(newVersionButton);
                     toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
 
