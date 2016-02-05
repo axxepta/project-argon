@@ -1,4 +1,4 @@
-declare option output:method "raw";
+declare option output:method "basex";
 
 (: test :)
 (:~ Path to resource. :)
@@ -21,7 +21,6 @@ return if($exists and db:is-xml($db, $path)) then (
 
     let $params := <output:serialization-parameters>
                     <output:omit-xml-declaration value="no"/>
-                    <output:method value="xml"/>
                     { $doctype }
                 </output:serialization-parameters>
     return serialize(db:open($db, $path), $params)

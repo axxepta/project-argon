@@ -22,5 +22,6 @@ $PATH
 return if($exists) then (
     db:replace($LOCK-DB, $LOCK-DB, $locks)
 ) else (
-    db:create($LOCK-DB, $locks, $LOCK-DB)
+       db:add($LOCK-DB, $locks, $LOCK-DB)
+    (: db:create($LOCK-DB, $locks, $LOCK-DB) :)
 )
