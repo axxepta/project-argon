@@ -419,7 +419,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 scrollPane.getViewport().add(tree);
                 viewInfo.setComponent(scrollPane);
 
-                viewInfo.setTitle("BaseX DB Connection");
+                viewInfo.setTitle("Argon DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
                 // Table (will be put in bottom Box)
@@ -431,7 +431,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // Two Buttons (with filler) in Pane in Top Box
                 JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
                 compareRevisionsButton.setEnabled(false);
-                JButton replaceRevisionButton = new JButton("Replace");
+                JButton replaceRevisionButton = new JButton("Reset to");
                 replaceRevisionButton.setEnabled(false);
                 JPanel versionHistoryButtonPanel = new JPanel();
                 versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));
@@ -452,7 +452,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
                 versionHistoryPanel.add(scrollPane);
                 viewInfo.setComponent(versionHistoryPanel);
-                viewInfo.setTitle("BaseX Version History");
+                viewInfo.setTitle("Argon Version History");
             } else if ("Project".equals(viewInfo.getViewID())) {
                 // Change the 'Project' view title.
                 viewInfo.setTitle("CMS Project");

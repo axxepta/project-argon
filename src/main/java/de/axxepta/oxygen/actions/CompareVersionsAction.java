@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
  * @author Markus on 02.02.2016.
@@ -41,10 +40,9 @@ public class CompareVersionsAction extends AbstractAction {
         if (selection.length == 1) {
             urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(rows - 1);
             urls[1] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[0]);
-        }
-        if (selection.length == 2) {
+        } else {
             urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[0]);
-            urls[1] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[0]);
+            urls[1] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[1]);
         }
         return urls;
     }

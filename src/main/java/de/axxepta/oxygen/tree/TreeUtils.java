@@ -112,8 +112,7 @@ public class TreeUtils {
     }
 
     public static String treeStringFromTreePath(TreePath path) {
-        // ToDo: use String constant
-        StringBuilder db_path = new StringBuilder("BaseX Server");
+        StringBuilder db_path = new StringBuilder(Lang.get(Lang.Keys.tree_root));
         for (int i = 1; i < path.getPathCount(); i++) {
             db_path.append("/").append(path.getPathComponent(i).toString());
         }

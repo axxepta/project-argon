@@ -37,7 +37,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_BASEX_VERSIONING = "KEY_BASEX_VERSIONING";
     public static final String KEY_BASEX_LOGFILE = "KEY_BASEX_LOGFILE";
 
-    private static final String DEF_BASEX_HOST = "localhost";
+    private static final String DEF_BASEX_HOST = "localhost:8984/rest";
     private static final String DEF_BASEX_HTTP_PORT = "8984";
     private static final String DEF_BASEX_TCP_PORT = "1984";
     private static final String DEF_BASEX_USERNAME = "admin";
@@ -291,30 +291,14 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         /**
          * BaseX Strings
          */
-        String baseXHost = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_HOST,
-                null);
-/*        String baseXHttpPort = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_HTTP_PORT,
-                null);*/
-/*        String baseXTcpPort = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_TCP_PORT,
-                null);*/
-        String baseXUsername = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_USERNAME,
-                null);
-        String baseXPassword = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_PASSWORD,
-                null);
-/*        String baseXConnection = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_CONNECTION,
-                null);*/
-        String baseXVersioning = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_VERSIONING,
-                null);
-/*        String baseXLogfile = pluginWorkspace.getOptionsStorage().getOption(
-                KEY_BASEX_LOGFILE,
-                null);*/
+        String baseXHost = getOption(KEY_BASEX_HOST, false);
+/*        String baseXHttpPort = getOption(KEY_BASEX_HTTP_PORT, false);*/
+/*        String baseXTcpPort = getOption(KEY_BASEX_TCP_PORT, false)*/
+        String baseXUsername = getOption(KEY_BASEX_USERNAME, false);
+        String baseXPassword = getOption(KEY_BASEX_PASSWORD, false);
+/*        String baseXConnection = getOption(KEY_BASEX_CONNECTION, false);*/
+        String baseXVersioning = getOption(KEY_BASEX_VERSIONING, false);
+/*        String baseXLogfile = getOption(KEY_BASEX_LOGFILE, false);*/
 
         // Initialize the fields with the stored options.
 
