@@ -68,8 +68,6 @@ public class ShowVersionHistoryContextAction extends AbstractAction {
         }
         if (resource.lastIndexOf("/") != -1)
             pathStr.append(resource.substring(0, resource.lastIndexOf("/")));
-        else
-            pathStr.append(resource.substring(0, resource.lastIndexOf("/")));
         return pathStr.toString();
     }
 

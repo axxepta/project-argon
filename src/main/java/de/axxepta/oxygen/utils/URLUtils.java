@@ -10,6 +10,7 @@ public class URLUtils {
     public static boolean isXML(String file) {
         return (file.toLowerCase().endsWith(".xml") ||
                 file.toLowerCase().endsWith(".dita") ||
+                file.toLowerCase().endsWith(".ditaval") ||
                 file.toLowerCase().endsWith(".ditamap") );
     }
 
