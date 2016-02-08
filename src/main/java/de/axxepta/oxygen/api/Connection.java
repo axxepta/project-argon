@@ -132,6 +132,15 @@ public interface Connection extends Closeable {
     boolean lockedByUser(final BaseXSource source, final String path) throws IOException;
 
     /**
+     * Checks if the specified resource has no locking information at all
+     * @param source data source
+     * @param path path
+     * @return result of check
+     * @throws IOException I/O exception
+     */
+    boolean noLockSet(final BaseXSource source, final String path) throws IOException;
+
+    /**
      * Returns active users (i.e., users who have currently locked any files).
      * @return users
      * @throws IOException I/O exception

@@ -153,8 +153,16 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public boolean lockedByUser(final BaseXSource source, final String path) throws IOException {
+         public boolean lockedByUser(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("lockedByUser"));
+        query.bind(SOURCE, source.toString(), "");
+        query.bind(PATH, path, "");
+        return query.execute().equals("true");
+    }
+
+    @Override
+    public boolean noLockSet(final BaseXSource source, final String path) throws IOException {
+        final Query query = client.query(getQuery("no-lock-set"));
         query.bind(SOURCE, source.toString(), "");
         query.bind(PATH, path, "");
         return query.execute().equals("true");

@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3d30828-18d3-4a8c-bd47-23932b0e0ca8" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/argon.iws" afterPath="$PROJECT_DIR$/argon.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/api/lock.xq" afterPath="$PROJECT_DIR$/src/main/resources/api/lock.xq" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/api/locked.xq" afterPath="$PROJECT_DIR$/src/main/resources/api/locked.xq" />
     </list>
     <ignored path="argon.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -153,7 +155,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/resources/api/locked.xq">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="10" column="157" selection-start-line="10" selection-start-column="89" selection-end-line="10" selection-end-column="157" />
+              <caret line="10" column="61" selection-start-line="10" selection-start-column="61" selection-end-line="10" selection-end-column="61" />
               <folding />
             </state>
           </provider>
@@ -163,7 +165,17 @@
         <entry file="file://$PROJECT_DIR$/src/main/resources/api/lockedByUser.xq">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="107" selection-start-line="9" selection-start-column="97" selection-end-line="9" selection-end-column="107" />
+              <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="no-lock-set.xq" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -172,8 +184,8 @@
       <file leaf-file-name="CustomProtocolURLHandlerExtension.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.70658034">
-              <caret line="155" column="14" selection-start-line="155" selection-start-column="14" selection-end-line="155" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.5111732">
+              <caret line="137" column="55" selection-start-line="137" selection-start-column="45" selection-end-line="137" selection-end-column="55" />
               <folding>
                 <element signature="method#isLockingSupported#0;class#CustomProtocolURLHandlerExtension#0" expanded="false" />
                 <element signature="method#canCheckReadOnly#0;class#CustomProtocolURLHandlerExtension#0" expanded="false" />
@@ -185,11 +197,31 @@
       <file leaf-file-name="RestConnection.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-56.86207">
-              <caret line="116" column="30" selection-start-line="116" selection-start-column="30" selection-end-line="116" selection-end-column="30" />
+            <state vertical-scroll-proportion="-19.344828">
+              <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
               <folding>
                 <element signature="method#request#0;class#RestConnection#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ClientConnection.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="164" column="62" selection-start-line="164" selection-start-column="62" selection-end-line="164" selection-end-column="62" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Connection.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="140" column="21" selection-start-line="140" selection-start-column="12" selection-end-line="140" selection-end-column="21" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -465,6 +497,10 @@
         <option value="$PROJECT_DIR$/src/main/resources/api/get-database.xq" />
         <option value="$PROJECT_DIR$/src/main/resources/api/locked.xq" />
         <option value="$PROJECT_DIR$/src/main/resources/api/lock.xq" />
+        <option value="$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" />
       </list>
     </option>
@@ -717,6 +753,11 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\Projekte\argon\project-argon\src\main\resources\api" />
+    </key>
+  </component>
   <component name="RunManager" selected="Gradle.project-argon [jar]">
     <configuration default="false" name="project-argon [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -956,7 +997,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.08888889" sideWeight="0.49601874" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28425926" sideWeight="0.49601874" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12740806" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1192,14 +1233,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/lockedByUser.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="107" selection-start-line="9" selection-start-column="97" selection-end-line="9" selection-end-column="107" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/api/unlock.xq">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1216,32 +1249,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-56.86207">
-          <caret line="116" column="30" selection-start-line="116" selection-start-column="30" selection-end-line="116" selection-end-column="30" />
-          <folding>
-            <element signature="method#request#0;class#RestConnection#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.9230038">
-          <caret line="122" column="30" selection-start-line="122" selection-start-column="25" selection-end-line="122" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/locked.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="157" selection-start-line="10" selection-start-column="89" selection-end-line="10" selection-end-column="157" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/api/lock.xq">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-7.62069">
@@ -1250,10 +1257,60 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/api/locked.xq">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="61" selection-start-line="10" selection-start-column="61" selection-end-line="10" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/api/lockedByUser.xq">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="140" column="21" selection-start-line="140" selection-start-column="12" selection-end-line="140" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.344828">
+          <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
+          <folding>
+            <element signature="method#request#0;class#RestConnection#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="164" column="62" selection-start-line="164" selection-start-column="62" selection-end-line="164" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.70658034">
-          <caret line="155" column="14" selection-start-line="155" selection-start-column="14" selection-end-line="155" selection-end-column="14" />
+        <state vertical-scroll-proportion="0.5111732">
+          <caret line="137" column="55" selection-start-line="137" selection-start-column="45" selection-end-line="137" selection-end-column="55" />
           <folding>
             <element signature="method#isLockingSupported#0;class#CustomProtocolURLHandlerExtension#0" expanded="false" />
             <element signature="method#canCheckReadOnly#0;class#CustomProtocolURLHandlerExtension#0" expanded="false" />
