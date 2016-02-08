@@ -11,10 +11,7 @@ import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.versioncontrol.DateTableCellRenderer;
-import de.axxepta.oxygen.versioncontrol.VersionControlListSelectionListener;
-import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
-import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
+import de.axxepta.oxygen.versioncontrol.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
@@ -74,6 +71,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // init icon map
         ImageUtils.init();
 
+        // init version history
+        VersionHistoryUpdater.init(this);
+
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
@@ -98,11 +98,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void editorSelected(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
             }
 
             @Override
             public void editorActivated(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
             }
 
             @Override
@@ -117,6 +119,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
@@ -390,7 +393,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
                 Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener, ArgonWorkspaceAccessPluginExtension.this);
+                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener);
                 contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
 
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),

@@ -53,6 +53,11 @@ public class TreeUtils {
         return null;
     }
 
+    public static TreePath pathFromURLString(String urlString) {
+        TreePath path = new TreePath("");
+        return path;
+    }
+
     public static BaseXSource sourceFromTreePath(TreePath path) {
         if (path.getPathCount() > 1) {
             String sourceStr = path.getPathComponent(1).toString();
