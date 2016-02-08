@@ -1,4 +1,4 @@
-declare option output:method "raw";
+declare option output:method "basex";
 
 (:~ Path to resource. :)
 declare variable $PATH as xs:string external;

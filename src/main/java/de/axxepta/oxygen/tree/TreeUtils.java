@@ -53,6 +53,11 @@ public class TreeUtils {
         return null;
     }
 
+    public static TreePath pathFromURLString(String urlString) {
+        TreePath path = new TreePath("");
+        return path;
+    }
+
     public static BaseXSource sourceFromTreePath(TreePath path) {
         if (path.getPathCount() > 1) {
             String sourceStr = path.getPathComponent(1).toString();
@@ -112,8 +117,7 @@ public class TreeUtils {
     }
 
     public static String treeStringFromTreePath(TreePath path) {
-        // ToDo: use String constant
-        StringBuilder db_path = new StringBuilder("BaseX Server");
+        StringBuilder db_path = new StringBuilder(Lang.get(Lang.Keys.tree_root));
         for (int i = 1; i < path.getPathCount(); i++) {
             db_path.append("/").append(path.getPathComponent(i).toString());
         }

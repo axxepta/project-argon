@@ -7,5 +7,5 @@ declare variable $PATH as xs:string external;
 declare variable $LOCK-DB := '~argon';
 
 let $user := user:current()
-return db:exists($LOCK-DB, $LOCK-DB) and db:open($LOCK-DB)/*
-[name() = $SOURCE][text() = $PATH][@user != $user]
+let $lock-file := db:open($LOCK-DB, $LOCK-DB)
+return exists($lock-file) and exists($lock-file/*[name() = $SOURCE][text() = $PATH]) and empty($lock-file/*[name() = $SOURCE][text() = $PATH][@user = $user])

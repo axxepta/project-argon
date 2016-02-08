@@ -2,6 +2,7 @@ package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,6 +63,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
             transferData.addAll(transferList);
             if (transferData.size() > 0) {
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
+                String protocol = TreeUtils.protocolFromTreePath(path);
 
                 ArrayList<String> pathList = new ArrayList<>();
                 // consider: transferred objects could be deep directories!
@@ -69,6 +71,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                     pathList.add(TreeUtils.urlStringFromTreePath(path) + "/" + file.getName());
                 }
                 int i = 0;
+                List<String> lockedFiles = new ArrayList<>();
                 while (i < transferData.size()) {
                     File file = transferData.get(i);
                     if (transferData.get(i).isFile()){
@@ -78,25 +81,30 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                         } catch (MalformedURLException e1) {
                             logger.error(e1);
                         }
-                        //copy file
-                        byte[] isByte;
-                        try (InputStream is = new FileInputStream(file)) {
-                            int l = is.available();
-                            isByte = new byte[l];
-                            //noinspection ResultOfMethodCallIgnored
-                            is.read(isByte);
-                            try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
-                                os.write(isByte);
-                                logger.info("Dropped file " + file.toString() + " to " + pathList.get(i));
-                            } catch (IOException ex) {
-                                logger.error(ex.getMessage());
-                                JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
-                                        + "\nto database.", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                        CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+                        if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
+                            lockedFiles.add(url.toString());
+                        } else {
+                            //copy file
+                            byte[] isByte;
+                            try (InputStream is = new FileInputStream(file)) {
+                                int l = is.available();
+                                isByte = new byte[l];
+                                //noinspection ResultOfMethodCallIgnored
+                                is.read(isByte);
+                                try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
+                                    os.write(isByte);
+                                    logger.info("Dropped file " + file.toString() + " to " + pathList.get(i));
+                                } catch (IOException ex) {
+                                    logger.error(ex.getMessage());
+                                    JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
+                                            + "\nto database.", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                                }
+                            } catch (IOException es) {
+                                logger.error(es);
+                                JOptionPane.showMessageDialog(null, "Couldn't read transferred object\n" + file.toString()
+                                        + ".", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
                             }
-                        } catch (IOException es) {
-                            logger.error(es);
-                            JOptionPane.showMessageDialog(null, "Couldn't read transferred object\n" + file.toString()
-                                    + ".", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
                         }
                     } else {    // expand subdirectories
                         File[] dirFiles = file.listFiles();
@@ -108,6 +116,10 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                         }
                     }
                     i++;
+                }
+                if (lockedFiles.size() > 0) {
+                    JOptionPane.showMessageDialog(null, "The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles
+                            , "Drag&Drop Message", JOptionPane.PLAIN_MESSAGE);
                 }
             }
         } catch (Exception e1) {

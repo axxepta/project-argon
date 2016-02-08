@@ -11,10 +11,7 @@ import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.versioncontrol.DateTableCellRenderer;
-import de.axxepta.oxygen.versioncontrol.VersionControlListSelectionListener;
-import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
-import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
+import de.axxepta.oxygen.versioncontrol.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
@@ -51,6 +48,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      */
     private JTextArea cmsMessagesArea;
     private JTable versionHistoryTable;
+    private JLabel versionHistoryLabel;
     private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
     private ToolbarButton newVersionButton;
     private ToolbarButton replyCommentButton;
@@ -72,6 +70,9 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         // init icon map
         ImageUtils.init();
+
+        // init version history
+        VersionHistoryUpdater.init(this);
 
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
@@ -97,11 +98,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void editorSelected(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
             }
 
             @Override
             public void editorActivated(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
             }
 
             @Override
@@ -116,6 +119,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+                //VersionHistoryUpdater.update(editorLocation.toString());
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
@@ -389,7 +393,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
                 Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener, ArgonWorkspaceAccessPluginExtension.this);
+                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener);
                 contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
 
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
@@ -419,9 +423,14 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 scrollPane.getViewport().add(tree);
                 viewInfo.setComponent(scrollPane);
 
-                viewInfo.setTitle("BaseX DB Connection");
+                viewInfo.setTitle("Argon DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
+                versionHistoryLabel = new JLabel();
+                versionHistoryLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+                JPanel versionHistoryLabelPanel = new JPanel();
+                versionHistoryLabelPanel.setLayout(new BoxLayout(versionHistoryLabelPanel, BoxLayout.X_AXIS));
+                versionHistoryLabelPanel.add(versionHistoryLabel);
                 // Table (will be put in bottom Box)
                 versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
                 versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -431,7 +440,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // Two Buttons (with filler) in Pane in Top Box
                 JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
                 compareRevisionsButton.setEnabled(false);
-                JButton replaceRevisionButton = new JButton("Replace");
+                JButton replaceRevisionButton = new JButton(new RollbackVersionAction("Reset to", versionHistoryTable));
                 replaceRevisionButton.setEnabled(false);
                 JPanel versionHistoryButtonPanel = new JPanel();
                 versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));
@@ -452,7 +461,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
                 versionHistoryPanel.add(scrollPane);
                 viewInfo.setComponent(versionHistoryPanel);
-                viewInfo.setTitle("BaseX Version History");
+                viewInfo.setTitle("Argon Version History");
             } else if ("Project".equals(viewInfo.getViewID())) {
                 // Change the 'Project' view title.
                 viewInfo.setTitle("CMS Project");
