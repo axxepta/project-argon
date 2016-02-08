@@ -51,6 +51,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      */
     private JTextArea cmsMessagesArea;
     private JTable versionHistoryTable;
+    private JLabel versionHistoryLabel;
     private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
     private ToolbarButton newVersionButton;
     private ToolbarButton replyCommentButton;
@@ -422,6 +423,11 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 viewInfo.setTitle("Argon DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
+                versionHistoryLabel = new JLabel();
+                versionHistoryLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+                JPanel versionHistoryLabelPanel = new JPanel();
+                versionHistoryLabelPanel.setLayout(new BoxLayout(versionHistoryLabelPanel, BoxLayout.X_AXIS));
+                versionHistoryLabelPanel.add(versionHistoryLabel);
                 // Table (will be put in bottom Box)
                 versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
                 versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -431,7 +437,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // Two Buttons (with filler) in Pane in Top Box
                 JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
                 compareRevisionsButton.setEnabled(false);
-                JButton replaceRevisionButton = new JButton("Reset to");
+                JButton replaceRevisionButton = new JButton(new RollbackVersionAction("Reset to", versionHistoryTable));
                 replaceRevisionButton.setEnabled(false);
                 JPanel versionHistoryButtonPanel = new JPanel();
                 versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));

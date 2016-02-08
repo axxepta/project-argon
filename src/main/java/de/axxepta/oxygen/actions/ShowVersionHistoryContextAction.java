@@ -46,14 +46,8 @@ public class ShowVersionHistoryContextAction extends AbstractAction {
             String extension = urlString.substring(urlString.lastIndexOf("."));
 
             List<String> allVersions = obtainFileVersions(pathStr, fileName, extension);
-
-            if (allVersions.size() > 0) {
-                VersionHistoryUpdater history = VersionHistoryUpdater.getInstance();
-                history.update(pathStr, allVersions, pluginWorkspaceAccessExtension);
-            } else {
-                JOptionPane.showMessageDialog(null, "For this file no entries were found in version control.",
-                        "Version History", JOptionPane.PLAIN_MESSAGE);
-            }
+            VersionHistoryUpdater history = VersionHistoryUpdater.getInstance();
+            history.updateAndShow(pathStr, allVersions, pluginWorkspaceAccessExtension);
         }
     }
 

@@ -104,7 +104,7 @@ public class CompareVersionsAction extends AbstractAction {
         }
     }
 
-    private URL obtainCurrentURLFromHistoryURL(URL url) {
+    protected static URL obtainCurrentURLFromHistoryURL(URL url) {
         URL currentURL;
         StringBuilder urlStr = new StringBuilder(url.toString());
         int endOfProtocolPos = urlStr.indexOf(":");

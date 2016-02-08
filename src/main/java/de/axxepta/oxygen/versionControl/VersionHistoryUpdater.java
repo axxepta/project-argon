@@ -34,6 +34,11 @@ public final class VersionHistoryUpdater {
         historyList = new ArrayList<>();
     }
 
+    public void updateAndShow(String path, List<String> strEntries, ArgonWorkspaceAccessPluginExtension pluginWSAExtension) {
+        update(path, strEntries, pluginWSAExtension);
+        show();
+    }
+
     public void update(String path, List<String> strEntries, ArgonWorkspaceAccessPluginExtension pluginWSAExtension) {
         this.historyList = new ArrayList<>();
         this.pluginWSAExtension = pluginWSAExtension;
@@ -53,11 +58,11 @@ public final class VersionHistoryUpdater {
             VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
             historyList.add(versionHistoryEntry);
         }
+        pluginWSAExtension.updateVersionHistory(historyList);
         show();
     }
 
     private void show() {
-        pluginWSAExtension.updateVersionHistory(historyList);
         StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
         pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
     }
