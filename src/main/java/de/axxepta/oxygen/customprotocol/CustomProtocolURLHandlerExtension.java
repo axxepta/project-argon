@@ -127,17 +127,23 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
             Connection connection = BaseXConnectionWrapper.getConnection();
             if (connection != null) {
                 boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
+
+                //already locked by another user
                 if (isLocked) {
                     return true;
-                } else return false;
-                /*
-                {
+
+                //maybe no lock set at all (removed in meantime)
+                } else{
+                    //file already open in Editor
                     if (ArgonEditorsWatchMap.isURLInMap(url)) {
+
+                        //question has ben asked already
                         if (ArgonEditorsWatchMap.askedForAccess(url)) {
                             return true;
+
                         } else {
                             // just got write access (lock removed by other user), reload and lock resource for me now?
-                           // if (!connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url))) {
+                           if (connection.noLockSet(BaseXSource.DATABASE, pathFromURL(url))) {
 
                                 int reloadFile = JOptionPane.showConfirmDialog(null, "The lock on this file just has been removed.\n" +
                                         "Do you want to reload the file and gain write access?", "File unlocked", JOptionPane.YES_NO_OPTION);
@@ -150,13 +156,13 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                                     ArgonEditorsWatchMap.setAsked(url);
                                     return true;
                                 }
-                           // } else {
-                           //     return false;
-                           // }
+                            } else {
+                                return false;
+                            }
                         }
                     } else  // isReadOnly is called also for "Save to URL", therefore there might be no entry in WatchMap
                         return false;
-                } */
+                }
             } else {
                 return true;
             }
