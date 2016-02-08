@@ -98,13 +98,19 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void editorSelected(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
             }
 
             @Override
             public void editorActivated(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
             }
 
             @Override
@@ -119,7 +125,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
@@ -318,8 +327,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 try {
                     databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
                 } catch (Exception er) {
-                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
-                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+/*                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
+                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);*/
                     databaseList = new ArrayList<>();
                 }
                 for (int i = 0; i < (databaseList.size() / 2); i++) {
@@ -332,6 +341,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // explicit tree model necessary to use allowsChildren for definition of leafs
                 final DefaultTreeModel treeModel = new DefaultTreeModel(root);
                 treeModel.setAsksAllowsChildren(true);
+                TreeUtils.init(treeModel);
                 final BasexTree tree = new BasexTree(treeModel);
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 setTreeState(tree, new TreePath(root), false);
@@ -391,10 +401,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.INC_VER),
                         tListener, pluginWorkspaceAccess);
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
-
-                Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener);
-                contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
 
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                         pluginWorkspaceAccess, tree);

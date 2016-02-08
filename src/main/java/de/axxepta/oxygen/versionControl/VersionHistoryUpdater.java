@@ -53,11 +53,15 @@ public final class VersionHistoryUpdater {
         show();
     }
 
+    public static void update(String urlString) {
+        TreePath path = TreeUtils.pathFromURLString(urlString);
+        update(urlString, path);
+    }
+
     public static void update(String urlString, TreePath path) {
         historyList = new ArrayList<>();
-        if (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString)) {
+        if (!TreeUtils.isDbSource(path) && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
 
-            //TreePath path = TreeUtils.pathFromURLString(urlString);
             String resource = TreeUtils.resourceFromTreePath(path);
             String pathStr = obtainHistoryPath(resource, path);
             String fileName = urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."));
