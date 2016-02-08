@@ -1,0 +1,34 @@
+image: mohamnag/gradle
+
+stages:
+  - test
+  - deploy
+
+gradlebuild:
+  stage: test
+  script:
+   - gradle -q build
+  except:
+  - /^release-.*$/ # use regexp ;-)
+  tags:
+    - docker
+
+releasebuild:
+  stage: test
+  script:
+   - gradle -q build
+   - mkdir -p Argon
+   - cp -r build/libs Argon/
+   - cp -r build/resources Argon/
+   - cp build/resources/main/plugin.xml Argon/
+   - apt-get update
+   - apt-get install -y --no-install-recommends zip
+   - zip -r -1 Argon Argon && curl -T Argon.zip ftp://basex.io/Argon.zip --user $CREDENTIALS
+
+  only:
+  - /^release-.*$/ # use regexp ;-)
+  tags:
+    - docker
+  # artifacts:
+  #   paths:
+  #   - Argon

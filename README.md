@@ -1,2 +1,6 @@
 # Project Argon
-Author technical information with Oxygen + BaseX 
+Author technical content with oXygen + BaseX 
+
+http://argon-author.com
+
+
