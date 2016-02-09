@@ -5,6 +5,7 @@
         <options/>
     </meta>
     <projectTree name="gh-pages.xpr">
+        <folder path="files/"/>
         <folder path="images/"/>
         <folder path="javascripts/"/>
         <folder path="stylesheets/"/>
