@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    
+
     <!--<link href="https://fonts.googleapis.com/css?family=Architects+Daughter" rel="stylesheet" type="text/css" />-->
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'></link>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css" />
 
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/layout.css" media="screen" />
@@ -25,27 +25,129 @@
       <div class="inner">
         <h1>Argon Author</h1>
         <h2>Author technical content with oXygen XML Editor + BaseX</h2>
-        <!--
+        
         <a href="https://github.com/axxepta/project-argon" class="button"><small>View project on</small> GitHub</a>
-        -->
+        
       </div>
     </header>
 
     <div id="content-wrapper">
-      
+
       <div class="banner">
         <div class="inner clearfix">
-        <img srcset="images/Argon-Banner-2x.png 2x, images/Argon-Banner-1x.png" sarc="images/Argon-Banner-1x.png"></img>
+          <img srcset="images/Argon-Banner-2x.png 2x, images/Argon-Banner-1x.png" sarc="images/Argon-Banner-1x.png" />
         </div>
       </div>
-      
+
       <div class="inner clearfix">
-        
+
         <section id="main-content">
+
           <h3>
+            <a id="what-is-argon-author" class="anchor" href="#what-is-argon-author" aria-hidden="true"></a>What is Argon Author?</h3>
+
+          <p>
+            Argon Author is an <a href="http://oxygenxml.com/" title="http://oxygenxml.com/" rel="nofollow">Oxygen XML Editor</a> (v17) plugin 
+            that provides access to the <a href="http://basex.org" title="http://basex.org" rel="nofollow">BaseX XML database</a> (v8.4).</p>
+         
+          <p> For testing you can use the free online playground on <a href="http://argon.basex.io" title="http://argon.basex.io"
+              rel="nofollow">argon.basex.io</a> where you will be provided with a hosted test database and 3 pre-set users and our DITA demo project.</p>
+
+
+          <h3>
+            <a id="installation" class="anchor" href="#installation" aria-hidden="true"></a>Installation</h3>
+
+            With Oxygen, you can install plugins directly from web locations. 
+            <ul>
+              <li>call <em>Help | Install new add-ons...</em> from the Oxygen menu </li>
+              </ul>
+
+            <img src="images/install1.png" alt="Add extension.xml" />
+          
+          
+          <ul>
+            <li>then choose <em>Browse for remote file</em> in the drop-down folder button next to the field <em>Show add-ons from</em> </li>
+            <li>In the next dialog type 
+              <a href="http://www.argon-author.com/files/extension.xml" rel="nofollow">http://www.argon-author.com/files/extension.xml</a> in the <em>File URL</em> field.</li>
+          </ul>
+          
+          <h3>
+            <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"></a>Configuration</h3>
+          
+            <p>Just enter your REST (HTTP) credentials in the configuration settings dialog and choose if you want to use the versioning feature.</p>
+
+          <p>
+            <img src="images/install2.png" alt="Configure connection" />
+          </p>
+          
+          <h3>
+            <a id="features" class="anchor" href="#features" aria-hidden="true"></a>Features</h3>
+          
+        <h4>Database access</h4>
+          <img style="vertical-align:right;margin-left:10px;" align="right" src="images/treeview-inner.png" alt="Browse database" />
+          <p>
+            You can browse the database structure of your BaseX server using the view <em>Argon DB Connection</em>.
+          </p>
+          <p>
+            Creation of new databases and files can be performed via context menu of the tree.
+          </p>
+          
+          <h4>File Locking (Check In, Check Out)</h4>
+          <p>
+              Double clicking on a file will open it in the editor.
+              It will be opened read-only if another user is currently working with this file on the server.
+          </p>
+          <p>
+              After the other user has finished working on the file, you will be prompted (with some delay) to gain write access.
+          </p>
+          
+          <h4>Drag/Drop</h4>
+             <p>
+              You can drop files and whole directories from your file browser into the dabase tree.
+           </p>
+          
+          <h4>Custom Protocol</h4>
+            <p>
+              Files edited in Oxygen can be stored into the database using <em>File | Save to URL</em>, specifying <em>argon:</em> as protocol, followed by the path in the database structure (new directories will be created automatically).
+            </p>
+            <p>
+              User with admin rights are able to access BaseX special folders via <em>argonquery:/</em> for the RestXQ folder, <em>argonrepo:/</em> for the Repo folder.
+            </p>
+          
+    
+              <h4>Version control</h4>
+          <p>
+              If you have checked the box <em>Version Control</em> in the preferences of the plugin, XML and XQuery files will be put under version control.
+              Each time you save a file, a copy is stored in a hidden database as a new revision.
+            </p>
+          <p>
+              You can mark special progress in the file by setting it to a new version via context menu of the tree or the <em>Increase File Version</em> button in the toolbar.
+          </p>
+          <p>
+              You can open the version history via <em>Window\Show View\Argon Version History</em> and compare previous revisions with the current one or other older ones.
+              If you would like to go back to a previous revision of the file use the <em>Reset to</em> button in the <em>Argon Version History</em> view.  </p>
+          
+            <h4>Sending queries to the server</h4>
+          <p>
+              Use the <em>Run BaseX Query</em> in the toolbar to send queries to the BaseX server to perform transformation on files stored in your databases.
+              The response to your query will be shown in a new editor window.
+              </p>
+          <p>
+              Queries that are stored on the BaseX server will be checked  against the syntax known to the server when you are editing them in Oxygen.</p>
+         
+          <h4>Replying to comments in Oxygen's Author mode</h4>
+            <p>
+              When you are using the Author mode in Oxygen, you can reply to comments in the text.
+              Your reply will be formatted into the comment in a way that is easily recognisable for your co-worker.</p>
             
-            <a id="welcome-to-argon" class="anchor" href="#welcome-to-argon" aria-hidden="true">
-              <span class="octicon octicon-link"></span></a>Welcome</h3>
+ 
+
+            
+            <footer>
+              <small><b>brought to you by</b></small>
+              <img src="images/footer.png" alt="brought to you by axxepta solutions, pantopix, basex and oxygen" />
+            </footer>
+          <!--
 
             <p>Register for Public Beta!</p>
 
@@ -56,19 +158,22 @@
            
             <input type="submit" value="Send"></input>
           </form>
+          -->
+          
+          
 
-         
         </section>
 
         <aside id="sidebar">
-          
-          <!--
+
+          <h3>I just want the source code!</h3>
+
           <a href="https://github.com/axxepta/project-argon/zipball/master" class="button">
             <small>Download</small> .zip file </a>
           <a href="https://github.com/axxepta/project-argon/tarball/master" class="button">
             <small>Download</small> .tar.gz file </a>
-          
-          -->
+
+
 
           <p class="repo-owner"><a href="https://github.com/axxepta/project-argon"></a> is maintained by <a
               href="https://github.com/axxepta">axxepta</a>.</p>
