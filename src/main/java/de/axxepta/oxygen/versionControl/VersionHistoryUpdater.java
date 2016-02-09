@@ -24,20 +24,12 @@ import java.util.List;
  * @author Markus on 31.01.2016.
  */
 
-// ToDo: completely static instead of singleton? access to instance necessary?
-
 public final class VersionHistoryUpdater {
-    private static final VersionHistoryUpdater ourInstance = new VersionHistoryUpdater();
+
     private static final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
     private static List<VersionHistoryEntry> historyList;
 
     private static ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
-
-/*
-    public static VersionHistoryUpdater getInstance() {
-        return ourInstance;
-    }
-*/
 
     private VersionHistoryUpdater() {
         historyList = new ArrayList<>();
@@ -46,11 +38,6 @@ public final class VersionHistoryUpdater {
     public static void init(ArgonWorkspaceAccessPluginExtension plugin) {
         pluginWSAExtension = plugin;
         historyList = new ArrayList<>();
-    }
-
-    public static void updateAndShow(String urlString, TreePath path) {
-        update(urlString, path);
-        show();
     }
 
     public static void update(String urlString) {

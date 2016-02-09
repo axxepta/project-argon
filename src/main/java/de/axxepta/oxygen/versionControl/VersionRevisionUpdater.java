@@ -48,7 +48,7 @@ public class VersionRevisionUpdater {
     private WSTextEditorPage textPage;
     private int currentOnset;
     private int currentOffset;
-
+    private boolean revisionReset;
 
     public VersionRevisionUpdater(String type) {
         this.fromDocument = true;
@@ -115,45 +115,7 @@ public class VersionRevisionUpdater {
                 docBuilder.replace(historyTagPosition[0], historyTagPosition[1] + 1, tag);
             }
             if (fromDocument) {
-                if (tagLength != (oldTagLength + 1)){
-                    currentOnset = currentOnset + tagLength - oldTagLength - 1;
-                    currentOffset = currentOffset + tagLength - oldTagLength - 1;
-                }
-                if (oldTagLength != 0) {
-                    if (SwingUtilities.isEventDispatchThread()) {
-                        replaceTagInDoc(historyTagPosition[0], oldTagLength, tag);
-                    } else {
-                        try {
-                            SwingUtilities.invokeAndWait(new Runnable() {
-                                @Override
-                                public void run() {
-                                    replaceTagInDoc(historyTagPosition[0], oldTagLength, tag);
-                                }
-                            });
-                        } catch (InvocationTargetException ite) {
-                            logger.error(ite);
-                        } catch (InterruptedException ie) {
-                            logger.error(ie);
-                        }
-                    }
-                } else {
-                    if (SwingUtilities.isEventDispatchThread()) {
-                        insertTagInDoc(historyTagPosition[0], tag);
-                    } else {
-                        try {
-                            SwingUtilities.invokeAndWait(new Runnable() {
-                                @Override
-                                public void run() {
-                                    insertTagInDoc(historyTagPosition[0], tag);
-                                }
-                            });
-                        } catch (InvocationTargetException ite) {
-                            logger.error(ite);
-                        } catch (InterruptedException ie) {
-                            logger.error(ie);
-                        }
-                    }
-                }
+                replaceTagInDocument(tagLength, oldTagLength, tag, historyTagPosition[0]);
                 resetEditor();
             }
             updated = true;
@@ -165,9 +127,9 @@ public class VersionRevisionUpdater {
         return verRev;
     }
 
-    private String getVersionRevisionTag() {
+    public String getVersionRevisionTag() {
         if (type.equals(XML))
-            return String.format("<?argon_history version=\"%s\" revision=\"%s\" ?>", verRev[0], verRev[1]);
+            return String.format("<?argon_history version=\"%s\" revision=\"%s\"?>", verRev[0], verRev[1]);
         else
             return String.format("(: argon_history version=\"%s\" revision=\"%s\" :)", verRev[0], verRev[1]);
     }
@@ -193,14 +155,64 @@ public class VersionRevisionUpdater {
     }
 
     private void resetEditor() {
-        if (editorInAuthorMode) {
-            editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
-            ((WSAuthorEditorPage) editorPage).select(currentOnset, currentOffset);
+        if (revisionReset) {
+            if (editorInAuthorMode) {
+                editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
+                ((WSAuthorEditorPage) editorPage).select(0, 0);  // old doc could be much smaller
+            } else {
+                textPage.select(0, 0);
+            }
         } else {
-            textPage.select(currentOnset, currentOffset);
+            if (editorInAuthorMode) {
+                editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
+                ((WSAuthorEditorPage) editorPage).select(currentOnset, currentOffset);
+            } else {
+                textPage.select(currentOnset, currentOffset);
+            }
+            editorAccess.setModified(false);
         }
-        // ToDO: tell EditorChangeListener that no change has happened?!
-        editorAccess.setModified(false);
+    }
+
+    private void replaceTagInDocument(int tagLength, final int oldTagLength, final String tag, final int historyTagPosition) {
+        if (tagLength != (oldTagLength + 1)){
+            currentOnset = currentOnset + tagLength - oldTagLength - 1;
+            currentOffset = currentOffset + tagLength - oldTagLength - 1;
+        }
+        if (oldTagLength != 0) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                replaceTagInDoc(historyTagPosition, oldTagLength, tag);
+            } else {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            replaceTagInDoc(historyTagPosition, oldTagLength, tag);
+                        }
+                    });
+                } catch (InvocationTargetException ite) {
+                    logger.error(ite);
+                } catch (InterruptedException ie) {
+                    logger.error(ie);
+                }
+            }
+        } else {
+            if (SwingUtilities.isEventDispatchThread()) {
+                insertTagInDoc(historyTagPosition, tag);
+            } else {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            insertTagInDoc(historyTagPosition, tag);
+                        }
+                    });
+                } catch (InvocationTargetException ite) {
+                    logger.error(ite);
+                } catch (InterruptedException ie) {
+                    logger.error(ie);
+                }
+            }
+        }
     }
 
     private void replaceTagInDoc(int historyTagPosition0, int oldTagLength, String tag) {
@@ -299,6 +311,58 @@ public class VersionRevisionUpdater {
         if (position[0] != position[1])
             extractVersionAndRevision(position);
         return position;
+    }
+
+    // the methods below were added to process the reset to an old file revision
+
+    private void replaceDocument(final String newDoc) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            replaceWholeDocument(newDoc);
+        } else {
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        replaceWholeDocument(newDoc);
+                    }
+                });
+            } catch (InvocationTargetException ite) {
+                logger.error(ite);
+            } catch (InterruptedException ie) {
+                logger.error(ie);
+            }
+        }
+    }
+
+    private void replaceWholeDocument(String newDoc) {
+        try {
+            doc.remove(0, doc.getLength());
+        } catch (BadLocationException el) {
+            logger.error(el);
+        }
+        try {
+            doc.insertString(0, newDoc, null);
+        } catch (BadLocationException el) {
+            logger.error(el);
+        }
+    }
+
+    private void setVerRev(int ver, int rev) {
+        verRev[0] = ver;
+        verRev[1] = rev;
+    }
+
+    public void updateEditorToOldRevision(String newDocumentString, int version, int revision) {
+        revisionReset = true;
+        replaceDocument(newDocumentString);
+        docBuilder = new StringBuilder(newDocumentString);
+        final int[] historyTagPosition = obtainVersionAndRevision();
+        setVerRev(version, revision);
+        final int oldTagLength = historyTagPosition[1] - historyTagPosition[0];
+        final String tag = getVersionRevisionTag();
+        int tagLength = tag.length();
+        replaceTagInDocument(tagLength, oldTagLength, tag, historyTagPosition[0]);
+        resetEditor();
     }
 
 }
