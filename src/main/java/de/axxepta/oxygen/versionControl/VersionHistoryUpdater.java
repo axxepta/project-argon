@@ -41,16 +41,11 @@ public final class VersionHistoryUpdater {
     }
 
     public static void update(String urlString) {
-        TreePath path = TreeUtils.pathFromURLString(urlString);
-        update(urlString, path);
-    }
-
-    public static void update(String urlString, TreePath path) {
         historyList = new ArrayList<>();
-        if (!TreeUtils.isDbSource(path) && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
+        if (!urlString.equals("") && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
 
-            String resource = TreeUtils.resourceFromTreePath(path);
-            String pathStr = obtainHistoryPath(resource, path);
+            String resource = CustomProtocolURLHandlerExtension.pathFromURLString(urlString);
+            String pathStr = obtainHistoryPath(resource, urlString);
             String fileName = urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."));
             String extension = urlString.substring(urlString.lastIndexOf("."));
 
@@ -91,14 +86,14 @@ public final class VersionHistoryUpdater {
     }
 
 
-    private static String obtainHistoryPath(String resource, TreePath path) {
+    private static String obtainHistoryPath(String resource, String urlString) {
         StringBuilder pathStr;
-        if (TreeUtils.isInDB(path)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupDBBase);
-        } else if (TreeUtils.isInRepo(path)) {
+        if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRESTXYBase);
+        } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
             pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRepoBase);
         } else {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRESTXYBase);
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupDBBase);
         }
         if (resource.lastIndexOf("/") != -1)
             pathStr.append(resource.substring(0, resource.lastIndexOf("/")));

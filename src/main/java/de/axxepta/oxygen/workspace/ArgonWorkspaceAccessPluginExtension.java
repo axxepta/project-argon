@@ -100,7 +100,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation != null)
                     VersionHistoryUpdater.update(editorLocation.toString());
                 else
-                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
+                    VersionHistoryUpdater.update("");
             }
 
             @Override
@@ -109,7 +109,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation != null)
                     VersionHistoryUpdater.update(editorLocation.toString());
                 else
-                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
+                    VersionHistoryUpdater.update("");
             }
 
             @Override
@@ -125,7 +125,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
                 if (editorLocation != null)
-                    VersionHistoryUpdater.update(editorLocation.toString());
+                    VersionHistoryUpdater.update("");
                 else
                     VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
 

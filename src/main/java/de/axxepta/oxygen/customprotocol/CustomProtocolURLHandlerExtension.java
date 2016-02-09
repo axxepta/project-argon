@@ -173,6 +173,10 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
     public static String pathFromURL(URL url) {
         String urlString = url.toString();
+        return pathFromURLString(urlString);
+    }
+
+    public static String pathFromURLString(String urlString) {
         int ind1 = urlString.indexOf(":");
         if (urlString.substring(ind1 + 1, ind1 + 2).equals("/"))
             return urlString.substring(ind1 + 2);
