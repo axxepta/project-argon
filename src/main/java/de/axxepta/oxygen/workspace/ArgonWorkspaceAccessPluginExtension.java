@@ -48,7 +48,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
      */
     private JTextArea cmsMessagesArea;
     private JTable versionHistoryTable;
-    private JLabel versionHistoryLabel;
     private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
     private ToolbarButton newVersionButton;
     private ToolbarButton replyCommentButton;
@@ -98,13 +97,19 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void editorSelected(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
             }
 
             @Override
             public void editorActivated(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
             }
 
             @Override
@@ -119,7 +124,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                //VersionHistoryUpdater.update(editorLocation.toString());
+                if (editorLocation != null)
+                    VersionHistoryUpdater.update(editorLocation.toString());
+                else
+                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
                 boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
@@ -318,8 +326,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 try {
                     databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
                 } catch (Exception er) {
-                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
-                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+/*                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
+                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);*/
                     databaseList = new ArrayList<>();
                 }
                 for (int i = 0; i < (databaseList.size() / 2); i++) {
@@ -332,6 +340,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // explicit tree model necessary to use allowsChildren for definition of leafs
                 final DefaultTreeModel treeModel = new DefaultTreeModel(root);
                 treeModel.setAsksAllowsChildren(true);
+                TreeUtils.init(treeModel);
                 final BasexTree tree = new BasexTree(treeModel);
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 setTreeState(tree, new TreePath(root), false);
@@ -392,10 +401,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         tListener, pluginWorkspaceAccess);
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
-                Action showVersionHistory = new ShowVersionHistoryContextAction(Lang.get(Lang.Keys.cm_showversion),
-                        ImageUtils.getIcon(ImageUtils.VER_HIST), tListener);
-                contextMenu.add(showVersionHistory, Lang.get(Lang.Keys.cm_showversion));
-
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                         pluginWorkspaceAccess, tree);
                 contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
@@ -426,11 +431,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 viewInfo.setTitle("Argon DB Connection");
                 viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                versionHistoryLabel = new JLabel();
-                versionHistoryLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-                JPanel versionHistoryLabelPanel = new JPanel();
-                versionHistoryLabelPanel.setLayout(new BoxLayout(versionHistoryLabelPanel, BoxLayout.X_AXIS));
-                versionHistoryLabelPanel.add(versionHistoryLabel);
                 // Table (will be put in bottom Box)
                 versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
                 versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);

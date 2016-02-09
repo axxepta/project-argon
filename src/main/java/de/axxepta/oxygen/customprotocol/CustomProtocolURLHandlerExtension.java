@@ -189,9 +189,17 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     }
 
     public static BaseXSource sourceFromURL(URL url) {
-        String urlString = url.toString();
+        return sourceFromURLString(url.toString());
+
+    }
+
+    public static BaseXSource sourceFromURLString(String urlString) {
+        String protocol;
         int ind1 = urlString.indexOf(":");
-        String protocol = urlString.substring(0, ind1);
+        if (ind1 == -1)     // no proper URL string, but used someplace
+            protocol = urlString;
+        else
+            protocol = urlString.substring(0, ind1);
         switch (protocol) {
             case ARGON_XQ: return BaseXSource.RESTXQ;
             case ARGON_REPO: return BaseXSource.REPO;

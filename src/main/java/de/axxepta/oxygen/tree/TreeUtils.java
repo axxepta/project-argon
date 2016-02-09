@@ -13,6 +13,12 @@ import javax.swing.tree.TreePath;
  */
 public class TreeUtils {
 
+    private static DefaultTreeModel model;
+
+    public static void init(DefaultTreeModel treeModel) {
+        model = treeModel;
+    }
+
     public static void insertStrAsNodeLexi(DefaultTreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
@@ -54,7 +60,20 @@ public class TreeUtils {
     }
 
     public static TreePath pathFromURLString(String urlString) {
-        TreePath path = new TreePath("");
+        TreePath path = new TreePath(model.getRoot());
+        BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURLString(urlString);
+        switch (source) {
+            case REPO: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_repo)); break;
+            case RESTXQ: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_restxq)); break;
+            default: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_DB));
+        }
+        String[] protocolResource = urlString.split(":/?");
+        if (protocolResource.length > 1) {
+            String[] pathParts = protocolResource[1].split("/");
+            for (String res: pathParts) {
+                path = pathByAddingChildAsStr(path, res);
+            }
+        }
         return path;
     }
 

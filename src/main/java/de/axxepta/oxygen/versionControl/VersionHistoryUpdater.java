@@ -24,20 +24,12 @@ import java.util.List;
  * @author Markus on 31.01.2016.
  */
 
-// ToDo: completely static instead of singleton? access to instance necessary?
-
 public final class VersionHistoryUpdater {
-    private static final VersionHistoryUpdater ourInstance = new VersionHistoryUpdater();
+
     private static final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
     private static List<VersionHistoryEntry> historyList;
 
     private static ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
-
-/*
-    public static VersionHistoryUpdater getInstance() {
-        return ourInstance;
-    }
-*/
 
     private VersionHistoryUpdater() {
         historyList = new ArrayList<>();
@@ -48,16 +40,15 @@ public final class VersionHistoryUpdater {
         historyList = new ArrayList<>();
     }
 
-    public static void updateAndShow(String urlString, TreePath path) {
+    public static void update(String urlString) {
+        TreePath path = TreeUtils.pathFromURLString(urlString);
         update(urlString, path);
-        show();
     }
 
     public static void update(String urlString, TreePath path) {
         historyList = new ArrayList<>();
-        if (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString)) {
+        if (!TreeUtils.isDbSource(path) && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
 
-            //TreePath path = TreeUtils.pathFromURLString(urlString);
             String resource = TreeUtils.resourceFromTreePath(path);
             String pathStr = obtainHistoryPath(resource, path);
             String fileName = urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."));
@@ -68,7 +59,7 @@ public final class VersionHistoryUpdater {
             for (String strEntry : allVersions) {
                 URL url = null;
                 try {
-                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + path + "/" + strEntry);
+                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + pathStr + "/" + strEntry);
                 } catch (MalformedURLException e1) {
                     logger.error(e1);
                 }
