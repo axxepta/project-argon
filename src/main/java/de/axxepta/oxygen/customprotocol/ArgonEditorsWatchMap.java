@@ -18,7 +18,8 @@ public class ArgonEditorsWatchMap {
     }
 
     public static void addURL(URL url) {
-        URLMap.put(url, false);
+        if (!isURLInMap(url) || !askedForAccess(url))
+            URLMap.put(url, false);
     }
 
     public static void removeURL(URL url) {

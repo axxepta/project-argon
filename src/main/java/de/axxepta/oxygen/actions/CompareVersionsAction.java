@@ -24,6 +24,7 @@ public class CompareVersionsAction extends AbstractAction {
 
     private final JTable table;
     private static final Logger logger = LogManager.getLogger(CompareVersionsAction.class);
+    private boolean savedEditor;
 
     public CompareVersionsAction(String name, JTable table) {
         super(name);
@@ -33,25 +34,35 @@ public class CompareVersionsAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         URL[] urls = selectURLs();
+        ArgonEditorsWatchMap.addURL(urls[0]);
+        ArgonEditorsWatchMap.setAsked(urls[0]);
+        ArgonEditorsWatchMap.addURL(urls[1]);
+        ArgonEditorsWatchMap.setAsked(urls[1]);
         openDiffer(urls);
+        if (savedEditor) {  // editor was saved prior to comparison, these lines prevent it from being locked as read-only
+            ArgonEditorsWatchMap.removeURL(urls[0]);
+            ArgonEditorsWatchMap.addURL(urls[0]);
+            savedEditor = false;
+        }
     }
 
     private URL[] selectURLs() {
-        URL[] urls = new URL[2];
+        final URL[] urls = new URL[2];
         int[] selection = table.getSelectedRows();
-        int rows = table.getModel().getRowCount();
         // if only one revision row is selected, it is compared to the last (current) one
         if (selection.length == 1) {
+            int rows = table.getModel().getRowCount();
             urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(rows - 1);
             urls[1] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[0]);
-            // if a changed instance of the file is currently opened in an editor, save it and use it's URL
-            URL currentURL = obtainCurrentURLFromHistoryURL(urls[0]);
-            if (ArgonEditorsWatchMap.isURLInMap(currentURL)) {
-                WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
-                        getEditorAccess(currentURL, PluginWorkspace.MAIN_EDITING_AREA);
-                if (editorAccess.isModified())
-                    editorAccess.save();
-                urls[0] = currentURL;
+            WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
+                    getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+/*            if (editorAccess.isModified())
+                JOptionPane.showMessageDialog(null, "The content in the editor was changed.\n" +
+                    "Save first to compare with current content.",  "Compare File Revisions", JOptionPane.PLAIN_MESSAGE);*/
+            if (editorAccess.isModified()) {    // take current version editor instead
+                editorAccess.save();
+                savedEditor = true;
+                urls[0] = obtainCurrentURLFromHistoryURL(urls[0]);
             }
         } else {
             urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[1]);

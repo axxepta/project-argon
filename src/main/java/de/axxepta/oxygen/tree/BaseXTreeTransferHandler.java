@@ -85,6 +85,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                         if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
                             lockedFiles.add(url.toString());
                         } else {
+                            // ToDo: proper locking while store process (transaction)
                             //copy file
                             byte[] isByte;
                             try (InputStream is = new FileInputStream(file)) {

@@ -72,7 +72,7 @@ public final class VersionHistoryUpdater {
             for (String strEntry : allVersions) {
                 URL url = null;
                 try {
-                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + path + "/" + strEntry);
+                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + pathStr + "/" + strEntry);
                 } catch (MalformedURLException e1) {
                     logger.error(e1);
                 }

@@ -196,7 +196,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     public static BaseXSource sourceFromURLString(String urlString) {
         String protocol;
         int ind1 = urlString.indexOf(":");
-        if (ind1 == -1)
+        if (ind1 == -1)     // no proper URL string, but used someplace
             protocol = urlString;
         else
             protocol = urlString.substring(0, ind1);
