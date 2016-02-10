@@ -360,7 +360,7 @@
                           <list>
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jidesoft/jide-oss/3.6.7/f826c3bf4c4cf45f0581b75a1976b2eae43ef293/jide-oss-3.6.7.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.jersey/jersey-client/1.9/d3c4b2b5f89db32c96ceddcb863684821910a7bb/jersey-client-1.9.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.basex/basex/7.6/5eca4231c57ce2dd7699f2b867d879823589c8da/basex-7.6.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.basex/basex/8.4/cd0370fdaedd0c2f3d1ecd64354572b05a3e6b00/basex-8.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.jersey/jersey-core/1.9/8341846f18187013bb9e27e46b7ee00a6395daf4/jersey-core-1.9.jar" />
                             <option value="$MODULE_DIR$/libs/oxygen.jar" />
                           </list>

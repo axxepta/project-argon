@@ -34,14 +34,14 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.jidesoft:jide-oss:3.6.7'
     compile 'com.sun.jersey:jersey-client:1.9'
-    compile 'org.basex:basex:8.4-SNAPSHOT'
+    compile 'org.basex:basex:8.4'
     
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
   	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
 
     releaseJars 'com.sun.jersey:jersey-client:1.9'
     releaseJars 'com.jidesoft:jide-oss:3.6.7'
-    releaseJars 'org.basex:basex:8.4-SNAPSHOT'
+    releaseJars 'org.basex:basex:8.4'
     releaseJars 'org.apache.logging.log4j:log4j-api:2.3'
     releaseJars 'org.apache.logging.log4j:log4j-core:2.3'
 }

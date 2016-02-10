@@ -1,10 +1,14 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -13,12 +17,19 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @author Markus on 20.10.2015.
  */
 public class AddNewFileAction extends AbstractAction {
+
+    private static final Logger logger = LogManager.getLogger(AddNewFileAction.class);
 
     StandalonePluginWorkspace wsa;
     BasexTree tree;
@@ -108,26 +119,43 @@ public class AddNewFileAction extends AbstractAction {
                 final TokenBuilder template = new TokenBuilder();
                 switch (ext) {
                     case ".xml":
-                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a/>");
                         break;
                     case ".xquery":
                         template.add("xquery version \"3.0\";");
                         break;
-                    case "xqm":
+                    case ".xqm":
                         template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
                         break;
                     default:
                         template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 }
                 // add file
-                String resource = db_path + "/" + name + ext;
-                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                    connection.put(TreeUtils.sourceFromTreePath(path), resource, template.finish());
-                    TopicHolder.saveFile.postMessage(TreeUtils.protocolFromTreePath(path) + ":" + resource);
-                } catch (IOException er) {
-                    er.printStackTrace();
-                    JOptionPane.showMessageDialog(null, er.getMessage(), "BaseX Connection Error",
+                BaseXSource source = TreeUtils.sourceFromTreePath(path);
+                String protocol = TreeUtils.protocolFromTreePath(path);
+
+                String urlString = TreeUtils.urlStringFromTreePath(path) + "/" + name + ext;
+                URL url = null;
+                try {
+                    url = new URL(urlString);
+                } catch (MalformedURLException e1) {
+                    logger.error(e1);
+                }
+
+                CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+                if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
+                    JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
+                                    "and is locked by another user.", "File locked",
                             JOptionPane.PLAIN_MESSAGE);
+                } else {
+                    // ToDo: proper locking while store process
+                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
+                        os.write(template.finish());
+                    } catch (IOException ex) {
+                        logger.error(ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Couldn't create new file", "BaseX Connection Error",
+                                JOptionPane.PLAIN_MESSAGE);
+                    }
                 }
             }
             newFileDialog.dispose();
