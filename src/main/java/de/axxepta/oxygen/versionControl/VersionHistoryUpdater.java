@@ -107,8 +107,6 @@ public final class VersionHistoryUpdater {
             allVersions = (new BaseXRequest("list", source, pathStr)).getResult();
         } catch (Exception er) {
             allVersions = new ArrayList<>();
-            JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX.\n Check whether server is still running!",
-                    "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
         }
 
         String filter = fileName + "_[0-9]{4}-[0-1][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]_v[0-9]+r[0-9]+" + extension;

@@ -98,13 +98,13 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public void restoreDefaults() {
         // Reset the text fields values. Empty string is used to map the <null> default values of the options.
         baseXHostTextField.setText(DEF_BASEX_HOST);
-        baseXHttpPortTextField.setText(DEF_BASEX_HTTP_PORT);
-        baseXTcpPortTextField.setText(DEF_BASEX_TCP_PORT);
+/*        baseXHttpPortTextField.setText(DEF_BASEX_HTTP_PORT);
+        baseXTcpPortTextField.setText(DEF_BASEX_TCP_PORT);*/
         baseXUsernameTextField.setText(DEF_BASEX_USERNAME);
         baseXPasswordTextField.setText(DEF_BASEX_PASSWORD);
-        baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);
+/*        baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_VERSIONING));
-        baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);
+/*        baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);*/
     }
 
     /**
