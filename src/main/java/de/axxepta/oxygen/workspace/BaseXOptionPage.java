@@ -44,7 +44,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_PASSWORD = "admin";
     private static final String DEF_BASEX_CONNECTION = "HTTP";
     private static final String DEF_BASEX_VERSIONING = "true";
-    private static final String DEF_BASEX_LOGFILE = "/tmp/argon.log";
+    private static final String DEF_BASEX_LOGFILE = System.getProperty("user.home") + "/argon.log";
+            //"/tmp/argon.log";
 
     /**
      * BaseX JTextFields

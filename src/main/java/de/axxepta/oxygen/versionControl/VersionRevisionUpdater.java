@@ -3,6 +3,10 @@ package de.axxepta.oxygen.versioncontrol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorAccess;
+import ro.sync.ecss.extensions.api.AuthorDocumentController;
+import ro.sync.ecss.extensions.api.AuthorOperationException;
+import ro.sync.ecss.extensions.api.access.AuthorXMLUtilAccess;
+import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -139,14 +143,46 @@ public class VersionRevisionUpdater {
         if (editorAccess.getCurrentPageID().equals(EditorPageConstants.PAGE_AUTHOR)) {
             editorInAuthorMode = true;
             editorPage = editorAccess.getCurrentPage();
+
             AuthorAccess authorAccess = ((WSAuthorEditorPage) editorPage).getAuthorAccess();
+
             // store current cursor position for later reset
             currentOnset = authorAccess.getEditorAccess().getSelectionStart();
             currentOffset = authorAccess.getEditorAccess().getCaretOffset();
+
+
+            final AuthorDocumentController adc = authorAccess.getDocumentController();
+            //editorAccess.toString()
+
+            //editorAccess.reloadContent();
+
+            final int startOffset = adc.getAuthorDocumentNode().getRootElement().getStartOffset();
+
+
+            try {
+
+                final AuthorDocumentFragment frag  = adc.createNewDocumentFragmentInContext("<?history version=\"\"?>", startOffset + 1);
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        adc.insertFragment(startOffset, frag);
+                    }
+                });
+
+            } catch (AuthorOperationException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
+
             // change to Text mode
             editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
         }
         textPage = (WSTextEditorPage)editorAccess.getCurrentPage();
+        //textPage.getDocument()
         if (!editorInAuthorMode) {
             currentOnset = textPage.getSelectionStart();
             currentOffset = textPage.getCaretOffset();

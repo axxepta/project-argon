@@ -121,6 +121,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
             @Override
             public void editorOpened(URL editorLocation) {
+                logger.debug("editor opened: " + editorLocation.toString());
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
@@ -141,6 +142,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                         public void filterValidationProblems(ValidationProblems validationProblems) {
                             // get content of editor window
                             String editorContent;
+                            logger.debug("filter validation problems");
                             try {
                                 InputStream editorStream = editorAccess.createContentInputStream();
                                 Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
