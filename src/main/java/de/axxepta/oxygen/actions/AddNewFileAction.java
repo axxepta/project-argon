@@ -88,6 +88,7 @@ public class AddNewFileAction extends AbstractAction {
             newFileDialog.setContentPane(content);
             newFileDialog.pack();
             newFileDialog.setLocationRelativeTo(parentFrame);
+            newFileDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             //DialogTools.CenterDialogRelativeToParent(newFileDialog);
             newFileDialog.setVisible(true);
         }

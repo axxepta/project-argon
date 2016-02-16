@@ -47,7 +47,14 @@ public class RenameAction extends AbstractAction {
         if ((source != null) && (!db_path.equals(""))) {
             Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
-            renameDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_rename));
+            String urlString = TreeUtils.urlStringFromTreePath(path);
+            int filePosition = urlString.lastIndexOf("/");
+            if (filePosition == -1)
+                filePosition = urlString.indexOf(":");
+            String fileName = urlString.substring(filePosition + 1);
+            String filePath = urlString.substring(0, filePosition + 1);
+
+            renameDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_rename) + " in " + filePath);
             renameDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
             renameDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -56,6 +63,7 @@ public class RenameAction extends AbstractAction {
             newFileNameTextField = new JTextField();
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, true));
             content.add(newFileNameTextField, BorderLayout.NORTH);
+            newFileNameTextField.setText(fileName);
 
             JPanel btnPanel = new JPanel();
             JButton addBtn = new JButton(new renameThisAction("Rename"));
@@ -68,6 +76,7 @@ public class RenameAction extends AbstractAction {
             renameDialog.setContentPane(content);
             renameDialog.pack();
             renameDialog.setLocationRelativeTo(parentFrame);
+            renameDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             renameDialog.setVisible(true);
         }
     }

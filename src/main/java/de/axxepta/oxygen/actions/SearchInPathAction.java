@@ -120,6 +120,7 @@ public class SearchInPathAction extends AbstractAction {
                 resultsDialog.setContentPane(content);
                 resultsDialog.setSize(500,300);
                 resultsDialog.setLocationRelativeTo(parentFrame);
+                resultsDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
                 resultsDialog.setVisible(true);
 
             }
