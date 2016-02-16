@@ -464,9 +464,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 versionHistoryPanel.add(scrollPane);
                 viewInfo.setComponent(versionHistoryPanel);
                 viewInfo.setTitle("Argon Version History");
-            } else if ("Project".equals(viewInfo.getViewID())) {
-                // Change the 'Project' view title.
-                viewInfo.setTitle("CMS Project");
             }
         }
     }

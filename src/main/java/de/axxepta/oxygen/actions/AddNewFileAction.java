@@ -18,9 +18,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -90,6 +88,7 @@ public class AddNewFileAction extends AbstractAction {
             newFileDialog.setContentPane(content);
             newFileDialog.pack();
             newFileDialog.setLocationRelativeTo(parentFrame);
+            newFileDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             //DialogTools.CenterDialogRelativeToParent(newFileDialog);
             newFileDialog.setVisible(true);
         }

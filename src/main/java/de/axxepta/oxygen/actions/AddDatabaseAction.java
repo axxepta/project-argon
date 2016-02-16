@@ -60,6 +60,7 @@ public class AddDatabaseAction extends AbstractAction {
         addDbDialog.setContentPane(content);
         addDbDialog.pack();
         addDbDialog.setLocationRelativeTo(parentFrame);
+        addDbDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         addDbDialog.setVisible(true);
     }
 
