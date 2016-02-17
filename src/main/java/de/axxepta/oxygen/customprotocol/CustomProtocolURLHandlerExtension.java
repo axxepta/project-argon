@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.customprotocol;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 
@@ -123,56 +124,75 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isReadOnly(URL url) {
         //return false;
-        try {
-            Connection connection = BaseXConnectionWrapper.getConnection();
-            if (connection != null) {
-                boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
+        if (isInHiddenDB(url)) {
+            return true;
+        } else {
+            try {
+                Connection connection = BaseXConnectionWrapper.getConnection();
+                if (connection != null) {
+                    boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
 
-                //already locked by another user
-                if (isLocked) {
-                    return true;
+                    //already locked by another user
+                    if (isLocked) {
+                        return true;
 
-                //maybe no lock set at all (removed in meantime)
-                } else{
-                    //file already open in Editor
-                    if (ArgonEditorsWatchMap.isURLInMap(url)) {
+                        //maybe no lock set at all (removed in meantime)
+                    } else {
+                        //file already open in Editor
+                        if (ArgonEditorsWatchMap.isURLInMap(url)) {
 
-                        //question has ben asked already
-                        if (ArgonEditorsWatchMap.askedForAccess(url)) {
-                            return true;
+                            //question has ben asked already
+                            if (ArgonEditorsWatchMap.askedForAccess(url)) {
+                                return true;
 
-                        } else {
-                            // just got write access (lock removed by other user), reload and lock resource for me now?
-                           if (connection.noLockSet(BaseXSource.DATABASE, pathFromURL(url))) {
-
-                                int reloadFile = JOptionPane.showConfirmDialog(null, "The lock on this file just has been removed.\n" +
-                                        "Do you want to reload the file and gain write access?", "File unlocked", JOptionPane.YES_NO_OPTION);
-                                if (reloadFile == JOptionPane.YES_OPTION) {
-                                    PluginWorkspace wsa = PluginWorkspaceProvider.getPluginWorkspace();
-                                    wsa.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA).close(false);
-                                    wsa.open(url);
-                                    return false;
-                                } else {
-                                    ArgonEditorsWatchMap.setAsked(url);
-                                    return true;
-                                }
                             } else {
-                                return false;
+                                // just got write access (lock removed by other user), reload and lock resource for me now?
+                                if (connection.noLockSet(BaseXSource.DATABASE, pathFromURL(url))) {
+
+                                    int reloadFile = JOptionPane.showConfirmDialog(null, "The lock on this file just has been removed.\n" +
+                                            "Do you want to reload the file and gain write access?", "File unlocked", JOptionPane.YES_NO_OPTION);
+                                    if (reloadFile == JOptionPane.YES_OPTION) {
+                                        PluginWorkspace wsa = PluginWorkspaceProvider.getPluginWorkspace();
+                                        wsa.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA).close(false);
+                                        wsa.open(url);
+                                        return false;
+                                    } else {
+                                        ArgonEditorsWatchMap.setAsked(url);
+                                        return true;
+                                    }
+                                } else {
+                                    return false;
+                                }
                             }
-                        }
-                    } else  // isReadOnly is called also for "Save to URL", therefore there might be no entry in WatchMap
-                        return false;
+                        } else  // isReadOnly is called also for "Save to URL", therefore there might be no entry in WatchMap
+                            return false;
+                    }
+                } else {
+                    return true;
                 }
-            } else {
-                return true;
+            } catch (Exception er) {
+                return false;
             }
-        } catch (Exception er) {
+        }
+    }
+
+    private static boolean isInHiddenDB(URL url) {
+        String path = pathFromURL(url);
+        int firstCharOfPath = (path.charAt(0) == '/') ? 1 : 0;
+        if (path.charAt(firstCharOfPath) == '~') {
+            return true;
+        } else {
             return false;
         }
     }
 
     public static String pathFromURL(URL url) {
-        String urlString = url.toString();
+        String urlString = "";
+        try {
+            urlString = java.net.URLDecoder.decode(url.toString(), "UTF-8");
+        } catch(UnsupportedEncodingException uee) {
+            logger.debug(uee.getMessage());
+        }
         return pathFromURLString(urlString);
     }
 
