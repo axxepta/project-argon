@@ -46,12 +46,16 @@ public class DeleteAction extends AbstractAction {
                     }
                 }
                 if (treeModel.getChildCount(path.getLastPathComponent()) == 0) {
-                    try {
-                        new BaseXRequest("delete", source, db_path);
-                        treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
-                    } catch (Exception er) {
-                        JOptionPane.showMessageDialog(null, "Failed to delete resource",
-                                "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                    int dialogResult = JOptionPane.showConfirmDialog (null, "Do you really want to delete the file\n" +
+                            TreeUtils.urlStringFromTreePath(path) + "?", "Delete Resource", JOptionPane.YES_NO_OPTION);
+                    if(dialogResult == JOptionPane.YES_OPTION) {
+                        try {
+                            new BaseXRequest("delete", source, db_path);
+                            treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+                        } catch (Exception er) {
+                            JOptionPane.showMessageDialog(null, "Failed to delete resource",
+                                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "You cannot delete non-empty directories!",

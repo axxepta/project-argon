@@ -20,6 +20,7 @@ import org.basex.util.http.*;
 public final class RestConnection implements Connection {
     /** URI. */
     private final IOUrl url;
+    private final URL sUrl;
     private final String basicAuth;
 
     /**
@@ -34,7 +35,7 @@ public final class RestConnection implements Connection {
         //url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
         url = new IOUrl("http://" + user + ":" + password + "@" + server );
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
-
+        sUrl = new URL("http://" + user + ":" + password + "@" + server );
     }
 
     @Override
@@ -150,6 +151,7 @@ public final class RestConnection implements Connection {
      */
     private byte[] request(final String body, final String... bindings) throws IOException {
         final HttpURLConnection conn = (HttpURLConnection) url.connection();
+        //sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
@@ -165,14 +167,22 @@ public final class RestConnection implements Connection {
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");
-
             try(final OutputStream out = conn.getOutputStream()) {
                 out.write(tb.finish());
                 out.close();
             }
+
+/*            if (conn.getResponseCode() >= 400) {
+                final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
+                throw BaseXQueryException.get(msg);
+            } else {
+                return new IOStream(conn.getInputStream()).read();
+            }*/
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
+            //InputStream errorOS = conn.getErrorStream();
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
+            //final String msg =  new String(new IOStream(conn.getErrorStream()).read(), "UTF-8");
             throw BaseXQueryException.get(msg);
         } finally {
             conn.disconnect();

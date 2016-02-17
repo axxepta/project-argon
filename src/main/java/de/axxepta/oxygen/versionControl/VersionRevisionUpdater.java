@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
-import ro.sync.ecss.extensions.api.access.AuthorXMLUtilAccess;
 import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -39,20 +38,20 @@ public class VersionRevisionUpdater {
     public static final String XML = "XML";
     public static final String XQUERY = "XQUERY";
 
-    private Document doc = null;
-    private StringBuilder docBuilder;
-    private String type;
-    private long[] verRev = {1,0};
+    protected Document doc = null;
+    protected StringBuilder docBuilder;
+    protected String type;
+    protected long[] verRev = {1,0};
     private boolean updated;
 
-    private boolean fromDocument = false;
-    private WSEditor editorAccess;
+    protected boolean fromDocument = false;
+    protected WSEditor editorAccess;
     private boolean editorInAuthorMode;
     private WSEditorPage editorPage;
     private WSTextEditorPage textPage;
     private int currentOnset;
     private int currentOffset;
-    private boolean revisionReset;
+    protected boolean revisionReset;
 
     public VersionRevisionUpdater(String type) {
         this.fromDocument = true;
@@ -138,7 +137,7 @@ public class VersionRevisionUpdater {
             return String.format("(: argon_history version=\"%s\" revision=\"%s\" :)", verRev[0], verRev[1]);
     }
 
-    private Document getDocumentFromEditor() {
+    protected Document getDocumentFromEditor() {
         editorInAuthorMode = false;
         if (editorAccess.getCurrentPageID().equals(EditorPageConstants.PAGE_AUTHOR)) {
             editorInAuthorMode = true;
@@ -150,17 +149,14 @@ public class VersionRevisionUpdater {
             currentOnset = authorAccess.getEditorAccess().getSelectionStart();
             currentOffset = authorAccess.getEditorAccess().getCaretOffset();
 
-
             final AuthorDocumentController adc = authorAccess.getDocumentController();
             //editorAccess.toString()
 
             //editorAccess.reloadContent();
 
-            final int startOffset = adc.getAuthorDocumentNode().getRootElement().getStartOffset();
-
+/*            final int startOffset = adc.getAuthorDocumentNode().getRootElement().getStartOffset();
 
             try {
-
                 final AuthorDocumentFragment frag  = adc.createNewDocumentFragmentInContext("<?history version=\"\"?>", startOffset + 1);
                 SwingUtilities.invokeAndWait(new Runnable() {
                     @Override
@@ -175,8 +171,7 @@ public class VersionRevisionUpdater {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
-            }
-
+            }*/
 
             // change to Text mode
             editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
@@ -190,7 +185,7 @@ public class VersionRevisionUpdater {
         return textPage.getDocument();
     }
 
-    private void resetEditor() {
+    protected void resetEditor() {
         if (revisionReset) {
             if (editorInAuthorMode) {
                 editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
@@ -209,7 +204,7 @@ public class VersionRevisionUpdater {
         }
     }
 
-    private void replaceTagInDocument(int tagLength, final int oldTagLength, final String tag, final int historyTagPosition) {
+    protected void replaceTagInDocument(int tagLength, final int oldTagLength, final String tag, final int historyTagPosition) {
         if (tagLength != (oldTagLength + 1)){
             currentOnset = currentOnset + tagLength - oldTagLength - 1;
             currentOffset = currentOffset + tagLength - oldTagLength - 1;
@@ -338,7 +333,7 @@ public class VersionRevisionUpdater {
      * docBuilder, extracts version and revision (if present) and stores them into the field verRev.
      * @return diverging from what the name might let expect you the start and end position of the version/revision tag
      */
-    private int[] obtainVersionAndRevision() {
+    protected int[] obtainVersionAndRevision() {
         int[] position;
         if (type.equals(XML))
             position = getXMLHistoryTagPosition();
@@ -347,58 +342,6 @@ public class VersionRevisionUpdater {
         if (position[0] != position[1])
             extractVersionAndRevision(position);
         return position;
-    }
-
-    // the methods below were added to process the reset to an old file revision
-
-    private void replaceDocument(final String newDoc) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            replaceWholeDocument(newDoc);
-        } else {
-            try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        replaceWholeDocument(newDoc);
-                    }
-                });
-            } catch (InvocationTargetException ite) {
-                logger.error(ite);
-            } catch (InterruptedException ie) {
-                logger.error(ie);
-            }
-        }
-    }
-
-    private void replaceWholeDocument(String newDoc) {
-        try {
-            doc.remove(0, doc.getLength());
-        } catch (BadLocationException el) {
-            logger.error(el);
-        }
-        try {
-            doc.insertString(0, newDoc, null);
-        } catch (BadLocationException el) {
-            logger.error(el);
-        }
-    }
-
-    private void setVerRev(int ver, int rev) {
-        verRev[0] = ver;
-        verRev[1] = rev;
-    }
-
-    public void updateEditorToOldRevision(String newDocumentString, int version, int revision) {
-        revisionReset = true;
-        replaceDocument(newDocumentString);
-        docBuilder = new StringBuilder(newDocumentString);
-        final int[] historyTagPosition = obtainVersionAndRevision();
-        setVerRev(version, revision);
-        final int oldTagLength = historyTagPosition[1] - historyTagPosition[0];
-        final String tag = getVersionRevisionTag();
-        int tagLength = tag.length();
-        replaceTagInDocument(tagLength, oldTagLength, tag, historyTagPosition[0]);
-        resetEditor();
     }
 
 }

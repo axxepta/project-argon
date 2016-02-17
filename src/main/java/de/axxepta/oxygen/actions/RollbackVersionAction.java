@@ -7,6 +7,7 @@ import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.ArgonProtocolHandler;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.versioncontrol.RevisionReset;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import de.axxepta.oxygen.versioncontrol.VersionRevisionUpdater;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +64,7 @@ public class RollbackVersionAction extends AbstractAction {
                     extension = VersionRevisionUpdater.XQUERY;
                 else
                     extension = VersionRevisionUpdater.XML;
-                VersionRevisionUpdater updater = new VersionRevisionUpdater(editorAccess, extension);
+                RevisionReset updater = new RevisionReset(editorAccess, extension);
                 updater.updateEditorToOldRevision(newDocumentString, version, revision);
             }
         }
