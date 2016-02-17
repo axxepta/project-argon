@@ -81,7 +81,10 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.put(this.source, path, savedBytes);
+
+            //inform any interested party in save operation
             TopicHolder.saveFile.postMessage(this.url.getProtocol() + ":" + this.url.getPath());
+
             if (useVersioning) {
                 // ToDo: catch IOException for getBackupPath() independently
                 String backupPath = getBackupPath(path);
