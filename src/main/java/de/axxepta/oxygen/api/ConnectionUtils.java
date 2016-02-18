@@ -25,6 +25,10 @@ public final class ConnectionUtils {
     static final String XQUERY = "XQUERY";
     /** Search filter variable */
     static final String FILTER = "FILTER";
+    /** Create database chop option */
+    static final String CHOP = "CHOP";
+    /** Create database ftindex option */
+    static final String FTINDEX = "FTINDEX";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

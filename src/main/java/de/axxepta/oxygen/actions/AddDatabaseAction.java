@@ -6,6 +6,7 @@ import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.workspace.BaseXOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -75,8 +76,10 @@ public class AddDatabaseAction extends AbstractAction {
             String db = newDbNameTextField.getText();
             // ToDo: check, whether database already exists, otherwise duplicate node is inserted
             DefaultMutableTreeNode parentNode = listener.getNode();
+            String chop = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
+            String ftindex = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
             try {
-                new BaseXRequest("create", BaseXSource.DATABASE, db);
+                new BaseXRequest("create", BaseXSource.DATABASE, db, chop, ftindex);
                 TreeUtils.insertStrAsNodeLexi(treeModel, db, parentNode, false);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Failed to add new database",

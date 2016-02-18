@@ -36,6 +36,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_BASEX_CONNECTION = "KEY_BASEX_CONNECTION";
     public static final String KEY_BASEX_VERSIONING = "KEY_BASEX_VERSIONING";
     public static final String KEY_BASEX_LOGFILE = "KEY_BASEX_LOGFILE";
+    public static final String KEY_BASEX_DB_CREATE_CHOP = "KEY_BASEX_DB_CREATE_CHOP";
+    public static final String KEY_BASEX_DB_CREATE_FTINDEX = "KEY_BASEX_DB_CREATE_FTINDEX";
 
     private static final String DEF_BASEX_HOST = "localhost:8984/rest";
     private static final String DEF_BASEX_HTTP_PORT = "8984";
@@ -46,6 +48,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_VERSIONING = "true";
     private static final String DEF_BASEX_LOGFILE = System.getProperty("user.home") + "/argon.log";
             //"/tmp/argon.log";
+    private static final String DEF_BASEX_DB_CREATE_CHOP = "false";
+    private static final String DEF_BASEX_DB_CREATE_FTINDEX = "false";
 
     /**
      * BaseX JTextFields
@@ -58,6 +62,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private JComboBox baseXConnectionTypeComboBox;
     private JCheckBox baseXVersioningCheckBox;
     private JTextField baseXLogfileTextField;
+    private JCheckBox baseXDBCreateChopCheckBox;
+    private JCheckBox baseXDBCreateFTIndexCheckBox;
 
     /**
      * @see ro.sync.exml.plugin.option.OptionPagePluginExtension#apply(ro.sync.exml.workspace.api.PluginWorkspace)
@@ -90,6 +96,12 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 
 /*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
                 !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);*/
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_CHOP,
+                baseXDBCreateChopCheckBox.isSelected() ? "true" : "false");
+
+        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_FTINDEX,
+                baseXDBCreateFTIndexCheckBox.isSelected() ? "true" : "false");
     }
 
     /**
@@ -106,6 +118,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 /*        baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_VERSIONING));
 /*        baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);*/
+        baseXDBCreateChopCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_DB_CREATE_CHOP));
+        baseXDBCreateFTIndexCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_DB_CREATE_FTINDEX));
     }
 
     /**
@@ -123,8 +137,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public JComponent init(final PluginWorkspace pluginWorkspace) {
         GridBagConstraints c = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
-        JLabel saveTmpLocationLbl = new JLabel("This Panel will be used to set BaseX DB configurations");
-
+        JLabel saveTmpLocationLbl = new JLabel("BaseX server connection configuration");
+        saveTmpLocationLbl.setFont(saveTmpLocationLbl.getFont().deriveFont(Font.BOLD));
 
         c.gridx = 0;
         c.gridy = 0;
@@ -132,7 +146,6 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.weighty = 0;
         c.anchor = GridBagConstraints.WEST;
         panel.add(saveTmpLocationLbl, c);
-
 
         /**
          * BaseX Hostname
@@ -230,6 +243,9 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.insets = new Insets(0, 5, 0, 5);
         panel.add(baseXConnectionTypeComboBox, c);*/
 
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
         /**
          * BaseX Versioning
          */
@@ -280,6 +296,48 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         });
 */
 
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
+        /**
+         * BaseX DB Create Options
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXDBCreateOptionsLbl = new JLabel("Options for creating new databases");
+        baseXDBCreateOptionsLbl.setFont(baseXDBCreateOptionsLbl.getFont().deriveFont(Font.BOLD));
+        panel.add(baseXDBCreateOptionsLbl, c);
+
+        /**
+         * BaseX DB Create Chop Option
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXDBCreateChopCheckBoxLbl = new JLabel("Chop whitespaces");
+        panel.add(baseXDBCreateChopCheckBoxLbl, c);
+
+        baseXDBCreateChopCheckBox = new JCheckBox();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXDBCreateChopCheckBox, c);
+
+        /**
+         * BaseX DB Create FTIndex Option
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXDBCreateFTIndexCheckBoxLbl = new JLabel("Full-text index:");
+        panel.add(baseXDBCreateFTIndexCheckBoxLbl, c);
+
+        baseXDBCreateFTIndexCheckBox = new JCheckBox();
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXDBCreateFTIndexCheckBox, c);
+
 
         c.gridx = 0;
         c.gridy++;
@@ -300,6 +358,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
 /*        String baseXConnection = getOption(KEY_BASEX_CONNECTION, false);*/
         String baseXVersioning = getOption(KEY_BASEX_VERSIONING, false);
 /*        String baseXLogfile = getOption(KEY_BASEX_LOGFILE, false);*/
+        String baseXDBCreateChop = getOption(KEY_BASEX_DB_CREATE_CHOP, false);
+        String baseXDBCreateFTIndex = getOption(KEY_BASEX_DB_CREATE_FTINDEX, false);
 
         // Initialize the fields with the stored options.
 
@@ -315,6 +375,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         }*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(baseXVersioning));
 /*        baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");*/
+        baseXDBCreateChopCheckBox.setSelected(Boolean.parseBoolean(baseXDBCreateChop));
+        baseXDBCreateFTIndexCheckBox.setSelected(Boolean.parseBoolean(baseXDBCreateFTIndex));
 
         return panel;
     }
@@ -330,6 +392,8 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
             case KEY_BASEX_CONNECTION: defaultValue = DEF_BASEX_CONNECTION; break;
             case KEY_BASEX_VERSIONING: defaultValue = DEF_BASEX_VERSIONING; break;
             case KEY_BASEX_LOGFILE: defaultValue = DEF_BASEX_LOGFILE; break;
+            case KEY_BASEX_DB_CREATE_CHOP: defaultValue = DEF_BASEX_DB_CREATE_CHOP; break;
+            case KEY_BASEX_DB_CREATE_FTINDEX: defaultValue = DEF_BASEX_DB_CREATE_FTINDEX; break;
             default: defaultValue = "empty option";
         }
         if (defaults) {

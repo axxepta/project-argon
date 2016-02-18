@@ -57,8 +57,8 @@ public final class RestConnection implements Connection {
     }
 
     @Override
-    public void create(String database) throws IOException {
-        request(getQuery("create-database"), DATABASE, database);
+    public void create(String database, String chop, String ftindex) throws IOException {
+        request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex);
     }
 
     @Override

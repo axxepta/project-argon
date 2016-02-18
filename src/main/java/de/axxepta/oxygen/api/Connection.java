@@ -23,9 +23,11 @@ public interface Connection extends Closeable {
     /**
      * Creates a new database.
      * @param database new database name
+     * @param chop chop option as string
+     * @param ftindex ftindex option as string
      * @throws IOException I/O exception
      */
-    void create(final String database) throws IOException;
+    void create(final String database, final String chop, final String ftindex) throws IOException;
 
     /**
      * Returns a resource in its binary representation.

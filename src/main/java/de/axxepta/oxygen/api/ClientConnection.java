@@ -48,7 +48,7 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public void create(final String database) throws IOException {
+    public void create(final String database, final String chop, final String ftindex) throws IOException {
         final Query query = client.query(getQuery("create-database"));
         query.bind(DATABASE, database, "");
         query.execute();

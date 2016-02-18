@@ -24,7 +24,7 @@ public class BaseXRequest {
                 case "create": result = new ArrayList<>();
                     answer = "";
                     check = false;
-                    connection.create(path);
+                    connection.create(path, params[0], params[1]);
                     break;
                 case "list":
                     answer = "";
