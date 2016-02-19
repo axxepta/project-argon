@@ -28,43 +28,69 @@ public class DeleteAction extends AbstractAction {
         this.treeListener = treeListener;
     }
 
+    public DeleteAction(BasexTree tree, TreeListener treeListener){
+        super();
+        this.tree = tree;
+        this.treeModel = (DefaultTreeModel) tree.getModel();
+        this.treeListener = treeListener;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        TreePath path = treeListener.getPath();
-        BaseXSource source = TreeUtils.sourceFromTreePath(path);
-        String db_path = TreeUtils.resourceFromTreePath(path);
-        if ((source != null) && (!db_path.equals(""))) {
-            // don't try to delete databases!
-            if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
-                if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
-                    if (tree.isCollapsed(path)) {
-                        tree.expandPath(path);
-                        tree.collapsePath(path);
-                    } else {
-                        tree.collapsePath(path);
-                        tree.expandPath(path);
-                    }
-                }
-                if (treeModel.getChildCount(path.getLastPathComponent()) == 0) {
-                    int dialogResult = JOptionPane.showConfirmDialog (null, "Do you really want to delete the file\n" +
-                            TreeUtils.urlStringFromTreePath(path) + "?", "Delete Resource", JOptionPane.YES_NO_OPTION);
-                    if(dialogResult == JOptionPane.YES_OPTION) {
-                        try {
-                            new BaseXRequest("delete", source, db_path);
-                            treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
-                        } catch (Exception er) {
-                            JOptionPane.showMessageDialog(null, "Failed to delete resource",
-                                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+        TreePath[] paths = tree.getSelectionPaths();
+        boolean deleteAll = false;
+        for (TreePath path : paths) {
+            BaseXSource source = TreeUtils.sourceFromTreePath(path);
+            String db_path = TreeUtils.resourceFromTreePath(path);
+            if ((source != null) && (!db_path.equals(""))) {
+                // don't try to delete databases!
+                if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
+                    if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
+                        if (tree.isCollapsed(path)) {
+                            tree.expandPath(path);
+                            tree.collapsePath(path);
+                        } else {
+                            tree.collapsePath(path);
+                            tree.expandPath(path);
                         }
                     }
+                    if (treeModel.getChildCount(path.getLastPathComponent()) == 0) {
+
+                        int dialogResult = JOptionPane.YES_OPTION;
+                        if (!deleteAll) {
+                            Object[] answerOptions = {"Yes" , "All" , "No"};
+                            dialogResult = JOptionPane.showOptionDialog(null, "Do you really want to delete the file\n" +
+                                            TreeUtils.urlStringFromTreePath(path) + "?", "Delete Resource(s)",
+                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, answerOptions,
+                                    answerOptions[0]);
+                        }
+                        if ((deleteAll) || (dialogResult == JOptionPane.YES_OPTION)) {
+                            deleteFile(source, db_path, path);
+                        } else if (dialogResult == JOptionPane.NO_OPTION) {
+                            deleteAll = true;
+                            deleteFile(source, db_path, path);
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "You cannot delete non-empty directories!",
+                                "BaseX Delete Warning", JOptionPane.PLAIN_MESSAGE);
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "You cannot delete non-empty directories!",
+                    JOptionPane.showMessageDialog(null, "You cannot delete databases!",
                             "BaseX Delete Warning", JOptionPane.PLAIN_MESSAGE);
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "You cannot delete databases!",
-                        "BaseX Delete Warning", JOptionPane.PLAIN_MESSAGE);
             }
         }
     }
+
+    private void deleteFile(BaseXSource source, String db_path, TreePath path) {
+        try {
+            new BaseXRequest("delete", source, db_path);
+            treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+        } catch (Exception er) {
+            JOptionPane.showMessageDialog(null, "Failed to delete resource",
+                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+        }
+    }
+
 }

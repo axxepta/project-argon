@@ -23,6 +23,13 @@ public class RefreshTreeAction extends AbstractAction {
         this.model = (DefaultTreeModel) tree.getModel();
     }
 
+
+    public RefreshTreeAction(BasexTree tree) {
+        super();
+        this.tree = tree;
+        this.model = (DefaultTreeModel) tree.getModel();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         TreePath rootPath = new TreePath(model.getRoot());

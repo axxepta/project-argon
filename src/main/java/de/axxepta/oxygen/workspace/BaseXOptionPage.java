@@ -7,6 +7,8 @@ package de.axxepta.oxygen.workspace;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -170,7 +172,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         /**
          * Initial Values
          */
-        String baseXConnectionSetting = getOption(KEY_BASEX_CONNECTION_SETTING, false);
+        final String baseXConnectionSetting = getOption(KEY_BASEX_CONNECTION_SETTING, false);
         String baseXHost = getOption(KEY_BASEX_HOST, false);
 /*        String baseXHttpPort = getOption(KEY_BASEX_HTTP_PORT, false);*/
 /*        String baseXTcpPort = getOption(KEY_BASEX_TCP_PORT, false)*/

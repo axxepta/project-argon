@@ -1,9 +1,6 @@
 package de.axxepta.oxygen.tree;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -16,6 +13,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
+import de.axxepta.oxygen.actions.DeleteAction;
+import de.axxepta.oxygen.actions.RefreshTreeAction;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
@@ -29,7 +28,8 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 /**
  * Listener class observing all tree-related events
  */
-public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener, ObserverInterface{
+public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener,
+        KeyListener, ObserverInterface{
 	
 	 // Define a static logger variable so that it references the
     // Logger instance named "TreeListener".
@@ -152,26 +152,32 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     }
 
     @Override
-    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-    }
+    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {}
 
-    private void singleClickHandler(ActionEvent e) {
-        logger.debug("-- single click --");
-    }
+    private void singleClickHandler(ActionEvent e) { logger.debug("-- single click --"); }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");
-        // open file
-        String db_path = TreeUtils.urlStringFromTreePath(this.path);
-        logger.info("DbPath: " + db_path);
-        if (!this.node.getAllowsChildren()) {
-            URL argonURL = null;
-            try {
-                argonURL = new URL(db_path);
-            } catch (MalformedURLException e1) {
-                logger.error(e1);
+        // open file(s)
+        TreePath[] paths = _Tree.getSelectionPaths();
+        for (TreePath path : paths) {
+            if (((DefaultMutableTreeNode)path.getLastPathComponent()).getAllowsChildren()) {
+                try {
+                    treeWillExpand(new TreeExpansionEvent(this, path));
+                } catch (ExpandVetoException eve) {}
+            } else {
+                String db_path = TreeUtils.urlStringFromTreePath(path);
+                logger.info("DbPath: " + db_path);
+                if (!this.node.getAllowsChildren()) {
+                    URL argonURL = null;
+                    try {
+                        argonURL = new URL(db_path);
+                    } catch (MalformedURLException e1) {
+                        logger.error(e1);
+                    }
+                    this.wsa.open(argonURL);
+                }
             }
-            this.wsa.open(argonURL);
         }
     }
 
@@ -350,4 +356,21 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         return this.node;
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {}
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        switch (key) {
+            case KeyEvent.VK_DELETE: new DeleteAction(this._Tree, this).actionPerformed(null); break;
+            case KeyEvent.VK_F5: new RefreshTreeAction(this._Tree).actionPerformed(null); break;
+            // if URL raises exception, just ignore
+            case KeyEvent.VK_ENTER: try {doubleClickHandler(null);} catch(ParseException pe) {} break;
+            default:
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
 }

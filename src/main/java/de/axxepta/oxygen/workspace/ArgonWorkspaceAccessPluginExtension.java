@@ -344,7 +344,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 treeModel.setAsksAllowsChildren(true);
                 TreeUtils.init(treeModel);
                 final BasexTree tree = new BasexTree(treeModel);
-                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
                 setTreeState(tree, new TreePath(root), false);
 
                 // Add context menu
@@ -355,6 +355,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 tree.addTreeWillExpandListener(tListener);
                 tree.addMouseListener(tListener);
                 tree.addTreeSelectionListener(tListener);
+                tree.addKeyListener(tListener);
                 TopicHolder.saveFile.register(tListener);
                 TopicHolder.deleteFile.register(tListener);
 
