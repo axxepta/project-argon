@@ -137,7 +137,8 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         System.out.println(backupPath);
         String backupDBPath = backupPath.toString();
         // ToDo: insert create for non-existing databases in connection.put
-        new BaseXRequest("create", BaseXSource.DATABASE, backupDBPath.substring(0,backupDBPath.indexOf("/")));
+        new BaseXRequest("create", BaseXSource.DATABASE, backupDBPath.substring(0,backupDBPath.indexOf("/")),
+                "true", "false");
         return backupDBPath;
     }
 

@@ -42,6 +42,12 @@ public class AddNewFileAction extends AbstractAction {
         this.tree = tree;
     }
 
+    public AddNewFileAction(StandalonePluginWorkspace wsa, BasexTree tree){
+        super();
+        this.wsa = wsa;
+        this.tree = tree;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();

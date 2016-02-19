@@ -36,6 +36,12 @@ public class AddDatabaseAction extends AbstractAction {
         this.listener = listener;
     }
 
+    public AddDatabaseAction(DefaultTreeModel treeModel, TreeListener listener){
+        super();
+        this.treeModel = treeModel;
+        this.listener = listener;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());

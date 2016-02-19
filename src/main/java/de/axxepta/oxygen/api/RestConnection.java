@@ -56,6 +56,7 @@ public final class RestConnection implements Connection {
         return list.toArray(new BaseXResource[list.size()]);
     }
 
+    // CAVE: If new options are inserted, also change call in BaseXByteArrayOutputStream.getBackupPath
     @Override
     public void create(String database, String chop, String ftindex) throws IOException {
         request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex);

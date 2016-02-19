@@ -13,6 +13,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
+import de.axxepta.oxygen.actions.AddDatabaseAction;
+import de.axxepta.oxygen.actions.AddNewFileAction;
 import de.axxepta.oxygen.actions.DeleteAction;
 import de.axxepta.oxygen.actions.RefreshTreeAction;
 import de.axxepta.oxygen.api.BaseXSource;
@@ -73,6 +75,11 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         timer.setRepeats(false);
     }
 
+
+    /*
+     * methods of MouseAdapter
+     */
+
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 1) {
             singleClick = true;
@@ -92,11 +99,21 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             contextMenu.show(e.getComponent(), e.getX(), e.getY(), this.path);
     }
 
+
+    /*
+     * methods of interface TreeSelectionListener
+     */
+
     @Override
     public void valueChanged( TreeSelectionEvent e ) {
         this.path = e.getNewLeadSelectionPath();
         this.node = (DefaultMutableTreeNode)this._Tree.getLastSelectedPathComponent();
     }
+
+
+    /*
+     * methods of interface TreeWillExpandListener
+     */
 
     @Override
     public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
@@ -154,6 +171,11 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     @Override
     public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {}
 
+
+    /*
+     * methods for MouseAdapter
+     */
+
     private void singleClickHandler(ActionEvent e) { logger.debug("-- single click --"); }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
@@ -180,6 +202,58 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
         }
     }
+
+
+    /*
+     * method for interface Observer
+     */
+
+    @Override
+    public void update(String type, String message) {
+        // is notified as observer when changes have been made to the database file structure
+        // updates the tree if necessary
+        DefaultMutableTreeNode currNode;
+        TreePath currPath;
+
+        logger.info("Tree needs to update: " + message);
+
+        if (type.equals("SAVE_FILE")) {
+            String[] protocol = message.split(":/?");
+            String[] path = protocol[1].split("/");
+            currPath = new TreePath(this._treeModel.getRoot());
+            switch (protocol[0]) {
+                case CustomProtocolURLHandlerExtension.ARGON_REPO:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_repo));
+                    break;
+                case CustomProtocolURLHandlerExtension.ARGON_XQ:
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_restxq));
+                    break;
+                default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_DB));
+            }
+            currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
+            boolean expanded = false;
+            Boolean isFile;
+            for (int i = 0; i < path.length; i++) {
+                if (this._Tree.isExpanded(currPath)) expanded = true;
+                if (expanded || (i == path.length - 1)) { // update tree now only if file is in visible path
+                    if (!TreeUtils.isNodeAsStrChild(currNode, path[i])) {
+                        isFile = (i + 1 == path.length);
+                        TreeUtils.insertStrAsNodeLexi(this._treeModel, path[i], currNode, isFile);
+                        this._treeModel.reload(currNode);
+                    }
+                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[i]);
+                    currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+
+    /*
+     * other methods
+     */
 
     private boolean updateExpandedNode(DefaultMutableTreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
         DefaultMutableTreeNode newChild;
@@ -224,48 +298,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
 
         return treeChanged;
-    }
-
-    @Override
-    public void update(String type, String message) {
-        // is notified as observer when changes have been made to the database file structure
-        // updates the tree if necessary
-        DefaultMutableTreeNode currNode;
-        TreePath currPath;
-
-        logger.info("Tree needs to update: " + message);
-
-        if (type.equals("SAVE_FILE")) {
-            String[] protocol = message.split(":/?");
-            String[] path = protocol[1].split("/");
-            currPath = new TreePath(this._treeModel.getRoot());
-            switch (protocol[0]) {
-                case CustomProtocolURLHandlerExtension.ARGON_REPO:
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_repo));
-                    break;
-                case CustomProtocolURLHandlerExtension.ARGON_XQ:
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_restxq));
-                    break;
-                default: currPath = TreeUtils.pathByAddingChildAsStr(currPath, Lang.get(Lang.Keys.tree_DB));
-            }
-            currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
-            boolean expanded = false;
-            Boolean isFile;
-            for (int i = 0; i < path.length; i++) {
-                if (this._Tree.isExpanded(currPath)) expanded = true;
-                if (expanded || (i == path.length - 1)) { // update tree now only if file is in visible path
-                    if (!TreeUtils.isNodeAsStrChild(currNode, path[i])) {
-                        isFile = (i + 1 == path.length);
-                        TreeUtils.insertStrAsNodeLexi(this._treeModel, path[i], currNode, isFile);
-                        this._treeModel.reload(currNode);
-                    }
-                    currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[i]);
-                    currNode = (DefaultMutableTreeNode) currPath.getLastPathComponent();
-                } else {
-                    break;
-                }
-            }
-        }
     }
 
     // ToDo:  implement this method as part of a listener class that is added to the contextMenu
@@ -356,6 +388,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         return this.node;
     }
 
+    /*
+     * methods for interface KeyListener
+     */
+
     @Override
     public void keyTyped(KeyEvent e) {}
 
@@ -367,6 +403,13 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             case KeyEvent.VK_F5: new RefreshTreeAction(this._Tree).actionPerformed(null); break;
             // if URL raises exception, just ignore
             case KeyEvent.VK_ENTER: try {doubleClickHandler(null);} catch(ParseException pe) {} break;
+            case KeyEvent.VK_INSERT: if (TreeUtils.isDir(path) || TreeUtils.isDB(path) || TreeUtils.isFileSource(path)) {
+                                        new AddNewFileAction(wsa, this._Tree).actionPerformed(null); break;
+                                    }
+                                    if (TreeUtils.isDbSource(path)) {
+                                        new AddDatabaseAction(this._treeModel, this).actionPerformed(null); break;
+                                    }
+                                    break;
             default:
         }
     }
