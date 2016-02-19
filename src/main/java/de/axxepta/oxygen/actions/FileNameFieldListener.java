@@ -9,6 +9,11 @@ import javax.swing.event.DocumentListener;
  */
 public class FileNameFieldListener implements DocumentListener {
 
+    public final static String FILE_NAME_CHAR_WITH_EXTENSION = "\\w|_|-|\\.";
+    public final static String FILE_NAME_CHARS_WITH_EXTENSION ="(\\w|_|-|\\.)*";
+    public final static String FILE_NAME_CHAR_WITHOUT_EXTENSION = "\\w|_|-";
+    public final static String FILE_NAME_CHARS_WITHOUT_EXTENSION = "(\\w|_|-)*";
+
     boolean textFieldResetInProgress;
     JTextField textField;
     final String fileNameChar;
@@ -17,11 +22,11 @@ public class FileNameFieldListener implements DocumentListener {
     public FileNameFieldListener(JTextField textField, boolean withExtension) {
         this.textField = textField;
         if (withExtension) {
-            fileNameChar = "\\w|_|-|\\.";
-            fileNameChars = "(\\w|_|-|\\.)*";
+            fileNameChar = FILE_NAME_CHAR_WITH_EXTENSION;
+            fileNameChars = FILE_NAME_CHARS_WITH_EXTENSION;
         } else {
-            fileNameChar = "\\w|_|-";
-            fileNameChars = "(\\w|_|-)*";
+            fileNameChar = FILE_NAME_CHAR_WITHOUT_EXTENSION;
+            fileNameChars = FILE_NAME_CHARS_WITHOUT_EXTENSION;
         }
     }
 

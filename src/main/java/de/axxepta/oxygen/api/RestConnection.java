@@ -150,8 +150,8 @@ public final class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     private byte[] request(final String body, final String... bindings) throws IOException {
-        final HttpURLConnection conn = (HttpURLConnection) url.connection();
-        //sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
+        //final java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
+        sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
@@ -172,17 +172,9 @@ public final class RestConnection implements Connection {
                 out.close();
             }
 
-/*            if (conn.getResponseCode() >= 400) {
-                final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
-                throw BaseXQueryException.get(msg);
-            } else {
-                return new IOStream(conn.getInputStream()).read();
-            }*/
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
-            //InputStream errorOS = conn.getErrorStream();
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
-            //final String msg =  new String(new IOStream(conn.getErrorStream()).read(), "UTF-8");
             throw BaseXQueryException.get(msg);
         } finally {
             conn.disconnect();

@@ -7,10 +7,15 @@ package de.axxepta.oxygen.workspace;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.swing.*;
 
+import de.axxepta.oxygen.actions.FileNameFieldListener;
+import de.axxepta.oxygen.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
@@ -28,6 +33,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     /**
      * BaseX Keys
      */
+    public static final String KEY_BASEX_CONNECTION_SETTING = "KEY_BASEX_CONNECTION_SETTING";
     public static final String KEY_BASEX_HOST = "KEY_BASEX_HOST";
     public static final String KEY_BASEX_HTTP_PORT = "KEY_BASEX_HTTP_PORT";
     public static final String KEY_BASEX_TCP_PORT = "KEY_BASEX_TCP_PORT";
@@ -39,6 +45,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static final String KEY_BASEX_DB_CREATE_CHOP = "KEY_BASEX_DB_CREATE_CHOP";
     public static final String KEY_BASEX_DB_CREATE_FTINDEX = "KEY_BASEX_DB_CREATE_FTINDEX";
 
+    private static final String DEF_BASEX_CONNECTION_SETTING = "default";
     private static final String DEF_BASEX_HOST = "localhost:8984/rest";
     private static final String DEF_BASEX_HTTP_PORT = "8984";
     private static final String DEF_BASEX_TCP_PORT = "1984";
@@ -51,9 +58,18 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_DB_CREATE_CHOP = "false";
     private static final String DEF_BASEX_DB_CREATE_FTINDEX = "false";
 
+    private static final String CONNECTION_SETTING_PATH = System.getProperty("user.home") + "/argon";
+    private static final String CONNECTION_SETTING_FILE_TYPE = ".csini";
+
+    private static final String CS_NAME = "CS_NAME";
+    private static final String CS_HOST = "CS_HOST";
+    private static final String CS_USER = "CS_USER";
+    private static final String CS_PWD = "CS_PWD";
+
     /**
      * BaseX JTextFields
      */
+    private JComboBox<String> baseXConnectionSettingsComboBox;
     private JTextField baseXHostTextField;
     private JTextField baseXHttpPortTextField;
     private JTextField baseXTcpPortTextField;
@@ -70,38 +86,52 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
      */
     @Override
     public void apply(PluginWorkspace pluginWorkspace) {
+        if (!((String) baseXConnectionSettingsComboBox.getSelectedItem()).
+                matches(FileNameFieldListener.FILE_NAME_CHARS_WITHOUT_EXTENSION)) {
+            java.awt.Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Choose a name suitable for a file (without ending) as\n" +
+                    "'Connection configuration'!", "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+        } else {
 
-        // save BaseX configs in the option storage
+            // save BaseX configs in the option storage
+            //ToDo: clear ComboBox, if entries in the corresponding fields have been changed
+            if (baseXConnectionSettingsComboBox.getSelectedIndex() == -1)
+                storeConnectionSettings();
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HOST,
-                !"".equals(baseXHostTextField.getText()) ? baseXHostTextField.getText() : null);
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION_SETTING,
+                    !"".equals(baseXConnectionSettingsComboBox.getSelectedItem().toString()) ?
+                            baseXConnectionSettingsComboBox.getSelectedItem().toString() : DEF_BASEX_CONNECTION_SETTING);
+
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HOST,
+                    !"".equals(baseXHostTextField.getText()) ? baseXHostTextField.getText() : DEF_BASEX_HOST);
 
 /*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_HTTP_PORT,
-                !"".equals(baseXHttpPortTextField.getText()) ? baseXHttpPortTextField.getText() : null);
+                !"".equals(baseXHttpPortTextField.getText()) ? baseXHttpPortTextField.getText() : DEF_BASEX_HTTP_PORT);
 
         pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_TCP_PORT,
-                !"".equals(baseXTcpPortTextField.getText()) ? baseXTcpPortTextField.getText() : null);*/
+                !"".equals(baseXTcpPortTextField.getText()) ? baseXTcpPortTextField.getText() : DEF_BASEX_TCP_PORT);*/
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_USERNAME,
-                !"".equals(baseXUsernameTextField.getText()) ? baseXUsernameTextField.getText() : null);
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_USERNAME,
+                    !"".equals(baseXUsernameTextField.getText()) ? baseXUsernameTextField.getText() : DEF_BASEX_USERNAME);
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_PASSWORD,
-                !"".equals(baseXPasswordTextField.getText()) ? baseXPasswordTextField.getText() : null);
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_PASSWORD,
+                    !"".equals(baseXPasswordTextField.getText()) ? baseXPasswordTextField.getText() : DEF_BASEX_PASSWORD);
 
 /*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION,
                 baseXConnectionTypeComboBox.getSelectedItem().toString());*/
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_VERSIONING,
-                baseXVersioningCheckBox.isSelected() ? "true" : "false");
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_VERSIONING,
+                    baseXVersioningCheckBox.isSelected() ? "true" : "false");
 
 /*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
-                !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : null);*/
+                !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : DEF_BASEX_LOGFILE);*/
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_CHOP,
-                baseXDBCreateChopCheckBox.isSelected() ? "true" : "false");
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_CHOP,
+                    baseXDBCreateChopCheckBox.isSelected() ? "true" : "false");
 
-        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_FTINDEX,
-                baseXDBCreateFTIndexCheckBox.isSelected() ? "true" : "false");
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_DB_CREATE_FTINDEX,
+                    baseXDBCreateFTIndexCheckBox.isSelected() ? "true" : "false");
+        }
     }
 
     /**
@@ -110,6 +140,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     @Override
     public void restoreDefaults() {
         // Reset the text fields values. Empty string is used to map the <null> default values of the options.
+        baseXConnectionSettingsComboBox.setSelectedItem(0);
         baseXHostTextField.setText(DEF_BASEX_HOST);
 /*        baseXHttpPortTextField.setText(DEF_BASEX_HTTP_PORT);
         baseXTcpPortTextField.setText(DEF_BASEX_TCP_PORT);*/
@@ -135,6 +166,32 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
      */
     @Override
     public JComponent init(final PluginWorkspace pluginWorkspace) {
+
+        /**
+         * Initial Values
+         */
+        String baseXConnectionSetting = getOption(KEY_BASEX_CONNECTION_SETTING, false);
+        String baseXHost = getOption(KEY_BASEX_HOST, false);
+/*        String baseXHttpPort = getOption(KEY_BASEX_HTTP_PORT, false);*/
+/*        String baseXTcpPort = getOption(KEY_BASEX_TCP_PORT, false)*/
+        String baseXUsername = getOption(KEY_BASEX_USERNAME, false);
+        String baseXPassword = getOption(KEY_BASEX_PASSWORD, false);
+/*        String baseXConnection = getOption(KEY_BASEX_CONNECTION, false);*/
+        String baseXVersioning = getOption(KEY_BASEX_VERSIONING, false);
+/*        String baseXLogfile = getOption(KEY_BASEX_LOGFILE, false);*/
+        String baseXDBCreateChop = getOption(KEY_BASEX_DB_CREATE_CHOP, false);
+        String baseXDBCreateFTIndex = getOption(KEY_BASEX_DB_CREATE_FTINDEX, false);
+
+        List<String[]> connectionSettings = loadConnectionSettings();
+        List<String> connectionSettingNames = new ArrayList<>();
+        for (String[] setting : connectionSettings) {
+            connectionSettingNames.add(setting[0]);
+        }
+
+
+        /**
+         * Setup of Option Pane
+         */
         GridBagConstraints c = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
         JLabel saveTmpLocationLbl = new JLabel("BaseX server connection configuration");
@@ -146,6 +203,25 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         c.weighty = 0;
         c.anchor = GridBagConstraints.WEST;
         panel.add(saveTmpLocationLbl, c);
+
+
+        /**
+         * BaseX Connection Settings List
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXConnectionSettingsComboBoxLbl = new JLabel("Connection configuration:");
+        panel.add(baseXConnectionSettingsComboBoxLbl, c);
+
+        baseXConnectionSettingsComboBox = new JComboBox(connectionSettingNames.toArray());
+        baseXConnectionSettingsComboBox.setEditable(true);
+        baseXConnectionSettingsComboBox.addActionListener(new ConnectionsListListener(connectionSettings));
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXConnectionSettingsComboBox, c);
+
 
         /**
          * BaseX Hostname
@@ -348,21 +424,10 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         panel.add(new JPanel(), c);
 
         /**
-         * BaseX Strings
+         * Initialize the fields with the stored options.
          */
-        String baseXHost = getOption(KEY_BASEX_HOST, false);
-/*        String baseXHttpPort = getOption(KEY_BASEX_HTTP_PORT, false);*/
-/*        String baseXTcpPort = getOption(KEY_BASEX_TCP_PORT, false)*/
-        String baseXUsername = getOption(KEY_BASEX_USERNAME, false);
-        String baseXPassword = getOption(KEY_BASEX_PASSWORD, false);
-/*        String baseXConnection = getOption(KEY_BASEX_CONNECTION, false);*/
-        String baseXVersioning = getOption(KEY_BASEX_VERSIONING, false);
-/*        String baseXLogfile = getOption(KEY_BASEX_LOGFILE, false);*/
-        String baseXDBCreateChop = getOption(KEY_BASEX_DB_CREATE_CHOP, false);
-        String baseXDBCreateFTIndex = getOption(KEY_BASEX_DB_CREATE_FTINDEX, false);
-
-        // Initialize the fields with the stored options.
-
+        baseXConnectionSettingsComboBox.setSelectedIndex(0);
+        baseXConnectionSettingsComboBox.setSelectedItem(baseXConnectionSetting);
         baseXHostTextField.setText(baseXHost != null ? baseXHost : "");
 /*        baseXHttpPortTextField.setText(baseXHttpPort != null ? baseXHttpPort : "");*/
 /*        baseXTcpPortTextField.setText(baseXTcpPort != null ? baseXTcpPort : "");*/
@@ -384,6 +449,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     public static String getOption(String key, boolean defaults) {
         String defaultValue;
         switch (key) {
+            case KEY_BASEX_CONNECTION_SETTING: defaultValue = DEF_BASEX_CONNECTION_SETTING; break;
             case KEY_BASEX_HOST: defaultValue = DEF_BASEX_HOST; break;
             case KEY_BASEX_HTTP_PORT: defaultValue = DEF_BASEX_HTTP_PORT; break;
             case KEY_BASEX_TCP_PORT: defaultValue = DEF_BASEX_TCP_PORT; break;
@@ -411,6 +477,85 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
             } else {
                 logger.error("Plugin error - no plugin workspace accessible");
                 return defaultValue;
+            }
+        }
+    }
+
+    private List loadConnectionSettings() {
+        List<String[]> connectionSettings = new ArrayList<>();
+        String[] conn = {"default" , DEF_BASEX_HOST, DEF_BASEX_USERNAME, DEF_BASEX_PASSWORD};
+        connectionSettings.add(conn);
+        File settingsPath = new File(CONNECTION_SETTING_PATH);
+        if (FileUtils.directoryExists(settingsPath)) {
+            String[] fileList = settingsPath.list(new FilenameFilter() {
+                @Override
+                public boolean accept(final File dir, final String fileName) {
+                    return fileName.toLowerCase().endsWith(CONNECTION_SETTING_FILE_TYPE);
+                }
+            });
+            if (fileList != null) {
+                for (String settingsFile : fileList) {
+                    Properties properties = new Properties();
+                    try (InputStream in = new BufferedInputStream(
+                            new FileInputStream(CONNECTION_SETTING_PATH + "/" + settingsFile))) {
+                        properties.load(in);
+                        String[] connSetting = {properties.getProperty(CS_NAME), properties.getProperty(CS_HOST),
+                                properties.getProperty(CS_USER), properties.getProperty(CS_PWD)};
+                        connectionSettings.add(connSetting);
+                    } catch (IOException ioe) {
+                        logger.debug(ioe.getMessage());
+                    }
+                }
+            }
+        }
+        return connectionSettings;
+    }
+
+    private void storeConnectionSettings() {
+        File settingsPath = new File(CONNECTION_SETTING_PATH);
+        boolean noDirectory = false;
+        if (!FileUtils.directoryExists(settingsPath)) {
+            if (!settingsPath.mkdir()) {
+                noDirectory = true;
+                JOptionPane.showMessageDialog(null, "Couldn't create config directory 'argon' in user home path.\n" +
+                                "Please create it manually to store connection settings permanently.",
+                        "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (!noDirectory) {
+            String fileName = CONNECTION_SETTING_PATH + "/" +
+                    baseXConnectionSettingsComboBox.getSelectedItem() + CONNECTION_SETTING_FILE_TYPE;
+            File settingsFile = new File(fileName);
+            Properties properties = new Properties();
+            properties.setProperty(CS_NAME, (String) baseXConnectionSettingsComboBox.getSelectedItem());
+            properties.setProperty(CS_HOST, baseXHostTextField.getText());
+            properties.setProperty(CS_USER, baseXUsernameTextField.getText());
+            properties.setProperty(CS_PWD, baseXPasswordTextField.getText());
+            try (FileOutputStream fileOut = new FileOutputStream(settingsFile)) {
+                properties.store(fileOut, "Favorite Things");
+            } catch (IOException ioe) {
+                logger.error(ioe.getMessage());
+                JOptionPane.showMessageDialog(null, "Couldn't store connection settings to file\n" + fileName,
+                        "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+
+    private class ConnectionsListListener implements ActionListener {
+
+        private final List<String[]> connectionSettingList;
+        private ConnectionsListListener(List<String[]> connectionSettingsList) {
+            this.connectionSettingList = connectionSettingsList;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newSelection = ((JComboBox)e.getSource()).getSelectedIndex();
+            if (newSelection != -1) {  // one of the old entries was selected
+                baseXHostTextField.setText(connectionSettingList.get(newSelection)[1]);
+                baseXUsernameTextField.setText(connectionSettingList.get(newSelection)[2]);
+                baseXPasswordTextField.setText(connectionSettingList.get(newSelection)[3]);
             }
         }
     }
