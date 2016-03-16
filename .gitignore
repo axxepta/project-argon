@@ -72,3 +72,4 @@ local.properties
 # TeXlipse plugin
 .texlipse
 /*.ipr
+/work_resources
