@@ -4,7 +4,7 @@ import de.axxepta.oxygen.tree.BasexTree;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -15,19 +15,19 @@ import java.util.ArrayList;
 public class RefreshTreeAction extends AbstractAction {
 
     BasexTree tree;
-    DefaultTreeModel model;
+    TreeModel model;
 
     public RefreshTreeAction(String name, Icon icon, BasexTree tree) {
         super(name, icon);
         this.tree = tree;
-        this.model = (DefaultTreeModel) tree.getModel();
+        this.model = tree.getModel();
     }
 
 
     public RefreshTreeAction(BasexTree tree) {
         super();
         this.tree = tree;
-        this.model = (DefaultTreeModel) tree.getModel();
+        this.model = tree.getModel();
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,7 +24,7 @@ public class RenameAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(RenameAction.class);
     final BasexTree tree;
-    final DefaultTreeModel treeModel;
+    final TreeModel treeModel;
     final TreeListener treeListener;
     JDialog renameDialog;
     JTextField newFileNameTextField;
@@ -35,7 +35,7 @@ public class RenameAction extends AbstractAction {
     public RenameAction(String name, Icon icon, BasexTree tree, TreeListener treeListener){
         super(name, icon);
         this.tree = tree;
-        this.treeModel = (DefaultTreeModel) tree.getModel();
+        this.treeModel = tree.getModel();
         this.treeListener = treeListener;
     }
 

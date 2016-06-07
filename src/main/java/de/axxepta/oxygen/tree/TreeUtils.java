@@ -1,27 +1,26 @@
 package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.Lang;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 /**
  * Utility class for tree related operations
  */
 public class TreeUtils {
 
-    private static DefaultTreeModel model;
+    private static TreeModel model;
 
-    public static void init(DefaultTreeModel treeModel) {
+    public static void init(TreeModel treeModel) {
         model = treeModel;
     }
 
-    public static void insertStrAsNodeLexi(DefaultTreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+    public static void insertStrAsNodeLexi(TreeModel treeModel, String child, MutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
-        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
+        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child);
         if (childIsFile) childNode.setAllowsChildren(false);
         else childNode.setAllowsChildren(true);
         Boolean parentIsFile;
@@ -31,31 +30,29 @@ public class TreeUtils {
             parentIsFile = !currNode.getAllowsChildren();
             if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
                     (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
-                treeModel.insertNodeInto(childNode, parent, i);
+                ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, i);
                 inserted = true;
                 break;
             }
         }
-        if (!inserted) treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
+        if (!inserted) ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-    public static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
+    public static int isNodeAsStrChild(TreeNode parent, String child) {
         for (int i=0; i<parent.getChildCount(); i++) {
             if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
     }
 
     public static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
         // returns TreePath to child given by String, if child doesn't exist returns null!
         DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
-        for (int i=0; i<currNode.getChildCount(); i++) {
-            if (((DefaultMutableTreeNode)currNode.getChildAt(i)).getUserObject().toString().equals(child)) {
-                return new TreePath(((DefaultMutableTreeNode) currNode.getChildAt(i)).getPath());
-            }
-        }
+        int childNodeIndex = isNodeAsStrChild(currNode, child);
+        if (childNodeIndex != -1)
+            return new TreePath(((DefaultMutableTreeNode) currNode.getChildAt(childNodeIndex)).getPath());
         return null;
     }
 

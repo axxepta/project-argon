@@ -179,11 +179,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     private static boolean isInHiddenDB(URL url) {
         String path = pathFromURL(url);
         int firstCharOfPath = (path.charAt(0) == '/') ? 1 : 0;
-        if (path.charAt(firstCharOfPath) == '~') {
-            return true;
-        } else {
-            return false;
-        }
+        return (path.charAt(firstCharOfPath) == '~');
     }
 
     public static String pathFromURL(URL url) {

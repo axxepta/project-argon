@@ -13,7 +13,8 @@ import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -25,18 +26,18 @@ public class AddDatabaseAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddDatabaseAction.class);
 
-    DefaultTreeModel treeModel;
+    TreeModel treeModel;
     TreeListener listener;
     JDialog addDbDialog;
     JTextField newDbNameTextField;
 
-    public AddDatabaseAction(String name, Icon icon, DefaultTreeModel treeModel, TreeListener listener){
+    public AddDatabaseAction(String name, Icon icon, TreeModel treeModel, TreeListener listener){
         super(name, icon);
         this.treeModel = treeModel;
         this.listener = listener;
     }
 
-    public AddDatabaseAction(DefaultTreeModel treeModel, TreeListener listener){
+    public AddDatabaseAction(TreeModel treeModel, TreeListener listener){
         super();
         this.treeModel = treeModel;
         this.listener = listener;
@@ -81,12 +82,12 @@ public class AddDatabaseAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             String db = newDbNameTextField.getText();
             // ToDo: check, whether database already exists, otherwise duplicate node is inserted
-            DefaultMutableTreeNode parentNode = listener.getNode();
+            TreeNode parentNode = listener.getNode();
             String chop = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
             String ftindex = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
             try {
                 new BaseXRequest("create", BaseXSource.DATABASE, db, chop, ftindex);
-                TreeUtils.insertStrAsNodeLexi(treeModel, db, parentNode, false);
+                TreeUtils.insertStrAsNodeLexi(treeModel, db, (DefaultMutableTreeNode) parentNode, false);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Failed to add new database",
                         "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);

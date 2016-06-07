@@ -4,6 +4,7 @@ import de.axxepta.oxygen.actions.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
@@ -26,10 +27,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -336,15 +334,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 //The view ID defined in the "plugin.xml"
 
                 // Create some data to populate our tree.
-                DefaultMutableTreeNode root = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_root));
+                DefaultMutableTreeNode root = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_root));
                 root.setAllowsChildren(true);
-                DefaultMutableTreeNode databases = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_DB));
+                DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB));
                 databases.setAllowsChildren(true);
                 root.add(databases);
-                DefaultMutableTreeNode queryFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_restxq));
+                DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq));
                 queryFolder.setAllowsChildren(true);
                 root.add(queryFolder);
-                DefaultMutableTreeNode repoFolder = new DefaultMutableTreeNode(Lang.get(Lang.Keys.tree_repo));
+                DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo));
                 queryFolder.setAllowsChildren(true);
                 root.add(repoFolder);
 
@@ -357,15 +355,15 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     databaseList = new ArrayList<>();
                 }
                 for (int i = 0; i < (databaseList.size() / 2); i++) {
-                    DefaultMutableTreeNode dbNode = new DefaultMutableTreeNode(databaseList.get(i));
+                    DefaultMutableTreeNode dbNode = ClassFactory.getInstance().getTreeNode(databaseList.get(i));
                     dbNode.setAllowsChildren(true);
                     databases.add(dbNode);
                 }
 
                 // Create a new tree control
                 // explicit tree model necessary to use allowsChildren for definition of leafs
-                final DefaultTreeModel treeModel = new DefaultTreeModel(root);
-                treeModel.setAsksAllowsChildren(true);
+                final TreeModel treeModel = new DefaultTreeModel(root);
+                ((DefaultTreeModel) treeModel).setAsksAllowsChildren(true);
                 TreeUtils.init(treeModel);
                 final BasexTree tree = new BasexTree(treeModel);
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);

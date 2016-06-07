@@ -12,14 +12,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import de.axxepta.oxygen.utils.ImageUtils;
 import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
-//public class BasexTreeCellRenderer extends DefaultTreeCellRenderer {
 public class BasexTreeCellRenderer extends TreeCellRenderer {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	TreeCellRenderer defaultRenderer = new TreeCellRenderer();
-	//DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree aTree, Object aValue,

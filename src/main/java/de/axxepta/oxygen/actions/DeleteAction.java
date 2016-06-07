@@ -9,6 +9,7 @@ import de.axxepta.oxygen.tree.TreeUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
@@ -18,20 +19,20 @@ import java.awt.event.ActionEvent;
 public class DeleteAction extends AbstractAction {
 
     BasexTree tree;
-    DefaultTreeModel treeModel;
+    TreeModel treeModel;
     TreeListener treeListener;
 
     public DeleteAction(String name, Icon icon, BasexTree tree, TreeListener treeListener){
         super(name, icon);
         this.tree = tree;
-        this.treeModel = (DefaultTreeModel) tree.getModel();
+        this.treeModel = tree.getModel();
         this.treeListener = treeListener;
     }
 
     public DeleteAction(BasexTree tree, TreeListener treeListener){
         super();
         this.tree = tree;
-        this.treeModel = (DefaultTreeModel) tree.getModel();
+        this.treeModel = tree.getModel();
         this.treeListener = treeListener;
     }
 
@@ -86,7 +87,7 @@ public class DeleteAction extends AbstractAction {
     private void deleteFile(BaseXSource source, String db_path, TreePath path) {
         try {
             new BaseXRequest("delete", source, db_path);
-            treeModel.removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+            ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
         } catch (Exception er) {
             JOptionPane.showMessageDialog(null, "Failed to delete resource",
                     "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);

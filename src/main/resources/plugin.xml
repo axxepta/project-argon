@@ -16,7 +16,6 @@
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"></extension>
     <extension type="URLHandler" class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension" />
     <extension type="LockHandlerFactory" class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension" />
-    <extension type="selectionProcessor" class="de.axxepta.oxygen.selection.ReplyToCommentSelectionPlugin"/>
     <!--
     <extension type="URLChooser" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     <extension type="URLChooserToolbar" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
