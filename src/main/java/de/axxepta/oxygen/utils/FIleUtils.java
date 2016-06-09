@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * @author Markus on 19.02.2016.
  */
-public class FileUtils {
+public class FIleUtils {
     public static boolean directoryExists(File dir) {
         if (dir == null)
             return false;

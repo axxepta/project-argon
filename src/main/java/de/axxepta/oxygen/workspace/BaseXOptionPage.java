@@ -17,7 +17,7 @@ import java.util.Properties;
 import javax.swing.*;
 
 import de.axxepta.oxygen.actions.FileNameFieldListener;
-import de.axxepta.oxygen.utils.FileUtils;
+import de.axxepta.oxygen.utils.FIleUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
@@ -488,7 +488,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
         String[] conn = {"default" , DEF_BASEX_HOST, DEF_BASEX_USERNAME, DEF_BASEX_PASSWORD};
         connectionSettings.add(conn);
         File settingsPath = new File(CONNECTION_SETTING_PATH);
-        if (FileUtils.directoryExists(settingsPath)) {
+        if (FIleUtils.directoryExists(settingsPath)) {
             String[] fileList = settingsPath.list(new FilenameFilter() {
                 @Override
                 public boolean accept(final File dir, final String fileName) {
@@ -516,7 +516,7 @@ public class BaseXOptionPage extends OptionPagePluginExtension {
     private void storeConnectionSettings() {
         File settingsPath = new File(CONNECTION_SETTING_PATH);
         boolean noDirectory = false;
-        if (!FileUtils.directoryExists(settingsPath)) {
+        if (!FIleUtils.directoryExists(settingsPath)) {
             if (!settingsPath.mkdir()) {
                 noDirectory = true;
                 JOptionPane.showMessageDialog(null, "Couldn't create config directory 'argon' in user home path.\n" +
