@@ -4,8 +4,8 @@ apply plugin: 'idea'
 //apply plugin: 'jetty'
 apply plugin: 'maven'
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 group = 'de.axxepta'
 version = '0.0.2'
@@ -19,6 +19,7 @@ repositories {
         dirs 'libs'
     }
 }
+
 
 configurations {
     releaseJars
@@ -46,6 +47,7 @@ dependencies {
     releaseJars 'org.apache.logging.log4j:log4j-core:2.3'
 }
 
+
 task copyToLib( type: Copy ) {
     into "$buildDir/libs/lib"
     from configurations.releaseJars
@@ -70,7 +72,7 @@ jar {
 
 idea{
     project {
-        languageLevel = '1.7'
+        languageLevel = '1.8'
     }
     module {
         downloadJavadoc = true // defaults to false

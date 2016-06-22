@@ -25,6 +25,14 @@ public final class BaseXResource {
         this.source = source;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public BaseXType getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return name + " (" + type + ")";

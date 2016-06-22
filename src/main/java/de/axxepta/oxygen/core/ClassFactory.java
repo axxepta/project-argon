@@ -1,6 +1,10 @@
 package de.axxepta.oxygen.core;
 
+import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.api.RestConnection;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.net.MalformedURLException;
 
 /**
  * @author Markus on 02.06.2016.
@@ -19,5 +23,9 @@ public class ClassFactory {
 
     public DefaultMutableTreeNode getTreeNode(String obj) {
         return new DefaultMutableTreeNode(obj);
+    }
+
+    public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {
+        return new RestConnection(host, port, user, password);
     }
 }

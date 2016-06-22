@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.api;
 
+import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.workspace.BaseXOptionPage;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class BaseXConnectionWrapper {
 
         if (connType.equals("REST")) {
             try {
-                connection = new RestConnection(host, port, user, pass);
+                connection = ClassFactory.getInstance().getRestConnection(host, port, user, pass);
             } catch (MalformedURLException er) {
                 connection = null;
             }
@@ -45,7 +46,15 @@ public class BaseXConnectionWrapper {
 
     public static void refreshDefaults() {
         try {
-            connection = new RestConnection("localhost", 8984, "admin", "admin");
+            connection = ClassFactory.getInstance().getRestConnection("localhost", 8984, "admin", "admin");
+        } catch (MalformedURLException er) {
+            connection = null;
+        }
+    }
+
+    public static void refreshDefaults(String host, int port, String user, String password) {
+        try {
+            connection = ClassFactory.getInstance().getRestConnection(host, port, user, password);
         } catch (MalformedURLException er) {
             connection = null;
         }

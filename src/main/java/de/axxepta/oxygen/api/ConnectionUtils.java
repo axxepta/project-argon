@@ -12,23 +12,23 @@ import org.basex.util.*;
  */
 public final class ConnectionUtils {
     /** Database variable. */
-    static final String DATABASE = "DB";
+    public static final String DATABASE = "DB";
     /** Path variable. */
-    static final String PATH = "PATH";
+    public static final String PATH = "PATH";
     /** Path variable for moved/renamed resources. */
-    static final String NEWPATH = "NEWPATH";
+    public static final String NEWPATH = "NEWPATH";
     /** Source variable. */
-    static final String SOURCE = "SOURCE";
+    public static final String SOURCE = "SOURCE";
     /** Resource variable. */
-    static final String RESOURCE = "RESOURCE";
+    public static final String RESOURCE = "RESOURCE";
     /** Query string variable */
-    static final String XQUERY = "XQUERY";
+    public static final String XQUERY = "XQUERY";
     /** Search filter variable */
-    static final String FILTER = "FILTER";
+    public static final String FILTER = "FILTER";
     /** Create database chop option */
-    static final String CHOP = "CHOP";
+    public static final String CHOP = "CHOP";
     /** Create database ftindex option */
-    static final String FTINDEX = "FTINDEX";
+    public static final String FTINDEX = "FTINDEX";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }
@@ -51,7 +51,7 @@ public final class ConnectionUtils {
      * @param resource resource
      * @return resulting array
      */
-    static String prepare(final byte[] resource) {
+    public static String prepare(final byte[] resource) {
         return Token.string(Token.startsWith(resource, '<') ? resource :
                 org.basex.util.Base64.encode(resource));
     }

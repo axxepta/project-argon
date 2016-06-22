@@ -17,11 +17,11 @@ import org.basex.util.http.*;
  *
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
-public final class RestConnection implements Connection {
+public class RestConnection implements Connection {
     /** URI. */
-    private final IOUrl url;
-    private final URL sUrl;
-    private final String basicAuth;
+    protected final IOUrl url;
+    protected final URL sUrl;
+    protected final String basicAuth;
 
     /**
      * Constructor.
@@ -150,7 +150,7 @@ public final class RestConnection implements Connection {
      * @return string result, or {@code null} for a failure.
      * @throws IOException I/O exception
      */
-    private byte[] request(final String body, final String... bindings) throws IOException {
+    protected byte[] request(final String body, final String... bindings) throws IOException {
         //final java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
         sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
         try {
@@ -187,7 +187,7 @@ public final class RestConnection implements Connection {
      * @param string input string
      * @return resulting string
      */
-    private static String toEntities(final String string) {
+    protected static String toEntities(final String string) {
         return string.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;").
                 replace("<", "&lt;").replace(">", "&gt;");
     }
