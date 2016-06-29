@@ -56,6 +56,11 @@ public class RestConnection implements Connection {
         return list.toArray(new BaseXResource[list.size()]);
     }
 
+    @Override
+    public void init() throws IOException {
+        request(getQuery("init"), RESOURCE, prepare(getAPIResource("MetaTemplate.xml").getBytes("UTF-8")));
+    }
+
     // CAVE: If new options are inserted, also change call in BaseXByteArrayOutputStream.getBackupPath
     @Override
     public void create(String database, String chop, String ftindex) throws IOException {

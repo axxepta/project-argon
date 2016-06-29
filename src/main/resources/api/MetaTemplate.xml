@@ -1,0 +1,29 @@
+<argon-meta>
+    <versioning>
+        <version/>
+        <revision/>
+        <history/>
+    </versioning>
+    <owner/>
+    <mimetype/>
+    <prologue/>
+    <doctype/>
+    <status/>
+    <rights>
+        <owner>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </owner>
+        <group>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </group>
+        <others>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </others>
+    </rights>
+</argon-meta>

@@ -21,6 +21,12 @@ public interface Connection extends Closeable {
     BaseXResource[] list(final BaseXSource source, final String path) throws IOException;
 
     /**
+     * Sets up a database for user management and copies a meta data template file into it.
+     * @throws IOException I/O exception
+     */
+    void init() throws IOException;
+
+    /**
      * Creates a new database.
      * @param database new database name
      * @param chop chop option as string

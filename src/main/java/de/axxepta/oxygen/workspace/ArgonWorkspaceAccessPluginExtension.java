@@ -275,7 +275,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
     }
 
-    public static void setTreeState(JTree tree, TreePath path, boolean expanded) {
+    private static void setTreeState(JTree tree, TreePath path, boolean expanded) {
         Object lastNode = path.getLastPathComponent();
         for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
             Object child = tree.getModel().getChild(lastNode,i);
@@ -288,7 +288,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             tree.collapsePath(path);
     }
 
-    public void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
+    private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
         WSEditor currentEditor = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
 
         if(currentEditor == null) {
@@ -496,7 +496,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         private final WSEditor editorAccess;
         private final List<DocumentPositionedInfo> problemList;
 
-        public QueryValidator(WSEditor editorAccess, List<DocumentPositionedInfo> problemList) {
+        QueryValidator(WSEditor editorAccess, List<DocumentPositionedInfo> problemList) {
             this.editorAccess = editorAccess;
             this.problemList = problemList;
         }

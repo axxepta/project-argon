@@ -40,7 +40,12 @@ public final class ConnectionUtils {
      * @throws IOException I/O exception
      */
     public static String getQuery(final String path) throws IOException {
-        final String resource = "/api/" + path + ".xq";
+        final String resource = path + ".xq";
+        return(getAPIResource(resource));
+    }
+
+    public static String getAPIResource(final String path) throws IOException {
+        final String resource = "/api/" + path;
         final InputStream is = ConnectionUtils.class.getResourceAsStream(resource);
         if(is == null) throw new IOException("Resource not found: " + resource);
         return Token.string(new IOStream(is).read());
