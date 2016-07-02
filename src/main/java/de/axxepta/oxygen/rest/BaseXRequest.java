@@ -21,11 +21,6 @@ public class BaseXRequest {
         Connection connection = BaseXConnectionWrapper.getConnection();
         if (connection != null) {
             switch (request) {
-                case "create": result = new ArrayList<>();
-                    answer = "";
-                    check = false;
-                    connection.create(path, params[0], params[1]);
-                    break;
                 case "list":
                     answer = "";
                     check = false;
@@ -39,18 +34,6 @@ public class BaseXRequest {
                         String type = resource.type.toString();
                         result.add(type);
                     }
-                    break;
-                case "delete":
-                    result = new ArrayList<>();
-                    answer = "";
-                    check = false;
-                    connection.delete(source, path);
-                    break;
-                case "rename":
-                    result = new ArrayList<>();
-                    answer = "";
-                    check = false;
-                    connection.rename(source, path, params[0]);
                     break;
                 case "query":
                     result = new ArrayList<>();

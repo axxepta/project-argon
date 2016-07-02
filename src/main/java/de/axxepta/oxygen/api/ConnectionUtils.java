@@ -29,6 +29,10 @@ public final class ConnectionUtils {
     public static final String CHOP = "CHOP";
     /** Create database ftindex option */
     public static final String FTINDEX = "FTINDEX";
+    /** Use version control option */
+    public static final String VERSIONIZE = "VERSIONIZE";
+    /** Increase file version option */
+    public static final String VERSION_UP = "VERSION-UP";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

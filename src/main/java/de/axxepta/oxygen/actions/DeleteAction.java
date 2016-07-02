@@ -1,7 +1,8 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
@@ -18,9 +19,9 @@ import java.awt.event.ActionEvent;
  */
 public class DeleteAction extends AbstractAction {
 
-    BasexTree tree;
-    TreeModel treeModel;
-    TreeListener treeListener;
+    private BasexTree tree;
+    private TreeModel treeModel;
+    private TreeListener treeListener;
 
     public DeleteAction(String name, Icon icon, BasexTree tree, TreeListener treeListener){
         super(name, icon);
@@ -85,8 +86,8 @@ public class DeleteAction extends AbstractAction {
     }
 
     private void deleteFile(BaseXSource source, String db_path, TreePath path) {
-        try {
-            new BaseXRequest("delete", source, db_path);
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            connection.delete(source, db_path);
             ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
         } catch (Exception er) {
             JOptionPane.showMessageDialog(null, "Failed to delete resource",

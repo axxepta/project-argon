@@ -56,6 +56,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
         if (!((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren())
             path = path.getParentPath();
 
+        String pathURLString = ((ArgonTreeNode) path.getLastPathComponent()).getUrl();
         Transferable transferable = info.getTransferable();
         try {
             List<File> transferList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
@@ -68,44 +69,46 @@ public class BaseXTreeTransferHandler extends TransferHandler {
                 ArrayList<String> pathList = new ArrayList<>();
                 // consider: transferred objects could be deep directories!
                 for (File file : transferData) {
-                    pathList.add(TreeUtils.urlStringFromTreePath(path) + "/" + file.getName());
+                    pathList.add(pathURLString + "/" + file.getName());
                 }
                 int i = 0;
                 List<String> lockedFiles = new ArrayList<>();
                 while (i < transferData.size()) {
                     File file = transferData.get(i);
                     if (transferData.get(i).isFile()){
-                        URL url = null;
+                        URL url;
                         try {
                             url = new URL(pathList.get(i));
+
+                            CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+                            if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
+                                lockedFiles.add(url.toString());
+                            } else {
+                                // ToDo: proper locking while store process (transaction)
+                                //copy file
+                                byte[] isByte;
+                                try (InputStream is = new FileInputStream(file)) {
+                                    int l = is.available();
+                                    isByte = new byte[l];
+                                    //noinspection ResultOfMethodCallIgnored
+                                    is.read(isByte);
+                                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
+                                        os.write(isByte);
+                                        logger.info("Dropped file " + file.toString() + " to " + pathList.get(i));
+                                    } catch (IOException ex) {
+                                        logger.error(ex.getMessage());
+                                        JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
+                                                + "\nto database.", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                } catch (IOException es) {
+                                    logger.error(es);
+                                    JOptionPane.showMessageDialog(null, "Couldn't read transferred object\n" + file.toString()
+                                            + ".", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                                }
+                            }
+
                         } catch (MalformedURLException e1) {
                             logger.error(e1);
-                        }
-                        CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
-                        if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
-                            lockedFiles.add(url.toString());
-                        } else {
-                            // ToDo: proper locking while store process (transaction)
-                            //copy file
-                            byte[] isByte;
-                            try (InputStream is = new FileInputStream(file)) {
-                                int l = is.available();
-                                isByte = new byte[l];
-                                //noinspection ResultOfMethodCallIgnored
-                                is.read(isByte);
-                                try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
-                                    os.write(isByte);
-                                    logger.info("Dropped file " + file.toString() + " to " + pathList.get(i));
-                                } catch (IOException ex) {
-                                    logger.error(ex.getMessage());
-                                    JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
-                                            + "\nto database.", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
-                                }
-                            } catch (IOException es) {
-                                logger.error(es);
-                                JOptionPane.showMessageDialog(null, "Couldn't read transferred object\n" + file.toString()
-                                        + ".", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
-                            }
                         }
                     } else {    // expand subdirectories
                         File[] dirFiles = file.listFiles();
@@ -126,7 +129,7 @@ public class BaseXTreeTransferHandler extends TransferHandler {
         } catch (Exception e1) {
             logger.info(e1.getMessage());
             java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null, "Couldn't access transfered objects,\n see log file for details.",
+            JOptionPane.showMessageDialog(null, "Couldn't access transferred objects,\n see log file for details.",
                     "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
             return false;
         }

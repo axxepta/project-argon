@@ -1,5 +1,7 @@
 package de.axxepta.oxygen.utils;
 
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+
 import java.net.URL;
 
 /**
@@ -28,6 +30,10 @@ public class URLUtils {
 
     public static boolean isQuery(URL url) {
         return isQuery(url.toString());
+    }
+
+    public static boolean isArgon(URL url) {
+        return url.toString().toLowerCase().startsWith(CustomProtocolURLHandlerExtension.ARGON);
     }
 
 }

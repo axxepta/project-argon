@@ -14,8 +14,8 @@ import java.util.ArrayList;
  */
 public class RefreshTreeAction extends AbstractAction {
 
-    BasexTree tree;
-    TreeModel model;
+    private BasexTree tree;
+    private TreeModel model;
 
     public RefreshTreeAction(String name, Icon icon, BasexTree tree) {
         super(name, icon);

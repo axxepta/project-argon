@@ -12,16 +12,15 @@ public class VersionHistoryEntry {
     private int revision;
     private Date changeDate;
 
-    public VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
+    VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
         this.url = url;
         this.version = version;
         this.revision = revision;
         this.changeDate = changeDate;
     }
 
-    protected Object[] getDisplayVector() {
-        Object[] displayVector = {version, revision, changeDate};
-        return displayVector;
+    Object[] getDisplayVector() {
+        return new Object[] {version, revision, changeDate};
     }
 
     protected URL getURL() {

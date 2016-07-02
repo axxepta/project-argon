@@ -1,8 +1,12 @@
 package de.axxepta.oxygen.tree;
 
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
+
+import java.awt.event.MouseEvent;
 
 
 /**

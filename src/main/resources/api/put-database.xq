@@ -9,13 +9,16 @@ declare variable $VERSION-UP as xs:boolean external;
 
 declare variable $metatemplate := 'MetaTemplate.xml';
 declare variable $argon_db := '~argon';
+declare variable $historyfile := 'historyfile';
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
 let $path := substring-after($PATH, '/')
+let $metapath := concat($path, '.xml')
 
+let $histdb := concat('~history_', $db)
 let $metadb := concat('~meta_', $db)
-let $meta := if(db:exists($metadb, $path)) then (
-    db:open($metadb, $path)/*
+let $meta := if(db:exists($metadb, $metapath)) then (
+    db:open($metadb, $metapath)/*
 ) else (
     db:open($argon_db, $metatemplate)
 )
@@ -32,10 +35,6 @@ let $version := if(not(empty($meta//version/text()))) then (
     1
 )
 (: build path for history file :)
-let $date := current-date()
-let $time := current-time()
-let $hours := get-hours-from-time($time)
-let $minutes := get-minutes-from-time($time)
 let $hist-ext := concat(format-dateTime(current-dateTime(), "_[Y0001]-[M01]-[D01]_[H01]-[m01]_"), 'v', $version, 'r', $revision)
 
 let $pathtokens := tokenize($path, '/')
@@ -49,16 +48,32 @@ let $histpath := if(contains($filename, '.')) then (
     concat($path, $hist-ext)
 )
 
+(: update metadata  :)
+let $metaupdated := (
+    $meta
+) update (
+    if ($VERSIONIZE) then (
+        replace value of node .//version with $version,
+        replace value of node .//revision with $revision,
+        insert node element { $historyfile } { $histpath } into .//history
+    ) else ()
+)
+
+let $xml := if(starts-with($RESOURCE, '<')) then (
+    try {
+        parse-xml($RESOURCE)
+    } catch * {
+    (: raise error if input is not well-formed :)
+        error(xs:QName("api"), "Resource is not well-formed")
+    }
+) else ('')
+
 return if(starts-with($RESOURCE, '<')) then (
-(: first byte is angle bracket :)
-let $xml := try {
-    parse-xml($RESOURCE)
-} catch * {
-(: raise error if input is not well-formed :)
-    error(xs:QName("api"), "Resource is not well-formed")
-}
-(: return db:add($db, $xml, $path) :)
-    return db:replace($db, $path, $xml)
+    db:replace($db, $path, $xml),
+    db:replace($metadb, $metapath, $metaupdated),
+    if($VERSIONIZE) then (db:replace($histdb, $histpath, $xml)) else ()
 ) else (
-    db:store($db, $path, xs:base64Binary($RESOURCE))
+    db:store($db, $path, xs:base64Binary($RESOURCE)),
+    db:replace($metadb, $metapath, $metaupdated),
+    if($VERSIONIZE) then (db:store($histdb, $histpath, xs:base64Binary($RESOURCE))) else ()
 )

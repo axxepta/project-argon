@@ -1,6 +1,5 @@
 package de.axxepta.oxygen.customprotocol;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLStreamHandler;
@@ -193,11 +192,8 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     }
 
     public static String pathFromURLString(String urlString) {
-        int ind1 = urlString.indexOf(":");
-        if (urlString.substring(ind1 + 1, ind1 + 2).equals("/"))
-            return urlString.substring(ind1 + 2);
-        else
-            return urlString.substring(ind1 + 1);
+        String[] urlComponents = urlString.split(":/*");
+        return urlComponents[1];
     }
 
     public static String protocolFromSource(BaseXSource source) {

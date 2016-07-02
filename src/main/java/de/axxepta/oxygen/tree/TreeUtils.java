@@ -20,7 +20,8 @@ public class TreeUtils {
 
     public static void insertStrAsNodeLexi(TreeModel treeModel, String child, MutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
-        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child);
+        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
+                ((ArgonTreeNode) parent).getUrl() + "/" + child);
         if (childIsFile) childNode.setAllowsChildren(false);
         else childNode.setAllowsChildren(true);
         Boolean parentIsFile;
@@ -64,7 +65,7 @@ public class TreeUtils {
             case RESTXQ: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_restxq)); break;
             default: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_DB));
         }
-        String[] protocolResource = urlString.split(":/?");
+        String[] protocolResource = urlString.split(":/*");
         if (protocolResource.length > 1) {
             String[] pathParts = protocolResource[1].split("/");
             for (String res: pathParts) {
@@ -120,11 +121,11 @@ public class TreeUtils {
     public static String urlStringFromTreePath(TreePath path) {
         StringBuilder db_path;
         if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":");
+            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":/");
         else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_repo)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":");
+            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":/");
         else
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
+            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":/");
         for (int i = 2; i < path.getPathCount(); i++) {
             db_path.append('/');
             db_path.append(path.getPathComponent(i).toString());

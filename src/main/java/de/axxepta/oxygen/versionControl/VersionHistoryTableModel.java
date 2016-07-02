@@ -11,7 +11,7 @@ import java.util.List;
 
 public class VersionHistoryTableModel extends AbstractTableModel {
 
-    public static final String[] COLUMN_NAMES = {"Version", "Revision", "Date"};
+    private static final String[] COLUMN_NAMES = {"Version", "Revision", "Date"};
 
     private List<VersionHistoryEntry> data;
 

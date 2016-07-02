@@ -1,7 +1,7 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
@@ -26,10 +26,10 @@ public class AddDatabaseAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddDatabaseAction.class);
 
-    TreeModel treeModel;
-    TreeListener listener;
-    JDialog addDbDialog;
-    JTextField newDbNameTextField;
+    private TreeModel treeModel;
+    private TreeListener listener;
+    private JDialog addDbDialog;
+    private JTextField newDbNameTextField;
 
     public AddDatabaseAction(String name, Icon icon, TreeModel treeModel, TreeListener listener){
         super(name, icon);
@@ -74,7 +74,7 @@ public class AddDatabaseAction extends AbstractAction {
 
     private class AddDbAction extends AbstractAction {
 
-        public AddDbAction(String name){
+        AddDbAction(String name){
             super(name);
         }
 
@@ -85,8 +85,8 @@ public class AddDatabaseAction extends AbstractAction {
             TreeNode parentNode = listener.getNode();
             String chop = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
             String ftindex = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
-            try {
-                new BaseXRequest("create", BaseXSource.DATABASE, db, chop, ftindex);
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                connection.create(db, chop, ftindex);
                 TreeUtils.insertStrAsNodeLexi(treeModel, db, (DefaultMutableTreeNode) parentNode, false);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Failed to add new database",

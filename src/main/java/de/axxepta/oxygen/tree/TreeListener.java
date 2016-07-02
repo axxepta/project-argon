@@ -189,6 +189,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     treeWillExpand(new TreeExpansionEvent(this, path));
                 } catch (ExpandVetoException eve) {}
             } else {
+                //String db_path = ((ArgonTreeNode) path.getLastPathComponent()).getUrl();
                 String db_path = TreeUtils.urlStringFromTreePath(path);
                 logger.info("DbPath: " + db_path);
                 if (!node.getAllowsChildren()) {
@@ -219,7 +220,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         logger.info("Tree needs to update: " + message);
 
         if (type.equals("SAVE_FILE")) {
-            String[] protocol = message.split(":/?");
+            String[] protocol = message.split(":/*");
             String[] path = protocol[1].split("/");
             currPath = new TreePath(treeModel.getRoot());
             switch (protocol[0]) {
@@ -283,7 +284,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
         if (node.getChildCount() == 0) {  // if old list was empty skip lexicographic insert (faster)
             for (int i=0; i<children.size(); i++){
-                newChild = ClassFactory.getInstance().getTreeNode(children.get(i));
+                newChild = ClassFactory.getInstance().getTreeNode(children.get(i),
+                        ((ArgonTreeNode) node).getUrl() + "/" + children.get(i));
                 if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
                 else newChild.setAllowsChildren(false);
                 ((DefaultTreeModel) treeModel).insertNodeInto(newChild, (MutableTreeNode) node, node.getChildCount());
@@ -407,7 +409,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             // if URL raises exception, just ignore
             case KeyEvent.VK_ENTER: try {doubleClickHandler(null);} catch(ParseException pe) {} break;
             case KeyEvent.VK_INSERT: if (TreeUtils.isDir(path) || TreeUtils.isDB(path) || TreeUtils.isFileSource(path)) {
-                                        new AddNewFileAction(wsa, tree).actionPerformed(null); break;
+                                        new AddNewFileAction(tree).actionPerformed(null); break;
                                     }
                                     if (TreeUtils.isDbSource(path)) {
                                         new AddDatabaseAction(treeModel, this).actionPerformed(null); break;

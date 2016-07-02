@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -29,22 +28,19 @@ public class AddNewFileAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddNewFileAction.class);
 
-    StandalonePluginWorkspace wsa;
-    BasexTree tree;
-    JDialog newFileDialog;
+    private BasexTree tree;
+    private JDialog newFileDialog;
 
-    JTextField newFileNameTextField;
-    JComboBox newFileTypeComboBox;
+    private JTextField newFileNameTextField;
+    private JComboBox newFileTypeComboBox;
 
-    public AddNewFileAction(String name, Icon icon, StandalonePluginWorkspace wsa, BasexTree tree){
+    public AddNewFileAction(String name, Icon icon, BasexTree tree){
         super(name, icon);
-        this.wsa = wsa;
         this.tree = tree;
     }
 
-    public AddNewFileAction(StandalonePluginWorkspace wsa, BasexTree tree){
+    public AddNewFileAction(BasexTree tree){
         super();
-        this.wsa = wsa;
         this.tree = tree;
     }
 
@@ -154,7 +150,7 @@ public class AddNewFileAction extends AbstractAction {
                             JOptionPane.PLAIN_MESSAGE);
                 } else {
                     // ToDo: proper locking while store process
-                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
+                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
                         os.write(template.finish());
                     } catch (IOException ex) {
                         logger.error(ex.getMessage());

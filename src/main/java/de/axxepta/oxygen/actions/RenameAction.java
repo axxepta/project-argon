@@ -1,6 +1,8 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.BasexTree;
 import de.axxepta.oxygen.tree.TreeListener;
@@ -98,8 +100,8 @@ public class RenameAction extends AbstractAction {
                     newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
                 System.out.println(db_path);
                 System.out.println(newPathString);
-                try {
-                    new BaseXRequest("rename", source, db_path, newPathString);
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    connection.rename(source, db_path, newPathString);
                     treeModel.valueForPathChanged(path, newPath);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Failed to rename resource",

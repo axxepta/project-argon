@@ -52,7 +52,7 @@ public class CompareVersionsAction extends AbstractAction {
         // if only one revision row is selected, it is compared to the last (current) one
         if (selection.length == 1) {
             int rows = table.getModel().getRowCount();
-            urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(rows - 1);
+            urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(0);
             urls[1] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[0]);
             WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
                     getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
@@ -62,7 +62,7 @@ public class CompareVersionsAction extends AbstractAction {
             if (editorAccess.isModified()) {    // take current version editor instead
                 editorAccess.save();
                 savedEditor = true;
-                urls[0] = obtainCurrentURLFromHistoryURL(urls[0]);
+                urls[0] = editorAccess.getEditorLocation();
             }
         } else {
             urls[0] = ((VersionHistoryTableModel) table.getModel()).getURL(selection[1]);
@@ -115,7 +115,7 @@ public class CompareVersionsAction extends AbstractAction {
         }
     }
 
-    protected static URL obtainCurrentURLFromHistoryURL(URL url) {
+    static URL obtainCurrentURLFromHistoryURL(URL url) {
         URL currentURL;
         StringBuilder urlStr = new StringBuilder(url.toString());
         int endOfProtocolPos = urlStr.indexOf(":");

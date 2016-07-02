@@ -51,9 +51,11 @@ public interface Connection extends Closeable {
      * @param source data source
      * @param path path
      * @param resource resource to be stored
+     * @param versionize flag whether version control should be used
+     * @param versionUp flag whether version should be raised as String
      * @throws IOException I/O exception
      */
-    void put(final BaseXSource source, final String path, final byte[] resource) throws IOException;
+    void put(final BaseXSource source, final String path, final byte[] resource, String versionize, String versionUp) throws IOException;
 
     /**
      * Deletes a resource.

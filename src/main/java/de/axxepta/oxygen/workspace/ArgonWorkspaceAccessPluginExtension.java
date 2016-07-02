@@ -96,19 +96,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             @Override
             public void editorSelected(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                if (editorLocation != null)
-                    VersionHistoryUpdater.update(editorLocation.toString());
-                else
-                    VersionHistoryUpdater.update("");
+                checkVersionHistory(editorLocation);
             }
 
             @Override
             public void editorActivated(URL editorLocation) {
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                if (editorLocation != null)
-                    VersionHistoryUpdater.update(editorLocation.toString());
-                else
-                    VersionHistoryUpdater.update("");
+                checkVersionHistory(editorLocation);
             }
 
             @Override
@@ -124,13 +118,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
                     ArgonEditorsWatchMap.addURL(editorLocation);
                 checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                if (editorLocation != null)
-                    VersionHistoryUpdater.update("");
-                else
-                    VersionHistoryUpdater.update(CustomProtocolURLHandlerExtension.ARGON);
+                checkVersionHistory(editorLocation);
 
                 final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-                boolean isArgon = (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON));
+                boolean isArgon = URLUtils.isArgon(editorLocation);
+
+                if (isArgon)
+                    editorAccess.addEditorListener(new ArgonEditorListener(pluginWorkspaceAccess));
 
                 if (isArgon && URLUtils.isQuery(editorLocation))
                     editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
@@ -275,6 +269,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
     }
 
+    public static void checkVersionHistory(URL editorLocation) {
+        if ((editorLocation != null) && (URLUtils.isArgon(editorLocation)))
+            VersionHistoryUpdater.update(editorLocation.toString());
+        else
+            VersionHistoryUpdater.update("");
+    }
+
     private static void setTreeState(JTree tree, TreePath path, boolean expanded) {
         Object lastNode = path.getLastPathComponent();
         for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
@@ -295,16 +296,16 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             runQueryButton.setEnabled(false);
             newVersionButton.setEnabled(false);
         } else {
-            if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
-                runQueryButton.setEnabled(true);
+            URL url = currentEditor.getEditorLocation();
+            if (URLUtils.isArgon(url)) {
                 newVersionButton.setEnabled(true);
             } else {
+                newVersionButton.setEnabled(false);
+            }
+            if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
+                runQueryButton.setEnabled(true);
+            } else {
                 runQueryButton.setEnabled(false);
-                if (URLUtils.isXML(currentEditor.getEditorLocation())) {
-                    newVersionButton.setEnabled(true);
-                } else {
-                    newVersionButton.setEnabled(false);
-                }
             }
         }
     }
@@ -336,13 +337,16 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 // Create some data to populate our tree.
                 DefaultMutableTreeNode root = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_root));
                 root.setAllowsChildren(true);
-                DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB));
+                DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB),
+                        CustomProtocolURLHandlerExtension.ARGON + "://");
                 databases.setAllowsChildren(true);
                 root.add(databases);
-                DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq));
+                DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
+                        CustomProtocolURLHandlerExtension.ARGON_XQ + ":/");
                 queryFolder.setAllowsChildren(true);
                 root.add(queryFolder);
-                DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo));
+                DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo),
+                        CustomProtocolURLHandlerExtension.ARGON_REPO + ":/");
                 queryFolder.setAllowsChildren(true);
                 root.add(repoFolder);
 
@@ -355,7 +359,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                     databaseList = new ArrayList<>();
                 }
                 for (int i = 0; i < (databaseList.size() / 2); i++) {
-                    DefaultMutableTreeNode dbNode = ClassFactory.getInstance().getTreeNode(databaseList.get(i));
+                    DefaultMutableTreeNode dbNode = ClassFactory.getInstance().getTreeNode(databaseList.get(i),
+                            CustomProtocolURLHandlerExtension.ARGON + "://" + databaseList.get(i));
                     dbNode.setAllowsChildren(true);
                     databases.add(dbNode);
                 }
@@ -427,7 +432,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
                 contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
 
                 Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
-                        pluginWorkspaceAccess, tree);
+                        tree);
                 contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
 
                 final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);

@@ -17,12 +17,12 @@ import java.net.URLStreamHandler;
 /**
  * @author Markus on 12.10.2015.
  */
-public class ArgonProtocolHandler extends URLStreamHandler {
+class ArgonProtocolHandler extends URLStreamHandler {
 
-    BaseXSource source;
+    private BaseXSource source;
     private static final Logger logger = LogManager.getLogger(ArgonProtocolHandler.class);
 
-    public ArgonProtocolHandler(BaseXSource source) {
+    ArgonProtocolHandler(BaseXSource source) {
         this.source = source;
     }
 
@@ -30,7 +30,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
         BaseXSource source;
 
-        protected ArgonConnection(URL url, BaseXSource source) {
+        ArgonConnection(URL url, BaseXSource source) {
             super(url);
             this.source = source;
             // Allow output

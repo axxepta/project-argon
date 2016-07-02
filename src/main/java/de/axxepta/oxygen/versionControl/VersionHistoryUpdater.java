@@ -1,22 +1,19 @@
 package de.axxepta.oxygen.versioncontrol;
 
-import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-import javax.swing.*;
-import javax.swing.tree.TreePath;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +39,7 @@ public final class VersionHistoryUpdater {
 
     public static void update(String urlString) {
         historyList = new ArrayList<>();
-        if (!urlString.equals("") && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
+        if (!urlString.equals("")) {
 
             String resource = CustomProtocolURLHandlerExtension.pathFromURLString(urlString);
             String pathStr = obtainHistoryPath(resource, urlString);
@@ -54,7 +51,7 @@ public final class VersionHistoryUpdater {
             for (String strEntry : allVersions) {
                 URL url = null;
                 try {
-                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + pathStr + "/" + strEntry);
+                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + "://" + pathStr + "/" + strEntry);
                 } catch (MalformedURLException e1) {
                     logger.error(e1);
                 }
@@ -101,20 +98,22 @@ public final class VersionHistoryUpdater {
     }
 
     private static List<String> obtainFileVersions(String pathStr, String fileName, String extension) {
-        List<String> allVersions;
+        //ToDo: exchange by query to metadata file
+        List<String> allVersions = new ArrayList<>();
         BaseXSource source = BaseXSource.DATABASE;
-        try {
-            allVersions = (new BaseXRequest("list", source, pathStr)).getResult();
-        } catch (Exception er) {
-            allVersions = new ArrayList<>();
+
+        List<BaseXResource> allOldVersions;
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            allOldVersions = Arrays.asList(connection.list(source, pathStr));
+        } catch (IOException ioe) {
+            allOldVersions = new ArrayList<>();
         }
 
         String filter = fileName + "_[0-9]{4}-[0-1][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]_v[0-9]+r[0-9]+" + extension;
 
-        allVersions = allVersions.subList(0, allVersions.size() / 2);
-        for (int i=allVersions.size()-1; i>=0; i--) {
-            if (!allVersions.get(i).matches(filter))
-                allVersions.remove(i);
+        for (int i=allOldVersions.size()-1; i>=0; i--) {
+            if (!allOldVersions.get(i).getType().equals(BaseXType.DIRECTORY) && allOldVersions.get(i).getName().matches(filter))
+                allVersions.add(allOldVersions.get(i).getName());
         }
         return allVersions;
     }

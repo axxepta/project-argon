@@ -70,12 +70,14 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource)
+    public void put(final BaseXSource source, final String path, final byte[] resource, String versionize, String versionUp)
             throws IOException {
 
         final Query query = client.query(getQuery("put-" + source));
         query.bind(PATH, path, "");
         query.bind(RESOURCE, prepare(resource), "");
+        query.bind(VERSIONIZE, versionize, "");
+        query.bind(VERSION_UP, versionUp, "");
         query.execute();
     }
 

@@ -73,9 +73,9 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource)
+    public void put(final BaseXSource source, final String path, final byte[] resource, String versionize, String versionUp)
             throws IOException {
-        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource));
+        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource), VERSIONIZE, versionize, VERSION_UP, versionUp);
     }
 
     @Override
