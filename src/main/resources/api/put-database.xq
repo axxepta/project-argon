@@ -10,6 +10,7 @@ declare variable $VERSION-UP as xs:boolean external;
 declare variable $metatemplate := 'MetaTemplate.xml';
 declare variable $argon_db := '~argon';
 declare variable $historyfile := 'historyfile';
+declare variable $DOCTYPE := '!DOCTYPE';
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
 let $path := substring-after($PATH, '/')
@@ -34,6 +35,21 @@ let $version := if(not(empty($meta//version/text()))) then (
 ) else (
     1
 )
+
+(: get doctype definition :)
+let $doctypetokens := if(contains($RESOURCE, $DOCTYPE)) then (
+    <doctype>
+    {
+	let $firstelements := subsequence(tokenize($RESOURCE, '[<>]'), 1, 4)
+	let $doctypeseq := for $j in (1 to 4)
+		return if (contains(subsequence($firstelements, $j, 1), $DOCTYPE)) then (
+			subsequence(analyze-string(subsequence($firstelements, $j, 1), '( )|".*?"')//text()[if (compare(., ' ') = 0) then () else .], 2, 5)
+		) else ()
+	for $doctypecomponent in $doctypeseq return <doctypecomponent>{$doctypecomponent}</doctypecomponent>
+	}
+	</doctype>
+) else ()
+
 (: build path for history file :)
 let $hist-ext := concat(format-dateTime(current-dateTime(), "_[Y0001]-[M01]-[D01]_[H01]-[m01]_"), 'v', $version, 'r', $revision)
 
@@ -56,6 +72,9 @@ let $metaupdated := (
         replace value of node .//version with $version,
         replace value of node .//revision with $revision,
         insert node element { $historyfile } { $histpath } into .//history
+    ) else (),
+    if(not(empty($doctypetokens))) then (
+        replace node .//doctype with $doctypetokens
     ) else ()
 )
 
