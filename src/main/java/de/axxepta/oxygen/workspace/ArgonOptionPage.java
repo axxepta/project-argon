@@ -7,8 +7,6 @@ package de.axxepta.oxygen.workspace;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,9 +26,9 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 /**
  * Plugin option page extension Custom Workspace Access Plugin Extension.
  */
-public class BaseXOptionPage extends OptionPagePluginExtension {
+public class ArgonOptionPage extends OptionPagePluginExtension {
 
-    private static final Logger logger = LogManager.getLogger(BaseXOptionPage.class);
+    private static final Logger logger = LogManager.getLogger(ArgonOptionPage.class);
 
     /**
      * BaseX Keys

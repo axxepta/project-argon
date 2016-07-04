@@ -30,7 +30,7 @@ public class ArgonEditorsWatchMap {
         URLMap.put(url, true);
     }
 
-    public static boolean askedForAccess(URL url) {
+    static boolean askedForAccess(URL url) {
         if (URLMap.get(url) == null) {
             return false;
         } else {
@@ -38,7 +38,7 @@ public class ArgonEditorsWatchMap {
         }
     }
 
-    public static boolean isURLInMap(URL url) {
+    static boolean isURLInMap(URL url) {
         return !(URLMap.get(url) == null);
     }
 

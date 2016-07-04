@@ -21,7 +21,7 @@
     <extension type="URLChooserToolbar" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     -->
 
-    <extension type="OptionPage" class="de.axxepta.oxygen.workspace.BaseXOptionPage"></extension>
+    <extension type="OptionPage" class="de.axxepta.oxygen.workspace.ArgonOptionPage"></extension>
     <!-- The view for BaseX Database Tree-->
     <view id="ArgonWorkspaceAccessID" initialSide="WEST" initialRow="0" />
     <!-- The view which will present messages from the plugin.-->

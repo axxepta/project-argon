@@ -1,10 +1,11 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
-import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -54,7 +55,7 @@ public class NewVersionButtonAction extends AbstractAction {
             JOptionPane.showMessageDialog(null, "Couldn't write updated version of file\n" + url.toString(),
                     "Update Version Error", JOptionPane.PLAIN_MESSAGE);
         }
-        ArgonWorkspaceAccessPluginExtension.checkVersionHistory(url);
+        TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(url));
     }
 
 }

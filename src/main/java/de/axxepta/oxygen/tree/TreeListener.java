@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -17,11 +18,10 @@ import de.axxepta.oxygen.actions.AddDatabaseAction;
 import de.axxepta.oxygen.actions.AddNewFileAction;
 import de.axxepta.oxygen.actions.DeleteAction;
 import de.axxepta.oxygen.actions.RefreshTreeAction;
-import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,17 +38,17 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     // Logger instance named "TreeListener".
     private static final Logger logger = LogManager.getLogger(TreeListener.class);
     
-    private BasexTree tree;
+    private ArgonTree tree;
     private TreeModel treeModel;
     private TreePath path;
     private TreeNode node;
     private boolean newExpandEvent;
     private boolean singleClick  = true;
     private Timer timer;
-    private final BaseXPopupMenu contextMenu;
+    private final ArgonPopupMenu contextMenu;
 	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(BasexTree tree, TreeModel treeModel, BaseXPopupMenu contextMenu,
+    public TreeListener(ArgonTree tree, TreeModel treeModel, ArgonPopupMenu contextMenu,
                         StandalonePluginWorkspace workspaceAccess)
     {
     	this.wsa = workspaceAccess;
@@ -128,39 +128,35 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         if ((path.getPathCount() > 1) && (node.getAllowsChildren()) && this.newExpandEvent) {
 
-            ArrayList<String> newNodes;
-            ArrayList<String> newTypes = new ArrayList<>();
-            ArrayList<String> newValues = new ArrayList<>();
-            BaseXSource queryType;
+            List<BaseXResource> childList;
+            List<String> newValues = new ArrayList<>();
+            BaseXSource source;
             StringBuilder db_path = new StringBuilder("");
 
             if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))){
-                queryType = BaseXSource.DATABASE;
+                source = BaseXSource.DATABASE;
             } else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq))) {
-                queryType = BaseXSource.RESTXQ;
+                source = BaseXSource.RESTXQ;
             } else {
-                queryType = BaseXSource.REPO;
+                source = BaseXSource.REPO;
             }
 
             for (int i = 2; i < path.getPathCount(); i++) {
                 db_path.append(path.getPathComponent(i).toString());
                 db_path.append('/');
             }
-            try {
-                newNodes = (new BaseXRequest("list", queryType, db_path.toString())).getResult();
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                childList = connection.list(source, db_path.toString());
             } catch (Exception er) {
-                newNodes = new ArrayList<>();
+                childList = new ArrayList<>();
                 logger.debug(er);
                 JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX.\n Check whether server is still running!",
                         "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
             }
-
-            if (newNodes.size() > 0) {
-                newTypes.addAll(newNodes.subList(newNodes.size() / 2, newNodes.size()));
-                newValues.addAll(newNodes.subList(0, newNodes.size() / 2));
+            for (BaseXResource child : childList) {
+                newValues.add(child.getName());
             }
-
-            if (updateExpandedNode(node, newValues, newTypes)) {
+            if (updateExpandedNode(node, childList, newValues)) {
                 this.newExpandEvent = false;
                 tree.expandPath(path);
             }
@@ -257,21 +253,22 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
      * other methods
      */
 
-    private boolean updateExpandedNode(TreeNode node, ArrayList<String> children, ArrayList<String> chTypes){
+    private boolean updateExpandedNode(TreeNode node, List<BaseXResource> newChildrenList, List<String> childrenValues){
         DefaultMutableTreeNode newChild;
-        ArrayList<String> oldChildren = new ArrayList<>();
+        List<String> oldChildren = new ArrayList<>();
         String oldChild;
         boolean treeChanged = false;
 
         // check whether old children are in new list and vice versa
         if (node.getChildCount() > 0) {
             boolean[] inNewList = new boolean[node.getChildCount()];
-            if (children.size() > 0){
+            if (newChildrenList.size() > 0){
                 for (int i=0; i<node.getChildCount(); i++){
                     DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)node.getChildAt(i);
                     oldChild = currNode.getUserObject().toString();
                     oldChildren.add(oldChild);
-                    if (children.contains(oldChild)) inNewList[i] = true;
+                    if (childrenValues.contains(oldChild))
+                        inNewList[i] = true;
                 }
             }
             for (int i=node.getChildCount()-1; i>-1; i--){
@@ -283,105 +280,26 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
         }
         if (node.getChildCount() == 0) {  // if old list was empty skip lexicographic insert (faster)
-            for (int i=0; i<children.size(); i++){
-                newChild = ClassFactory.getInstance().getTreeNode(children.get(i),
-                        ((ArgonTreeNode) node).getUrl() + "/" + children.get(i));
-                if (chTypes.get(i).equals("directory")) newChild.setAllowsChildren(true);
-                else newChild.setAllowsChildren(false);
+            for (BaseXResource newPossibleChild : newChildrenList){
+                newChild = ClassFactory.getInstance().getTreeNode(newPossibleChild.getName(),
+                        ((ArgonTreeNode) node).getUrl() + "/" + newPossibleChild.getName());
+                if (newPossibleChild.getType().equals(BaseXType.DIRECTORY))
+                    newChild.setAllowsChildren(true);
+                else
+                    newChild.setAllowsChildren(false);
                 ((DefaultTreeModel) treeModel).insertNodeInto(newChild, (MutableTreeNode) node, node.getChildCount());
                 treeChanged = true;
             }
         } else {
-            for (int i=0; i<children.size(); i++){
-                if (!oldChildren.contains(children.get(i))) {
-                    TreeUtils.insertStrAsNodeLexi(treeModel, children.get(i), (MutableTreeNode) node,
-                            !(chTypes.get(i).equals("directory")));
+            for (BaseXResource newPossibleChild : newChildrenList){
+                if (!oldChildren.contains(newPossibleChild.getName())) {
+                    TreeUtils.insertStrAsNodeLexi(treeModel, newPossibleChild.getName(), (MutableTreeNode) node,
+                            !(newPossibleChild.getType().equals(BaseXType.DIRECTORY)));
                     treeChanged = true;
                 }
             }
         }
-
         return treeChanged;
-    }
-
-    // ToDo:  implement this method as part of a listener class that is added to the contextMenu
-    public static void prepareContextMenu(BaseXPopupMenu contextMenu, TreePath path){
-
-        // at what kind of node was the context menu invoked?
-        boolean isFile = TreeUtils.isFile(path);
-        boolean isDir = TreeUtils.isDir(path);
-        boolean isDB = TreeUtils.isDB(path);
-        boolean isFileSource = TreeUtils.isFileSource(path);
-
-        // check whether items apply to node
-        int itemCount = contextMenu.getItemCount();
-        for (int i=0; i<itemCount; i++){
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
-                if (isFile)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
-                if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
-                if (TreeUtils.isDbSource(path))
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
-                if (isFile || isDir)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
-                if (isFile || (isDir && !TreeUtils.isWEBINF(path)))  // never! try to change the name of a WEB-INF folder
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
-                if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_newversion))) {
-                if (isFile)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_showversion))) {
-                if (isFile)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
-                if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
-                else
-                    contextMenu.setItemEnabled(i, false);
-            }
-
-        }
     }
 
     public TreePath getPath() {
@@ -404,7 +322,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         switch (key) {
-            case KeyEvent.VK_DELETE: new DeleteAction(tree, this).actionPerformed(null); break;
+            case KeyEvent.VK_DELETE: new DeleteAction(tree).actionPerformed(null); break;
             case KeyEvent.VK_F5: new RefreshTreeAction(tree).actionPerformed(null); break;
             // if URL raises exception, just ignore
             case KeyEvent.VK_ENTER: try {doubleClickHandler(null);} catch(ParseException pe) {} break;

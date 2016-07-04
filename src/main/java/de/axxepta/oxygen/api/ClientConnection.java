@@ -30,7 +30,7 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public BaseXResource[] list(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("list-" + source));
         query.bind(PATH, path, "");
 
@@ -39,7 +39,7 @@ public final class ClientConnection implements Connection {
             final String type = query.next(), name = query.next();
             list.add(new BaseXResource(name, BaseXType.get(type), source));
         }
-        return list.toArray(new BaseXResource[list.size()]);
+        return list;
     }
 
     @Override

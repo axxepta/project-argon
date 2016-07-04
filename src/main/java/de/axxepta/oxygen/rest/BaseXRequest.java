@@ -5,6 +5,7 @@ import de.axxepta.oxygen.tree.TreeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
  * Wrapper class for request to BaseX, connection details are "inherited" from the included connection
  */
 public class BaseXRequest {
-    private ArrayList<String> result;
+    private List<String> result;
     private String answer;
     private boolean check;
 
@@ -21,20 +22,6 @@ public class BaseXRequest {
         Connection connection = BaseXConnectionWrapper.getConnection();
         if (connection != null) {
             switch (request) {
-                case "list":
-                    answer = "";
-                    check = false;
-                    result = new ArrayList<>();
-                    BaseXResource[] resources = connection.list(source, path);
-                    for (BaseXResource resource : resources) {
-                        String databaseEntry = resource.name;
-                        result.add(databaseEntry);
-                    }
-                    for (BaseXResource resource : resources) {
-                        String type = resource.type.toString();
-                        result.add(type);
-                    }
-                    break;
                 case "query":
                     result = new ArrayList<>();
                     answer = "";
@@ -100,7 +87,7 @@ public class BaseXRequest {
         }
     }
 
-    public ArrayList<String> getResult() {
+    public List<String> getResult() {
         return result;
     }
 

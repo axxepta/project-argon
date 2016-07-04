@@ -3,7 +3,7 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
@@ -28,18 +28,18 @@ public class AddNewFileAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddNewFileAction.class);
 
-    private BasexTree tree;
+    private ArgonTree tree;
     private JDialog newFileDialog;
 
     private JTextField newFileNameTextField;
     private JComboBox newFileTypeComboBox;
 
-    public AddNewFileAction(String name, Icon icon, BasexTree tree){
+    public AddNewFileAction(String name, Icon icon, ArgonTree tree){
         super(name, icon);
         this.tree = tree;
     }
 
-    public AddNewFileAction(BasexTree tree){
+    public AddNewFileAction(ArgonTree tree){
         super();
         this.tree = tree;
     }

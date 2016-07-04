@@ -6,7 +6,7 @@ package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.workspace.BaseXOptionPage;
+import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,7 +47,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         super.close();
         byte[] savedBytes;
         savedBytes = toByteArray();
-        String useVersioning = BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_VERSIONING, false);
+        String useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.put(this.source, path, savedBytes, useVersioning, String.valueOf(versionUp));

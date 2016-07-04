@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.utils;
 
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ui.Icons;
@@ -123,7 +123,7 @@ public class ImageUtils {
     }
 
     public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = BasexTree.class.getResource(path);
+        java.net.URL imgURL = ArgonTree.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {

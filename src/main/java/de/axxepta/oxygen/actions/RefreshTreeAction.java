@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -14,17 +14,17 @@ import java.util.ArrayList;
  */
 public class RefreshTreeAction extends AbstractAction {
 
-    private BasexTree tree;
+    private ArgonTree tree;
     private TreeModel model;
 
-    public RefreshTreeAction(String name, Icon icon, BasexTree tree) {
+    public RefreshTreeAction(String name, Icon icon, ArgonTree tree) {
         super(name, icon);
         this.tree = tree;
         this.model = tree.getModel();
     }
 
 
-    public RefreshTreeAction(BasexTree tree) {
+    public RefreshTreeAction(ArgonTree tree) {
         super();
         this.tree = tree;
         this.model = tree.getModel();

@@ -6,7 +6,6 @@ import de.axxepta.oxygen.tree.ArgonTreeNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Markus on 02.06.2016.

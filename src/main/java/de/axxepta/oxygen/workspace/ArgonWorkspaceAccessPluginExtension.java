@@ -1,57 +1,23 @@
 package de.axxepta.oxygen.workspace;
 
-import de.axxepta.oxygen.actions.*;
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.TopicHolder;
-import de.axxepta.oxygen.core.ClassFactory;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
-import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.versioncontrol.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import ro.sync.document.DocumentPositionedInfo;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryPanel;
+
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.editor.validation.ValidationProblems;
-import ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter;
-import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.*;
-import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 /**
- * Main plugin class, defining tree, context menu, and toolbar
+ * Main plugin class, defining tree panel, version history panel, and toolbar
  */
 public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPluginExtension {
 
-    /**
-     * The CMS messages area.
-     */
-    private JTextArea cmsMessagesArea;
-    private JTable versionHistoryTable;
-    private ToolbarButton runQueryButton;   // declare here for access in inner functions (toggling)
-    private ToolbarButton newVersionButton;
-    private ToolbarButton replyCommentButton;
-
-    private static final Logger logger = LogManager.getLogger(ArgonWorkspaceAccessPluginExtension.class);
     private StandalonePluginWorkspace pluginWorkspaceAccess;
 
     @java.lang.Override
@@ -69,253 +35,27 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // init icon map
         ImageUtils.init();
 
-        // init version history
-        VersionHistoryUpdater.init(this);
-
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HOST));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_HTTP_PORT));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_TCP_PORT));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_USERNAME));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_PASSWORD));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_CONNECTION));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new BaseXOptionListener(BaseXOptionPage.KEY_BASEX_LOGFILE));
+
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HOST));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HTTP_PORT));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_TCP_PORT));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_USERNAME));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_PASSWORD));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_CONNECTION));
+        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_LOGFILE));
 
         ArgonEditorsWatchMap.init();
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 
-        pluginWorkspaceAccess.addEditorChangeListener(new WSEditorChangeListener() {
+        ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer(pluginWorkspaceAccess);
+        pluginWorkspaceAccess.addToolbarComponentsCustomizer(toolbarCustomizer);
 
-            @Override
-            public void editorPageChanged(URL editorLocation) {
-                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-            }
-
-            @Override
-            public void editorSelected(URL editorLocation) {
-                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                checkVersionHistory(editorLocation);
-            }
-
-            @Override
-            public void editorActivated(URL editorLocation) {
-                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                checkVersionHistory(editorLocation);
-            }
-
-            @Override
-            public void editorClosed(URL editorLocation) {
-                if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
-                    ArgonEditorsWatchMap.removeURL(editorLocation);
-                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-            }
-
-            @Override
-            public void editorOpened(URL editorLocation) {
-                logger.debug("editor opened: " + editorLocation.toString());
-                if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
-                    ArgonEditorsWatchMap.addURL(editorLocation);
-                checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
-                checkVersionHistory(editorLocation);
-
-                final WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-                boolean isArgon = URLUtils.isArgon(editorLocation);
-
-                if (isArgon)
-                    editorAccess.addEditorListener(new ArgonEditorListener(pluginWorkspaceAccess));
-
-                if (isArgon && URLUtils.isQuery(editorLocation))
-                    editorAccess.addValidationProblemsFilter(new ValidationProblemsFilter() {
-                        /**
-                         * @see ro.sync.exml.workspace.api.editor.validation.ValidationProblemsFilter#filterValidationProblems(ro.sync.exml.workspace.api.editor.validation.ValidationProblems)
-                         */
-                        @Override
-                        public void filterValidationProblems(ValidationProblems validationProblems) {
-/*                            // get content of editor window
-                            String editorContent;
-                            logger.debug("filter validation problems");
-                            try {
-                                InputStream editorStream = editorAccess.createContentInputStream();
-                                Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
-                                editorContent = s.hasNext() ? s.next() : "";
-                                editorStream.close();
-                            } catch (IOException er) {
-                                logger.error(er);
-                                editorContent = "";
-                            }
-                            // pass content of editor window to BaseXRequest with queryTest
-                            ArrayList<String> valProbStr;
-                            try {
-                                BaseXRequest testQuery = new BaseXRequest("parse",
-                                        BaseXSource.DATABASE, editorContent);
-                                valProbStr = testQuery.getResult();
-                            } catch (Exception er) {
-                                logger.error("query to BaseX failed");
-                                valProbStr = new ArrayList<>();
-                                valProbStr.add("1");
-                                valProbStr.add("1");
-                                valProbStr.add("Fatal BaseX request error: "+er.getMessage());
-                                er.printStackTrace();
-                            }
-                            // build DocumentPositionedInfo list from query return;
-                            List<DocumentPositionedInfo> problemList = new ArrayList<>();
-                            if (valProbStr.size() > 0) {
-                                DocumentPositionedInfo dpi =
-                                        new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
-                                                Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
-                                problemList.add(dpi);
-                            }*/
-
-                            /*try {
-                                SwingUtilities.invokeAndWait(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        problemList = isQueryValid(editorAccess);
-                                    }
-                                });
-                            } catch (InvocationTargetException ite) {
-                                logger.error(ite);
-                            } catch (InterruptedException ie) {
-                                logger.error(ie);
-                            }*/
-
-                            final List<DocumentPositionedInfo> problemList = new ArrayList<>();
-                            Thread validatorThread = new Thread(new QueryValidator(editorAccess, problemList));
-                            validatorThread.run();
-                            try {
-                                validatorThread.join();
-                            } catch (InterruptedException ie) {
-                                // ToDo:
-                            }
-
-                            //The DocumentPositionInfo represents an error with location in the document and has a constructor like:
-                            //  public DocumentPositionedInfo(int severity, String message, String systemID, int line, int column, int length)
-                            validationProblems.setProblemsList(problemList);
-                            super.filterValidationProblems(validationProblems);
-                        }
-                    });
-            }
-        }, PluginWorkspace.MAIN_EDITING_AREA);
-
-        // create actions for Toolbars
-        final Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
-                ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
-        final Action newVersionAction = new NewVersionButtonAction("Increase File Version",
-                ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
-        final Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
-                ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
-
-        pluginWorkspaceAccess.addToolbarComponentsCustomizer(new ToolbarComponentsCustomizer() {
-            /**
-             * @see ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer#customizeToolbar(ro.sync.exml.workspace.api.standalone.ToolbarInfo)
-             */
-            @SuppressWarnings("serial")
-            @Override
-            public void customizeToolbar(ToolbarInfo toolbarInfo) {
-                //The toolbar ID is defined in the "plugin.xml"
-                if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
-                    List<JComponent> comps = new ArrayList<>();
-                    JComponent[] initialComponents = toolbarInfo.getComponents();
-                    boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
-                    if (hasInitialComponents) {
-                        // Add initial toolbar components
-                        comps.addAll(Arrays.asList(initialComponents));
-                    }
-
-                    // Add toolbar buttons
-                    // run query in current editor window
-                    runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
-                    runQueryButton.setText("");
-                    // increase revision of document in current editor window
-                    newVersionButton = new ToolbarButton(newVersionAction, true);
-                    newVersionButton.setText("");
-
-                    // Add in toolbar
-                    comps.add(runQueryButton);
-                    comps.add(new JSeparator(SwingConstants.VERTICAL));
-                    comps.add(newVersionButton);
-                    toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
-
-                    // Set title
-                    String initialTitle = toolbarInfo.getTitle();
-                    String title = "";
-                    if (hasInitialComponents && initialTitle != null && initialTitle.trim().length() > 0) {
-                        // Include initial tile
-                        title += initialTitle + " | ";
-                    }
-                    title += "BaseX DB";
-                    toolbarInfo.setTitle(title);
-                }
-
-                if ("toolbar.review".equals(toolbarInfo.getToolbarID())) {
-                    List<JComponent> comps = new ArrayList<>();
-                    JComponent[] initialComponents = toolbarInfo.getComponents();
-                    boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
-                    if (hasInitialComponents) {
-                        // Add initial toolbar components
-                        comps.addAll(Arrays.asList(initialComponents));
-                    }
-                    // reply to author comment
-                    replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
-                    replyCommentButton.setText("");
-                    comps.add(replyCommentButton);
-                    toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
-                }
-
-            }
-        });
-
-    }
-
-    public static void checkVersionHistory(URL editorLocation) {
-        if ((editorLocation != null) && (URLUtils.isArgon(editorLocation)))
-            VersionHistoryUpdater.update(editorLocation.toString());
-        else
-            VersionHistoryUpdater.update("");
-    }
-
-    private static void setTreeState(JTree tree, TreePath path, boolean expanded) {
-        Object lastNode = path.getLastPathComponent();
-        for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
-            Object child = tree.getModel().getChild(lastNode,i);
-            TreePath pathToChild = path.pathByAddingChild(child);
-            setTreeState(tree,pathToChild,expanded);
-        }
-        if (expanded)
-            tree.expandPath(path);
-        else
-            tree.collapsePath(path);
-    }
-
-    private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
-        WSEditor currentEditor = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
-
-        if(currentEditor == null) {
-            runQueryButton.setEnabled(false);
-            newVersionButton.setEnabled(false);
-        } else {
-            URL url = currentEditor.getEditorLocation();
-            if (URLUtils.isArgon(url)) {
-                newVersionButton.setEnabled(true);
-            } else {
-                newVersionButton.setEnabled(false);
-            }
-            if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
-                runQueryButton.setEnabled(true);
-            } else {
-                runQueryButton.setEnabled(false);
-            }
-        }
-    }
-
-    public void updateVersionHistory(List<VersionHistoryEntry> historyList) {
-        ((VersionHistoryTableModel) versionHistoryTable.getModel()).setNewContent(historyList);
-        versionHistoryTable.setFillsViewportHeight(true);
-        versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-        versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
-        versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
+        pluginWorkspaceAccess.addEditorChangeListener(
+                new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),
+                PluginWorkspace.MAIN_EDITING_AREA);
     }
 
     @java.lang.Override
@@ -333,255 +73,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
             if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                 //The view ID defined in the "plugin.xml"
-
-                // Create some data to populate our tree.
-                DefaultMutableTreeNode root = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_root));
-                root.setAllowsChildren(true);
-                DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB),
-                        CustomProtocolURLHandlerExtension.ARGON + "://");
-                databases.setAllowsChildren(true);
-                root.add(databases);
-                DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
-                        CustomProtocolURLHandlerExtension.ARGON_XQ + ":/");
-                queryFolder.setAllowsChildren(true);
-                root.add(queryFolder);
-                DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo),
-                        CustomProtocolURLHandlerExtension.ARGON_REPO + ":/");
-                queryFolder.setAllowsChildren(true);
-                root.add(repoFolder);
-
-                ArrayList<String> databaseList;
-                try {
-                    databaseList = (new BaseXRequest("list", BaseXSource.DATABASE, "")).getResult();
-                } catch (Exception er) {
-/*                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
-                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);*/
-                    databaseList = new ArrayList<>();
-                }
-                for (int i = 0; i < (databaseList.size() / 2); i++) {
-                    DefaultMutableTreeNode dbNode = ClassFactory.getInstance().getTreeNode(databaseList.get(i),
-                            CustomProtocolURLHandlerExtension.ARGON + "://" + databaseList.get(i));
-                    dbNode.setAllowsChildren(true);
-                    databases.add(dbNode);
-                }
-
-                // Create a new tree control
-                // explicit tree model necessary to use allowsChildren for definition of leafs
-                final TreeModel treeModel = new DefaultTreeModel(root);
-                ((DefaultTreeModel) treeModel).setAsksAllowsChildren(true);
-                TreeUtils.init(treeModel);
-                final BasexTree tree = new BasexTree(treeModel);
-                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-                setTreeState(tree, new TreePath(root), false);
-
-                // Add context menu
-                BaseXPopupMenu contextMenu = new BaseXPopupMenu();
-
-                // Add Tree Listener
-                final TreeListener tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
-                tree.addTreeWillExpandListener(tListener);
-                tree.addMouseListener(tListener);
-                tree.addTreeSelectionListener(tListener);
-                tree.addKeyListener(tListener);
-                TopicHolder.saveFile.register(tListener);
-                TopicHolder.deleteFile.register(tListener);
-
-                // Add transfer handler for DnD
-                tree.setTransferHandler(new BaseXTreeTransferHandler());
-                tree.setDropMode(DropMode.ON);
-
-                // Populate context menu
-                Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
-                    public void actionPerformed(ActionEvent e) {
-                        String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
-                        if (!tListener.getNode().getAllowsChildren()) {
-                            URL argonURL = null;
-                            try {
-                                argonURL = new URL(db_path);
-                            } catch (MalformedURLException e1) {
-                                logger.error(e1);
-                            }
-                            pluginWorkspaceAccess.open(argonURL);
-                        }
-                    }
-                };
-                contextMenu.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
-
-                Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD)) {
-                    public void actionPerformed(ActionEvent e) {
-                    }
-                };
-                contextMenu.add(checkIn, Lang.get(Lang.Keys.cm_checkin));
-
-                contextMenu.addSeparator();
-
-                Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD),
-                        treeModel, tListener);
-                contextMenu.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
-
-                Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE),
-                        tree, tListener);
-                contextMenu.add(delete, Lang.get(Lang.Keys.cm_delete));
-
-                Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
-                        tree, tListener);
-                contextMenu.add(rename, Lang.get(Lang.Keys.cm_rename));
-
-                Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.INC_VER),
-                        tListener, pluginWorkspaceAccess);
-                contextMenu.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
-
-                Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
-                        tree);
-                contextMenu.add(add, Lang.get(Lang.Keys.cm_add));
-
-                final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
-                contextMenu.add(refresh, Lang.get(Lang.Keys.cm_refresh));
-
-                contextMenu.addSeparator();
-
-                final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH),
-                        pluginWorkspaceAccess, tree);
-                contextMenu.add(searchInPath, Lang.get(Lang.Keys.cm_search));
-
-                Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {
-                    public void actionPerformed(ActionEvent e) {
-                    }
-                };
-                contextMenu.add(searchInFiles, "Search In Files");
-
-                tree.add(contextMenu);
-
-                //
-                cmsMessagesArea = new JTextArea("CMS Session History:");
-                JScrollPane scrollPane = new JScrollPane(cmsMessagesArea);
-                scrollPane.getViewport().add(tree);
-                viewInfo.setComponent(scrollPane);
-
+                viewInfo.setComponent(new TreePane(pluginWorkspaceAccess));
                 viewInfo.setTitle("Argon DB Connection");
-                viewInfo.setIcon(Icons.getIcon(Icons.CMS_MESSAGES_CUSTOM_VIEW_STRING));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
-                // Table (will be put in bottom Box)
-                versionHistoryTable = new JTable(new VersionHistoryTableModel(null));
-                versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-                versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
-                versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
-                versionHistoryTable.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-                // Two Buttons (with filler) in Pane in Top Box
-                JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
-                compareRevisionsButton.setEnabled(false);
-                JButton replaceRevisionButton = new JButton(new RollbackVersionAction("Reset to", versionHistoryTable));
-                replaceRevisionButton.setEnabled(false);
-                JPanel versionHistoryButtonPanel = new JPanel();
-                versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));
-                compareRevisionsButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-                versionHistoryButtonPanel.add(compareRevisionsButton);
-                versionHistoryButtonPanel.add(new Box.Filler(
-                        new Dimension(10,10), new Dimension(20,10), new Dimension(50,10)));
-                replaceRevisionButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-                versionHistoryButtonPanel.add(replaceRevisionButton);
-                // Table in ScrollPane in bottom Box
-                versionHistoryTable.getSelectionModel().addListSelectionListener(
-                        new VersionControlListSelectionListener(versionHistoryTable, compareRevisionsButton, replaceRevisionButton));
-                JScrollPane scrollPane = new JScrollPane(versionHistoryTable);
-                JPanel versionHistoryPanel = new JPanel();
-                versionHistoryPanel.setLayout(new BoxLayout(versionHistoryPanel, BoxLayout.Y_AXIS));
-                versionHistoryButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                versionHistoryPanel.add(versionHistoryButtonPanel);
-                scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-                versionHistoryPanel.add(scrollPane);
-                viewInfo.setComponent(versionHistoryPanel);
+                viewInfo.setComponent(new VersionHistoryPanel());
                 viewInfo.setTitle("Argon Version History");
             }
         }
-    }
-
-    private static class QueryValidator implements Runnable {
-
-        private final WSEditor editorAccess;
-        private final List<DocumentPositionedInfo> problemList;
-
-        QueryValidator(WSEditor editorAccess, List<DocumentPositionedInfo> problemList) {
-            this.editorAccess = editorAccess;
-            this.problemList = problemList;
-        }
-
-        public void run() {
-            // get content of editor window
-            String editorContent;
-            logger.debug("filter validation problems");
-            try {
-                InputStream editorStream = editorAccess.createContentInputStream();
-                Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
-                editorContent = s.hasNext() ? s.next() : "";
-                editorStream.close();
-            } catch (IOException er) {
-                logger.error(er);
-                editorContent = "";
-            }
-            // pass content of editor window to BaseXRequest with queryTest
-            ArrayList<String> valProbStr;
-            try {
-                BaseXRequest testQuery = new BaseXRequest("parse",
-                        BaseXSource.DATABASE, editorContent);
-                valProbStr = testQuery.getResult();
-            } catch (Exception er) {
-                logger.error("query to BaseX failed");
-                valProbStr = new ArrayList<>();
-                valProbStr.add("1");
-                valProbStr.add("1");
-                valProbStr.add("Fatal BaseX request error: "+er.getMessage());
-                er.printStackTrace();
-            }
-            // build DocumentPositionedInfo list from query return;
-            if (valProbStr.size() > 0) {
-                DocumentPositionedInfo dpi =
-                        new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
-                                Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
-                problemList.add(dpi);
-            }
-            //wait(1000);
-        }
-
-    }
-
-    private List<DocumentPositionedInfo> isQueryValid(WSEditor editorAccess) {
-
-        // get content of editor window
-        String editorContent;
-        logger.debug("filter validation problems");
-        try {
-            InputStream editorStream = editorAccess.createContentInputStream();
-            Scanner s = new java.util.Scanner(editorStream, "UTF-8").useDelimiter("\\A");
-            editorContent = s.hasNext() ? s.next() : "";
-            editorStream.close();
-        } catch (IOException er) {
-            logger.error(er);
-            editorContent = "";
-        }
-        // pass content of editor window to BaseXRequest with queryTest
-        ArrayList<String> valProbStr;
-        try {
-            BaseXRequest testQuery = new BaseXRequest("parse",
-                    BaseXSource.DATABASE, editorContent);
-            valProbStr = testQuery.getResult();
-        } catch (Exception er) {
-            logger.error("query to BaseX failed");
-            valProbStr = new ArrayList<>();
-            valProbStr.add("1");
-            valProbStr.add("1");
-            valProbStr.add("Fatal BaseX request error: "+er.getMessage());
-            er.printStackTrace();
-        }
-        // build DocumentPositionedInfo list from query return;
-        List<DocumentPositionedInfo> problemList = new ArrayList<>();
-        if (valProbStr.size() > 0) {
-            DocumentPositionedInfo dpi =
-                    new DocumentPositionedInfo(DocumentPositionedInfo.SEVERITY_ERROR, valProbStr.get(2), "",
-                            Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
-            problemList.add(dpi);
-        }
-        return problemList;
     }
 
 }

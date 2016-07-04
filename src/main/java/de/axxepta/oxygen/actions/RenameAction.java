@@ -3,8 +3,7 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
@@ -25,18 +24,16 @@ import java.awt.event.ActionEvent;
 public class RenameAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(RenameAction.class);
-    final BasexTree tree;
-    final TreeModel treeModel;
-    final TreeListener treeListener;
-    JDialog renameDialog;
-    JTextField newFileNameTextField;
-    BaseXSource source;
-    TreePath path;
-    String db_path;
+    private final TreeModel treeModel;
+    private final TreeListener treeListener;
+    private JDialog renameDialog;
+    private JTextField newFileNameTextField;
+    private BaseXSource source;
+    private TreePath path;
+    private String db_path;
 
-    public RenameAction(String name, Icon icon, BasexTree tree, TreeListener treeListener){
+    public RenameAction(String name, Icon icon, ArgonTree tree, TreeListener treeListener){
         super(name, icon);
-        this.tree = tree;
         this.treeModel = tree.getModel();
         this.treeListener = treeListener;
     }
@@ -85,7 +82,7 @@ public class RenameAction extends AbstractAction {
 
     private class renameThisAction extends AbstractAction {
 
-        public renameThisAction(String name){
+        renameThisAction(String name){
             super(name);
         }
 

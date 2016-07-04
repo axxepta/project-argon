@@ -17,7 +17,7 @@ public class MsgTopic implements SubjectInterface {
     private boolean changed;
     private final Object MUTEX= new Object();
 
-    public MsgTopic(String msgType){
+    MsgTopic(String msgType){
         this.observers=new ArrayList<>();
         this.type = msgType;
     }

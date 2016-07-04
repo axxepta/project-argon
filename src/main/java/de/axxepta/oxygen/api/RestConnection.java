@@ -44,7 +44,7 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public BaseXResource[] list(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
         final String result = Token.string(request(getQuery("list-" + source), PATH, path));
         final ArrayList<BaseXResource> list = new ArrayList<>();
         if(!result.isEmpty()) {
@@ -53,7 +53,7 @@ public class RestConnection implements Connection {
                 list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
             }
         }
-        return list.toArray(new BaseXResource[list.size()]);
+        return list;
     }
 
     @Override

@@ -5,10 +5,11 @@ declare variable $NEWPATH as xs:string external;
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
 let $path := substring-after($PATH, '/')
+let $newpath := substring-after($NEWPATH, '/')
 
 return if(string-length($path) = 0) then (
 (: rename database :)
 db:alter($db, $NEWPATH)
 ) else (
-db:rename($db, $PATH, $NEWPATH)
+db:rename($db, $path, $newpath)
 )

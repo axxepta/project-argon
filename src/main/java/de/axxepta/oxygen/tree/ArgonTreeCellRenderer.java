@@ -12,7 +12,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import de.axxepta.oxygen.utils.ImageUtils;
 import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
-public class BasexTreeCellRenderer extends TreeCellRenderer {
+public class ArgonTreeCellRenderer extends TreeCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 	TreeCellRenderer defaultRenderer = new TreeCellRenderer();

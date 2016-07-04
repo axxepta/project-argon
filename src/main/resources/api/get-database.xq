@@ -6,7 +6,14 @@ declare variable $PATH as xs:string external;
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
 let $path := substring-after($PATH, '/')
+let $metadb := concat('~meta_', $db)
+let $metapath := concat($path, '.xml')
 let $exists := db:exists($db, $path)
+
+let $doctypecomponents := if(db:exists($metadb, $metapath)) then (
+    db:open($metadb, $metapath)//doctypecomponent/text()
+) else ()
+
 return if($exists and db:is-xml($db, $path)) then (
 
     let $doctype := if(contains($path, 'ditamap')) then

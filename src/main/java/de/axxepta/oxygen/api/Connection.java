@@ -2,6 +2,7 @@ package de.axxepta.oxygen.api;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.basex.util.*;
 
@@ -18,7 +19,7 @@ public interface Connection extends Closeable {
      * @return entries
      * @throws IOException I/O exception
      */
-    BaseXResource[] list(final BaseXSource source, final String path) throws IOException;
+    List<BaseXResource> list(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Sets up a database for user management and copies a meta data template file into it.

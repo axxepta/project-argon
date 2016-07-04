@@ -1,19 +1,18 @@
 package de.axxepta.oxygen.versioncontrol;
 
 import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
+import de.axxepta.oxygen.utils.URLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -21,23 +20,21 @@ import java.util.List;
  * @author Markus on 31.01.2016.
  */
 
-public final class VersionHistoryUpdater {
+public class VersionHistoryUpdater implements ObserverInterface {
 
-    private static final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
-    private static List<VersionHistoryEntry> historyList;
+    private final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
 
-    private static ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
+    private List<VersionHistoryEntry> historyList = new ArrayList<>();
+    private JTable versionHistoryTable;
 
-    private VersionHistoryUpdater() {
+
+    public VersionHistoryUpdater(JTable versionHistoryTable) {
+        this.versionHistoryTable = versionHistoryTable;
         historyList = new ArrayList<>();
     }
 
-    public static void init(ArgonWorkspaceAccessPluginExtension plugin) {
-        pluginWSAExtension = plugin;
-        historyList = new ArrayList<>();
-    }
+    public void update(String type, String urlString) {
 
-    public static void update(String urlString) {
         historyList = new ArrayList<>();
         if (!urlString.equals("")) {
 
@@ -65,12 +62,7 @@ public final class VersionHistoryUpdater {
                 historyList.add(versionHistoryEntry);
             }
         }
-        pluginWSAExtension.updateVersionHistory(historyList);
-    }
-
-    private static void show() {
-        StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
-        pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
+        updateVersionHistory();
     }
 
     private static Date parseDate(String dateStr) {
@@ -81,7 +73,6 @@ public final class VersionHistoryUpdater {
         int min = Integer.parseInt(dateStr.substring(14));
         return new Date(year, month, day, hour, min);
     }
-
 
     private static String obtainHistoryPath(String resource, String urlString) {
         StringBuilder pathStr;
@@ -98,13 +89,14 @@ public final class VersionHistoryUpdater {
     }
 
     private static List<String> obtainFileVersions(String pathStr, String fileName, String extension) {
-        //ToDo: exchange by query to metadata file
+        //ToDo: exchange by query to metadata file -- maybe store data permanently in editor watch map to avoid repeated traffic
+        //      then the editor watch map needed to be notified about save processes!
         List<String> allVersions = new ArrayList<>();
         BaseXSource source = BaseXSource.DATABASE;
 
         List<BaseXResource> allOldVersions;
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            allOldVersions = Arrays.asList(connection.list(source, pathStr));
+            allOldVersions = connection.list(source, pathStr);
         } catch (IOException ioe) {
             allOldVersions = new ArrayList<>();
         }
@@ -116,6 +108,21 @@ public final class VersionHistoryUpdater {
                 allVersions.add(allOldVersions.get(i).getName());
         }
         return allVersions;
+    }
+
+    public static String checkVersionHistory(URL editorLocation) {
+        if ((editorLocation != null) && (URLUtils.isArgon(editorLocation)))
+            return editorLocation.toString();
+        else
+            return  "";
+    }
+
+    private void updateVersionHistory() {
+        ((VersionHistoryTableModel) versionHistoryTable.getModel()).setNewContent(historyList);
+        versionHistoryTable.setFillsViewportHeight(true);
+        versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
     }
 
 }

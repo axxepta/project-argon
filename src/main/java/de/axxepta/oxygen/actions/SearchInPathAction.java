@@ -25,11 +25,11 @@ import java.util.ArrayList;
  */
 public class SearchInPathAction extends AbstractAction {
 
-    JTree tree;
+    private JTree tree;
     Icon icon;
-    StandalonePluginWorkspace wsa;
+    private StandalonePluginWorkspace wsa;
     private static final Logger logger = LogManager.getLogger(SearchInPathAction.class);
-    JDialog resultsDialog;
+    private JDialog resultsDialog;
 
     public SearchInPathAction (String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree){
         super(name, icon);
@@ -122,12 +122,11 @@ public class SearchInPathAction extends AbstractAction {
                 resultsDialog.setLocationRelativeTo(parentFrame);
                 resultsDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
                 resultsDialog.setVisible(true);
-
             }
         }
     }
 
-    protected static ArrayList<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
+    private static ArrayList<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
         String basePathStr = TreeUtils.resourceFromTreePath(path);
         ArrayList<String> allResources = searchResourcesInPathString(source, basePathStr, filter);
         String searchRoot;
@@ -141,7 +140,7 @@ public class SearchInPathAction extends AbstractAction {
         return allResources;
     }
 
-    protected static ArrayList<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
+    private static ArrayList<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
         ArrayList<String> allResources = new ArrayList<>();
         JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
         try {
@@ -158,7 +157,6 @@ public class SearchInPathAction extends AbstractAction {
         }
         return allResources;
     }
-
 
     private class OpenSelectedAction extends AbstractAction {
 
