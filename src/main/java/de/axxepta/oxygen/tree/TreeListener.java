@@ -207,16 +207,16 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
      */
 
     @Override
-    public void update(String type, String message) {
+    public void update(String type, Object... message) {
         // is notified as observer when changes have been made to the database file structure
         // updates the tree if necessary
         TreeNode currNode;
         TreePath currPath;
 
-        logger.info("Tree needs to update: " + message);
+        logger.info("Tree needs to update: " + message[0]);
 
         if (type.equals("SAVE_FILE")) {
-            String[] protocol = message.split(":/*");
+            String[] protocol = ((String) message[0]).split(":/*");
             String[] path = protocol[1].split("/");
             currPath = new TreePath(treeModel.getRoot());
             switch (protocol[0]) {
@@ -282,7 +282,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         if (node.getChildCount() == 0) {  // if old list was empty skip lexicographic insert (faster)
             for (BaseXResource newPossibleChild : newChildrenList){
                 newChild = ClassFactory.getInstance().getTreeNode(newPossibleChild.getName(),
-                        ((ArgonTreeNode) node).getUrl() + "/" + newPossibleChild.getName());
+                        ((ArgonTreeNode) node).getTag().toString() + "/" + newPossibleChild.getName());
                 if (newPossibleChild.getType().equals(BaseXType.DIRECTORY))
                     newChild.setAllowsChildren(true);
                 else

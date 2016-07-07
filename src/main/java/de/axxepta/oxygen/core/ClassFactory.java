@@ -2,9 +2,13 @@ package de.axxepta.oxygen.core;
 
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
+import de.axxepta.oxygen.tree.ArgonPopupMenu;
+import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 import java.net.MalformedURLException;
 
 /**
@@ -28,6 +32,10 @@ public class ClassFactory {
 
     public DefaultMutableTreeNode getTreeNode(String obj, String url) {
         return new ArgonTreeNode(obj, url);
+    }
+
+    public ArgonPopupMenu getTreePopupMenu(StandalonePluginWorkspace pluginWorkspace, ArgonTree tree, TreeModel treeModel) {
+        return new ArgonPopupMenu(pluginWorkspace, tree, treeModel);
     }
 
     public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {

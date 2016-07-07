@@ -12,7 +12,7 @@ public class FileNameFieldListener implements DocumentListener {
     private final static String FILE_NAME_CHAR_WITH_EXTENSION = "\\w|_|-|\\.";
     private final static String FILE_NAME_CHARS_WITH_EXTENSION ="(\\w|_|-|\\.)*";
     private final static String FILE_NAME_CHAR_WITHOUT_EXTENSION = "\\w|_|-";
-    private final static String FILE_NAME_CHARS_WITHOUT_EXTENSION = "(\\w|_|-)*";
+    public final static String FILE_NAME_CHARS_WITHOUT_EXTENSION = "(\\w|_|-)*";
 
     private boolean textFieldResetInProgress;
     private JTextField textField;

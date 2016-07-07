@@ -7,23 +7,27 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class ArgonTreeNode extends DefaultMutableTreeNode {
 
-    private String url;
+    private Object tag;
+
+    public ArgonTreeNode() {
+        super();
+    }
 
     public ArgonTreeNode(Object name) {
         super(name);
     }
 
-    public ArgonTreeNode(Object name, String url) {
+    public ArgonTreeNode(Object name, Object url) {
         super(name);
-        this.url = url;
+        this.tag = url;
     }
 
-    public String getUrl() {
-        return url;
+    public Object getTag() {
+        return tag;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setTag(Object tag) {
+        this.tag = tag;
     }
 
 }

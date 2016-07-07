@@ -21,7 +21,7 @@ public class TreeUtils {
     public static void insertStrAsNodeLexi(TreeModel treeModel, String child, MutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
         DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
-                ((ArgonTreeNode) parent).getUrl() + "/" + child);
+                ((ArgonTreeNode) parent).getTag().toString() + "/" + child);
         if (childIsFile) childNode.setAllowsChildren(false);
         else childNode.setAllowsChildren(true);
         Boolean parentIsFile;

@@ -63,7 +63,7 @@ public class TreePane extends JScrollPane {
 
         final TreeListener tListener;
         // Add context menu
-        final ArgonPopupMenu contextMenu = new ArgonPopupMenu(pluginWorkspaceAccess, tree, treeModel);
+        final ArgonPopupMenu contextMenu = ClassFactory.getInstance().getTreePopupMenu(pluginWorkspaceAccess, tree, treeModel);
 
         // Add Tree Listener
         tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);

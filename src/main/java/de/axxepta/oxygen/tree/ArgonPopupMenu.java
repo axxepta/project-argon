@@ -21,7 +21,8 @@ import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
  * PopupMenu class which holds extra ArrayLists for MenuItems and their names, providing access methods
  *  for enabling the items via name keys.
  */
-class ArgonPopupMenu extends PopupMenu {
+@SuppressWarnings("all")  // CAVE: keep access modifiers public because class is subject to modification by AspectJ
+public class ArgonPopupMenu extends PopupMenu {
 
     private static final Logger logger = LogManager.getLogger(ArgonPopupMenu.class);
 
@@ -32,7 +33,7 @@ class ArgonPopupMenu extends PopupMenu {
     private ArrayList<String> itemNames;
     private ArrayList<JMenuItem> items;
 
-    ArgonPopupMenu(final StandalonePluginWorkspace pluginWorkspaceAccess, final ArgonTree tree, final TreeModel treeModel) {
+    public ArgonPopupMenu(final StandalonePluginWorkspace pluginWorkspaceAccess, final ArgonTree tree, final TreeModel treeModel) {
         super();
         this.itemNames = new ArrayList<>();
         this.items = new ArrayList<>();
@@ -78,22 +79,22 @@ class ArgonPopupMenu extends PopupMenu {
 
     public void show(Component invoker, int x, int y, TreePath path){
         // set entries in menu to (un)visible outside of the class because used constants are not inherent
-        prepareContextMenu(this, path);
+        prepareContextMenu(path);
         super.show(invoker, x, y);
     }
 
-    private int getItemCount() {
+    public int getItemCount() {
         return this.items.size();
     }
 
-    private String getItemName(int i) {
+    public String getItemName(int i) {
         if (this.itemNames.size() > i)
             return this.itemNames.get(i);
         else
             throw new NullPointerException("Tried to access ArgonPopupMenu item number not in list");
     }
 
-    private void setItemEnabled(int i, boolean b) {
+    public void setItemEnabled(int i, boolean b) {
         if (this.itemNames.size() > i)
             items.get(i).setEnabled(b);
         else
@@ -106,7 +107,7 @@ class ArgonPopupMenu extends PopupMenu {
         }
     }*/
 
-    void init(final TreeListener tListener) {
+    public void init(final TreeListener tListener) {
         // Populate context menu
         Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
             public void actionPerformed(ActionEvent e) {
@@ -167,7 +168,7 @@ class ArgonPopupMenu extends PopupMenu {
         this.add(searchInFiles, "Search In Files");
     }
 
-    private static void prepareContextMenu(ArgonPopupMenu contextMenu, TreePath path){
+    public void prepareContextMenu(TreePath path){
         // at what kind of node was the context menu invoked?
         boolean isFile = TreeUtils.isFile(path);
         boolean isDir = TreeUtils.isDir(path);
@@ -175,62 +176,62 @@ class ArgonPopupMenu extends PopupMenu {
         boolean isFileSource = TreeUtils.isFileSource(path);
 
         // check whether items apply to node
-        int itemCount = contextMenu.getItemCount();
+        int itemCount = this.getItemCount();
         for (int i=0; i<itemCount; i++){
 
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
                 if (isFile)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
                 if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
                 if (TreeUtils.isDbSource(path))
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
                 if (isFile || isDir)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
                 if (isFile || (isDir && !TreeUtils.isWEBINF(path)))  // never! try to change the name of a WEB-INF folder
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
                 if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_newversion))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_newversion))) {
                 if (isFile)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_showversion))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_showversion))) {
                 if (isFile)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
-            if ( contextMenu.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
                 if (isDir || isDB || isFileSource)
-                    contextMenu.setItemEnabled(i, true);
+                    this.setItemEnabled(i, true);
                 else
-                    contextMenu.setItemEnabled(i, false);
+                    this.setItemEnabled(i, false);
             }
         }
     }

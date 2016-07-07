@@ -10,5 +10,7 @@ public class TopicHolder {
     public static MsgTopic saveFile = new MsgTopic("SAVE_FILE");
     public static MsgTopic deleteFile = new MsgTopic("DELETE_FILE");
     public static MsgTopic changedEditorStatus = new MsgTopic("EDITOR_STATUS_CHANGED");
+    public static MsgTopic changedServerStatus = new MsgTopic("SERVER_STATUS_CHANGED");
+    public static MsgTopic treeNodeRequested = new MsgTopic("REQUESTED_TREE_NODE");
 
 }

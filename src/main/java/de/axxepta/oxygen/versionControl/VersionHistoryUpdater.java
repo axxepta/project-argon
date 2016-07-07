@@ -27,21 +27,21 @@ public class VersionHistoryUpdater implements ObserverInterface {
     private List<VersionHistoryEntry> historyList = new ArrayList<>();
     private JTable versionHistoryTable;
 
-
-    public VersionHistoryUpdater(JTable versionHistoryTable) {
+    VersionHistoryUpdater(JTable versionHistoryTable) {
         this.versionHistoryTable = versionHistoryTable;
         historyList = new ArrayList<>();
     }
 
-    public void update(String type, String urlString) {
+    public void update(String type, Object... urlString) {
 
         historyList = new ArrayList<>();
-        if (!urlString.equals("")) {
+        if (!(urlString[0]).equals("")) {
 
-            String resource = CustomProtocolURLHandlerExtension.pathFromURLString(urlString);
-            String pathStr = obtainHistoryPath(resource, urlString);
-            String fileName = urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."));
-            String extension = urlString.substring(urlString.lastIndexOf("."));
+            String resource = CustomProtocolURLHandlerExtension.pathFromURLString((String) urlString[0]);
+            String pathStr = obtainHistoryPath(resource, (String) urlString[0]);
+            String fileName = ((String) urlString[0]).substring(((String) urlString[0]).lastIndexOf("/") + 1,
+                    ((String) urlString[0]).lastIndexOf("."));
+            String extension = ((String) urlString[0]).substring(((String) urlString[0]).lastIndexOf("."));
 
             List<String> allVersions = obtainFileVersions(pathStr, fileName, extension);
 
