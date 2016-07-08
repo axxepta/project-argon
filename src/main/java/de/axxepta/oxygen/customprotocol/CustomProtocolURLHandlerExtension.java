@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.customprotocol;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLStreamHandler;
@@ -7,17 +8,12 @@ import java.net.URLStreamHandler;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.rest.BaseXRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
 import ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension;
 import ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-
-import javax.swing.*;
 
 
 /**
@@ -60,18 +56,18 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
             @Override
              public void unlock(URL url) throws LockException {
-                try {
+/*                try {
                     new BaseXRequest("unlock", BaseXSource.DATABASE, pathFromURL(url));
                 } catch (Exception ex) {
                     //JOptionPane.showMessageDialog(null, "Failed to unlock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                     logger.debug(ex);
-                }
+                }*/
 
             }
 
             @Override
             public void updateLock(URL url, int i) throws LockException {
-                try {
+/*                try {
                     Connection connection = BaseXConnectionWrapper.getConnection();
                     if (connection != null) {
                         boolean isLocked;
@@ -92,7 +88,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 } catch (Exception ex) {
                     //JOptionPane.showMessageDialog(null, "Failed to lock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
                     logger.debug(ex);
-                }
+                }*/
             }
 
         });
@@ -126,7 +122,16 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         if (isInHiddenDB(url)) {
             return true;
         } else {
-            try {
+            boolean isLockedByUser = false;
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                if (connection != null)
+                    isLockedByUser = connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url));
+            } catch (IOException ioe) {
+                logger.debug(ioe);
+                isLockedByUser = false;
+            }
+            return !isLockedByUser;
+/*            try {
                 Connection connection = BaseXConnectionWrapper.getConnection();
                 if (connection != null) {
                     boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
@@ -171,7 +176,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
                 }
             } catch (Exception er) {
                 return false;
-            }
+            }*/
         }
     }
 

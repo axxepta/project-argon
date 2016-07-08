@@ -1,5 +1,8 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
@@ -12,6 +15,8 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.net.URL;
 
 
@@ -50,6 +55,19 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
             ArgonEditorsWatchMap.removeURL(editorLocation);
         toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
+            String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
+            if (connection.lockedByUser(source, path)) {
+                int checkInFile = JOptionPane.showConfirmDialog(null, "You just closed a checked out file.\n" +
+                        "Do you want to check it in?", "Closed checked out file", JOptionPane.YES_NO_OPTION);
+                if (checkInFile == JOptionPane.YES_OPTION) {
+                    connection.unlock(source, path);
+                }
+            }
+        } catch (IOException ioe) {
+            logger.debug(ioe.getMessage());
+        }
     }
 
     @Override

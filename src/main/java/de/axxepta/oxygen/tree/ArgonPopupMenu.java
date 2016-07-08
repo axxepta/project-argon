@@ -5,8 +5,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import de.axxepta.oxygen.actions.*;
@@ -109,26 +107,12 @@ public class ArgonPopupMenu extends PopupMenu {
 
     public void init(final TreeListener tListener) {
         // Populate context menu
-        Action checkOut = new AbstractAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN)) {
-            public void actionPerformed(ActionEvent e) {
-                String db_path = TreeUtils.urlStringFromTreePath(tListener.getPath());
-                if (!tListener.getNode().getAllowsChildren()) {
-                    URL argonURL = null;
-                    try {
-                        argonURL = new URL(db_path);
-                    } catch (MalformedURLException e1) {
-                        logger.error(e1);
-                    }
-                    pluginWorkspaceAccess.open(argonURL);
-                }
-            }
-        };
+        Action checkOut = new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN),
+                tListener);
         this.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
 
-        Action checkIn = new AbstractAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD)) {
-            public void actionPerformed(ActionEvent e) {
-            }
-        };
+        Action checkIn = new CheckInAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.FILE_ADD),
+                tListener);
         add(checkIn, Lang.get(Lang.Keys.cm_checkin));
 
         this.addSeparator();
@@ -186,7 +170,7 @@ public class ArgonPopupMenu extends PopupMenu {
                     this.setItemEnabled(i, false);
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkin))) {
-                if (isDir || isDB || isFileSource)
+                if (isFile)
                     this.setItemEnabled(i, true);
                 else
                     this.setItemEnabled(i, false);

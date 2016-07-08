@@ -5,23 +5,25 @@ declare variable $PATH as xs:string external;
 
 (:~ Lock database. :)
 declare variable $LOCK-DB := '~argon';
+declare variable $USER-FILE := '~usermanagement';
 
 let $user := user:current()
-let $lock-file := db:open($LOCK-DB, $LOCK-DB)
-let $my-lock := $lock-file/*[name() = $SOURCE][text() = $PATH][@user = $user]
+let $lock-file := db:open($LOCK-DB, $USER-FILE)
+let $my-lock := if(exists($lock-file)) then (
+    $lock-file/*[name() = $SOURCE][text() = $PATH]
+) else ()
 
 let $locks := (
     if(exists($lock-file))
     then $lock-file
-    else document { <locks/> }
+    else document { <usermanagement><locks/><groups/></usermanagement> }
 ) update (
-insert node element { $SOURCE } { attribute user { $user },  $PATH } into . )
+insert node element { $SOURCE } { attribute user { $user },  $PATH } into .//locks )
 
 return if(exists($lock-file) and exists($my-lock) ) then (
     ()
 ) else if(exists($lock-file) ) then (
-    db:replace($LOCK-DB, $LOCK-DB, $locks)
-)
-else (
-        db:add($LOCK-DB, $locks, $LOCK-DB)
+    db:replace($LOCK-DB, $USER-FILE, $locks)
+) else (
+    db:add($LOCK-DB, $locks, $USER-FILE)
 )

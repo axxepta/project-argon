@@ -58,7 +58,7 @@ public class TreePane extends JScrollPane {
         ((DefaultTreeModel) treeModel).setAsksAllowsChildren(true);
         TreeUtils.init(treeModel);
         final ArgonTree tree = new ArgonTree(treeModel);
-        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         setTreeState(tree, new TreePath(root), false);
 
         final TreeListener tListener;

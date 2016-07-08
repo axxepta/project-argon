@@ -60,7 +60,12 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
     @java.lang.Override
     public boolean applicationClosing() {
+        checkForCheckedOutDocuments();
         return true;
+    }
+
+    private void checkForCheckedOutDocuments() {
+        // ToDo
     }
 
 
