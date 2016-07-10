@@ -173,8 +173,13 @@ public class RestConnection implements Connection {
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");
+            byte[] outArray = tb.finish();
+            if (bindings[1].contains(".tpl")) {
+                storeString(Arrays.toString(outArray), "E:\\Dateien\\Projekte\\MAN\\Daten\\bytes.txt");
+                storeString(new String(outArray, "UTF-8"), "E:\\Dateien\\Projekte\\MAN\\Daten\\utf8string.txt");
+            }
             try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tb.finish());
+                out.write(outArray);
                 out.close();
             }
 
@@ -195,5 +200,16 @@ public class RestConnection implements Connection {
     protected static String toEntities(final String string) {
         return string.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;").
                 replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+
+    public static void storeString(String text, String filePath) {
+        try {
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(text);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

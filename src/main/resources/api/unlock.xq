@@ -12,7 +12,7 @@ let $exists := db:exists($LOCK-DB, $USER-FILE)
 let $locks := (
     if($exists)
     then db:open($LOCK-DB, $USER-FILE)
-    else document { <usermanagement><locks/><groups/></usermanagement> }
+    else document { <usermanagement><locks/><groups><group name="admin"><user>admin</user></group></groups></usermanagement> }
 ) update (
     delete node *//locks/*[name() = $SOURCE][text() = $PATH][@user = $user]
 )

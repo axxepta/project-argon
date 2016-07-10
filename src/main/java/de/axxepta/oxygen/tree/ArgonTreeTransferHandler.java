@@ -1,6 +1,8 @@
 package de.axxepta.oxygen.tree;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +67,6 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 transferData.addAll(transferList);
                 if (transferData.size() > 0) {
                     BaseXSource source = TreeUtils.sourceFromTreePath(path);
-                    String protocol = TreeUtils.protocolFromTreePath(path);
 
                     ArrayList<String> pathList = new ArrayList<>();
                     // consider: transferred objects could be deep directories!
@@ -74,15 +75,24 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     }
                     int i = 0;
                     List<String> lockedFiles = new ArrayList<>();
+                    boolean isLocked;
                     while (i < transferData.size()) {
                         File file = transferData.get(i);
                         if (transferData.get(i).isFile()) {
                             URL url;
                             try {
                                 url = new URL(pathList.get(i));
+                                String newPath = CustomProtocolURLHandlerExtension.pathFromURL(url);
 
-                                CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
-                                if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
+                                isLocked = false;
+                                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                                    if (connection.locked(source, newPath))
+                                        isLocked = true;
+                                }catch (IOException ie) {
+                                    isLocked = true;
+                                    logger.debug("Querying LOCKED returned: ", ie.getMessage());
+                                }
+                                if (isLocked) {
                                     lockedFiles.add(url.toString());
                                 } else {
                                     // ToDo: proper locking while store process (transaction)

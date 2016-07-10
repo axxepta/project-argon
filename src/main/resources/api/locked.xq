@@ -9,4 +9,4 @@ declare variable $USER-FILE := '~usermanagement';
 
 let $user := user:current()
 let $lock-file := db:open($LOCK-DB, $USER-FILE)
-return exists($lock-file) and exists($lock-file/*[name() = $SOURCE][text() = $PATH]) and empty($lock-file/*[name() = $SOURCE][text() = $PATH][@user = $user])
+return exists($lock-file) and exists($lock-file//locks/*[name() = $SOURCE][text() = $PATH]) and empty($lock-file//locks/*[name() = $SOURCE][text() = $PATH][@user = $user])

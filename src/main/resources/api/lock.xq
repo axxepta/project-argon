@@ -16,7 +16,7 @@ let $my-lock := if(exists($lock-file)) then (
 let $locks := (
     if(exists($lock-file))
     then $lock-file
-    else document { <usermanagement><locks/><groups/></usermanagement> }
+    else document { <usermanagement><locks/><groups><group name="admin"><user>admin</user></group></groups></usermanagement> }
 ) update (
 insert node element { $SOURCE } { attribute user { $user },  $PATH } into .//locks )
 
