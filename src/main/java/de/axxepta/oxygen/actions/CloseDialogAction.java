@@ -6,11 +6,12 @@ import java.awt.event.ActionEvent;
 /**
  * @author by Markus on 21.10.2015.
  */
-class CloseDialogAction extends AbstractAction {
+@SuppressWarnings("all")
+public class CloseDialogAction extends AbstractAction {
 
     private JDialog dialog;
 
-    CloseDialogAction(String name, JDialog dialog){
+    public CloseDialogAction(String name, JDialog dialog){
         super(name);
         this.dialog = dialog;
     }

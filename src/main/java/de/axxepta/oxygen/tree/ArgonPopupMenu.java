@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import de.axxepta.oxygen.actions.*;
+import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
@@ -141,8 +142,8 @@ public class ArgonPopupMenu extends PopupMenu {
 
         this.addSeparator();
 
-        final Action searchInPath = new SearchInPathAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH),
-                pluginWorkspaceAccess, tree);
+        final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_search),
+                ImageUtils.getIcon(ImageUtils.SEARCH), pluginWorkspaceAccess, tree);
         this.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
         Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {

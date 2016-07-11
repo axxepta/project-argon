@@ -6,8 +6,6 @@ import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -16,8 +14,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -28,8 +24,6 @@ public class SearchInPathAction extends AbstractAction {
     private JTree tree;
     Icon icon;
     private StandalonePluginWorkspace wsa;
-    private static final Logger logger = LogManager.getLogger(SearchInPathAction.class);
-    private JDialog resultsDialog;
 
     public SearchInPathAction (String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree){
         super(name, icon);
@@ -46,7 +40,7 @@ public class SearchInPathAction extends AbstractAction {
                     "Search in Path", JOptionPane.PLAIN_MESSAGE);
             return;
         }
-        // ToDo: own class...
+
         if ((path.getPathCount() == 2) && (path.getPathComponent(1).toString().equals("Databases"))) {
             JOptionPane.showMessageDialog(parentFrame, "Please select specific database to search in.",
                     "Search in Path", JOptionPane.PLAIN_MESSAGE);
@@ -88,45 +82,63 @@ public class SearchInPathAction extends AbstractAction {
                 ArrayList<String> allResources = searchResourcesInPath(source, path, filter);
 
                 // show found resources
-                resultsDialog = new JDialog(parentFrame, "Open/Find Resources");
-                resultsDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-                resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-                JPanel content = new JPanel(new BorderLayout());
-                JLabel foundLabel = new JLabel("Search for '" + filter + "' in '" + pathStr + "' found "
-                        + allResources.size() + " resource(s).");
-                content.add(foundLabel, BorderLayout.NORTH);
-
                 JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
 
+                JDialog resultsDialog = createSelectionListDialog(parentFrame,
+                        "Open/Find Resources",
+                        "Search for '" + filter + "' in '" + pathStr + "' found " + allResources.size() + " resource(s).",
+                        resultList,
+                        700, 300);
+
                 JPanel buttonsPanel = new JPanel();
-                JButton openButton = new JButton(new OpenSelectedAction("Open Resource(s)", icon, this.wsa, resultList));
+                JButton openButton = new JButton(
+                        new OpenListSelectionAction("Open Resource(s)", this.wsa, resultList, resultsDialog));
                 buttonsPanel.add(openButton);
+
+                JButton checkOutButton = new JButton(
+                        new CheckOutListSelectionAction("Check out Resource(s)", resultList, resultsDialog));
+                buttonsPanel.add(checkOutButton);
 
                 JButton cancelButton = new JButton(new CloseDialogAction("Cancel", resultsDialog));
                 buttonsPanel.add(cancelButton);
 
-                content.add(buttonsPanel, BorderLayout.SOUTH);
-
-                resultList.setLayoutOrientation(JList.VERTICAL);
-                resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-                JScrollPane resultPane = new JScrollPane(resultList);
-                resultPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                resultPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-                resultsDialog.getContentPane().add(resultPane, BorderLayout.CENTER);
-                content.add(resultPane);
-
-                content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-                resultsDialog.setContentPane(content);
-                resultsDialog.setSize(500,300);
-                resultsDialog.setLocationRelativeTo(parentFrame);
-                resultsDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+                resultsDialog.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
                 resultsDialog.setVisible(true);
             }
         }
     }
 
-    private static ArrayList<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
+    // made public for access via AspectJ
+    @SuppressWarnings("all")
+    public static JDialog createSelectionListDialog(JFrame parentFrame, String title, String label, JList resultList,
+                                             int width, int height) {
+        JDialog resultsDialog = new JDialog(parentFrame, title);
+        resultsDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
+        resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        JPanel content = new JPanel(new BorderLayout());
+        JLabel foundLabel = new JLabel(label);
+        content.add(foundLabel, BorderLayout.NORTH);
+
+        resultList.setLayoutOrientation(JList.VERTICAL);
+        resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane resultPane = new JScrollPane(resultList);
+        resultPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        resultPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        resultsDialog.getContentPane().add(resultPane, BorderLayout.CENTER);
+        content.add(resultPane);
+
+        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        resultsDialog.setContentPane(content);
+        resultsDialog.setSize(width, height);
+        resultsDialog.setLocationRelativeTo(parentFrame);
+        resultsDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        return resultsDialog;
+    }
+
+    // made public for access via AspectJ
+    @SuppressWarnings("all")
+    public static ArrayList<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
         String basePathStr = TreeUtils.resourceFromTreePath(path);
         ArrayList<String> allResources = searchResourcesInPathString(source, basePathStr, filter);
         String searchRoot;
@@ -140,7 +152,9 @@ public class SearchInPathAction extends AbstractAction {
         return allResources;
     }
 
-    private static ArrayList<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
+    // made public for access via AspectJ
+    @SuppressWarnings("all")
+    public static ArrayList<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
         ArrayList<String> allResources = new ArrayList<>();
         JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
         try {
@@ -156,36 +170,6 @@ public class SearchInPathAction extends AbstractAction {
             allResources.set(i, allResources.get(i).replaceAll("\\\\","/"));
         }
         return allResources;
-    }
-
-    private class OpenSelectedAction extends AbstractAction {
-
-        JList<String> results;
-        StandalonePluginWorkspace wsa;
-
-        OpenSelectedAction(String name, Icon icon, StandalonePluginWorkspace wsa, JList<String> results) {
-            super(name, icon);
-            this.results = results;
-            this.wsa = wsa;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            ArrayList<String> selectedResources = new ArrayList<>();
-            selectedResources.addAll(results.getSelectedValuesList());
-
-            for (Object resource : selectedResources) {
-                String db_path = TreeUtils.urlStringFromTreeString(resource.toString());
-                URL argonURL = null;
-                try {
-                    argonURL = new URL(db_path);
-                } catch (MalformedURLException e1) {
-                    logger.error(e1);
-                }
-                this.wsa.open(argonURL);
-            }
-            resultsDialog.dispose();
-        }
     }
 
 }

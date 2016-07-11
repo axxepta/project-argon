@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.actions.CheckCheckedOutFilesAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.tree.*;
@@ -60,12 +61,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
     @java.lang.Override
     public boolean applicationClosing() {
-        checkForCheckedOutDocuments();
+        new CheckCheckedOutFilesAction().actionPerformed(null);
         return true;
-    }
-
-    private void checkForCheckedOutDocuments() {
-        // ToDo
     }
 
 

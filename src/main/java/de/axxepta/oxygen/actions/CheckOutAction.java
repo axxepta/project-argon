@@ -34,17 +34,23 @@ public class CheckOutAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         if (!treeListener.getNode().getAllowsChildren()) {
             String db_path = TreeUtils.urlStringFromTreePath(treeListener.getPath());
-            try {
-                URL url = new URL(db_path);
-                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                    connection.lock(BaseXSource.DATABASE, CustomProtocolURLHandlerExtension.pathFromURL(url));
-                } catch (IOException ex) {
-                    logger.debug(ex);
-                }
-                PluginWorkspaceProvider.getPluginWorkspace().open(url);
-            } catch (MalformedURLException e1) {
-                logger.error(e1);
+            checkOut(db_path);
+        }
+    }
+
+    @SuppressWarnings("all")
+    public static void checkOut(String db_path) {
+        try {
+            URL url = new URL(db_path);
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                connection.lock(CustomProtocolURLHandlerExtension.sourceFromURL(url),
+                        CustomProtocolURLHandlerExtension.pathFromURL(url));
+            } catch (IOException ex) {
+                logger.debug(ex);
             }
+            PluginWorkspaceProvider.getPluginWorkspace().open(url);
+        } catch (MalformedURLException e1) {
+            logger.error(e1);
         }
     }
 }

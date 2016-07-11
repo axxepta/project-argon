@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.core;
 
+import de.axxepta.oxygen.actions.SearchInPathAction;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.tree.ArgonPopupMenu;
@@ -7,6 +8,7 @@ import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import java.net.MalformedURLException;
@@ -40,5 +42,9 @@ public class ClassFactory {
 
     public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {
         return new RestConnection(host, port, user, password);
+    }
+
+    public Action getSearchInPathAction(String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree) {
+        return new SearchInPathAction(name, icon, wsa, tree);
     }
 }

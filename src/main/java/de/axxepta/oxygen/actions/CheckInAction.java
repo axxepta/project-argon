@@ -37,23 +37,26 @@ public class CheckInAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         try {
             URL url = new URL(((ArgonTreeNode) treeListener.getPath().getLastPathComponent()).getTag().toString());
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-                String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
-                if (connection.lockedByUser(source, path)) {
-                    WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
-                            getEditorAccess(url, StandalonePluginWorkspace.MAIN_EDITING_AREA);
-                    if (editorAccess != null)
-                        editorAccess.close(true);
-                    connection.unlock(source, path);
-                }
-            } catch (IOException ex) {
-                logger.debug(ex);
-            }
+            checkIn(url);
         } catch (MalformedURLException mue) {
             logger.debug(mue);
         }
+    }
 
+    protected static void checkIn(URL url) {
+        BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            if (connection.lockedByUser(source, path)) {
+                WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
+                        getEditorAccess(url, StandalonePluginWorkspace.MAIN_EDITING_AREA);
+                if (editorAccess != null)
+                    editorAccess.close(true);
+                connection.unlock(source, path);
+            }
+        } catch (IOException ex) {
+            logger.debug(ex);
+        }
     }
 
 }
