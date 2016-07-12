@@ -4,7 +4,6 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +16,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 /**
@@ -45,31 +45,29 @@ public class AddDatabaseAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+        JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
-        addDbDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_adddb));
-        addDbDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-        addDbDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        addDbDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_adddb));
 
         JPanel content = new JPanel(new BorderLayout(10,10));
+
+        AddDbAction addDB = new AddDbAction("Add");
 
         newDbNameTextField = new JTextField();
         newDbNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newDbNameTextField, true));
         content.add(newDbNameTextField, BorderLayout.NORTH);
 
+        newDbNameTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+        newDbNameTextField.getActionMap().put("confirm", addDB);
+
         JPanel btnPanel = new JPanel();
-        JButton addBtn = new JButton(new AddDbAction("Add"));
+        JButton addBtn = new JButton(addDB);
         btnPanel.add(addBtn, BorderLayout.WEST);
-        JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", addDbDialog));
+        JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), addDbDialog));
         btnPanel.add(cancelBtn, BorderLayout.EAST);
         content.add(btnPanel, BorderLayout.SOUTH);
 
-        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        addDbDialog.setContentPane(content);
-        addDbDialog.pack();
-        addDbDialog.setLocationRelativeTo(parentFrame);
-        addDbDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        addDbDialog.setVisible(true);
+        DialogTools.wrapAndShow(addDbDialog, content, parentFrame);
     }
 
     private class AddDbAction extends AbstractAction {

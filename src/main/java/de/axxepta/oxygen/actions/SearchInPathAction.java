@@ -5,7 +5,6 @@ import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -84,38 +83,31 @@ public class SearchInPathAction extends AbstractAction {
                 // show found resources
                 JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
 
-                JDialog resultsDialog = createSelectionListDialog(parentFrame,
-                        "Open/Find Resources",
-                        "Search for '" + filter + "' in '" + pathStr + "' found " + allResources.size() + " resource(s).",
-                        resultList,
-                        700, 300);
+                JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, "Open/Find Resources");
+
+                JPanel content = createSelectionListPanel("Search for '" + filter + "' in '" + pathStr + "' found " +
+                        allResources.size() + " resource(s).", resultList);
 
                 JPanel buttonsPanel = new JPanel();
                 JButton openButton = new JButton(
                         new OpenListSelectionAction("Open Resource(s)", this.wsa, resultList, resultsDialog));
                 buttonsPanel.add(openButton);
-
                 JButton checkOutButton = new JButton(
                         new CheckOutListSelectionAction("Check out Resource(s)", resultList, resultsDialog));
                 buttonsPanel.add(checkOutButton);
-
                 JButton cancelButton = new JButton(new CloseDialogAction("Cancel", resultsDialog));
                 buttonsPanel.add(cancelButton);
 
-                resultsDialog.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-                resultsDialog.setVisible(true);
+                content.add(buttonsPanel, BorderLayout.SOUTH);
+
+                DialogTools.wrapAndShow(resultsDialog, content, parentFrame, 700, 300);
             }
         }
     }
 
     // made public for access via AspectJ
     @SuppressWarnings("all")
-    public static JDialog createSelectionListDialog(JFrame parentFrame, String title, String label, JList resultList,
-                                             int width, int height) {
-        JDialog resultsDialog = new JDialog(parentFrame, title);
-        resultsDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-        resultsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
+    public static JPanel createSelectionListPanel(String label, JList resultList) {
         JPanel content = new JPanel(new BorderLayout());
         JLabel foundLabel = new JLabel(label);
         content.add(foundLabel, BorderLayout.NORTH);
@@ -125,15 +117,9 @@ public class SearchInPathAction extends AbstractAction {
         JScrollPane resultPane = new JScrollPane(resultList);
         resultPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         resultPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        resultsDialog.getContentPane().add(resultPane, BorderLayout.CENTER);
-        content.add(resultPane);
+        content.add(resultPane, BorderLayout.CENTER);
 
-        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        resultsDialog.setContentPane(content);
-        resultsDialog.setSize(width, height);
-        resultsDialog.setLocationRelativeTo(parentFrame);
-        resultsDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        return resultsDialog;
+        return content;
     }
 
     // made public for access via AspectJ

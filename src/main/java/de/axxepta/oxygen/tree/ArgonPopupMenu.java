@@ -137,6 +137,10 @@ public class ArgonPopupMenu extends PopupMenu {
                 tree);
         this.add(add, Lang.get(Lang.Keys.cm_add));
 
+        Action newDir = new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), ImageUtils.getIcon(ImageUtils.FILE_ADD),
+                tree);
+        this.add(newDir, Lang.get(Lang.Keys.cm_newdir));
+
         final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
         this.add(refresh, Lang.get(Lang.Keys.cm_refresh));
 
@@ -195,6 +199,12 @@ public class ArgonPopupMenu extends PopupMenu {
                     this.setItemEnabled(i, false);
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
+                if (isDir || isDB || isFileSource)
+                    this.setItemEnabled(i, true);
+                else
+                    this.setItemEnabled(i, false);
+            }
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_newdir))) {
                 if (isDir || isDB || isFileSource)
                     this.setItemEnabled(i, true);
                 else

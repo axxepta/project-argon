@@ -4,9 +4,10 @@ import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
+import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
@@ -16,6 +17,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,21 +48,19 @@ public class AddNewFileAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
+        TreeListener listener = ((TreeListener) tree.getTreeSelectionListeners()[0]);
+        TreePath path = listener.getPath();
         String db_path = TreeUtils.resourceFromTreePath(path);
-        String pathString = TreeUtils.protocolFromTreePath(path) + ":/" + db_path;
+        String urlString = ((ArgonTreeNode) path.getLastPathComponent()).getTag().toString();
 
-        if (((TreeListener) tree.getTreeSelectionListeners()[0]).getNode().getAllowsChildren()) {
+        if (listener.getNode().getAllowsChildren()) {
 
-            // show dialog
             JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-            newFileDialog = new JDialog(parentFrame, "Add new File to " + pathString);
-            newFileDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-            newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            newFileDialog = DialogTools.getOxygenDialog(parentFrame, "Add new File to " + urlString);
 
+            AddNewSpecFileAction addFile = new AddNewSpecFileAction("Add File", path, db_path);
 
             JPanel content = new JPanel(new BorderLayout(10,10));
-
             JPanel namePanel = new JPanel(new GridLayout());
             JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
             namePanel.add(nameLabel);
@@ -68,6 +68,9 @@ public class AddNewFileAction extends AbstractAction {
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, false));
             namePanel.add(newFileNameTextField);
             content.add(namePanel, BorderLayout.NORTH);
+
+            newFileNameTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+            newFileNameTextField.getActionMap().put("confirm", addFile);
 
             JPanel extPanel = new JPanel(new GridLayout());
             JLabel extLabel = new JLabel("File Type", JLabel.LEFT);
@@ -80,19 +83,13 @@ public class AddNewFileAction extends AbstractAction {
             content.add(extPanel, BorderLayout.CENTER);
 
             JPanel btnPanel = new JPanel();
-            JButton addBtn = new JButton(new AddNewSpecFileAction("Add File", path, db_path));
+            JButton addBtn = new JButton(addFile);
             btnPanel.add(addBtn, BorderLayout.WEST);
-            JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", newFileDialog));
+            JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), newFileDialog));
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
-            content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            newFileDialog.setContentPane(content);
-            newFileDialog.pack();
-            newFileDialog.setLocationRelativeTo(parentFrame);
-            newFileDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-            //DialogTools.CenterDialogRelativeToParent(newFileDialog);
-            newFileDialog.setVisible(true);
+            DialogTools.wrapAndShow(newFileDialog, content, parentFrame);
         }
     }
 

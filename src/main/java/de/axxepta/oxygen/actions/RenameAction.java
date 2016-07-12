@@ -6,7 +6,6 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +16,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * @author Markus on 02.11.2015.
@@ -44,7 +44,7 @@ public class RenameAction extends AbstractAction {
         source = TreeUtils.sourceFromTreePath(path);
         db_path = TreeUtils.resourceFromTreePath(path);
         if ((source != null) && (!db_path.equals(""))) {
-            Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+            JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
             String urlString = TreeUtils.urlStringFromTreePath(path);
             int filePosition = urlString.lastIndexOf("/");
@@ -53,36 +53,33 @@ public class RenameAction extends AbstractAction {
             String fileName = urlString.substring(filePosition + 1);
             String filePath = urlString.substring(0, filePosition + 1);
 
-            renameDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_rename) + " in " + filePath);
-            renameDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-            renameDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            renameDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_rename) + " in " + filePath);
 
             JPanel content = new JPanel(new BorderLayout(10,10));
+
+            RenameThisAction renameThisAction = new RenameThisAction(Lang.get(Lang.Keys.cm_rename));
 
             newFileNameTextField = new JTextField();
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, true));
             content.add(newFileNameTextField, BorderLayout.NORTH);
             newFileNameTextField.setText(fileName);
+            newFileNameTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+            newFileNameTextField.getActionMap().put("confirm", renameThisAction);
 
             JPanel btnPanel = new JPanel();
-            JButton addBtn = new JButton(new renameThisAction("Rename"));
+            JButton addBtn = new JButton(renameThisAction);
             btnPanel.add(addBtn, BorderLayout.WEST);
-            JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", renameDialog));
+            JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), renameDialog));
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
-            content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            renameDialog.setContentPane(content);
-            renameDialog.pack();
-            renameDialog.setLocationRelativeTo(parentFrame);
-            renameDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-            renameDialog.setVisible(true);
+            DialogTools.wrapAndShow(renameDialog, content, parentFrame);
         }
     }
 
-    private class renameThisAction extends AbstractAction {
+    private class RenameThisAction extends AbstractAction {
 
-        renameThisAction(String name){
+        RenameThisAction(String name){
             super(name);
         }
 

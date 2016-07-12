@@ -17,11 +17,11 @@ import java.util.List;
 /**
  * @author Markus on 11.07.2016.
  */
-public class CheckCheckedOutFilesAction extends AbstractAction {
+public class CheckedOutFilesAction extends AbstractAction {
 
-    private static final Logger logger = LogManager.getLogger(CheckCheckedOutFilesAction.class);
+    private static final Logger logger = LogManager.getLogger(CheckedOutFilesAction.class);
 
-    public CheckCheckedOutFilesAction() {
+    public CheckedOutFilesAction() {
         super();
     }
 
@@ -39,11 +39,9 @@ public class CheckCheckedOutFilesAction extends AbstractAction {
         final ResourceListModel listModel = new ResourceListModel(files);
         final JList resultList = new JList(listModel);
 
-        final JDialog resultsDialog = SearchInPathAction.createSelectionListDialog(parentFrame,
-                "Checked out files",
-                "Choose files to check in.",
-                resultList,
-                500, 300);
+        final JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, "Checked out files");
+
+        JPanel content = SearchInPathAction.createSelectionListPanel("Choose files to check in.", resultList);
 
         JPanel buttonsPanel = new JPanel();
         JButton checkInButton = new JButton(new AbstractAction("Check in selected files") {
@@ -61,12 +59,11 @@ public class CheckCheckedOutFilesAction extends AbstractAction {
             }
         });
         buttonsPanel.add(checkInButton);
-
         JButton exitButton = new JButton(new CloseDialogAction("Exit", resultsDialog));
         buttonsPanel.add(exitButton);
+        content.add(buttonsPanel, BorderLayout.SOUTH);
 
-        resultsDialog.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-        resultsDialog.setVisible(true);
+        DialogTools.wrapAndShow(resultsDialog, content, parentFrame, 500, 300);
     }
 
     private static List<BaseXResource> getCheckedOutFiles() {

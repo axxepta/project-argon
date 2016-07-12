@@ -88,9 +88,9 @@ let $xml := if(starts-with($RESOURCE, '<')) then (
 ) else ('')
 
 return if(starts-with($RESOURCE, '<')) then (
-    db:replace($db, $path, $xml),
+    db:replace($db, $path, $RESOURCE),
     db:replace($metadb, $metapath, $metaupdated),
-    if($VERSIONIZE) then (db:replace($histdb, $histpath, $xml)) else ()
+    if($VERSIONIZE) then (db:replace($histdb, $histpath, $RESOURCE)) else ()
 ) else (
     db:store($db, $path, xs:base64Binary($RESOURCE)),
     db:replace($metadb, $metapath, $metaupdated),
