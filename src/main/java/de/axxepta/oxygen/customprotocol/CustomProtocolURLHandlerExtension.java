@@ -34,7 +34,6 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public URLStreamHandler getURLStreamHandler(String protocol) {
         //BaseXConnectionWrapper.refreshDefaults();
-        logger.info("Requested protocol: " + protocol);
         URLStreamHandler handler;
         switch (protocol.toLowerCase()) {
             case ARGON: handler = new ArgonProtocolHandler(BaseXSource.DATABASE);
@@ -190,15 +189,19 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         String urlString = "";
         try {
             urlString = java.net.URLDecoder.decode(url.toString(), "UTF-8");
-        } catch(UnsupportedEncodingException uee) {
-            logger.debug(uee.getMessage());
+        } catch(UnsupportedEncodingException| IllegalArgumentException ex) {
+            logger.error("URLDecoder error decoding " + url.toString(), ex.getMessage());
         }
         return pathFromURLString(urlString);
     }
 
     public static String pathFromURLString(String urlString) {
         String[] urlComponents = urlString.split(":/*");
-        return urlComponents[1];
+        if ((urlComponents == null) || (urlComponents.length < 2))
+            return "";
+        // ToDo: exception handling
+        else
+            return urlComponents[1];
     }
 
     public static String protocolFromSource(BaseXSource source) {

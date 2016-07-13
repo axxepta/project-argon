@@ -5,8 +5,10 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.tree.ArgonPopupMenu;
 import de.axxepta.oxygen.tree.ArgonTree;
+import de.axxepta.oxygen.tree.ArgonTreeCellRenderer;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -47,4 +49,9 @@ public class ClassFactory {
     public Action getSearchInPathAction(String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree) {
         return new SearchInPathAction(name, icon, wsa, tree);
     }
+
+    public TreeCellRenderer getTreeCellRenderer() {
+        return new ArgonTreeCellRenderer();
+    }
+
 }

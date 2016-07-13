@@ -48,7 +48,7 @@ public class BaseXConnectionWrapper {
 
         try {
             connection.init();
-        } catch (IOException ex) {
+        } catch (IOException|NullPointerException ex) {
             logger.debug("Argon initialization failed!");
         }
     }
