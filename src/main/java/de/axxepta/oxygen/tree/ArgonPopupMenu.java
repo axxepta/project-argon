@@ -223,10 +223,10 @@ public class ArgonPopupMenu extends PopupMenu {
                     this.setItemEnabled(i, false);
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
-                if (isDir || isDB || isFileSource)
-                    this.setItemEnabled(i, true);
-                else
+                if (isFile)
                     this.setItemEnabled(i, false);
+                else
+                    this.setItemEnabled(i, true);
             }
         }
     }

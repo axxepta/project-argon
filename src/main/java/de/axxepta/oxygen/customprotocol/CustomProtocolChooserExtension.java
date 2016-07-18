@@ -29,7 +29,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
 	List<URL> selectedURLs = new ArrayList<>();
 	selectedURLs.clear();
 	
-    String argonURL = "argon:/Users/daltiparmak/zilicon/develop/app/ionic/config.xml";
+    String argonURL = "argon://Users/daltiparmak/zilicon/develop/app/ionic/config.xml";
     try {
 		selectedURLs.add(new URL(argonURL));
 	} catch (MalformedURLException e) {

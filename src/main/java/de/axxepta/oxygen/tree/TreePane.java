@@ -8,8 +8,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import javax.swing.tree.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TreePane extends JScrollPane {
 
@@ -36,21 +34,6 @@ public class TreePane extends JScrollPane {
                 CustomProtocolURLHandlerExtension.ARGON_REPO + ":/");
         queryFolder.setAllowsChildren(true);
         root.add(repoFolder);
-
-        List<BaseXResource> databaseList;
-        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            databaseList = connection.list(BaseXSource.DATABASE, "");
-        } catch (Exception er) {
-//                    JOptionPane.showMessageDialog(null, "Couldn't read list of databases. Check whether BaseX server is running."
-//                            , "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
-            databaseList = new ArrayList<>();
-        }
-        for (BaseXResource database : databaseList) {
-            DefaultMutableTreeNode dbNode = ClassFactory.getInstance().getTreeNode(database.getName(),
-                    CustomProtocolURLHandlerExtension.ARGON + "://" + database.getName());
-            dbNode.setAllowsChildren(true);
-            databases.add(dbNode);
-        }
 
         // Create a new tree control
         // explicit tree model necessary to use allowsChildren for definition of leafs

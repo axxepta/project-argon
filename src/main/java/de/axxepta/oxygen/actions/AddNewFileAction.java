@@ -2,7 +2,6 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
@@ -130,22 +129,28 @@ public class AddNewFileAction extends AbstractAction {
                 }
                 // add file
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
-                String protocol = TreeUtils.protocolFromTreePath(path);
-
+                String resource = TreeUtils.resourceFromTreePath(path) + "/" + name + ext;
                 String urlString = TreeUtils.urlStringFromTreePath(path) + "/" + name + ext;
-                URL url = null;
+                URL url;
                 try {
                     url = new URL(urlString);
                 } catch (MalformedURLException e1) {
                     logger.error(e1);
+                    return;
                 }
 
-                CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
-                if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
-                    JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
-                                    "and is locked by another user.", "File locked",
-                            JOptionPane.PLAIN_MESSAGE);
-                } else {
+                boolean isLocked = false;
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    if (connection.locked(source, resource)) {
+                        isLocked = true;
+                        JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
+                                        "and is locked by another user.", "File locked", JOptionPane.PLAIN_MESSAGE);
+                    }
+                } catch (IOException ie) {
+                    isLocked = true;
+                    logger.debug("Querying LOCKED returned: ", ie.getMessage());
+                }
+                if (!isLocked) {
                     // ToDo: proper locking while store process
                     try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
                         os.write(template.finish());

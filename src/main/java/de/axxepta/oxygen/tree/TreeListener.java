@@ -192,10 +192,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                     URL argonURL = null;
                     try {
                         argonURL = new URL(db_path);
+                        wsa.open(argonURL);
                     } catch (MalformedURLException e1) {
                         logger.error(e1);
                     }
-                    wsa.open(argonURL);
                 }
             }
         }
