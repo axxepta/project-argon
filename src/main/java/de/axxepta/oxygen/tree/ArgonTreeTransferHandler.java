@@ -109,7 +109,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                                         } catch (IOException ex) {
                                             logger.error(ex.getMessage());
                                             JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
-                                                    + "\nto database.", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                                                    + "\nto database: " + ex.getMessage(), "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
                                         }
                                     } catch (IOException es) {
                                         logger.error(es);

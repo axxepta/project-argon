@@ -124,8 +124,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         path = event.getPath();
         node = (TreeNode) path.getLastPathComponent();
 
-        logger.info("-- tree expansion -- id=");
-
         if ((path.getPathCount() > 1) && (node.getAllowsChildren()) && this.newExpandEvent) {
 
             List<BaseXResource> childList;

@@ -79,6 +79,7 @@ public class ArgonPopupMenu extends PopupMenu {
     public void show(Component invoker, int x, int y, TreePath path){
         // set entries in menu to (un)visible outside of the class because used constants are not inherent
         prepareContextMenu(path);
+        tree.setSelectionPath(path);
         super.show(invoker, x, y);
     }
 

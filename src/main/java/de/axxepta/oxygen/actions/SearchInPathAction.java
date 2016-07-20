@@ -38,7 +38,7 @@ public class SearchInPathAction extends AbstractAction {
     private static final int SEARCH_ALL_DBS = 2;
     private static final int SEARCH_REPO = 4;
     private static final int SEARCH_XQ = 8;
-    private static final int SEARCH_ALL = 15;
+    public static final int SEARCH_ALL = 15;
 
     public SearchInPathAction (String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree){
         super(name, icon);
