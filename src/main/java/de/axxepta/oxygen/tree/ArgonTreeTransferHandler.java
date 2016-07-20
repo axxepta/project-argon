@@ -26,6 +26,25 @@ public class ArgonTreeTransferHandler extends TransferHandler {
 
     private static final Logger logger = LogManager.getLogger(ArgonTreeTransferHandler.class);
 
+    private final ArgonTree tree;
+
+    public ArgonTreeTransferHandler(ArgonTree tree) {
+        super();
+        this.tree = tree;
+    }
+
+    // for expansion to drag handling via AspectJ
+    @SuppressWarnings("all")
+    public void setTreeDragEnabled(boolean isEnabled) {
+        tree.setDragEnabled(isEnabled);
+    }
+
+    // for expansion to drag handling via AspectJ
+    @SuppressWarnings("all")
+    public TreePath[] getTreeSelection() {
+        return tree.getSelectionPaths();
+    }
+
     public int getSourceActions(JComponent c) {
         return COPY;
     }

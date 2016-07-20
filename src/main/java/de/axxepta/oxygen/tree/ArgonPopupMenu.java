@@ -109,6 +109,10 @@ public class ArgonPopupMenu extends PopupMenu {
 
     public void init(final TreeListener tListener) {
         // Populate context menu
+        Action open = new OpenFileAction(Lang.get(Lang.Keys.cm_open), ImageUtils.getIcon(ImageUtils.URL_OPEN),
+                tListener);
+        this.add(open, Lang.get(Lang.Keys.cm_open));
+
         Action checkOut = new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.URL_OPEN),
                 tListener);
         this.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
@@ -169,6 +173,12 @@ public class ArgonPopupMenu extends PopupMenu {
         int itemCount = this.getItemCount();
         for (int i=0; i<itemCount; i++){
 
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_open))) {
+                if (isFile)
+                    this.setItemEnabled(i, true);
+                else
+                    this.setItemEnabled(i, false);
+            }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
                 if (isFile)
                     this.setItemEnabled(i, true);

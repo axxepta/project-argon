@@ -3,10 +3,7 @@ package de.axxepta.oxygen.core;
 import de.axxepta.oxygen.actions.SearchInPathAction;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
-import de.axxepta.oxygen.tree.ArgonPopupMenu;
-import de.axxepta.oxygen.tree.ArgonTree;
-import de.axxepta.oxygen.tree.ArgonTreeCellRenderer;
-import de.axxepta.oxygen.tree.ArgonTreeNode;
+import de.axxepta.oxygen.tree.*;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
@@ -52,6 +49,10 @@ public class ClassFactory {
 
     public TreeCellRenderer getTreeCellRenderer() {
         return new ArgonTreeCellRenderer();
+    }
+
+    public ArgonTreeTransferHandler getTransferHandler(ArgonTree tree) {
+        return new ArgonTreeTransferHandler(tree);
     }
 
 }

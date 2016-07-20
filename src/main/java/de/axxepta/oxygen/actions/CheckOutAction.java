@@ -1,20 +1,17 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Markus on 07.07.2016.
@@ -40,17 +37,12 @@ public class CheckOutAction extends AbstractAction {
 
     @SuppressWarnings("all")
     public static void checkOut(String db_path) {
-        try {
-            URL url = new URL(db_path);
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                connection.lock(CustomProtocolURLHandlerExtension.sourceFromURL(url),
-                        CustomProtocolURLHandlerExtension.pathFromURL(url));
-            } catch (IOException ex) {
-                logger.debug(ex);
-            }
-            PluginWorkspaceProvider.getPluginWorkspace().open(url);
-        } catch (MalformedURLException e1) {
-            logger.error(e1);
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            connection.lock(CustomProtocolURLHandlerExtension.sourceFromURLString(db_path),
+                    CustomProtocolURLHandlerExtension.pathFromURLString(db_path));
+        } catch (IOException ex) {
+            logger.debug(ex);
         }
+        WorkspaceUtils.openURLString(db_path);
     }
 }

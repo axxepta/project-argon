@@ -1,8 +1,6 @@
 package de.axxepta.oxygen.tree;
 
 import java.awt.event.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +21,10 @@ import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Listener class observing all tree-related events
@@ -46,12 +44,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private boolean singleClick  = true;
     private Timer timer;
     private final ArgonPopupMenu contextMenu;
-	private StandalonePluginWorkspace wsa;
 
-    public TreeListener(ArgonTree tree, TreeModel treeModel, ArgonPopupMenu contextMenu,
-                        StandalonePluginWorkspace workspaceAccess)
+    public TreeListener(ArgonTree tree, TreeModel treeModel, ArgonPopupMenu contextMenu)
     {
-    	this.wsa = workspaceAccess;
         this.tree = tree;
         this.treeModel = treeModel;
         this.newExpandEvent = true;
@@ -123,32 +118,28 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         path = event.getPath();
         node = (TreeNode) path.getLastPathComponent();
+        int depth = path.getPathCount();
 
-        if ((path.getPathCount() > 1) && (node.getAllowsChildren()) && this.newExpandEvent) {
+        if ((depth > 1) && (node.getAllowsChildren()) && this.newExpandEvent) {
 
             List<BaseXResource> childList;
             List<String> newValues = new ArrayList<>();
             BaseXSource source;
-            StringBuilder db_path = new StringBuilder("");
+            String db_path;
 
-            if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB))){
-                source = BaseXSource.DATABASE;
-            } else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq))) {
-                source = BaseXSource.RESTXQ;
-            } else {
-                source = BaseXSource.REPO;
-            }
+            source = TreeUtils.sourceFromTreePath(path);
 
-            for (int i = 2; i < path.getPathCount(); i++) {
-                db_path.append(path.getPathComponent(i).toString());
-                db_path.append('/');
-            }
+            if (depth > 2)      // get path in source
+                db_path = (( (String) ((ArgonTreeNode) node).getTag() ).split("//"))[1] + "/";
+            else
+                db_path = "";
+
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                childList = connection.list(source, db_path.toString());
+                childList = connection.list(source, db_path);
             } catch (Exception er) {
                 childList = new ArrayList<>();
                 logger.debug(er);
-                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX.\n Check whether server is still running!",
+                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX:\n" + er.getMessage(),
                         "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
             }
             for (BaseXResource child : childList) {
@@ -175,28 +166,30 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");
-        // open file(s)
+        System.out.println("NewExpandEvent is " + newExpandEvent);
         TreePath[] paths = tree.getSelectionPaths();
-        for (TreePath path : paths) {
-            if (((TreeNode)path.getLastPathComponent()).getAllowsChildren()) {
-                try {
-                    treeWillExpand(new TreeExpansionEvent(this, path));
-                } catch (ExpandVetoException eve) {}
-            } else {
-                //String db_path = ((ArgonTreeNode) path.getLastPathComponent()).getUrl();
-                String db_path = TreeUtils.urlStringFromTreePath(path);
-                logger.info("DbPath: " + db_path);
-                if (!node.getAllowsChildren()) {
-                    URL argonURL = null;
+        if (paths != null) {
+            for (TreePath path : paths) {
+                if (((TreeNode) path.getLastPathComponent()).getAllowsChildren()) {
                     try {
-                        argonURL = new URL(db_path);
-                        wsa.open(argonURL);
-                    } catch (MalformedURLException e1) {
-                        logger.error(e1);
+                        treeWillExpand(new TreeExpansionEvent(this, path));
+                    } catch (ExpandVetoException eve) {
+                        logger.debug("Expand Veto: ", eve.getMessage());
                     }
+                } else {
+                    doubleClickAction(path);
                 }
             }
         }
+    }
+
+    // made public for access with AspectJ
+    @SuppressWarnings("all")
+    public static void doubleClickAction(TreePath path) {
+        //String db_path = ((ArgonTreeNode) path.getLastPathComponent()).getTag();
+        String dbPath = TreeUtils.urlStringFromTreePath(path);
+        logger.info("DbPath: " + dbPath);
+        WorkspaceUtils.openURLString(dbPath);
     }
 
 

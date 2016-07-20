@@ -18,7 +18,9 @@ public class TreePane extends JPanel {
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
     private DefaultMutableTreeNode root;
-    private DefaultTreeModel model;
+    private ArgonTree tree;
+    private TreeListener tListener;
+    private DefaultTreeModel treeModel;
 
     public TreePane(StandalonePluginWorkspace pluginWorkspaceAccess) {
         this.pluginWorkspaceAccess = pluginWorkspaceAccess;
@@ -27,12 +29,8 @@ public class TreePane extends JPanel {
 
     private void initView() {
         this.setLayout(new BorderLayout());
-
-        final ArgonTree tree = initTree();
-        JScrollPane treePane = new JScrollPane(tree);
-
+        JScrollPane treePane = new JScrollPane(initTree());
         JPanel filterPanel = createFilterPanel();
-
         this.add(filterPanel, BorderLayout.PAGE_START);
         this.add(treePane, BorderLayout.CENTER);
     }
@@ -43,20 +41,16 @@ public class TreePane extends JPanel {
 
         // Create a new tree control
         // explicit tree model necessary to use allowsChildren for definition of leafs
-        final DefaultTreeModel treeModel = new DefaultTreeModel(root);
+        treeModel = new DefaultTreeModel(root);
         treeModel.setAsksAllowsChildren(true);
         TreeUtils.init(treeModel);
-        ArgonTree tree = new ArgonTree(treeModel);
+        tree = new ArgonTree(treeModel);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         setTreeState(tree, new TreePath(root), false);
-        this.model = treeModel;
 
-        final TreeListener tListener;
-        // Add context menu
         final ArgonPopupMenu contextMenu = ClassFactory.getInstance().getTreePopupMenu(pluginWorkspaceAccess, tree, treeModel);
 
-        // Add Tree Listener
-        tListener = new TreeListener(tree, treeModel, contextMenu, pluginWorkspaceAccess);
+        tListener = new TreeListener(tree, treeModel, contextMenu);
         tree.addTreeWillExpandListener(tListener);
         tree.addMouseListener(tListener);
         tree.addTreeSelectionListener(tListener);
@@ -66,8 +60,7 @@ public class TreePane extends JPanel {
 
         contextMenu.init(tListener);
 
-        // Add transfer handler for DnD
-        tree.setTransferHandler(new ArgonTreeTransferHandler());
+        tree.setTransferHandler(ClassFactory.getInstance().getTransferHandler(tree));
         tree.setDropMode(DropMode.ON);
 
         tree.add(contextMenu);
@@ -75,11 +68,29 @@ public class TreePane extends JPanel {
         return tree;
     }
 
+    private JPanel createFilterPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+        panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        JTextField filterTextField = new JTextField();
+        filterTextField.setColumns(15);
+        AbstractAction searchAction = new SearchAction("", ImageUtils.getIcon(ImageUtils.SEARCH), treeModel, tree,
+                tListener, filterTextField);
+        JButton searchButton = new JButton(searchAction);
+        AbstractAction resetAction = new ResetAction("", ImageUtils.getIcon(ImageUtils.REMOVE), treeModel, tree,
+                tListener, filterTextField);
+        JButton clearButton = new JButton(resetAction);
+        panel.add(filterTextField);
+        panel.add(searchButton);
+        panel.add(clearButton);
+        return panel;
+    }
+
     private static DefaultMutableTreeNode getArgonBaseNodes() {
         DefaultMutableTreeNode root = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_root));
         root.setAllowsChildren(true);
         DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB),
-                CustomProtocolURLHandlerExtension.ARGON + "://");
+                CustomProtocolURLHandlerExtension.ARGON + ":/");
         databases.setAllowsChildren(true);
         root.add(databases);
         DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
@@ -93,28 +104,12 @@ public class TreePane extends JPanel {
         return root;
     }
 
-    private JPanel createFilterPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-        JTextField filterTextField = new JTextField();
-        filterTextField.setColumns(15);
-        AbstractAction searchAction = new SearchAction("", ImageUtils.getIcon(ImageUtils.SEARCH), model, filterTextField);
-        JButton searchButton = new JButton(searchAction);
-        AbstractAction resetAction = new ResetAction("", ImageUtils.getIcon(ImageUtils.REMOVE), model, filterTextField);
-        JButton clearButton = new JButton(resetAction);
-        panel.add(filterTextField);
-        panel.add(searchButton);
-        panel.add(clearButton);
-        return panel;
-    }
-
     private static void setTreeState(JTree tree, TreePath path, boolean expanded) {
         Object lastNode = path.getLastPathComponent();
         for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
             Object child = tree.getModel().getChild(lastNode,i);
             TreePath pathToChild = path.pathByAddingChild(child);
-            setTreeState(tree,pathToChild,expanded);
+            setTreeState(tree, pathToChild, expanded);
         }
         if (expanded)
             tree.expandPath(path);
@@ -127,11 +122,17 @@ public class TreePane extends JPanel {
         private JTextField filterField;
         private TreePath rootPath;
         private DefaultTreeModel model;
+        private ArgonTree tree;
+        private TreeListener treeListener;
+        private DefaultMutableTreeNode newRoot;
 
-        SearchAction(String name, Icon icon, DefaultTreeModel model, JTextField filterField) {
+        SearchAction(String name, Icon icon, DefaultTreeModel model, ArgonTree tree, TreeListener treeListener,
+                     JTextField filterField) {
             super(name, icon);
             this.filterField = filterField;
             this.model = model;
+            this.tree = tree;
+            this.treeListener = treeListener;
             rootPath = new TreePath(root.getPath());
         }
 
@@ -141,11 +142,42 @@ public class TreePane extends JPanel {
                     BaseXSource.DATABASE, null, filterField.getText());
             DefaultMutableTreeNode newRoot = getFilteredTree(resourceList);
             model.setRoot(newRoot);
+            tree.removeTreeWillExpandListener(treeListener);
+            for (int i = 0; i < tree.getRowCount(); i++) {
+                tree.expandRow(i);
+            }
         }
 
         private DefaultMutableTreeNode getFilteredTree(ArrayList<String> resources) {
-            DefaultMutableTreeNode newRoot = TreePane.getArgonBaseNodes();
+            newRoot = TreePane.getArgonBaseNodes();
+            addNodes(resources);
             return newRoot;
+        }
+
+        private void addNodes(ArrayList<String> resources) {
+            for (String resource : resources) {
+                String[] levels = resource.split("/+");
+                DefaultMutableTreeNode branch;
+                switch (levels[0]) {
+                    case CustomProtocolURLHandlerExtension.ARGON_REPO:
+                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(2);
+                        break;
+                    case CustomProtocolURLHandlerExtension.ARGON_XQ:
+                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(1);
+                        break;
+                    default:
+                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(0);
+                }
+                int depth = levels.length;
+                for (int i = 1; i < depth; i++) {
+                    int childIndex = TreeUtils.isNodeAsStrChild(branch, levels[i]);
+                    if (childIndex == -1) {
+                        branch = TreeUtils.insertStrAsNodeLexi(levels[i], branch, i == (depth - 1));
+                    } else {
+                        branch = (DefaultMutableTreeNode) branch.getChildAt(childIndex);
+                    }
+                }
+            }
         }
     }
 
@@ -153,17 +185,25 @@ public class TreePane extends JPanel {
 
         private JTextField filterField;
         private DefaultTreeModel model;
+        private ArgonTree tree;
+        private TreeListener treeListener;
 
-        ResetAction(String name, Icon icon, DefaultTreeModel model, JTextField filterField) {
+        ResetAction(String name, Icon icon, DefaultTreeModel model, ArgonTree tree, TreeListener treeListener,
+                    JTextField filterField) {
             super(name, icon);
             this.model = model;
+            this.tree = tree;
+            this.treeListener = treeListener;
             this.filterField = filterField;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.setRoot(root);
             filterField.setText("");
+            if (model.getRoot() != root) {
+                model.setRoot(root);
+                tree.addTreeWillExpandListener(treeListener);
+            }
         }
     }
 

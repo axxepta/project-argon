@@ -36,11 +36,35 @@ public class TreeUtils {
                 break;
             }
         }
-        if (!inserted) ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, parent.getChildCount());
+        if (!inserted)
+            ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, parent.getChildCount());
+    }
+
+    public static DefaultMutableTreeNode insertStrAsNodeLexi(String child, MutableTreeNode parent, Boolean childIsFile) {
+        DefaultMutableTreeNode currNode;
+        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
+                ((ArgonTreeNode) parent).getTag().toString() + "/" + child);
+        if (childIsFile) childNode.setAllowsChildren(false);
+        else childNode.setAllowsChildren(true);
+        Boolean parentIsFile;
+        boolean inserted = false;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
+            parentIsFile = !currNode.getAllowsChildren();
+            if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
+                    (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
+                parent.insert(childNode, i);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted)
+            parent.insert(childNode, parent.getChildCount());
+        return childNode;
     }
 
     public static int isNodeAsStrChild(TreeNode parent, String child) {
-        for (int i=0; i<parent.getChildCount(); i++) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
             if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
                 return i;
             }
@@ -207,7 +231,7 @@ public class TreeUtils {
                 (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
     }
 
-    public static boolean isInRestXY(TreePath path) {
+    public static boolean isInRestXQ(TreePath path) {
         int pathCount = path.getPathCount();
         return (pathCount > 2) &&
                 (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)));

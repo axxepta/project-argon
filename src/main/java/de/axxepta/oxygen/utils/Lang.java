@@ -69,7 +69,7 @@ public class Lang {
     }
 
     public enum Keys {
-        tree_root, tree_DB, tree_repo, tree_restxq, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_delete,
+        tree_root, tree_DB, tree_repo, tree_restxq, cm_open, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_delete,
         cm_rename, cm_newversion, cm_showversion, cm_refresh, cm_search, cm_newdir, cm_cancel
     }
 
