@@ -163,7 +163,7 @@ public class ArgonValidationProblemsFilter extends ValidationProblemsFilter {
                 valProbStr = new ArrayList<>();
                 valProbStr.add("1");
                 valProbStr.add("1");
-                valProbStr.add("Fatal BaseX request error: "+er.getMessage());
+                valProbStr.add("Fatal BaseX request error: " + er.getMessage());
                 er.printStackTrace();
             }
             // build DocumentPositionedInfo list from query return;
@@ -173,7 +173,9 @@ public class ArgonValidationProblemsFilter extends ValidationProblemsFilter {
                                 Integer.parseInt(valProbStr.get(0)), Integer.parseInt(valProbStr.get(1)), 0);
                 problemList.add(dpi);
             }
-            //wait(1000);
+/*            try {
+                wait(5000);
+            } catch (InterruptedException ie) {}*/
         }
 
     }

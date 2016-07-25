@@ -42,6 +42,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private TreeNode node;
     private boolean newExpandEvent;
     private boolean singleClick  = true;
+    private boolean doubleClickExpandEnabled = true;
     private Timer timer;
     private final ArgonPopupMenu contextMenu;
 
@@ -166,15 +167,16 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");
-        System.out.println("NewExpandEvent is " + newExpandEvent);
         TreePath[] paths = tree.getSelectionPaths();
         if (paths != null) {
             for (TreePath path : paths) {
                 if (((TreeNode) path.getLastPathComponent()).getAllowsChildren()) {
-                    try {
-                        treeWillExpand(new TreeExpansionEvent(this, path));
-                    } catch (ExpandVetoException eve) {
-                        logger.debug("Expand Veto: ", eve.getMessage());
+                    if (doubleClickExpandEnabled) {
+                        try {
+                            treeWillExpand(new TreeExpansionEvent(this, path));
+                        } catch (ExpandVetoException eve) {
+                            logger.debug("Expand Veto: ", eve.getMessage());
+                        }
                     }
                 } else {
                     doubleClickAction(path);
@@ -243,6 +245,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     /*
      * other methods
      */
+
+    public void setDoubleClickExpand(boolean expand) {
+        doubleClickExpandEnabled = expand;
+    }
 
     private boolean updateExpandedNode(TreeNode node, List<BaseXResource> newChildrenList, List<String> childrenValues){
         DefaultMutableTreeNode newChild;

@@ -16,6 +16,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -156,6 +157,11 @@ public class SearchInPathAction extends AbstractAction {
                 TreePath dbBasePath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_DB));
                 for (String db : dbList) {
                     TreePath currentPath = TreeUtils.pathByAddingChildAsStr(dbBasePath, db);
+                    if (currentPath == null) {
+                        currentPath = new TreePath(
+                                TreeUtils.insertStrAsNodeLexi(db, (MutableTreeNode) dbBasePath.getLastPathComponent(), false).
+                                        getPath());
+                    }
                     allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter));
                 }
                 break;

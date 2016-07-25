@@ -42,8 +42,15 @@ public class DeleteAction extends AbstractAction {
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
                 String db_path = TreeUtils.resourceFromTreePath(path);
                 if ((source != null) && (!db_path.equals(""))) {
-                    // don't try to delete databases!
-                    if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
+                    if (TreeUtils.isDB(path)) {
+                        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                            connection.drop(db_path);
+                            ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+                        } catch (Exception er) {
+                            JOptionPane.showMessageDialog(null, "Failed to delete database: " + er.getMessage(),
+                                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                        }
+                    } else if ((!(source == BaseXSource.DATABASE)) || (db_path.contains("/"))) {
                         if (((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren()) {
                             if (tree.isCollapsed(path)) {
                                 tree.expandPath(path);
@@ -69,14 +76,10 @@ public class DeleteAction extends AbstractAction {
                                 deleteAll = true;
                                 deleteFile(source, db_path, path);
                             }
-
                         } else {
                             JOptionPane.showMessageDialog(null, "You cannot delete non-empty directories!",
                                     "BaseX Delete Warning", JOptionPane.PLAIN_MESSAGE);
                         }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "You cannot delete databases!",
-                                "BaseX Delete Warning", JOptionPane.PLAIN_MESSAGE);
                     }
                 }
             }
@@ -88,7 +91,7 @@ public class DeleteAction extends AbstractAction {
             connection.delete(source, db_path);
             ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
         } catch (Exception er) {
-            JOptionPane.showMessageDialog(null, "Failed to delete resource",
+            JOptionPane.showMessageDialog(null, "Failed to delete resource: " + er.getMessage(),
                     "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
         }
     }

@@ -198,7 +198,7 @@ public class ArgonPopupMenu extends PopupMenu {
                     this.setItemEnabled(i, false);
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
-                if (isFile || isDir)
+                if (isFile || isDir || isDB)
                     this.setItemEnabled(i, true);
                 else
                     this.setItemEnabled(i, false);

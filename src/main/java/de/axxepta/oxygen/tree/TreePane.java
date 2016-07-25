@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.*;
 
 public class TreePane extends JPanel {
@@ -80,6 +81,21 @@ public class TreePane extends JPanel {
         AbstractAction resetAction = new ResetAction("", ImageUtils.getIcon(ImageUtils.REMOVE), treeModel, tree,
                 tListener, filterTextField);
         JButton clearButton = new JButton(resetAction);
+
+        Action fieldConfirmed = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (filterTextField.getText().equals("")) {
+                    resetAction.actionPerformed(null);
+                } else {
+                    searchAction.actionPerformed(null);
+                }
+            }
+        };
+
+        filterTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+        filterTextField.getActionMap().put("confirm", fieldConfirmed);
+
         panel.add(filterTextField);
         panel.add(searchButton);
         panel.add(clearButton);
@@ -140,34 +156,24 @@ public class TreePane extends JPanel {
         public void actionPerformed(ActionEvent e) {
             ArrayList<String> resourceList = SearchInPathAction.search(rootPath, SearchInPathAction.SEARCH_ALL,
                     BaseXSource.DATABASE, null, filterField.getText());
-            DefaultMutableTreeNode newRoot = getFilteredTree(resourceList);
+            buildFilteredTree(resourceList);
             model.setRoot(newRoot);
             tree.removeTreeWillExpandListener(treeListener);
+            treeListener.setDoubleClickExpand(false);
             for (int i = 0; i < tree.getRowCount(); i++) {
                 tree.expandRow(i);
             }
         }
 
-        private DefaultMutableTreeNode getFilteredTree(ArrayList<String> resources) {
+        private void buildFilteredTree(ArrayList<String> resources) {
             newRoot = TreePane.getArgonBaseNodes();
             addNodes(resources);
-            return newRoot;
         }
 
         private void addNodes(ArrayList<String> resources) {
             for (String resource : resources) {
                 String[] levels = resource.split("/+");
-                DefaultMutableTreeNode branch;
-                switch (levels[0]) {
-                    case CustomProtocolURLHandlerExtension.ARGON_REPO:
-                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(2);
-                        break;
-                    case CustomProtocolURLHandlerExtension.ARGON_XQ:
-                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(1);
-                        break;
-                    default:
-                        branch = (DefaultMutableTreeNode) newRoot.getChildAt(0);
-                }
+                DefaultMutableTreeNode branch = newRoot;
                 int depth = levels.length;
                 for (int i = 1; i < depth; i++) {
                     int childIndex = TreeUtils.isNodeAsStrChild(branch, levels[i]);
@@ -203,6 +209,7 @@ public class TreePane extends JPanel {
             if (model.getRoot() != root) {
                 model.setRoot(root);
                 tree.addTreeWillExpandListener(treeListener);
+                treeListener.setDoubleClickExpand(true);
             }
         }
     }

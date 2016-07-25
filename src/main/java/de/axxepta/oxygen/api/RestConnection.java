@@ -61,10 +61,14 @@ public class RestConnection implements Connection {
         request(getQuery("init"), RESOURCE, prepare(getAPIResource("MetaTemplate.xml").getBytes("UTF-8")));
     }
 
-    // CAVE: If new options are inserted, also change call in BaseXByteArrayOutputStream.getBackupPath
     @Override
     public void create(String database, String chop, String ftindex) throws IOException {
         request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex);
+    }
+
+    @Override
+    public void drop(String database) throws IOException {
+        request(getQuery("drop-database"), DATABASE, database);
     }
 
     @Override

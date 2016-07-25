@@ -37,6 +37,13 @@ public interface Connection extends Closeable {
     void create(final String database, final String chop, final String ftindex) throws IOException;
 
     /**
+     * Creates a new database.
+     * @param database new database name
+     * @throws IOException I/O exception
+     */
+    void drop(final String database) throws IOException;
+
+    /**
      * Returns a resource in its binary representation.
      * Texts are encoded as UTF-8 and can be converted via {@link Token#string(byte[])}.
      * @param source data source
