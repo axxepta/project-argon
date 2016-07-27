@@ -9,6 +9,7 @@ import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -86,10 +87,14 @@ public class AddDatabaseAction extends AbstractAction {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 connection.create(db, chop, ftindex);
                 TreeUtils.insertStrAsNodeLexi(treeModel, db, (DefaultMutableTreeNode) parentNode, false);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Failed to add new database",
-                        "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                logger.debug(ex.toString());
+            } catch (IOException | NullPointerException ex) {
+                String error = ex.getMessage();
+                if ((error == null) || error.equals("null"))
+                    error = "Database connection could not be established.";
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to add new database: " + error);
+/*                JOptionPane.showMessageDialog(null, "Failed to add new database",
+                        "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);*/
+                logger.debug(ex.getMessage());
             }
             addDbDialog.dispose();
         }

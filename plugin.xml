@@ -16,10 +16,10 @@
     <extension type="WorkspaceAccess" class="de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension"/>
     <extension type="URLHandler" class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension" />
     <extension type="LockHandlerFactory" class="de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension" />
-    <!--
+
     <extension type="URLChooser" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
     <extension type="URLChooserToolbar" class="de.axxepta.oxygen.customprotocol.CustomProtocolChooserExtension" />
-    -->
+
 
     <extension type="OptionPage" class="de.axxepta.oxygen.workspace.ArgonOptionPage"/>
     <!-- The view for BaseX Database Tree-->

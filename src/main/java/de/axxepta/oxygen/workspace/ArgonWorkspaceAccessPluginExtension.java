@@ -54,8 +54,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer(pluginWorkspaceAccess);
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(toolbarCustomizer);
 
-        pluginWorkspaceAccess.addEditorChangeListener(
-                new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),
+        pluginWorkspaceAccess.addEditorChangeListener(new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),
                 PluginWorkspace.MAIN_EDITING_AREA);
     }
 

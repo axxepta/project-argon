@@ -1,8 +1,5 @@
 package de.axxepta.oxygen.tree;
 
-/**
- * TreeCellRenderer using special icons
- */
 
 import java.awt.*;
 
@@ -25,7 +22,7 @@ public class ArgonTreeCellRenderer extends TreeCellRenderer {
 		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && aLeaf) {
 			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
 					aExpanded, true, aRow, aHasFocus);
-			String thisLeafFileType = fileType(aValue);
+			String thisLeafFileType = fileType(aValue.toString());
 			setIcon(ImageUtils.getIcon(thisLeafFileType));
 			return this;
 		}
@@ -63,9 +60,7 @@ public class ArgonTreeCellRenderer extends TreeCellRenderer {
 				aSelected, aExpanded, aLeaf, aRow, aHasFocus);
 	}
 
-	protected String fileType(Object value) {
-		DefaultMutableTreeNode leaf = (DefaultMutableTreeNode) value;
-		String leafStr = leaf.toString();
+	public static String fileType(String leafStr) {
 		if (leafStr.contains(".")) {
 			return leafStr.substring(leafStr.lastIndexOf(".") + 1);
 		} else

@@ -78,7 +78,8 @@ let $metaupdated := (
     ) else ()
 )
 
-let $xml := if(starts-with($RESOURCE, '<')) then (
+let $isXML := starts-with($RESOURCE, '<') and not(ends-with($PATH, '.html') or ends-with($PATH, '.htm'))
+let $xml := if($isXML) then (
     try {
         parse-xml($RESOURCE)
     } catch * {
@@ -87,7 +88,7 @@ let $xml := if(starts-with($RESOURCE, '<')) then (
     }
 ) else ('')
 
-return if(starts-with($RESOURCE, '<')) then (
+return if($isXML) then (
     db:replace($db, $path, $RESOURCE),
     db:replace($metadb, $metapath, $metaupdated),
     if($VERSIONIZE) then (db:replace($histdb, $histpath, $RESOURCE)) else ()

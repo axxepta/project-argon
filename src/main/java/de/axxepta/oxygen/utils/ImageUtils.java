@@ -25,6 +25,7 @@ public class ImageUtils {
     public static final String DB_CATALOG = "dbcatalog16";
     public static final String DB_HTTP = "dbhttp16";
     public static final String DB_FOLDER = "dbfolder16";
+    public static final String FOLDER = "folderclosed16";
     public static final String URL_OPEN = "openurl16";
     public static final String FILE_ADD = "addfile16";
     public static final String DB_ADD = "addb16";
@@ -80,6 +81,7 @@ public class ImageUtils {
         iconMap.put(DB_CATALOG, ImageUtils.createImageIcon("/images/DbCatalog16.gif"));
         iconMap.put(DB_HTTP, ImageUtils.createImageIcon("/images/DBHttp16.png"));
         iconMap.put(DB_FOLDER, ImageUtils.createImageIcon("/images/DbFolder16.png"));
+        iconMap.put(FOLDER, ImageUtils.createImageIcon("/images/FolderClosed16.png"));
         iconMap.put(URL_OPEN, ImageUtils.createImageIcon("/images/OpenURL16.gif"));
         iconMap.put(FILE_ADD, ImageUtils.createImageIcon("/images/AddFile16.gif"));
         iconMap.put(INC_VER, ImageUtils.createImageIcon("/images/IncVersion16.png"));

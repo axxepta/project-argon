@@ -140,7 +140,10 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             } catch (Exception er) {
                 childList = new ArrayList<>();
                 logger.debug(er);
-                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX:\n" + er.getMessage(),
+                String error = er.getMessage();
+                if ((error == null) || error.equals(""))
+                    error = "Database connection could not be established.";
+                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX:\n" + error,
                         "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
             }
             for (BaseXResource child : childList) {

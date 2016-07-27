@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -138,13 +140,15 @@ public class AddNewFileAction extends AbstractAction {
                     logger.error(e1);
                     return;
                 }
-
+                PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
                 boolean isLocked = false;
                 try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                     if (connection.locked(source, resource)) {
                         isLocked = true;
-                        JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
-                                        "and is locked by another user.", "File locked", JOptionPane.PLAIN_MESSAGE);
+                        pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
+                                "and is locked by another user.");
+/*                        JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
+                                        "and is locked by another user.", "File locked", JOptionPane.PLAIN_MESSAGE);*/
                     }
                 } catch (IOException ie) {
                     isLocked = true;
@@ -156,8 +160,9 @@ public class AddNewFileAction extends AbstractAction {
                         os.write(template.finish());
                     } catch (IOException ex) {
                         logger.error(ex.getMessage());
-                        JOptionPane.showMessageDialog(null, "Couldn't create new file", "BaseX Connection Error",
-                                JOptionPane.PLAIN_MESSAGE);
+                        pluginWorkspace.showInformationMessage("Couldn't create new file.");
+/*                        JOptionPane.showMessageDialog(null, "Couldn't create new file", "BaseX Connection Error",
+                                JOptionPane.PLAIN_MESSAGE);*/
                     }
                 }
             }

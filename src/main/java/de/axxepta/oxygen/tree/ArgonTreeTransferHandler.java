@@ -132,7 +132,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     if (isLocked) {
                         lockedFiles.add(url.toString());
                     } else {
-                        // ToDo: proper locking while store process (transaction)
+                        // ToDo: proper locking while storage process (transaction)
                         //copy file
                         copyFile(file, source, url);
                     }
