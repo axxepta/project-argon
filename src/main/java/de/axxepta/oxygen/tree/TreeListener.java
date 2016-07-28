@@ -31,9 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class TreeListener extends MouseAdapter implements TreeSelectionListener, TreeWillExpandListener,
         KeyListener, ObserverInterface{
-	
-	 // Define a static logger variable so that it references the
-    // Logger instance named "TreeListener".
+
     private static final Logger logger = LogManager.getLogger(TreeListener.class);
     
     private ArgonTree tree;
@@ -41,7 +39,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private TreePath path;
     private TreeNode node;
     private boolean newExpandEvent;
-    private boolean singleClick  = true;
+    private boolean singleClick = true;
     private boolean doubleClickExpandEnabled = true;
     private Timer timer;
     private final ArgonPopupMenu contextMenu;

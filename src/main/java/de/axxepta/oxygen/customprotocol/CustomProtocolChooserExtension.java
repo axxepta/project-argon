@@ -1,9 +1,7 @@
 package de.axxepta.oxygen.customprotocol;
 
-import java.net.MalformedURLException;
+import java.awt.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.Icon;
 
@@ -21,23 +19,9 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     * @see ro.sync.exml.plugin.urlstreamhandler.URLChooserPluginExtension2#chooseURLs(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
     */
     public URL[] chooseURLs(StandalonePluginWorkspace workspaceAccess) {
-        // Create the dialog
-        //URLChooserDialog urlChooser = new URLChooserDialog((Frame)workspaceAccess.getParentFrame());
-
-        // Show the dialog and return the string from the text field
-        //URL[] urls = urlChooser.selectURLs();
-
-        List<URL> selectedURLs = new ArrayList<>();
-        selectedURLs.clear();
-
-        String argonURL = "argon://test1/foo/snip.xml";
-        try {
-            selectedURLs.add(new URL(argonURL));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return selectedURLs.toArray(new URL[selectedURLs.size()]);
+        ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspaceAccess.getParentFrame(),
+                "Open File via BaseX Database Connection", ArgonChooserDialog.OPEN);
+        return urlChooser.selectURLs();
     }
 
     /**

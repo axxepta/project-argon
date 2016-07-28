@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * @author Markus on 27.07.2016.
  */
-class ArgonChooserListCellRenderer implements ListCellRenderer {
+public class ArgonChooserListCellRenderer implements ListCellRenderer {
 
     private static DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
@@ -33,7 +33,7 @@ class ArgonChooserListCellRenderer implements ListCellRenderer {
                 renderer.setIcon(ImageUtils.getIcon(ImageUtils.DB_FOLDER));
                 break;
             }
-            case DIR: {
+            case DIR: case ROOT: {
                 renderer.setIcon(ImageUtils.getIcon(ImageUtils.FOLDER));
                 break;
             }

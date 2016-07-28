@@ -33,6 +33,20 @@ class ArgonChooserListModel extends AbstractListModel {
             return data.get(index);
     }
 
+    ArgonEntity getTypeAt(int index) {
+        if (index > getSize())
+            return null;
+        else
+            return data.get(index).getType();
+    }
+
+    String getNameAt(int index) {
+        if (index > getSize())
+            return null;
+        else
+            return data.get(index).getName();
+    }
+
     void setData(List<Element> newData) {
         int oldSize = getSize();
         data.clear();
