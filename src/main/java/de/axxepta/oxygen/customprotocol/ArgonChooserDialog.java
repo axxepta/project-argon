@@ -261,7 +261,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         }
     }
 
-    URL[] selectURLs() {
+    public URL[] selectURLs() {
         ArrayList<URL> selectedURLs = new ArrayList<>();
         canceled = true;
         setVisible(true);

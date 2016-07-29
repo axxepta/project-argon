@@ -3,6 +3,7 @@ package de.axxepta.oxygen.workspace;
 import de.axxepta.oxygen.actions.BaseXRunQueryAction;
 import de.axxepta.oxygen.actions.NewVersionButtonAction;
 import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
+import de.axxepta.oxygen.actions.SaveFileToArgonAction;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.URLUtils;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -22,10 +23,12 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
 
     private ToolbarButton runQueryButton;
     private ToolbarButton newVersionButton;
+    private ToolbarButton saveToArgonButton;
 
     private final Action runBaseXQueryAction;
     private final Action newVersionAction;
     private final Action replyToAuthorComment;
+    private final Action saveToArgonAction;
 
     ArgonToolbarComponentCustomizer(StandalonePluginWorkspace pluginWorkspaceAccess) {
         super();
@@ -35,6 +38,8 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
                 ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
         replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
+        saveToArgonAction = new SaveFileToArgonAction("Save file to BaseX",
+                ImageUtils.createImageIcon("/images/AddFile16.gif"), pluginWorkspaceAccess);
     }
 
     @Override
@@ -77,6 +82,20 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
             toolbarInfo.setTitle(title);
         }
 
+        if ("toolbar.file".equals(toolbarInfo.getToolbarID())) {
+            List<JComponent> comps = new ArrayList<>();
+            JComponent[] initialComponents = toolbarInfo.getComponents();
+            boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
+            if (hasInitialComponents) {
+                // Add initial toolbar components
+                comps.addAll(Arrays.asList(initialComponents));
+            }
+            saveToArgonButton = new ToolbarButton(saveToArgonAction, true);
+            saveToArgonButton.setText("");
+            comps.add(0, saveToArgonButton);
+            toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
+        }
+
         if ("toolbar.review".equals(toolbarInfo.getToolbarID())) {
             List<JComponent> comps = new ArrayList<>();
             JComponent[] initialComponents = toolbarInfo.getComponents();
@@ -99,7 +118,9 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
         if(currentEditor == null) {
             runQueryButton.setEnabled(false);
             newVersionButton.setEnabled(false);
+            saveToArgonButton.setEnabled(false);
         } else {
+            saveToArgonButton.setEnabled(true);
             URL url = currentEditor.getEditorLocation();
             if (URLUtils.isArgon(url)) {
                 newVersionButton.setEnabled(true);

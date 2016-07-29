@@ -1,8 +1,7 @@
 package de.axxepta.oxygen.tree;
 
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import de.axxepta.oxygen.actions.SaveFileToArgonAction;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import org.apache.logging.log4j.LogManager;
@@ -121,14 +120,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     url = new URL(pathList.get(i));
                     String newPath = CustomProtocolURLHandlerExtension.pathFromURL(url);
 
-                    isLocked = false;
-                    try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                        if (connection.locked(source, newPath))
-                            isLocked = true;
-                    } catch (IOException ie) {
-                        isLocked = true;
-                        logger.debug("Querying LOCKED returned: ", ie.getMessage());
-                    }
+                    isLocked = SaveFileToArgonAction.isLocked(source, newPath);
                     if (isLocked) {
                         lockedFiles.add(url.toString());
                     } else {
@@ -174,11 +166,10 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             isByte = new byte[l];
             //noinspection ResultOfMethodCallIgnored
             is.read(isByte);
-            try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
-                os.write(isByte);
+            try {
+                SaveFileToArgonAction.saveFile(isByte, source, url);
                 logger.info("Dropped file " + file.toString() + " to " + url.toString());
             } catch (IOException ex) {
-                logger.error(ex.getMessage());
                 JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
                         + "\nto database: " + ex.getMessage(), "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
             }
