@@ -40,7 +40,7 @@ public class SaveFileToArgonAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspaceAccess.getParentFrame(),
-                "Open File via BaseX Database Connection", ArgonChooserDialog.SAVE);
+                "Save File via BaseX Database Connection", ArgonChooserDialog.SAVE);
         URL[] url =  urlChooser.selectURLs();
 
         WSEditor editorAccess = workspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
@@ -54,6 +54,8 @@ public class SaveFileToArgonAction extends AbstractAction {
                 try {
                     lock(source, path);
                     saveFile(content, source, url[0]);
+                    editorAccess.close(false);
+                    workspaceAccess.open(url[0]);
                 } catch (IOException ioe) {
                     workspaceAccess.showErrorMessage("Resource " + url[0].toString() +
                             " could not be stored to BaseX connection: " + ioe.getMessage());
@@ -95,7 +97,7 @@ public class SaveFileToArgonAction extends AbstractAction {
         if (!pageID.equals(EditorPageConstants.PAGE_TEXT))
             editorAccess.changePage(pageID);
         try {
-            content = doc.getText(0, doc.getLength() - 1).getBytes("UTF-8");
+            content = doc.getText(0, doc.getLength()).getBytes("UTF-8");
         } catch (BadLocationException | UnsupportedEncodingException ex) {
             content = new byte[0];
             logger.error(ex);
@@ -108,6 +110,7 @@ public class SaveFileToArgonAction extends AbstractAction {
             os.write(isByte);
         } catch (IOException ex) {
             logger.error(ex.getMessage());
+            throw new IOException(ex);
         }
     }
 }

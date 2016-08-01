@@ -38,7 +38,7 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
                 ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
         replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
-        saveToArgonAction = new SaveFileToArgonAction("Save file to BaseX",
+        saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol",
                 ImageUtils.createImageIcon("/images/AddFile16.gif"), pluginWorkspaceAccess);
     }
 
@@ -47,31 +47,18 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
 
         ToolbarButton replyCommentButton;
 
-        //The toolbar ID is defined in the "plugin.xml"
+        runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
+        runQueryButton.setText("");
+        newVersionButton = new ToolbarButton(newVersionAction, true);
+        newVersionButton.setText("");
+        addButtons("ArgonWorkspaceAccessToolbarID",
+                new JComponent[]{runQueryButton, new JSeparator(SwingConstants.VERTICAL), newVersionButton},
+                toolbarInfo, -1);
+
+        // Set title
         if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
-            List<JComponent> comps = new ArrayList<>();
             JComponent[] initialComponents = toolbarInfo.getComponents();
-            boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
-            if (hasInitialComponents) {
-                // Add initial toolbar components
-                comps.addAll(Arrays.asList(initialComponents));
-            }
-
-            // Add toolbar buttons
-            // run query in current editor window
-            runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
-            runQueryButton.setText("");
-            // increase revision of document in current editor window
-            newVersionButton = new ToolbarButton(newVersionAction, true);
-            newVersionButton.setText("");
-
-            // Add in toolbar
-            comps.add(runQueryButton);
-            comps.add(new JSeparator(SwingConstants.VERTICAL));
-            comps.add(newVersionButton);
-            toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
-
-            // Set title
+            boolean hasInitialComponents = (initialComponents != null) && (initialComponents.length > 0);
             String initialTitle = toolbarInfo.getTitle();
             String title = "";
             if (hasInitialComponents && initialTitle != null && initialTitle.trim().length() > 0) {
@@ -82,32 +69,30 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
             toolbarInfo.setTitle(title);
         }
 
-        if ("toolbar.file".equals(toolbarInfo.getToolbarID())) {
-            List<JComponent> comps = new ArrayList<>();
-            JComponent[] initialComponents = toolbarInfo.getComponents();
-            boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
-            if (hasInitialComponents) {
-                // Add initial toolbar components
-                comps.addAll(Arrays.asList(initialComponents));
-            }
-            saveToArgonButton = new ToolbarButton(saveToArgonAction, true);
-            saveToArgonButton.setText("");
-            comps.add(0, saveToArgonButton);
-            toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
-        }
+        saveToArgonButton = new ToolbarButton(saveToArgonAction, true);
+        saveToArgonButton.setText("");
+        addButtons("File", new JComponent[]{saveToArgonButton}, toolbarInfo, 2);
 
-        if ("toolbar.review".equals(toolbarInfo.getToolbarID())) {
+        replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
+        replyCommentButton.setText("");
+        addButtons("toolbar.review", new JComponent[]{replyCommentButton}, toolbarInfo, -1);
+    }
+
+    private void addButtons(String toolbarID, JComponent[] components, ToolbarInfo toolbarInfo, int pos) {
+        if (toolbarID.equals(toolbarInfo.getToolbarID())) {
             List<JComponent> comps = new ArrayList<>();
             JComponent[] initialComponents = toolbarInfo.getComponents();
-            boolean hasInitialComponents = initialComponents != null && initialComponents.length > 0;
+            boolean hasInitialComponents = (initialComponents != null) && (initialComponents.length > 0);
             if (hasInitialComponents) {
                 // Add initial toolbar components
                 comps.addAll(Arrays.asList(initialComponents));
             }
-            // reply to author comment
-            replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
-            replyCommentButton.setText("");
-            comps.add(replyCommentButton);
+            for (JComponent component : components) {
+                if (pos == -1)
+                    comps.add(component);
+                else
+                    comps.add(pos, component);
+            }
             toolbarInfo.setComponents(comps.toArray(new JComponent[comps.size()]));
         }
     }

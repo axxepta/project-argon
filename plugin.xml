@@ -28,5 +28,4 @@
     <view id="ArgonWorkspaceAccessOutputID" initialSide="EAST" initialRow="0" />
     <!-- The toolbar which will contain action buttons of the plugin. -->
     <toolbar id="ArgonWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1" />
-    <toolbar id="toolbar.file" initialSide="NORTH" initialRow="1" />
 </plugin>

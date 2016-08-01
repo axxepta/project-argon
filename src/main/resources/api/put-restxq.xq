@@ -9,7 +9,9 @@ declare variable $VERSION-UP as xs:boolean external;
 
 let $system := db:system()
 let $webpath := $system//webpath/string()
-let $restxqpath := $system//restxqpath/string()
+let $restxqpath := if (empty($system//restxqpath)) then (
+    error(xs:QName("api"), "Need admin rights to access query path.")
+) else ($system//restxqpath/string())
 
 let $pathtokens := tokenize($PATH, '/')
 let $ntokens := count($pathtokens)

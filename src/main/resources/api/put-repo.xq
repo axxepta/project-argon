@@ -7,17 +7,21 @@ declare variable $VERSIONIZE as xs:boolean external;
 (: increase version? :)
 declare variable $VERSION-UP as xs:boolean external;
 
+let $repopath := if (empty(db:system()//repopath)) then (
+    error(xs:QName("api"), "Need admin rights to access repo path.")
+) else (db:system()//repopath)
+
 let $pathtokens := tokenize($PATH, '/')
 let $ntokens := count($pathtokens)
 let $dir := if($ntokens gt 1) then (
     let $tokenlengths := for $i in (1 to ($ntokens -1)) return string-length(subsequence($pathtokens, $i, 1))
     let $dirEnd := sum($tokenlengths) + $ntokens - 2
-    return concat(db:system()//repopath || '/' , substring($PATH, 1, $dirEnd))
+    return concat($repopath || '/' , substring($PATH, 1, $dirEnd))
 ) else (
-   db:system()//repopath || ''
+   $repopath || ''
 )
 
-let $path := db:system()//repopath || '/' || $PATH
+let $path := $repopath || '/' || $PATH
 let $dir-exists := file:exists($dir)
 return if(starts-with($RESOURCE, '<')) then (
     if($dir-exists) then () else(file:create-dir($dir)),

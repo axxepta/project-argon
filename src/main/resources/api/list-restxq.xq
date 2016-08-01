@@ -4,7 +4,9 @@ declare variable $PATH as xs:string external;
 let $system := db:system()
 let $webpath := $system//webpath/string()
 (: absolute, or relative to webpath :)
-let $restxqpath := $system//restxqpath/string()
+let $restxqpath := if (empty($system//restxqpath)) then (
+    error(xs:QName("api"), "Need admin rights to access query path.")
+) else ($system//restxqpath/string())
 
 let $path := file:resolve-path($restxqpath, file:resolve-path($webpath)) || $PATH
 for $resource in file:children($path)
