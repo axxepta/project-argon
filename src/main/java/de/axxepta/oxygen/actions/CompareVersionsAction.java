@@ -120,14 +120,14 @@ public class CompareVersionsAction extends AbstractAction {
         StringBuilder urlStr = new StringBuilder(url.toString());
         int endOfProtocolPos = urlStr.indexOf(":");
         int endOfDBNamePos = urlStr.indexOf("/", endOfProtocolPos + 2);
-        if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.backupRepoBase)) {
+        if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.BACKUP_REPO_BASE)) {
             urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
             urlStr.replace(0,endOfProtocolPos, CustomProtocolURLHandlerExtension.ARGON_REPO);
-        } else if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.backupRESTXYBase)) {
+        } else if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.BACKUP_RESTXQ_BASE)) {
             urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
             urlStr.replace(0,endOfProtocolPos, CustomProtocolURLHandlerExtension.ARGON_XQ);
         } else {
-            urlStr.delete(endOfProtocolPos + 2, endOfProtocolPos + 2 + BaseXByteArrayOutputStream.backupDBBase.length());
+            urlStr.delete(endOfProtocolPos + 2, endOfProtocolPos + 2 + BaseXByteArrayOutputStream.BACKUP_DB_BASE.length());
         }
         int dotPos = urlStr.lastIndexOf(".");
         int endOfFileNamePos = urlStr.lastIndexOf("-", dotPos);

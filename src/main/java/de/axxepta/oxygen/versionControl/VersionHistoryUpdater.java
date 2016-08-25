@@ -5,10 +5,18 @@ import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.utils.XMLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,37 +40,53 @@ public class VersionHistoryUpdater implements ObserverInterface {
         historyList = new ArrayList<>();
     }
 
-    public void update(String type, Object... urlString) {
-
+    public void update(String type, Object... msg) {
+        // ToDo: store data permanently in editor watch map to avoid repeated traffic--refresh historyList if editor is saved
         historyList = new ArrayList<>();
-        if (!(urlString[0]).equals("")) {
-
-            String resource = CustomProtocolURLHandlerExtension.pathFromURLString((String) urlString[0]);
-            String pathStr = obtainHistoryPath(resource, (String) urlString[0]);
-            String fileName = ((String) urlString[0]).substring(((String) urlString[0]).lastIndexOf("/") + 1,
-                    ((String) urlString[0]).lastIndexOf("."));
-            String extension = ((String) urlString[0]).substring(((String) urlString[0]).lastIndexOf("."));
-
-            List<String> allVersions = obtainFileVersions(pathStr, fileName, extension);
-
-            for (String strEntry : allVersions) {
-                URL url = null;
-                try {
-                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + "://" + pathStr + "/" + strEntry);
-                } catch (MalformedURLException e1) {
-                    logger.error(e1);
-                }
-                int dotPos = strEntry.lastIndexOf(".");
-                int revPos = strEntry.lastIndexOf("r", dotPos);
-                int verPos = strEntry.lastIndexOf("v", dotPos);
-                int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
-                int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
-                Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
-                VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
-                historyList.add(versionHistoryEntry);
+        if ((msg[0] instanceof String) && !(msg[0]).equals("")) {
+            String urlString = (String) msg[0];
+            String resource = CustomProtocolURLHandlerExtension.pathFromURLString(urlString);
+            String historyPathStr = obtainHistoryRoot(resource, urlString);
+            String metaPathStr = obtainMetaPath(resource, urlString);
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                getAndParseMetaData(connection, metaPathStr, historyPathStr);
+            } catch (IOException ioe) {
+                logger.warn("Argon connection error while getting meta data from resource " + resource + ": ", ioe.getMessage());
+            } catch (Exception ex) {
+                logger.debug("Error while parsing history meta data from resource " + resource + ": ", ex.getMessage());
             }
         }
         updateVersionHistory();
+    }
+
+    private void getAndParseMetaData(Connection connection, String resource, String historyPath) throws IOException,
+            ParserConfigurationException, SAXException, XPathExpressionException {
+        byte[] metaData;
+        metaData = connection.get(BaseXSource.DATABASE, resource);
+        Document dom = XMLUtils.docFromByteArray(metaData);
+        XPathExpression expression = XMLUtils.getXPathExpression("*//" + MetaInfoDefinition.HISTORY_FILE_TAG);
+        NodeList historyFiles = (NodeList) expression.evaluate(dom, XPathConstants.NODESET);
+        for (int i = 0; i < historyFiles.getLength(); i++) {
+            String historyFile = historyFiles.item(i).getTextContent();
+            parseHistoryEntry(historyFile, historyPath);
+        }
+    }
+
+    private void parseHistoryEntry(String strEntry, String historyPath) {
+        URL url = null;
+        try {
+            url = new URL(CustomProtocolURLHandlerExtension.ARGON + "://" + historyPath + "/" + strEntry);
+        } catch (MalformedURLException e1) {
+            logger.error(e1);
+        }
+        int dotPos = strEntry.lastIndexOf(".");
+        int revPos = strEntry.lastIndexOf("r", dotPos);
+        int verPos = strEntry.lastIndexOf("v", dotPos);
+        int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
+        int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
+        Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
+        VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
+        historyList.add(versionHistoryEntry);
     }
 
     private static Date parseDate(String dateStr) {
@@ -74,40 +98,31 @@ public class VersionHistoryUpdater implements ObserverInterface {
         return new Date(year, month, day, hour, min);
     }
 
-    private static String obtainHistoryPath(String resource, String urlString) {
+    private static String obtainMetaPath(String resource, String urlString) {
         StringBuilder pathStr;
         if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRESTXYBase);
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_RESTXQ_BASE);
         } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRepoBase);
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_REPO_BASE);
         } else {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupDBBase);
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_DB_BASE);
         }
-        if (resource.lastIndexOf("/") != -1)
-            pathStr.append(resource.substring(0, resource.lastIndexOf("/")));
+        pathStr.append(resource).append(".xml");
         return pathStr.toString();
     }
 
-    private static List<String> obtainFileVersions(String pathStr, String fileName, String extension) {
-        //ToDo: exchange by query to metadata file -- maybe store data permanently in editor watch map to avoid repeated traffic
-        //      then the editor watch map needed to be notified about save processes!
-        List<String> allVersions = new ArrayList<>();
-        BaseXSource source = BaseXSource.DATABASE;
-
-        List<BaseXResource> allOldVersions;
-        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            allOldVersions = connection.list(source, pathStr);
-        } catch (IOException ioe) {
-            allOldVersions = new ArrayList<>();
+    private static String obtainHistoryRoot(String resource, String urlString) {
+        StringBuilder pathStr;
+        if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_RESTXQ_BASE);
+        } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_REPO_BASE);
+        } else {
+            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_DB_BASE);
+            if (resource.contains("/"))
+                pathStr.append(resource.substring(0, resource.indexOf("/")));
         }
-
-        String filter = fileName + "_[0-9]{4}-[0-1][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]_v[0-9]+r[0-9]+" + extension;
-
-        for (int i=allOldVersions.size()-1; i>=0; i--) {
-            if (!allOldVersions.get(i).getType().equals(BaseXType.DIRECTORY) && allOldVersions.get(i).getName().matches(filter))
-                allVersions.add(allOldVersions.get(i).getName());
-        }
-        return allVersions;
+        return pathStr.toString();
     }
 
     public static String checkVersionHistory(URL editorLocation) {

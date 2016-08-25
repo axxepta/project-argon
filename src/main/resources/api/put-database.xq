@@ -51,7 +51,8 @@ let $doctypetokens := if(contains($RESOURCE, $DOCTYPE)) then (
 ) else ()
 
 (: build path for history file :)
-let $hist-ext := concat(format-dateTime(current-dateTime(), "_[Y0001]-[M01]-[D01]_[H01]-[m01]_"), 'v', $version, 'r', $revision)
+let $timestamp := format-dateTime(current-dateTime(), "[Y0001]-[M01]-[D01]_[H01]-[m01]")
+let $hist-ext := concat('_', $timestamp, '_', 'v', $version, 'r', $revision)
 
 let $pathtokens := tokenize($path, '/')
 let $filename := head(reverse($pathtokens))
@@ -75,7 +76,8 @@ let $metaupdated := (
     ) else (),
     if(not(empty($doctypetokens))) then (
         replace node .//doctype with $doctypetokens
-    ) else ()
+    ) else (),
+    replace value of node .//lastchange with $timestamp
 )
 
 let $isXML := starts-with($RESOURCE, '<') and not(ends-with($PATH, '.html') or ends-with($PATH, '.htm'))

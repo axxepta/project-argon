@@ -1,6 +1,3 @@
-/**
- *
- */
 package de.axxepta.oxygen.customprotocol;
 
 
@@ -21,9 +18,14 @@ import java.net.URL;
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    public static final String backupDBBase = "~history_";
-    public static final String backupRESTXYBase = "~history_~restxq/";
-    public static final String backupRepoBase = "~history_~repo/";
+    public static final String BACKUP_DB_BASE = "~history_";
+
+    public static final String BACKUP_RESTXQ_BASE = "~history_~restxq/";
+    public static final String BACKUP_REPO_BASE = "~history_~repo/";
+
+    public static final String META_DB_BASE = "~meta_";
+    public static final String META_RESTXQ_BASE = "~meta_~restxq/";
+    public static final String META_REPO_BASE = "~meta_~repo/";
 
     private final URL url;
     private BaseXSource source;
