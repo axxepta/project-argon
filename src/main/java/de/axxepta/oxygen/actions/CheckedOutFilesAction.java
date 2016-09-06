@@ -42,6 +42,7 @@ public class CheckedOutFilesAction extends AbstractAction {
         final JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, "Checked out files");
 
         JPanel content = SearchInPathAction.createSelectionListPanel("Choose files to check in.", resultList);
+        resultList.setSelectionInterval(0, resultList.getModel().getSize() - 1);
 
         JPanel buttonsPanel = new JPanel();
         JButton checkInButton = new JButton(new AbstractAction("Check in selected files") {

@@ -9,6 +9,7 @@ import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -145,6 +146,7 @@ public class SearchInPathAction extends AbstractAction {
     @SuppressWarnings("all")
     public static ArrayList<String> search(TreePath rootPath, int type, BaseXSource source, TreePath path, String filter) {
         ArrayList<String> allResources = new ArrayList<>();
+        WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
         switch (type) {
             case SEARCH_ALL: {
                 TreePath currentPath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_repo));
@@ -170,6 +172,7 @@ public class SearchInPathAction extends AbstractAction {
                 allResources.addAll(searchResourcesInPath(source, path, filter));
             }
         }
+        WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
         return allResources;
     }
 

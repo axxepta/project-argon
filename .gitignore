@@ -73,3 +73,4 @@ local.properties
 .texlipse
 /*.ipr
 /work_resources
+/src/main/java/de/axxepta/oxygen/actions/MetaBuild.java
