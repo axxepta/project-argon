@@ -48,7 +48,7 @@ class ArgonProtocolHandler extends URLStreamHandler {
 
         @Override
         public OutputStream getOutputStream() throws IOException {
-            return new BaseXByteArrayOutputStream(this.source, url);
+            return new BaseXByteArrayOutputStream(url);
         }
 
         @Override

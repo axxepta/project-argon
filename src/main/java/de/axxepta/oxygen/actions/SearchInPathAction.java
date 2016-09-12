@@ -1,13 +1,12 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
@@ -181,8 +180,8 @@ public class SearchInPathAction extends AbstractAction {
     public static List<String> getDatabases() {
         List<BaseXResource> databaseList;
         List<String> databases = new ArrayList<>();
-        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            databaseList = connection.list(BaseXSource.DATABASE, "");
+        try {
+            databaseList = ConnectionWrapper.list(BaseXSource.DATABASE, "");
         } catch (Exception er) {
             logger.debug("Couldn't obtain database list. Error: ", er.getMessage());
             databaseList = new ArrayList<>();

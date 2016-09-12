@@ -6,10 +6,13 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
@@ -92,15 +95,20 @@ public class RenameAction extends AbstractAction {
                     newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newPath;
                 else
                     newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
-                System.out.println(db_path);
-                System.out.println(newPathString);
-                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                    connection.rename(source, db_path, newPathString);
-                    treeModel.valueForPathChanged(path, newPath);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Failed to rename resource",
-                            "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                    logger.debug(ex.toString());
+                if (!ConnectionWrapper.isLocked(source, newPathString)) {
+                    if (WorkspaceUtils.newResourceOrOverwrite(source, newPathString)) {
+                        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                            connection.rename(source, db_path, newPathString);
+                            treeModel.valueForPathChanged(path, newPath);
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Failed to rename resource",
+                                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                            logger.debug(ex.toString());
+                        }
+                    }
+                } else {
+                    PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage("Resource " + newPathString +
+                            " already exists and is locked by another user");
                 }
             }
             renameDialog.dispose();

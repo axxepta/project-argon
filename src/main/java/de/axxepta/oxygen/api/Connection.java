@@ -59,11 +59,14 @@ public interface Connection extends Closeable {
      * @param source data source
      * @param path path
      * @param resource resource to be stored
+     * @param binary flag whether resource should be stored binary
+     * @param encoding encoding of XML type resource
      * @param versionize flag whether version control should be used
      * @param versionUp flag whether version should be raised as String
      * @throws IOException I/O exception
      */
-    void put(final BaseXSource source, final String path, final byte[] resource, String versionize, String versionUp) throws IOException;
+    void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+             String versionize, String versionUp) throws IOException;
 
     /**
      * Deletes a resource.
@@ -72,6 +75,14 @@ public interface Connection extends Closeable {
      * @throws IOException I/O exception
      */
     void delete(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Checks for existence of resource.
+     * @param source data source
+     * @param path path
+     * @throws IOException I/O exception
+     */
+    boolean exists(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Renames a resource.

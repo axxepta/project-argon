@@ -1,11 +1,11 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -141,28 +140,16 @@ public class AddNewFileAction extends AbstractAction {
                     return;
                 }
                 PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-                boolean isLocked = false;
-                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                    if (connection.locked(source, resource)) {
-                        isLocked = true;
-                        pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
+                boolean isLocked = ConnectionWrapper.isLocked(source, resource);
+                if (isLocked) {
+                    pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
                                 "and is locked by another user.");
-/*                        JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
-                                        "and is locked by another user.", "File locked", JOptionPane.PLAIN_MESSAGE);*/
-                    }
-                } catch (IOException ie) {
-                    isLocked = true;
-                    logger.debug("Querying LOCKED returned: ", ie.getMessage());
-                }
-                if (!isLocked) {
-                    // ToDo: proper locking while store process
-                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
-                        os.write(template.finish());
+                } else {
+                    // ToDo: proper locking while store process, ask for overwrite
+                    try {
+                        ConnectionWrapper.save(url, template.finish(), "UTF-8");
                     } catch (IOException ex) {
-                        logger.error(ex.getMessage());
                         pluginWorkspace.showInformationMessage("Couldn't create new file.");
-/*                        JOptionPane.showMessageDialog(null, "Couldn't create new file", "BaseX Connection Error",
-                                JOptionPane.PLAIN_MESSAGE);*/
                     }
                 }
             }

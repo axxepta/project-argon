@@ -2,6 +2,7 @@ package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -226,8 +227,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
     private List<ArgonChooserListModel.Element> obtainNewList(BaseXSource source, String path) {
         List<ArgonChooserListModel.Element> newList = new ArrayList<>();
         newList.add(new ArgonChooserListModel.Element(ArgonEntity.ROOT, ".."));
-        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            List<BaseXResource> resourceList = connection.list(source, path);
+        try {
+            List<BaseXResource> resourceList = ConnectionWrapper.list(source, path);
             for (BaseXResource resource : resourceList) {
                 if ((depth == 1) && (this.path.get(0).getType().equals(ArgonEntity.DB_BASE)))
                     newList.add(new ArgonChooserListModel.Element(ArgonEntity.DB, resource.getName()));

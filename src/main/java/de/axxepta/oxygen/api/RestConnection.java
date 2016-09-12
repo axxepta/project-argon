@@ -77,14 +77,22 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource, String versionize, String versionUp)
+    public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+                    String versionize, String versionUp)
             throws IOException {
-        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource), VERSIONIZE, versionize, VERSION_UP, versionUp);
+        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource),
+                BINARY, Boolean.toString(binary), ENCODING, encoding, VERSIONIZE, versionize, VERSION_UP, versionUp);
     }
 
     @Override
     public void delete(final BaseXSource source, final String path) throws IOException {
         request(getQuery("delete-" + source), PATH, path);
+    }
+
+    @Override
+    public boolean exists(final BaseXSource source, final String path) throws IOException {
+        final byte[] result = request(getQuery("exists-" + source), PATH, path);
+        return Token.string(result).equals("true");
     }
 
     @Override

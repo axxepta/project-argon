@@ -33,6 +33,10 @@ public final class ConnectionUtils {
     public static final String VERSIONIZE = "VERSIONIZE";
     /** Increase file version option */
     public static final String VERSION_UP = "VERSION-UP";
+    /** Encoding variable */
+    public static final String ENCODING = "ENCODING";
+    /** Binary option */
+    public static final String BINARY = "BINARY";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

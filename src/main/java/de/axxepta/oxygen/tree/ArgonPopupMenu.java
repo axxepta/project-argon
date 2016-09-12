@@ -134,10 +134,6 @@ public class ArgonPopupMenu extends PopupMenu {
                 tree, tListener);
         this.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-        Action newVersion = new NewVersionContextAction(Lang.get(Lang.Keys.cm_newversion), ImageUtils.getIcon(ImageUtils.INC_VER),
-                tListener, pluginWorkspaceAccess);
-        this.add(newVersion, Lang.get(Lang.Keys.cm_newversion));
-
         Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                 tree);
         this.add(add, Lang.get(Lang.Keys.cm_add));
@@ -217,12 +213,6 @@ public class ArgonPopupMenu extends PopupMenu {
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_newdir))) {
                 if (isDir || isDB || isFileSource)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_newversion))) {
-                if (isFile)
                     this.setItemEnabled(i, true);
                 else
                     this.setItemEnabled(i, false);

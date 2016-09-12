@@ -20,6 +20,7 @@ import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
@@ -133,8 +134,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             else
                 db_path = "";
 
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                childList = connection.list(source, db_path);
+            try {
+                childList = ConnectionWrapper.list(source, db_path);
             } catch (Exception er) {
                 childList = new ArrayList<>();
                 logger.debug(er);

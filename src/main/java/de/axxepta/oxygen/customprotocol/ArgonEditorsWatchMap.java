@@ -42,4 +42,9 @@ public class ArgonEditorsWatchMap {
         return !(URLMap.get(url) == null);
     }
 
+    public static String getEncoding(URL url) {
+        // ToDo:
+        return "UTF-8";
+    }
+
 }

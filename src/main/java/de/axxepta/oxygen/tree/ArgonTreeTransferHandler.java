@@ -1,9 +1,8 @@
 package de.axxepta.oxygen.tree;
 
-import de.axxepta.oxygen.actions.SaveFileToArgonAction;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.utils.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -25,7 +24,7 @@ import java.util.List;
  * @author Markus on 04.11.2015.
  */
 public class ArgonTreeTransferHandler extends TransferHandler {
-
+// ToDo: change all calls of JOptionPane.showMessageDialog to Oxygen dialogs
     private static final Logger logger = LogManager.getLogger(ArgonTreeTransferHandler.class);
 
     private final ArgonTree tree;
@@ -109,6 +108,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
         for (File file : transferData) {
             pathList.add(pathURLString + "/" + file.getName());
         }
+        WorkspaceUtils.OverwriteChecker overwriteChecker = new WorkspaceUtils.OverwriteChecker();
         int i = 0;
         List<String> lockedFiles = new ArrayList<>();
         boolean isLocked;
@@ -120,13 +120,14 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     url = new URL(pathList.get(i));
                     String newPath = CustomProtocolURLHandlerExtension.pathFromURL(url);
 
-                    isLocked = SaveFileToArgonAction.isLocked(source, newPath);
+                    isLocked = ConnectionWrapper.isLocked(source, newPath);
                     if (isLocked) {
                         lockedFiles.add(url.toString());
                     } else {
-                        // ToDo: proper locking while storage process (transaction)
-                        //copy file
-                        copyFile(file, source, url);
+                        if (overwriteChecker.newResourceOrOverwrite(source, newPath)) {
+                            // ToDo: proper locking while storage process (transaction)
+                            copyFile(file, url);
+                        }
                     }
 
                 } catch (MalformedURLException e1) {
@@ -144,30 +145,27 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             i++;
         }
         if (lockedFiles.size() > 0) {
-            JOptionPane.showMessageDialog(null, "The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles
-                    , "Drag&Drop Message", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles,
+                    "Drag&Drop Message", JOptionPane.PLAIN_MESSAGE);
         }
     }
 
-    private void copyFile(File file, BaseXSource source, URL url) throws MalformedURLException {
-        //copy file
+    private void copyFile(File file, URL url) throws MalformedURLException {
         byte[] isByte;
-        URL sourceURL = file.toURI().toURL();
-/*        PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
-        try (Reader urlReader = workspace.getUtilAccess().createReader(sourceURL, "UTF-8")) {
-            //
-        } catch (IOException ie) {
-            logger.error(ie.getMessage());
-            JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
-                    + "\nto database: " + ie.getMessage(), "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
-        }*/
         try (InputStream is = new FileInputStream(file)) {
             int l = is.available();
             isByte = new byte[l];
             //noinspection ResultOfMethodCallIgnored
             is.read(isByte);
             try {
-                SaveFileToArgonAction.saveFile(isByte, source, url);
+                if (URLUtils.isBinary(url) || !IOUtils.isXML(isByte)) {   // check file content only if not enough info by file extension
+                    ConnectionWrapper.save(true, url, isByte);
+                } else {
+                    String encoding = XMLUtils.encodingFromBytes(isByte);
+                    if (!encoding.equals("UTF-8"))
+                        isByte = IOUtils.convertToUTF8(isByte, encoding);
+                    ConnectionWrapper.save(url, isByte, encoding);
+                }
                 logger.info("Dropped file " + file.toString() + " to " + url.toString());
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()

@@ -212,6 +212,15 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         }
     }
 
+    public static String protocolFromURL(URL url) {
+        String urlString = url.toString().toLowerCase();
+        if (urlString.startsWith(ARGON_XQ))
+            return ARGON_XQ;
+        if (urlString.startsWith(ARGON_REPO))
+            return ARGON_REPO;
+        return ARGON;
+    }
+
     public static BaseXSource sourceFromURL(URL url) {
         return sourceFromURLString(url.toString());
 

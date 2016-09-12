@@ -1,7 +1,7 @@
 package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.actions.BaseXRunQueryAction;
-import de.axxepta.oxygen.actions.NewVersionButtonAction;
+import de.axxepta.oxygen.actions.NewVersionAction;
 import de.axxepta.oxygen.actions.ReplyAuthorCommentAction;
 import de.axxepta.oxygen.actions.SaveFileToArgonAction;
 import de.axxepta.oxygen.utils.ImageUtils;
@@ -34,7 +34,7 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
         super();
         runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
                 ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
-        newVersionAction = new NewVersionButtonAction("Increase File Version",
+        newVersionAction = new NewVersionAction("Increase File Version",
                 ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
         replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);

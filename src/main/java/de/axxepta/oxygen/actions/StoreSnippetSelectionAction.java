@@ -2,8 +2,9 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorAccess;
@@ -77,28 +78,36 @@ public class StoreSnippetSelectionAction extends AbstractAction {
     private void saveToArgon(String text) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
                 "Save File via BaseX Database Connection", ArgonChooserDialog.SAVE);
-        URL url =  urlChooser.selectURLs()[0];
-        BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-        try {
-            byte[] bytes = text.getBytes("UTF-8");
-            try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url)) {
-                os.write(bytes);
-            } catch (IOException ioe) {
-                workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
+        URL[] urls =  urlChooser.selectURLs();
+        if (urls != null) {
+            URL url = urls[0];
+            BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+            String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
+            if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
+                try {
+                    byte[] bytes = text.getBytes("UTF-8");
+                    try {
+                        ConnectionWrapper.save(url, bytes, "UTF-8");
+                    } catch (IOException ioe) {
+                        workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
+                    }
+
+                } catch (UnsupportedEncodingException use) {
+                    logger.error(use.getMessage());
+                }
             }
-        } catch (UnsupportedEncodingException use) {
-            logger.error(use.getMessage());
         }
     }
 
     private void saveToFile(String text) {
         File file = workspace.chooseFile(null, "Save Snippet to File",  new String[] {"*"}, "All Files", true);
-        if (file != null)
+        if (file != null) {
             try {
                 storeString(text, file);
             } catch (IOException ioe) {
                 workspace.showErrorMessage("Failed to store snippet to File: " + ioe.getMessage());
             }
+        }
     }
 
     private static void storeString(String text, File file) throws IOException {

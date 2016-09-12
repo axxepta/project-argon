@@ -2,6 +2,10 @@
 declare variable $PATH as xs:string external;
 (:~ Resource (XML string or Base64). :)
 declare variable $RESOURCE as xs:string external;
+(:~ Binary storage? :)
+declare variable $BINARY as xs:string external;
+(:~ Original encoding for XML. :)
+declare variable $ENCODING as xs:string external;
 (:~ Put copy in history and increase revision? :)
 declare variable $VERSIONIZE as xs:boolean external;
 (: increase version? :)
@@ -77,10 +81,11 @@ let $metaupdated := (
     if(not(empty($doctypetokens))) then (
         replace node .//doctype with $doctypetokens
     ) else (),
+    replace value of node .//encoding with $ENCODING
     replace value of node .//lastchange with $timestamp
 )
 
-let $isXML := starts-with($RESOURCE, '<') and not(ends-with($PATH, '.html') or ends-with($PATH, '.htm'))
+let $isXML := compare($BINARY, 'true') = 0;
 let $xml := if($isXML) then (
     try {
         parse-xml($RESOURCE)
