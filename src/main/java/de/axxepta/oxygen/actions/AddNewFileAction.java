@@ -7,6 +7,7 @@ import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
@@ -126,7 +127,7 @@ public class AddNewFileAction extends AbstractAction {
                         template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
                         break;
                     default:
-                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a/>");
                 }
                 // add file
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
@@ -146,10 +147,15 @@ public class AddNewFileAction extends AbstractAction {
                                 "and is locked by another user.");
                 } else {
                     // ToDo: proper locking while store process, ask for overwrite
-                    try {
-                        ConnectionWrapper.save(url, template.finish(), "UTF-8");
-                    } catch (IOException ex) {
-                        pluginWorkspace.showInformationMessage("Couldn't create new file.");
+                    if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
+                        try {
+                            WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
+                            ConnectionWrapper.save(url, template.finish(), "UTF-8");
+                            WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                        } catch (IOException ex) {
+                            WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                            pluginWorkspace.showInformationMessage("Couldn't create new file.");
+                        }
                     }
                 }
             }

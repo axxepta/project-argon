@@ -46,7 +46,7 @@ public final class URLUtils {
      * @return true if non-xml type for sure
      */
     public static boolean isBinary(String file) {
-        return ((file.toLowerCase().endsWith(".gif") ||
+        return (file.toLowerCase().endsWith(".gif") ||
                 file.toLowerCase().endsWith(".png") ||
                 file.toLowerCase().endsWith(".eps") ||
                 file.toLowerCase().endsWith(".tiff") ||
@@ -57,13 +57,15 @@ public final class URLUtils {
                 file.toLowerCase().endsWith(".ppt") ||
                 file.toLowerCase().endsWith(".xls") ||
                 file.toLowerCase().endsWith(".xlsx") ||
+                file.toLowerCase().endsWith(".pdf") ||
                 file.toLowerCase().endsWith(".dll") ||
                 file.toLowerCase().endsWith(".exe") ||
                 file.toLowerCase().endsWith(".htm") ||     // store only XML as text
                 file.toLowerCase().endsWith(".html") ||
+                file.toLowerCase().endsWith(".php") ||
                 file.toLowerCase().endsWith(".css") ||
                 file.toLowerCase().endsWith(".txt") ||
-                isQuery(file)) && !isXML(file));
+                isQuery(file));
     }
 
     public static boolean isQuery(URL url) {

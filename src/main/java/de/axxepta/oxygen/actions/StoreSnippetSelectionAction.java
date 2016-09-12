@@ -103,8 +103,11 @@ public class StoreSnippetSelectionAction extends AbstractAction {
         File file = workspace.chooseFile(null, "Save Snippet to File",  new String[] {"*"}, "All Files", true);
         if (file != null) {
             try {
+                WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                 storeString(text, file);
+                WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } catch (IOException ioe) {
+                WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                 workspace.showErrorMessage("Failed to store snippet to File: " + ioe.getMessage());
             }
         }

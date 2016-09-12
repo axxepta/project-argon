@@ -38,10 +38,12 @@ public class NewVersionAction extends AbstractAction {
             CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
             if (handlerExtension.canCheckReadOnly(protocol) && !handlerExtension.isReadOnly(url)) {
                 byte[] outputArray = WorkspaceUtils.getEditorByteContent(editorAccess);
+                WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                 String encoding = ArgonEditorsWatchMap.getEncoding(url);
                 if (!encoding.equals("UTF-8"))
                     outputArray = IOUtils.convertToUTF8(outputArray, encoding);
                 updateFile(url, outputArray, encoding);
+                WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } else {
                 JOptionPane.showMessageDialog(null, "Couldn't update version of file\n" + url.toString() +
                         ".\n File is locked by other user.", "Update Version Message", JOptionPane.PLAIN_MESSAGE);
@@ -53,6 +55,7 @@ public class NewVersionAction extends AbstractAction {
         try {
             ConnectionWrapper.save(url, outputArray, encoding, true);
         } catch (IOException ex) {
+            WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             // ToDo: exchange by Oxygen dialog
             JOptionPane.showMessageDialog(null, "Couldn't write updated version of file\n" + url.toString(),
                     "Update Version Error", JOptionPane.PLAIN_MESSAGE);

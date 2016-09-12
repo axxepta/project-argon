@@ -158,7 +158,9 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             //noinspection ResultOfMethodCallIgnored
             is.read(isByte);
             try {
-                if (URLUtils.isBinary(url) || !IOUtils.isXML(isByte)) {   // check file content only if not enough info by file extension
+                WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
+                // check for XML, check file content only if not enough info by file extension
+                if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(isByte))) {
                     ConnectionWrapper.save(true, url, isByte);
                 } else {
                     String encoding = XMLUtils.encodingFromBytes(isByte);
@@ -167,7 +169,9 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     ConnectionWrapper.save(url, isByte, encoding);
                 }
                 logger.info("Dropped file " + file.toString() + " to " + url.toString());
+                WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } catch (IOException ex) {
+                WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                 JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
                         + "\nto database: " + ex.getMessage(), "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
             }

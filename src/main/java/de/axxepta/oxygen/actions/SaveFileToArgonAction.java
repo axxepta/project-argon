@@ -42,11 +42,14 @@ public class SaveFileToArgonAction extends AbstractAction {
             if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
                 if (!ConnectionWrapper.isLocked(source, path)) {
                     try {
+                        WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                         ConnectionWrapper.lock(source, path);
                         WorkspaceUtils.saveEditorToBaseXURL(editorAccess, url[0]);
                         editorAccess.close(false);
                         workspaceAccess.open(url[0]);
+                        WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                     } catch (IOException ioe) {
+                        WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                         workspaceAccess.showErrorMessage("Resource " + url[0].toString() +
                                 " could not be stored to BaseX connection: " + ioe.getMessage());
                     }

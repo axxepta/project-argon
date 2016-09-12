@@ -65,7 +65,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         byte[] savedBytes;
         savedBytes = toByteArray();
         // if "Save" or "Save as URL" were called check for encoding
-        if (!binary && !encoding.equals("")) {
+        if (!binary && encoding.equals("")) {
             encoding = ArgonEditorsWatchMap.getEncoding(url);
             if (encoding.equals(""))
                 XMLUtils.encodingFromBytes(savedBytes);

@@ -81,11 +81,16 @@ let $metaupdated := (
     if(not(empty($doctypetokens))) then (
         replace node .//doctype with $doctypetokens
     ) else (),
-    replace value of node .//encoding with $ENCODING
+    if (empty(.//creationdate/text())) then (
+        replace value of node .//creationdate with $timestamp
+    ) else (),
+    if (empty(.//creationdate/text())) then (
+        replace value of node .//initialencoding with $ENCODING
+    ) else (),
     replace value of node .//lastchange with $timestamp
 )
 
-let $isXML := compare($BINARY, 'true') = 0;
+let $isXML := (compare($BINARY, 'false') = 0)
 let $xml := if($isXML) then (
     try {
         parse-xml($RESOURCE)

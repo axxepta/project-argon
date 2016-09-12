@@ -1,4 +1,5 @@
 <argon-meta>
+    <creationdate/>
     <lastchange/>
     <versioning>
         <version/>
@@ -7,9 +8,8 @@
     </versioning>
     <owner/>
     <ownergroup/>
-    <encoding/>
+    <initialencoding/>
     <mimetype/>
-    <prolog/>
     <doctype/>
     <status/>
     <rights>
