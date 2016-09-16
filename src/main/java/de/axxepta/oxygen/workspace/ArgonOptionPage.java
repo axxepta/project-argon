@@ -182,7 +182,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         String baseXDBCreateChop = getOption(KEY_BASEX_DB_CREATE_CHOP, false);
         String baseXDBCreateFTIndex = getOption(KEY_BASEX_DB_CREATE_FTINDEX, false);
 
-        List<String[]> connectionSettings = loadConnectionSettings();
+        final List<String[]> connectionSettings = loadConnectionSettings();
         List<String> connectionSettingNames = new ArrayList<>();
         for (String[] setting : connectionSettings) {
             connectionSettingNames.add(setting[0]);
@@ -215,7 +215,14 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
 
         baseXConnectionSettingsComboBox = new JComboBox(connectionSettingNames.toArray());
         baseXConnectionSettingsComboBox.setEditable(true);
-        baseXConnectionSettingsComboBox.addActionListener(new ConnectionsListListener(connectionSettings));
+        baseXConnectionSettingsComboBox.addActionListener(e -> {
+            int newSelection = ((JComboBox)e.getSource()).getSelectedIndex();
+            if (newSelection != -1) {  // one of the old entries was selected
+                baseXHostTextField.setText(connectionSettings.get(newSelection)[1]);
+                baseXUsernameTextField.setText(connectionSettings.get(newSelection)[2]);
+                baseXPasswordTextField.setText(connectionSettings.get(newSelection)[3]);
+            }
+        });
         c.gridx++;
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -481,7 +488,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         }
     }
 
-    private List loadConnectionSettings() {
+    public static List loadConnectionSettings() {
         List<String[]> connectionSettings = new ArrayList<>();
         String[] conn = {"default" , DEF_BASEX_HOST, DEF_BASEX_USERNAME, DEF_BASEX_PASSWORD};
         connectionSettings.add(conn);
@@ -511,7 +518,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         return connectionSettings;
     }
 
-    private void storeConnectionSettings() {
+    public void storeConnectionSettings() {
         File settingsPath = new File(CONNECTION_SETTING_PATH);
         boolean noDirectory = false;
         if (!FileUtils.directoryExists(settingsPath)) {
@@ -541,24 +548,6 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         }
     }
 
-
-    private class ConnectionsListListener implements ActionListener {
-
-        private final List<String[]> connectionSettingList;
-        private ConnectionsListListener(List<String[]> connectionSettingsList) {
-            this.connectionSettingList = connectionSettingsList;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int newSelection = ((JComboBox)e.getSource()).getSelectedIndex();
-            if (newSelection != -1) {  // one of the old entries was selected
-                baseXHostTextField.setText(connectionSettingList.get(newSelection)[1]);
-                baseXUsernameTextField.setText(connectionSettingList.get(newSelection)[2]);
-                baseXPasswordTextField.setText(connectionSettingList.get(newSelection)[3]);
-            }
-        }
-    }
 
 }
 

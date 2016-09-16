@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.utils.DialogTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;

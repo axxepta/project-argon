@@ -14,6 +14,7 @@ declare variable $VERSION-UP as xs:boolean external;
 declare variable $metatemplate := 'MetaTemplate.xml';
 declare variable $argon_db := '~argon';
 declare variable $historyfile := 'historyfile';
+declare variable $historyentry := 'historyentry';
 declare variable $DOCTYPE := '!DOCTYPE';
 
 let $db := if(contains($PATH, '/')) then substring-before($PATH, '/') else $PATH
@@ -69,6 +70,9 @@ let $histpath := if(contains($filename, '.')) then (
     concat($path, $hist-ext)
 )
 
+let $histuser := <historyuser>{user:current()}</historyuser>
+let $histfile := <historyfile>{$histpath}</historyfile>
+
 (: update metadata  :)
 let $metaupdated := (
     $meta
@@ -76,7 +80,7 @@ let $metaupdated := (
     if ($VERSIONIZE) then (
         replace value of node .//version with $version,
         replace value of node .//revision with $revision,
-        insert node element { $historyfile } { $histpath } into .//history
+        insert node element { $historyentry } { $histfile, $histuser } into .//history
     ) else (),
     if(not(empty($doctypetokens))) then (
         replace node .//doctype with $doctypetokens

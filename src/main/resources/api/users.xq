@@ -1,4 +1,4 @@
-(:~ Lock database. :)
+(:~ List users. :)
 declare variable $LOCK-DB := '~argon';
 declare variable $USER-FILE := '~usermanagement';
 

@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.workspace;
 
-import de.axxepta.oxygen.actions.CheckedOutFilesAction;
+import de.axxepta.oxygen.actions.*;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.tree.*;
@@ -51,7 +51,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 
-        ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer(pluginWorkspaceAccess);
+        final ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer(pluginWorkspaceAccess);
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(toolbarCustomizer);
 
         pluginWorkspaceAccess.addEditorChangeListener(new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),

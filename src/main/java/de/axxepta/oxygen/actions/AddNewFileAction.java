@@ -6,6 +6,7 @@ import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
@@ -146,7 +147,7 @@ public class AddNewFileAction extends AbstractAction {
                     pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
                                 "and is locked by another user.");
                 } else {
-                    // ToDo: proper locking while store process, ask for overwrite
+                    // ToDo: proper locking while store process
                     if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
                         try {
                             WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);

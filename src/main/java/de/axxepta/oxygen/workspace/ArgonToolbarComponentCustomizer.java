@@ -31,7 +31,6 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
     private final Action saveToArgonAction;
 
     ArgonToolbarComponentCustomizer(StandalonePluginWorkspace pluginWorkspaceAccess) {
-        super();
         runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
                 ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
         newVersionAction = new NewVersionAction("Increase File Version",
@@ -78,7 +77,7 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
         addButtons("toolbar.review", new JComponent[]{replyCommentButton}, toolbarInfo, -1);
     }
 
-    private void addButtons(String toolbarID, JComponent[] components, ToolbarInfo toolbarInfo, int pos) {
+    private void addButtons(String toolbarID, JComponent[] components, final ToolbarInfo toolbarInfo, int pos) {
         if (toolbarID.equals(toolbarInfo.getToolbarID())) {
             List<JComponent> comps = new ArrayList<>();
             JComponent[] initialComponents = toolbarInfo.getComponents();

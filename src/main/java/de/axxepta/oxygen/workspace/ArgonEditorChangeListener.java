@@ -32,7 +32,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private static final Logger logger = LogManager.getLogger(ArgonEditorChangeListener.class);
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
-    private ArgonToolbarComponentCustomizer toolbarCustomizer;
+    private final ArgonToolbarComponentCustomizer toolbarCustomizer;
 
     private final Action snippetAction = new StoreSnippetSelectionAction();
 
@@ -41,7 +41,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private AuthorPopupMenuCustomizer authorPopupMenuCustomizer;
     private TextPopupMenuCustomizer textPopupMenuCustomizer;
 
-    ArgonEditorChangeListener(StandalonePluginWorkspace pluginWorkspace, ArgonToolbarComponentCustomizer toolbarCustomizer) {
+    ArgonEditorChangeListener(StandalonePluginWorkspace pluginWorkspace, final ArgonToolbarComponentCustomizer toolbarCustomizer) {
         super();
         this.pluginWorkspaceAccess = pluginWorkspace;
         this.toolbarCustomizer = toolbarCustomizer;

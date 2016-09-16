@@ -1,4 +1,5 @@
 <argon-meta>
+    <argon-ver>0.0.3</argon-ver>
     <creationdate/>
     <lastchange/>
     <versioning>
@@ -13,11 +14,11 @@
     <doctype/>
     <status/>
     <rights>
-        <owner>
+        <fileowner>
             <read>true</read>
             <write>true</write>
             <exec>false</exec>
-        </owner>
+        </fileowner>
         <group>
             <read>true</read>
             <write>true</write>

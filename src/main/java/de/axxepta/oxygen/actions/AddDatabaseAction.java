@@ -4,6 +4,7 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
