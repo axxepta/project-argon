@@ -1,14 +1,59 @@
 package de.axxepta.oxygen.utils;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Markus on 19.02.2016.
  */
-public class FileUtils {
+public final class FileUtils {
+
+    private static final Logger logger = LogManager.getLogger(FileUtils.class);
+
+    private FileUtils() {}
+
     public static boolean directoryExists(File dir) {
         if (dir == null)
             return false;
         return dir.exists() && dir.isDirectory();
     }
+
+    public static void createDirectory(String name) {
+        try {
+            Path newPath = Paths.get(new URI(name));
+            Files.createDirectory(newPath);
+        } catch (IOException | URISyntaxException use) {
+            logger.error("Error parsing path name to URI");
+        }
+    }
+
+    public static void copyFromBaseXToFile(String fileToCopy, String destinationFile) throws IOException {
+        String path = CustomProtocolURLHandlerExtension.pathFromURLString(fileToCopy);
+        try (Connection connection = BaseXConnectionWrapper.getConnection())
+        {
+            byte[] bytesToCopy = connection.get(BaseXSource.DATABASE, path);
+            try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
+                fos.write(bytesToCopy);
+                fos.close();
+            } catch (IOException ioe) {
+                throw new IOException("Argon: Copying file to file system failed: " + destinationFile);
+            }
+        } catch (IOException ioe) {
+            throw new IOException("Argon: Getting file to copy from database failed: " + destinationFile);
+        }
+    }
+
 }

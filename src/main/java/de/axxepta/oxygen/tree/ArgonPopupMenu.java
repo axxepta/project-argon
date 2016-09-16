@@ -134,6 +134,10 @@ public class ArgonPopupMenu extends PopupMenu {
                 tree, tListener);
         this.add(rename, Lang.get(Lang.Keys.cm_rename));
 
+        Action export = new ExportAction(Lang.get(Lang.Keys.cm_export), ImageUtils.getIcon(ImageUtils.URL_OPEN),
+                tListener);
+        this.add(export, Lang.get(Lang.Keys.cm_export));
+
         Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
                 tree);
         this.add(add, Lang.get(Lang.Keys.cm_add));
@@ -163,6 +167,7 @@ public class ArgonPopupMenu extends PopupMenu {
         boolean isFile = TreeUtils.isFile(path);
         boolean isDir = TreeUtils.isDir(path);
         boolean isDB = TreeUtils.isDB(path);
+        boolean isRoot = TreeUtils.isRoot(path);
         boolean isFileSource = TreeUtils.isFileSource(path);
 
         // check whether items apply to node
@@ -201,6 +206,12 @@ public class ArgonPopupMenu extends PopupMenu {
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
                 if (isFile || (isDir && !TreeUtils.isWEBINF(path)))  // never! try to change the name of a WEB-INF folder
+                    this.setItemEnabled(i, true);
+                else
+                    this.setItemEnabled(i, false);
+            }
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_export))) {
+                if (!isRoot)
                     this.setItemEnabled(i, true);
                 else
                     this.setItemEnabled(i, false);

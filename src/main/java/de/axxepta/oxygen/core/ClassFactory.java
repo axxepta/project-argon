@@ -5,7 +5,6 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.customprotocol.ArgonChooserListCellRenderer;
 import de.axxepta.oxygen.tree.*;
-import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 

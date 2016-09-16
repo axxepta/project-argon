@@ -43,6 +43,19 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException {
+        final Query query = client.query(getQuery("listall-" + source));
+        query.bind(PATH, path, "");
+
+        final ArrayList<BaseXResource> list = new ArrayList<>();
+        while(query.more()) {
+            final String type = query.next(), name = query.next();
+            list.add(new BaseXResource(name, BaseXType.get(type), source));
+        }
+        return list;
+    }
+
+    @Override
     public void init() throws IOException {
         final Query query = client.query(getQuery("init"));
         byte[] resource = getAPIResource("MetaTemplate.xml").getBytes("UTF-8");

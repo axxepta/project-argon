@@ -28,6 +28,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private final URL url;
     private BaseXSource source;
     private String encoding = "";
+    private boolean useGlobalVersioninng = true;
     private boolean versionUp = false;
     private boolean binary = false;
 
@@ -59,6 +60,20 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.versionUp = versionUp;
     }
 
+    /**
+     * allows to explicitly override the global versioning (swithc off only) for read-only databases
+     * @param useGlobalVersioninng set to false if no versioning should be used for the current data transfer
+     * @param url resource url to store to
+     * @param encoding encoding of the byte array
+     */
+    public BaseXByteArrayOutputStream(boolean useGlobalVersioninng, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        this.useGlobalVersioninng = useGlobalVersioninng;
+    }
+
     @Override
     public void close() throws IOException {
         super.close();
@@ -72,7 +87,11 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             if (!encoding.equals("UTF-8") && !encoding.equals(""))
                 savedBytes = IOUtils.convertToUTF8(savedBytes, encoding);
         }
-        String useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
+        String useVersioning;
+        if (useGlobalVersioninng)
+            useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
+        else
+            useVersioning = "false";
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.put(this.source, path, savedBytes, binary, encoding, useVersioning, String.valueOf(versionUp));

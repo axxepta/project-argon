@@ -64,6 +64,12 @@ public final class ConnectionWrapper {
         }
     }
 
+    public static List<BaseXResource> listAll(BaseXSource source, String path) throws IOException {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            return connection.listall(source, path);
+        }
+    }
+
     public static boolean isLocked(BaseXSource source, String path) {
         boolean isLocked = false;
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {

@@ -12,6 +12,7 @@ import org.basex.util.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public interface Connection extends Closeable {
+
     /**
      * Returns resources of the given data source and path.
      * @param source data source
@@ -20,6 +21,15 @@ public interface Connection extends Closeable {
      * @throws IOException I/O exception
      */
     List<BaseXResource> list(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Returns resources of the given data source and path and recursively all it's children.
+     * @param source data source
+     * @param path path
+     * @return entries
+     * @throws IOException I/O exception
+     */
+    List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Sets up a database for user management and copies a meta data template file into it.

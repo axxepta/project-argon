@@ -57,6 +57,19 @@ public class RestConnection implements Connection {
     }
 
     @Override
+    public List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException {
+        final String result = Token.string(request(getQuery("listall-" + source), PATH, path));
+        final ArrayList<BaseXResource> list = new ArrayList<>();
+        if(!result.isEmpty()) {
+            final String[] results = result.split("\r?\n");
+            for(int r = 0, rl = results.length; r < rl; r += 2) {
+                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
+            }
+        }
+        return list;
+    }
+
+    @Override
     public void init() throws IOException {
         request(getQuery("init"), RESOURCE, prepare(getAPIResource("MetaTemplate.xml").getBytes("UTF-8")));
     }
