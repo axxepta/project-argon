@@ -167,6 +167,7 @@ public class ArgonPopupMenu extends PopupMenu {
         boolean isFile = TreeUtils.isFile(path);
         boolean isDir = TreeUtils.isDir(path);
         boolean isDB = TreeUtils.isDB(path);
+        boolean isInDB = TreeUtils.isInDB(path);
         boolean isRoot = TreeUtils.isRoot(path);
         boolean isFileSource = TreeUtils.isFileSource(path);
 
@@ -211,7 +212,7 @@ public class ArgonPopupMenu extends PopupMenu {
                     this.setItemEnabled(i, false);
             }
             if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_export))) {
-                if (!isRoot)
+                if (isDB || isInDB)
                     this.setItemEnabled(i, true);
                 else
                     this.setItemEnabled(i, false);
