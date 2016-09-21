@@ -111,14 +111,14 @@ public class WorkspaceUtils {
 
     private static boolean checkOverwrite() {
         int save = workspaceAccess.showConfirmDialog("Overwrite resource?", "Resource already exists. Overwrite?",
-                new String[] {"Yes", "No"}, new int[] { OVERWRITE_YES, OVERWRITE_NO }, OVERWRITE_YES);
+                new String[] {"Yes", "No"}, new int[] { OVERWRITE_YES, OVERWRITE_NO }, 0);
         return (save == OVERWRITE_YES);
     }
 
     private static int checkOverwriteAll() {
         return workspaceAccess.showConfirmDialog("Overwrite resource?", "Resource already exists. Overwrite?",
                 new String[] {"Yes", "Always", "No", "Never"},
-                new int[] { OVERWRITE_YES, OVERWRITE_ALL, OVERWRITE_NO, OVERWRITE_NONE }, OVERWRITE_NO);
+                new int[] { OVERWRITE_YES, OVERWRITE_ALL, OVERWRITE_NO, OVERWRITE_NONE }, 2);
     }
 
     /**

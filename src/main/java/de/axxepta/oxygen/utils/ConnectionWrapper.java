@@ -90,7 +90,7 @@ public final class ConnectionWrapper {
         }
     }
 
-    static boolean resourceExists(BaseXSource source, String resource) {
+    public static boolean resourceExists(BaseXSource source, String resource) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.exists(source, resource);
         } catch (IOException ioe) {

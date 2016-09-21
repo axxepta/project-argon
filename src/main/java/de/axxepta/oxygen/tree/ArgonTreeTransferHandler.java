@@ -164,7 +164,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     ConnectionWrapper.save(true, url, isByte);
                 } else {
                     String encoding = XMLUtils.encodingFromBytes(isByte);
-                    if (!encoding.equals("UTF-8"))
+                    if (!encoding.equals("UTF-8") && !encoding.equals(""))
                         isByte = IOUtils.convertToUTF8(isByte, encoding);
                     ConnectionWrapper.save(url, isByte, encoding);
                 }

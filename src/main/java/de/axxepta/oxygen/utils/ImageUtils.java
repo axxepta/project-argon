@@ -21,6 +21,7 @@ public class ImageUtils {
 
     static private Map<String, Icon> iconMap;
 
+    // CAVE: String constants as Icon keys must be lowercase because the get function makes lowercase of requested keys!
     public static final String DB_CONNECTION = "dbconnection16";
     public static final String DB_CATALOG = "dbcatalog16";
     public static final String DB_HTTP = "dbhttp16";
@@ -35,6 +36,13 @@ public class ImageUtils {
     public static final String VER_HIST = "verhistory";
     public static final String REFRESH = "refresh16";
     public static final String SEARCH = "searchinpath16";
+    public static final String TEAM_LIBRARY = "teamlibrary";
+    public static final String SHARED = "shared";
+    public static final String S_DATABASE = "s_db";
+    public static final String F_DATABASE = "f_db";
+    public static final String T_DATABASE = "t_db";
+    public static final String P_DATABASE = "p_db";
+    public static final String INSERT_TEMPLATE = "inserttemplate";
 
     public static void init() {
         iconMap = new HashMap<>();
@@ -91,6 +99,13 @@ public class ImageUtils {
         iconMap.put(RENAME, ImageUtils.createImageIcon("/images/Rename16.png"));
         iconMap.put(REFRESH, ImageUtils.createImageIcon("/images/Refresh16.png"));
         iconMap.put(SEARCH, ImageUtils.createImageIcon("/images/SearchInPath16.png"));
+        iconMap.put(SHARED, ImageUtils.createImageIcon("/images/DbCatalogShared16.png"));
+        iconMap.put(TEAM_LIBRARY, ImageUtils.createImageIcon("/images/DbCatalogTeam16.png"));
+        iconMap.put(S_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogS16.png"));
+        iconMap.put(F_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogF16.png"));
+        iconMap.put(T_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogT16.png"));
+        iconMap.put(P_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogP16.png"));
+        iconMap.put(INSERT_TEMPLATE, ImageUtils.createImageIcon("/images/InsertTemplate16.png"));
     }
 
     public static Icon getIcon(String extension) {

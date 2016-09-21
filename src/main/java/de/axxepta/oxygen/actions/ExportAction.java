@@ -46,11 +46,11 @@ public class ExportAction extends AbstractAction {
                 if (targetDirectory != null) {
                     for (BaseXResource resource : resourceList) {
                         if (resource.getType().equals(BaseXType.DIRECTORY)) {
-                            String newDirectory = targetDirectory.getAbsolutePath() + "/" + resource.getName();
+                            String newDirectory = (targetDirectory.getAbsolutePath() + "/" + resource.getName()).replace("/", "\\");
                             FileUtils.createDirectory(newDirectory);
                         } else {
                             FileUtils.copyFromBaseXToFile(resource.getURLString(),
-                                    targetDirectory.getAbsolutePath() + "/" + resource.getName());
+                                    (targetDirectory.getAbsolutePath() + "/" + resource.getName()).replace("/", "\\"));
                         }
                     }
                 }

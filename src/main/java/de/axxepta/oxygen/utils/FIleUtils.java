@@ -10,8 +10,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,9 +31,9 @@ public final class FileUtils {
 
     public static void createDirectory(String name) {
         try {
-            Path newPath = Paths.get(new URI(name));
+            Path newPath = Paths.get(name);
             Files.createDirectory(newPath);
-        } catch (IOException | URISyntaxException use) {
+        } catch (IOException use) {
             logger.error("Error parsing path name to URI");
         }
     }
