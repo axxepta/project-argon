@@ -45,8 +45,10 @@ let $version := if(not(empty($meta//version/text()))) then (
 let $doctypetokens := if(contains($RESOURCE, $DOCTYPE)) then (
     <doctype>
     {
-	let $firstelements := subsequence(tokenize($RESOURCE, '[<>]'), 1, 4)
-	let $doctypeseq := for $j in (1 to 4)
+    let $tokenized := tokenize($RESOURCE, '[<>]')
+    let $n_firstTokens := min((15, count($tokenized)))
+	let $firstelements := subsequence($tokenized, 1, $n_firstTokens)
+	let $doctypeseq := for $j in (1 to $n_firstTokens)
 		return if (contains(subsequence($firstelements, $j, 1), $DOCTYPE)) then (
 			subsequence(analyze-string(subsequence($firstelements, $j, 1), '( )|".*?"')//text()[if (compare(., ' ') = 0) then () else .], 2, 5)
 		) else ()

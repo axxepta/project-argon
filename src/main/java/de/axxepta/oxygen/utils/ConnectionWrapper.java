@@ -66,7 +66,7 @@ public final class ConnectionWrapper {
 
     public static List<BaseXResource> listAll(BaseXSource source, String path) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            return connection.listall(source, path);
+            return connection.listAll(source, path);
         }
     }
 
@@ -75,17 +75,27 @@ public final class ConnectionWrapper {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             if (connection.locked(source, path))
                 isLocked = true;
-        } catch (IOException ie) {
+        } catch (Throwable ie) {
             isLocked = true;
             logger.debug("Querying LOCKED returned: ", ie.getMessage());
         }
         return isLocked;
     }
 
+    public static boolean isLockedByUser(BaseXSource source, String path) {
+        boolean isLockedByUser = false;
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            isLockedByUser = connection.lockedByUser(source, path);
+        } catch (Throwable ioe) {
+            logger.debug(ioe);
+        }
+        return isLockedByUser;
+    }
+
     public static void lock(BaseXSource source, String path) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.lock(source, path);
-        } catch (IOException ioe) {
+        } catch (Throwable ioe) {
             logger.error("Failed to lock resource " + path + " in " + source.toString() + ": " + ioe.getMessage());
         }
     }
@@ -93,7 +103,7 @@ public final class ConnectionWrapper {
     public static boolean resourceExists(BaseXSource source, String resource) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.exists(source, resource);
-        } catch (IOException ioe) {
+        } catch (Throwable ioe) {
             logger.error("Failed to ask BaseX for existence of resource " + resource + ": " + ioe.getMessage());
             return false;
         }

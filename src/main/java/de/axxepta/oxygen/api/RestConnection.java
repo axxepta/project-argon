@@ -57,7 +57,7 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
         final String result = Token.string(request(getQuery("listall-" + source), PATH, path));
         final ArrayList<BaseXResource> list = new ArrayList<>();
         if(!result.isEmpty()) {

@@ -79,6 +79,7 @@ public class NewDirectoryAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
             String name = newDirectoryNameTextField.getText();
+            String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a/>";
             TreeUtils.insertStrAsNodeLexi(tree.getModel(), name, node, false);
             newDirectoryDialog.dispose();
         }

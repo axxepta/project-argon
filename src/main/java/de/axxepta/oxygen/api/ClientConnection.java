@@ -43,7 +43,7 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("listall-" + source));
         query.bind(PATH, path, "");
 

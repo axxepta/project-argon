@@ -1,13 +1,11 @@
 package de.axxepta.oxygen.customprotocol;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.plugin.lock.LockException;
@@ -55,39 +53,10 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
             @Override
              public void unlock(URL url) throws LockException {
-/*                try {
-                    new BaseXRequest("unlock", BaseXSource.DATABASE, pathFromURL(url));
-                } catch (Exception ex) {
-                    //JOptionPane.showMessageDialog(null, "Failed to unlock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                    logger.debug(ex);
-                }*/
-
             }
 
             @Override
             public void updateLock(URL url, int i) throws LockException {
-/*                try {
-                    Connection connection = BaseXConnectionWrapper.getConnection();
-                    if (connection != null) {
-                        boolean isLocked;
-                      //  try {
-                            isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
-                       // } catch (Exception er) {
-                       //     isLocked = false;
-                       // }
-                        if (!isLocked) {
-                            //try {
-                               // if (!connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url)))
-                                    connection.lock(BaseXSource.DATABASE, pathFromURL(url));
-                           // } catch (IOException er) {
-                          //      er.printStackTrace();
-                          //  }
-                        }
-                    }
-                } catch (Exception ex) {
-                    //JOptionPane.showMessageDialog(null, "Failed to lock file", "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
-                    logger.debug(ex);
-                }*/
             }
 
         });
@@ -118,65 +87,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isReadOnly(URL url) {
         //return false;
-        if (isInHiddenDB(url)) {
-            return true;
-        } else {
-            boolean isLockedByUser = false;
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                if (connection != null)
-                    isLockedByUser = connection.lockedByUser(BaseXSource.DATABASE, pathFromURL(url));
-            } catch (IOException ioe) {
-                logger.debug(ioe);
-                isLockedByUser = false;
-            }
-            return !isLockedByUser;
-/*            try {
-                Connection connection = BaseXConnectionWrapper.getConnection();
-                if (connection != null) {
-                    boolean isLocked = connection.locked(BaseXSource.DATABASE, pathFromURL(url));
-
-                    //already locked by another user
-                    if (isLocked) {
-                        return true;
-
-                        //maybe no lock set at all (removed in meantime)
-                    } else {
-                        //file already open in Editor
-                        if (ArgonEditorsWatchMap.isURLInMap(url)) {
-
-                            //question has ben asked already
-                            if (ArgonEditorsWatchMap.askedForAccess(url)) {
-                                return true;
-
-                            } else {
-                                // just got write access (lock removed by other user), reload and lock resource for me now?
-                                if (connection.noLockSet(BaseXSource.DATABASE, pathFromURL(url))) {
-
-                                    int reloadFile = JOptionPane.showConfirmDialog(null, "The lock on this file just has been removed.\n" +
-                                            "Do you want to reload the file and gain write access?", "File unlocked", JOptionPane.YES_NO_OPTION);
-                                    if (reloadFile == JOptionPane.YES_OPTION) {
-                                        PluginWorkspace wsa = PluginWorkspaceProvider.getPluginWorkspace();
-                                        wsa.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA).close(false);
-                                        wsa.open(url);
-                                        return false;
-                                    } else {
-                                        ArgonEditorsWatchMap.setAsked(url);
-                                        return true;
-                                    }
-                                } else {
-                                    return false;
-                                }
-                            }
-                        } else  // isReadOnly is called also for "Save to URL", therefore there might be no entry in WatchMap
-                            return false;
-                    }
-                } else {
-                    return true;
-                }
-            } catch (Exception er) {
-                return false;
-            }*/
-        }
+        return isInHiddenDB(url) || !ConnectionWrapper.isLockedByUser(BaseXSource.DATABASE, pathFromURL(url));
     }
 
     private static boolean isInHiddenDB(URL url) {
@@ -197,7 +108,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
     public static String pathFromURLString(String urlString) {
         String[] urlComponents = urlString.split(":/*");
-        if ((urlComponents == null) || (urlComponents.length < 2))
+        if (urlComponents.length < 2)
             return "";
         // ToDo: exception handling
         else

@@ -29,7 +29,7 @@ public interface Connection extends Closeable {
      * @return entries
      * @throws IOException I/O exception
      */
-    List<BaseXResource> listall(final BaseXSource source, final String path) throws IOException;
+    List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Sets up a database for user management and copies a meta data template file into it.
