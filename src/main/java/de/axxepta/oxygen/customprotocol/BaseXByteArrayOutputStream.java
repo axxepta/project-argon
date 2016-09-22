@@ -87,6 +87,14 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             if (!encoding.equals("UTF-8") && !encoding.equals(""))
                 savedBytes = IOUtils.convertToUTF8(savedBytes, encoding);
         }
+        if (encoding.equals("UTF-8") && (savedBytes[0] == (byte)0xEF)) {
+            savedBytes = removeBOM(savedBytes, 3);
+        }
+        if (encoding.startsWith("UTF-16") &&
+                (((savedBytes[0] == (byte)0xFE) && (savedBytes[1] == (byte)0xFF)) ||
+                        ((savedBytes[0] == (byte)0xFF) && (savedBytes[1] == (byte)0xFE)))) {
+            savedBytes = removeBOM(savedBytes, 3);
+        }
         String useVersioning;
         if (useGlobalVersioninng)
             useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
@@ -102,6 +110,12 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             logger.error(ex);
             throw (ex);
         }
+    }
+
+    private static byte[] removeBOM(byte[] savedBytes, int BOMlength) {
+        byte[] tempArray = new byte[savedBytes.length - BOMlength];
+        System.arraycopy(savedBytes, BOMlength, tempArray, 0, savedBytes.length - BOMlength);
+        return tempArray;
     }
 
 }

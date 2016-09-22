@@ -42,7 +42,7 @@ public final class XMLUtils {
                 encoding = content.substring(encPos + 10, encEndPos);
             }
         }
-        return encoding;
+        return encoding.toUpperCase();
     }
 
     public static String encodingFromBytes(byte[] content) {
