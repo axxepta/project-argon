@@ -104,6 +104,15 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
+    public void newDir(final BaseXSource source, final String path) throws IOException {
+        if (!source.equals(BaseXSource.DATABASE)) {
+            final Query query = client.query(getQuery("newdir-" + source));
+            query.bind(PATH, path, "");
+            query.execute();
+        }
+    }
+
+    @Override
     public void delete(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("delete-" + source));
         query.bind(PATH, path, "");

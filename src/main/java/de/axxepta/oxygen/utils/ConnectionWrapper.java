@@ -2,6 +2,7 @@ package de.axxepta.oxygen.utils;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -139,8 +140,35 @@ public final class ConnectionWrapper {
         } catch (ParserConfigurationException | SAXException | XPathExpressionException xe) {
             logger.error("Failed to parse lock file XML: " + xe.getMessage());
             return true;
+        } catch (Throwable t) {
+            return true;
         }
         return false;
+    }
+
+    /**
+     * Adds new directory. Side effect: for databases an empty file .empty.xml will be added in the new directory to make
+     * the new directory persistent in the database.
+     * @param source BaseXSource in which new directory shall be added
+     * @param path path of new directory
+     */
+    public static void newDir(BaseXSource source, String path) {
+        if (source.equals(BaseXSource.DATABASE)) {
+            String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<empty/>";
+            String urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + "://" + path + "/.empty.xml";
+            try {
+                URL url = new URL(urlString);
+                ConnectionWrapper.save(url, resource.getBytes(), "UTF-8");
+            } catch (IOException e1) {
+                logger.error(e1);
+            }
+        } else {
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                connection.newDir(source, path);
+            } catch (Throwable io) {
+                logger.error("Failed to create new directory: " + io.getMessage());
+            }
+        }
     }
 
 }

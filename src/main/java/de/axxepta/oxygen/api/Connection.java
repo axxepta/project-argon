@@ -79,6 +79,14 @@ public interface Connection extends Closeable {
              String versionize, String versionUp) throws IOException;
 
     /**
+     * Creates a new directory. Only available for sources REPO and RESTXQ
+     * @param source data source
+     * @param path path
+     * @throws IOException I/O exception
+     */
+    void newDir(final BaseXSource source, final String path) throws IOException;
+
+    /**
      * Deletes a resource.
      * @param source data source
      * @param path path

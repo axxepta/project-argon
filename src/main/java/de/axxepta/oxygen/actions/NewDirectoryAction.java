@@ -1,13 +1,14 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
+import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
@@ -15,16 +16,11 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * @author Markus on 12.07.2016.
  */
 public class NewDirectoryAction extends AbstractAction {
-
-    private static final Logger logger = LogManager.getLogger(NewDirectoryAction.class);
-
 
     private ArgonTree tree;
     private JDialog newDirectoryDialog;
@@ -39,6 +35,8 @@ public class NewDirectoryAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         TreeListener listener = ((TreeListener) tree.getTreeSelectionListeners()[0]);
         TreePath path = listener.getPath();
+        BaseXSource source = TreeUtils.sourceFromTreePath(path);
+        String resource = TreeUtils.resourceFromTreePath(path);
         String urlString = ((ArgonTreeNode) path.getLastPathComponent()).getTag().toString();
 
         if (listener.getNode().getAllowsChildren()) {
@@ -49,7 +47,7 @@ public class NewDirectoryAction extends AbstractAction {
             JPanel content = new JPanel(new BorderLayout(10,10));
 
             MakeNewDirectoryAction makeDirectory = new MakeNewDirectoryAction(Lang.get(Lang.Keys.cm_newdir),
-                    urlString);
+                    source, resource, urlString);
 
             JPanel namePanel = new JPanel(new GridLayout());
             JLabel nameLabel = new JLabel("Directory Name", JLabel.LEFT);
@@ -75,24 +73,23 @@ public class NewDirectoryAction extends AbstractAction {
 
     private class MakeNewDirectoryAction extends AbstractAction {
 
-        private String urlPath;
+        private String path;
+        private BaseXSource source;
+        private String urlString;
 
-        MakeNewDirectoryAction(String name, String urlPath) {
+        MakeNewDirectoryAction(String name, BaseXSource source, String path, String urlString) {
             super(name);
-            this.urlPath = urlPath;
+            this.source = source;
+            this.path = path;
+            this.urlString = urlString;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String name = newDirectoryNameTextField.getText();
-            String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<empty/>";
-            String urlString = urlPath + "/" + name + "/.empty.xml";
-            try {
-                URL url = new URL(urlString);
-                ConnectionWrapper.save(url, resource.getBytes(), "UTF-8");
-            } catch (IOException e1) {
-                logger.error(e1);
-            }
+            String newPath = path + "/" + newDirectoryNameTextField.getText();
+            ConnectionWrapper.newDir(source, newPath);
+            if (!source.equals(BaseXSource.DATABASE))
+                TopicHolder.newDir.postMessage(urlString + "/" + newDirectoryNameTextField.getText());
             newDirectoryDialog.dispose();
         }
     }

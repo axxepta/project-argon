@@ -57,6 +57,7 @@ public class TreePane extends JPanel {
         tree.addTreeSelectionListener(tListener);
         tree.addKeyListener(tListener);
         TopicHolder.saveFile.register(tListener);
+        TopicHolder.newDir.register(tListener);
         TopicHolder.deleteFile.register(tListener);
 
         contextMenu.init(tListener);

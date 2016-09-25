@@ -98,6 +98,12 @@ public class RestConnection implements Connection {
     }
 
     @Override
+    public void newDir(final BaseXSource source, final String path) throws IOException {
+        if (!source.equals(BaseXSource.DATABASE))
+            request(getQuery("newdir-" + source), PATH, path);
+    }
+
+    @Override
     public void delete(final BaseXSource source, final String path) throws IOException {
         request(getQuery("delete-" + source), PATH, path);
     }

@@ -207,7 +207,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
 
         logger.info("Tree needs to update: " + message[0]);
 
-        if (type.equals("SAVE_FILE")) {
+        if (type.equals("SAVE_FILE") || type.equals("NEW_DIR")) {
             String[] protocol = ((String) message[0]).split(":/*");
             String[] path = protocol[1].split("/");
             currPath = new TreePath(treeModel.getRoot());
@@ -227,7 +227,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 if (tree.isExpanded(currPath)) expanded = true;
                 if (expanded || (i == path.length - 1)) { // update tree now only if file is in visible path
                     if (TreeUtils.isNodeAsStrChild(currNode, path[i]) == -1) {
-                        isFile = (i + 1 == path.length);
+                        isFile = (i + 1 == path.length) && type.equals("SAVE_FILE");
                         TreeUtils.insertStrAsNodeLexi(treeModel, path[i], (MutableTreeNode) currNode, isFile);
                         ((DefaultTreeModel) treeModel).reload(currNode);
                     }
