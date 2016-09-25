@@ -4,4 +4,4 @@ declare variable $PATH as xs:string external;
 declare variable $RESOURCE as xs:base64Binary external;
 
 let $path := db:system()//repopath || '/' || $PATH
-return file:delete($path)
+return file:delete($path, true())
