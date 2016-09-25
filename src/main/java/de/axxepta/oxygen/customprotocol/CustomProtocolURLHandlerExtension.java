@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
@@ -20,11 +21,11 @@ import ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtens
 public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLockPluginExtension, URLHandlerReadOnlyCheckerExtension {
 
   /**
-   * The custom protocol name.
+   * The custom protocol name is defined in ArgonConst.
    */
-    public static final String ARGON = "argon";
+    /*public static final String ARGON = "argon";
     public static final String ARGON_XQ = "argonquery";
-    public static final String ARGON_REPO = "argonrepo";
+    public static final String ARGON_REPO = "argonrepo";*/
 
     private static final Logger logger = LogManager.getLogger(CustomProtocolURLHandlerExtension.class);
   /**
@@ -34,11 +35,11 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         //BaseXConnectionWrapper.refreshDefaults();
         URLStreamHandler handler;
         switch (protocol.toLowerCase()) {
-            case ARGON: handler = new ArgonProtocolHandler(BaseXSource.DATABASE);
+            case ArgonConst.ARGON: handler = new ArgonProtocolHandler(BaseXSource.DATABASE);
                 return handler;
-            case ARGON_XQ: handler = new ArgonProtocolHandler(BaseXSource.RESTXQ);
+            case ArgonConst.ARGON_XQ: handler = new ArgonProtocolHandler(BaseXSource.RESTXQ);
                 return handler;
-            case ARGON_REPO: handler = new ArgonProtocolHandler(BaseXSource.REPO);
+            case ArgonConst.ARGON_REPO: handler = new ArgonProtocolHandler(BaseXSource.REPO);
                 return handler;
             default: return null;
         }
@@ -67,9 +68,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isLockingSupported(String protocol) {
         //return false;
-        return (protocol.toLowerCase().equals(ARGON) ||
-                protocol.toLowerCase().equals(ARGON_XQ) ||
-                protocol.toLowerCase().equals(ARGON_REPO));
+        return (protocol.toLowerCase().equals(ArgonConst.ARGON) ||
+                protocol.toLowerCase().equals(ArgonConst.ARGON_XQ) ||
+                protocol.toLowerCase().equals(ArgonConst.ARGON_REPO));
     }
 
   /**
@@ -77,9 +78,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean canCheckReadOnly(String protocol) {
         //return false;
-        return (protocol.toLowerCase().equals(ARGON) ||
-                protocol.toLowerCase().equals(ARGON_XQ) ||
-                protocol.toLowerCase().equals(ARGON_REPO));
+        return (protocol.toLowerCase().equals(ArgonConst.ARGON) ||
+                protocol.toLowerCase().equals(ArgonConst.ARGON_XQ) ||
+                protocol.toLowerCase().equals(ArgonConst.ARGON_REPO));
     }
 
   /**
@@ -117,19 +118,19 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
     public static String protocolFromSource(BaseXSource source) {
         switch (source) {
-            case RESTXQ: return ARGON_XQ;
-            case REPO: return ARGON_REPO;
-            default: return ARGON;
+            case RESTXQ: return ArgonConst.ARGON_XQ;
+            case REPO: return ArgonConst.ARGON_REPO;
+            default: return ArgonConst.ARGON;
         }
     }
 
     public static String protocolFromURL(URL url) {
         String urlString = url.toString().toLowerCase();
-        if (urlString.startsWith(ARGON_XQ))
-            return ARGON_XQ;
-        if (urlString.startsWith(ARGON_REPO))
-            return ARGON_REPO;
-        return ARGON;
+        if (urlString.startsWith(ArgonConst.ARGON_XQ))
+            return ArgonConst.ARGON_XQ;
+        if (urlString.startsWith(ArgonConst.ARGON_REPO))
+            return ArgonConst.ARGON_REPO;
+        return ArgonConst.ARGON;
     }
 
     public static BaseXSource sourceFromURL(URL url) {
@@ -145,9 +146,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
         else
             protocol = urlString.substring(0, ind1);
         switch (protocol) {
-            case ARGON_XQ: return BaseXSource.RESTXQ;
-            case ARGON_REPO: return BaseXSource.REPO;
-            case ARGON: return BaseXSource.DATABASE;
+            case ArgonConst.ARGON_XQ: return BaseXSource.RESTXQ;
+            case ArgonConst.ARGON_REPO: return BaseXSource.REPO;
+            case ArgonConst.ARGON: return BaseXSource.DATABASE;
             default: return null;
         }
     }

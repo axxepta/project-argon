@@ -2,7 +2,6 @@ package de.axxepta.oxygen.versioncontrol;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ObserverInterface;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.utils.XMLUtils;
@@ -75,7 +74,7 @@ public class VersionHistoryUpdater implements ObserverInterface {
     private void parseHistoryEntry(String strEntry, String historyPath) {
         URL url = null;
         try {
-            url = new URL(CustomProtocolURLHandlerExtension.ARGON + "://" + historyPath + "/" + strEntry);
+            url = new URL(ArgonConst.ARGON + "://" + historyPath + "/" + strEntry);
         } catch (MalformedURLException e1) {
             logger.error(e1);
         }
@@ -100,12 +99,12 @@ public class VersionHistoryUpdater implements ObserverInterface {
 
     private static String obtainMetaPath(String resource, String urlString) {
         StringBuilder pathStr;
-        if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_RESTXQ_BASE);
-        } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_REPO_BASE);
+        if (urlString.startsWith(ArgonConst.ARGON_XQ)) {
+            pathStr = new StringBuilder(ArgonConst.META_RESTXQ_BASE);
+        } else if (urlString.startsWith(ArgonConst.ARGON_REPO)) {
+            pathStr = new StringBuilder(ArgonConst.META_REPO_BASE);
         } else {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.META_DB_BASE);
+            pathStr = new StringBuilder(ArgonConst.META_DB_BASE);
         }
         pathStr.append(resource).append(".xml");
         return pathStr.toString();
@@ -113,12 +112,12 @@ public class VersionHistoryUpdater implements ObserverInterface {
 
     private static String obtainHistoryRoot(String resource, String urlString) {
         StringBuilder pathStr;
-        if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_RESTXQ_BASE);
-        } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_REPO_BASE);
+        if (urlString.startsWith(ArgonConst.ARGON_XQ)) {
+            pathStr = new StringBuilder(ArgonConst.BACKUP_RESTXQ_BASE);
+        } else if (urlString.startsWith(ArgonConst.ARGON_REPO)) {
+            pathStr = new StringBuilder(ArgonConst.BACKUP_REPO_BASE);
         } else {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.BACKUP_DB_BASE);
+            pathStr = new StringBuilder(ArgonConst.BACKUP_DB_BASE);
             if (resource.contains("/"))
                 pathStr.append(resource.substring(0, resource.indexOf("/")));
         }

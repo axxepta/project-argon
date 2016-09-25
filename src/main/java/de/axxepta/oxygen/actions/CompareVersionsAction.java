@@ -1,4 +1,5 @@
 package de.axxepta.oxygen.actions;
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
@@ -120,14 +121,14 @@ public class CompareVersionsAction extends AbstractAction {
         StringBuilder urlStr = new StringBuilder(url.toString());
         int endOfProtocolPos = urlStr.indexOf(":");
         int endOfDBNamePos = urlStr.indexOf("/", endOfProtocolPos + 2);
-        if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.BACKUP_REPO_BASE)) {
+        if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(ArgonConst.BACKUP_REPO_BASE)) {
             urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
-            urlStr.replace(0,endOfProtocolPos, CustomProtocolURLHandlerExtension.ARGON_REPO);
-        } else if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(BaseXByteArrayOutputStream.BACKUP_RESTXQ_BASE)) {
+            urlStr.replace(0,endOfProtocolPos, ArgonConst.ARGON_REPO);
+        } else if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(ArgonConst.BACKUP_RESTXQ_BASE)) {
             urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
-            urlStr.replace(0,endOfProtocolPos, CustomProtocolURLHandlerExtension.ARGON_XQ);
+            urlStr.replace(0,endOfProtocolPos, ArgonConst.ARGON_XQ);
         } else {
-            urlStr.delete(endOfProtocolPos + 2, endOfProtocolPos + 2 + BaseXByteArrayOutputStream.BACKUP_DB_BASE.length());
+            urlStr.delete(endOfProtocolPos + 2, endOfProtocolPos + 2 + ArgonConst.BACKUP_DB_BASE.length());
         }
         int dotPos = urlStr.lastIndexOf(".");
         int endOfFileNamePos = urlStr.lastIndexOf("-", dotPos);

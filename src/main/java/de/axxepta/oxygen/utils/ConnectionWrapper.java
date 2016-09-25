@@ -1,13 +1,17 @@
 package de.axxepta.oxygen.utils;
 
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.BaseXResource;
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -107,6 +111,36 @@ public final class ConnectionWrapper {
             logger.error("Failed to ask BaseX for existence of resource " + resource + ": " + ioe.getMessage());
             return false;
         }
+    }
+
+    public static boolean pathContainsLockedResource(BaseXSource source, String path) {
+        byte[] lockFile;
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            lockFile = connection.get(BaseXSource.DATABASE, ArgonConst.ARGON_DB + "/" + ArgonConst.LOCK_FILE);
+            Document dom = XMLUtils.docFromByteArray(lockFile);
+            XPathExpression expression = XMLUtils.getXPathExpression("*//" + source.toString());
+            NodeList lockedResources = (NodeList) expression.evaluate(dom, XPathConstants.NODESET);
+            String[] pathComponents = path.split("/");
+            for (int i = 0; i < lockedResources.getLength(); i++) {
+                String[] resourceComponents = lockedResources.item(i).getTextContent().split("/");
+                if (resourceComponents.length >= pathComponents.length) {
+                    boolean isEqual = true;
+                    for (int k = 0; k < pathComponents.length; k++) {
+                        if (!pathComponents[k].equals(resourceComponents[k]))
+                            isEqual = false;
+                    }
+                    if (isEqual)
+                        return true;
+                }
+            }
+        } catch (IOException ioe) {
+            logger.error("Failed to obtain lock list: " + ioe.getMessage());
+            return true;
+        } catch (ParserConfigurationException | SAXException | XPathExpressionException xe) {
+            logger.error("Failed to parse lock file XML: " + xe.getMessage());
+            return true;
+        }
+        return false;
     }
 
 }

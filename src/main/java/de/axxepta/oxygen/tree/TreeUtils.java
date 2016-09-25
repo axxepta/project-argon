@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.tree;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
@@ -118,11 +119,11 @@ public class TreeUtils {
         if (path.getPathCount() > 1) {
             String sourceStr = path.getPathComponent(1).toString();
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_DB)))
-                return CustomProtocolURLHandlerExtension.ARGON;
+                return ArgonConst.ARGON;
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_restxq)))
-                return CustomProtocolURLHandlerExtension.ARGON_XQ;
+                return ArgonConst.ARGON_XQ;
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_repo)))
-                return CustomProtocolURLHandlerExtension.ARGON_REPO;
+                return ArgonConst.ARGON_REPO;
             return null;
         } else {
             return null;
@@ -145,11 +146,11 @@ public class TreeUtils {
     public static String urlStringFromTreePath(TreePath path) {
         StringBuilder db_path;
         if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":/");
         else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_repo)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":/");
         else
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON + ":/");
         for (int i = 2; i < path.getPathCount(); i++) {
             db_path.append('/');
             db_path.append(path.getPathComponent(i).toString());
@@ -171,11 +172,11 @@ public class TreeUtils {
 
         if (components.length > 2) {
             if (components[1].equals(Lang.get(Lang.Keys.tree_restxq)))
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":");
+                db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":");
             else if (components[1].equals(Lang.get(Lang.Keys.tree_repo)))
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":");
+                db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":");
             else
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
+                db_path = new StringBuilder(ArgonConst.ARGON + ":");
             db_path.append(treeString.substring(components[0].length()+components[1].length()+1));
         } else {
             db_path = new StringBuilder("");

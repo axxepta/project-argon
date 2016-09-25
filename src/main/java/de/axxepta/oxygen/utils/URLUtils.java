@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.utils;
 
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.api.ArgonConst;
 
 import java.net.URL;
 
@@ -73,7 +73,7 @@ public final class URLUtils {
     }
 
     public static boolean isArgon(URL url) {
-        return url.toString().toLowerCase().startsWith(CustomProtocolURLHandlerExtension.ARGON);
+        return url.toString().toLowerCase().startsWith(ArgonConst.ARGON);
     }
 
 }

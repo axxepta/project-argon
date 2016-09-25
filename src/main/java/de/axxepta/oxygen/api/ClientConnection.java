@@ -58,7 +58,7 @@ public final class ClientConnection implements Connection {
     @Override
     public void init() throws IOException {
         final Query query = client.query(getQuery("init"));
-        byte[] resource = getAPIResource("MetaTemplate.xml").getBytes("UTF-8");
+        byte[] resource = getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8");
         query.bind(RESOURCE, prepare(resource), "");
         query.execute();
     }

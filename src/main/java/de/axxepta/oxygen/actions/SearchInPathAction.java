@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
@@ -70,7 +71,7 @@ public class SearchInPathAction extends AbstractAction {
                     if (path.getPathCount() == 2) {
                         pathStr = path.getPathComponent(1).toString();
                     } else {
-                        pathStr = CustomProtocolURLHandlerExtension.ARGON + ":" + TreeUtils.resourceFromTreePath(path);
+                        pathStr = ArgonConst.ARGON + ":" + TreeUtils.resourceFromTreePath(path);
                     }
                     source = BaseXSource.DATABASE;
                     break;
@@ -79,7 +80,7 @@ public class SearchInPathAction extends AbstractAction {
                     if (path.getPathCount() == 2) {
                         pathStr = path.getPathComponent(1).toString();
                     } else {
-                        pathStr = CustomProtocolURLHandlerExtension.ARGON_XQ + ":" + TreeUtils.resourceFromTreePath(path);
+                        pathStr = ArgonConst.ARGON_XQ + ":" + TreeUtils.resourceFromTreePath(path);
                     }
                     source = BaseXSource.RESTXQ;
                     break;
@@ -88,7 +89,7 @@ public class SearchInPathAction extends AbstractAction {
                     if (path.getPathCount() == 2) {
                         pathStr = path.getPathComponent(1).toString();
                     } else {
-                        pathStr = CustomProtocolURLHandlerExtension.ARGON_REPO + ":" + TreeUtils.resourceFromTreePath(path);
+                        pathStr = ArgonConst.ARGON_REPO + ":" + TreeUtils.resourceFromTreePath(path);
                     }
                     source = BaseXSource.REPO;
 

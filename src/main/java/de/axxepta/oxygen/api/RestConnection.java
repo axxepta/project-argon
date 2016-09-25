@@ -71,7 +71,7 @@ public class RestConnection implements Connection {
 
     @Override
     public void init() throws IOException {
-        request(getQuery("init"), RESOURCE, prepare(getAPIResource("MetaTemplate.xml").getBytes("UTF-8")));
+        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8")));
     }
 
     @Override

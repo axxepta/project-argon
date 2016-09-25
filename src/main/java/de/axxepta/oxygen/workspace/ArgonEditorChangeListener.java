@@ -1,10 +1,7 @@
 package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.actions.StoreSnippetSelectionAction;
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.URLUtils;
@@ -69,7 +66,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
 
     @Override
     public void editorClosed(URL editorLocation) {
-        if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON)) {
+        if (editorLocation.toString().startsWith(ArgonConst.ARGON)) {
             ArgonEditorsWatchMap.removeURL(editorLocation);
             //toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
@@ -91,7 +88,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     @Override
     public void editorOpened(URL editorLocation) {
         logger.debug("editor opened: " + editorLocation.toString());
-        if (editorLocation.toString().startsWith(CustomProtocolURLHandlerExtension.ARGON))
+        if (editorLocation.toString().startsWith(ArgonConst.ARGON))
             ArgonEditorsWatchMap.addURL(editorLocation);
         toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
