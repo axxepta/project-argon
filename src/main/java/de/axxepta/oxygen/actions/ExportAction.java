@@ -14,6 +14,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -39,29 +40,38 @@ public class ExportAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         TreePath path = treeListener.getPath();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
         BaseXSource source = TreeUtils.sourceFromTreePath(path);
         String db_path = TreeUtils.resourceFromTreePath(path);
         if ((source != null) && (!db_path.equals(""))) {
             try {
                 List<BaseXResource> resourceList = ConnectionWrapper.listAll(source, db_path);
-                // if complete database or special folder is to be exported, add empty resource to create folder
-                if ((source.equals(BaseXSource.DATABASE) && (path.getPathCount() == 3)) ||
-                        (!source.equals(BaseXSource.DATABASE) && (path.getPathCount() == 2))){
-                    resourceList.add(0, new BaseXResource("", BaseXType.DIRECTORY, source));
+                if (!node.getAllowsChildren()) {    // empty list for file nodes
+                    resourceList.add(0, new BaseXResource(node.getUserObject().toString(), BaseXType.RESOURCE, source));
                 }
                 File targetDirectory = workspace.chooseDirectory();
+                boolean createdDir = true;
                 if (targetDirectory != null) {
                     for (BaseXResource resource : resourceList) {
                         String fullResource = getFullResource(path, source, resource);
                         String relativePath = getRelativePath(source, db_path, fullResource);
-                        String newFile = (targetDirectory.getAbsolutePath() + "\\" + relativePath).replace("/", "\\");
-                        if (resource.getType().equals(BaseXType.DIRECTORY)) {
-                            FileUtils.createDirectory(newFile);
+                        String newFileName = (targetDirectory.getAbsolutePath() + "\\" + relativePath).replace("/", "\\");
+                        if (resource.getType().equals(BaseXType.RESOURCE)) {
+                            File newFile = new File(newFileName);
+                            if (!newFile.getParentFile().exists())
+                                createdDir = newFile.getParentFile().mkdirs();
+                            FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
+                                            "://" + fullResource, newFileName);
+                        }
+/*                        if (resource.getType().equals(BaseXType.DIRECTORY)) {
+                            FileUtils.createDirectory(newFileName);
                         } else {
                             FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
-                                            "://" + fullResource, newFile);
-                        }
+                                    "://" + fullResource, newFileName);
+                        }*/
                     }
+                    if (!createdDir)
+                        logger.debug("One of the parent directories couldn't created while exporting files from BaseX database.");
                 }
             } catch (IOException ioe) {
                 logger.error("Failed to export resources from database", ioe.getMessage());

@@ -3,22 +3,28 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
-import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * @author Markus on 12.07.2016.
  */
 public class NewDirectoryAction extends AbstractAction {
+
+    private static final Logger logger = LogManager.getLogger(NewDirectoryAction.class);
+
 
     private ArgonTree tree;
     private JDialog newDirectoryDialog;
@@ -43,7 +49,7 @@ public class NewDirectoryAction extends AbstractAction {
             JPanel content = new JPanel(new BorderLayout(10,10));
 
             MakeNewDirectoryAction makeDirectory = new MakeNewDirectoryAction(Lang.get(Lang.Keys.cm_newdir),
-                    (DefaultMutableTreeNode) path.getLastPathComponent());
+                    urlString);
 
             JPanel namePanel = new JPanel(new GridLayout());
             JLabel nameLabel = new JLabel("Directory Name", JLabel.LEFT);
@@ -69,18 +75,24 @@ public class NewDirectoryAction extends AbstractAction {
 
     private class MakeNewDirectoryAction extends AbstractAction {
 
-        private DefaultMutableTreeNode node;
+        private String urlPath;
 
-        MakeNewDirectoryAction(String name, DefaultMutableTreeNode node) {
+        MakeNewDirectoryAction(String name, String urlPath) {
             super(name);
-            this.node = node;
+            this.urlPath = urlPath;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             String name = newDirectoryNameTextField.getText();
-            String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a/>";
-            TreeUtils.insertStrAsNodeLexi(tree.getModel(), name, node, false);
+            String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<empty/>";
+            String urlString = urlPath + "/" + name + "/.empty.xml";
+            try {
+                URL url = new URL(urlString);
+                ConnectionWrapper.save(url, resource.getBytes(), "UTF-8");
+            } catch (IOException e1) {
+                logger.error(e1);
+            }
             newDirectoryDialog.dispose();
         }
     }

@@ -51,9 +51,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         this.treeModel = treeModel;
         this.newExpandEvent = true;
         this.contextMenu = contextMenu;
-        ActionListener actionListener = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e ) {
+        ActionListener actionListener = e -> {
                 timer.stop();
                 if (singleClick) {
                     singleClickHandler(e);
@@ -64,7 +62,6 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                         logger.error(ex);
                     }
                 }
-            }
         };
         int doubleClickDelay = 300;
         timer = new javax.swing.Timer(doubleClickDelay, actionListener);

@@ -222,6 +222,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         else
             pathString = CustomProtocolURLHandlerExtension.protocolFromSource(getSourceFromElement(path.get(0))) +
                     "://" + getResourceString() + "/" + selectedFileTextField.getText();
+        //pathString = pathString.replace("//", "/");
     }
 
     private List<ArgonChooserListModel.Element> obtainNewList(BaseXSource source, String path) {
@@ -255,11 +256,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
     private void lock() {
         BaseXSource source = getSourceFromElement(path.get(0));
         String path = getResourceString() + "/" + selectedFileTextField.getText();
-        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            connection.lock(source, path);
-        } catch (IOException ioe) {
-            logger.error("Failed to lock resource " + path + " in " + source.toString() + ": " + ioe.getMessage());
-        }
+        ConnectionWrapper.lock(source, path);
     }
 
     public URL[] selectURLs() {

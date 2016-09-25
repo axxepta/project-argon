@@ -90,9 +90,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         if (encoding.equals("UTF-8") && (savedBytes[0] == (byte)0xEF)) {
             savedBytes = removeBOM(savedBytes, 3);
         }
-        if (encoding.startsWith("UTF-16") &&
-                (((savedBytes[0] == (byte)0xFE) && (savedBytes[1] == (byte)0xFF)) ||
-                        ((savedBytes[0] == (byte)0xFF) && (savedBytes[1] == (byte)0xFE)))) {
+        if (encoding.startsWith("UTF-16") && ((savedBytes[0] == (byte)0xFE) || (savedBytes[0] == (byte)0xFF))) {
             savedBytes = removeBOM(savedBytes, 3);
         }
         String useVersioning;
