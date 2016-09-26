@@ -39,10 +39,12 @@ public final class FileUtils {
     }
 
     public static void copyFromBaseXToFile(String fileToCopy, String destinationFile) throws IOException {
+        BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURLString(fileToCopy);
         String path = CustomProtocolURLHandlerExtension.pathFromURLString(fileToCopy);
+
         try (Connection connection = BaseXConnectionWrapper.getConnection())
         {
-            byte[] bytesToCopy = connection.get(BaseXSource.DATABASE, path);
+            byte[] bytesToCopy = connection.get(source, path);
             try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
                 fos.write(bytesToCopy);
                 fos.close();

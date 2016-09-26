@@ -19,6 +19,7 @@ import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -43,35 +44,33 @@ public class ExportAction extends AbstractAction {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
         BaseXSource source = TreeUtils.sourceFromTreePath(path);
         String db_path = TreeUtils.resourceFromTreePath(path);
-        if ((source != null) && (!db_path.equals(""))) {
+        if (source != null) {
             try {
-                List<BaseXResource> resourceList = ConnectionWrapper.listAll(source, db_path);
-                if (!node.getAllowsChildren()) {    // empty list for file nodes
-                    resourceList.add(0, new BaseXResource(node.getUserObject().toString(), BaseXType.RESOURCE, source));
+                List<BaseXResource> resourceList;
+                if (node.getAllowsChildren()) {
+                    resourceList = ConnectionWrapper.listAll(source, db_path);
+                } else {
+                    resourceList = new ArrayList<>();
+                    resourceList.add(new BaseXResource(getStrippedResourceFromPath(source, path),
+                            BaseXType.RESOURCE, source));
                 }
                 File targetDirectory = workspace.chooseDirectory();
                 boolean createdDir = true;
                 if (targetDirectory != null) {
                     for (BaseXResource resource : resourceList) {
-                        String fullResource = getFullResource(path, source, resource);
-                        String relativePath = getRelativePath(source, db_path, fullResource);
-                        String newFileName = (targetDirectory.getAbsolutePath() + "\\" + relativePath).replace("/", "\\");
                         if (resource.getType().equals(BaseXType.RESOURCE)) {
+                            String fullResource = getFullResource(path, source, resource);
+                            String relativePath = getRelativePath(source, db_path, fullResource);
+                            String newFileName = (targetDirectory.getAbsolutePath() + "\\" + relativePath).replace("/", "\\");
                             File newFile = new File(newFileName);
                             if (!newFile.getParentFile().exists())
                                 createdDir = newFile.getParentFile().mkdirs();
                             FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
                                             "://" + fullResource, newFileName);
                         }
-/*                        if (resource.getType().equals(BaseXType.DIRECTORY)) {
-                            FileUtils.createDirectory(newFileName);
-                        } else {
-                            FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
-                                    "://" + fullResource, newFileName);
-                        }*/
                     }
                     if (!createdDir)
-                        logger.debug("One of the parent directories couldn't created while exporting files from BaseX database.");
+                        logger.debug("One of the parent directories couldn't be created while exporting files from BaseX database.");
                 }
             } catch (IOException ioe) {
                 logger.error("Failed to export resources from database", ioe.getMessage());
@@ -80,22 +79,35 @@ public class ExportAction extends AbstractAction {
         }
     }
 
+    private static String getStrippedResourceFromPath(BaseXSource source, TreePath path) {
+        StringJoiner joiner = new StringJoiner("/");
+        int startIndex;
+        if (source.equals(BaseXSource.DATABASE))
+            startIndex = 3;
+        else
+            startIndex = 2;
+        for (int i = startIndex; i < path.getPathCount(); i++) {
+            joiner.add(path.getPathComponent(i).toString());
+        }
+        return joiner.toString();
+    }
+
     private static String getFullResource(TreePath path, BaseXSource source, BaseXResource resource) {
         String fullResource;
         if (source.equals(BaseXSource.DATABASE)) {
             fullResource = path.getPathComponent(2) + "/" + resource.getName();
         } else {
-            fullResource = resource.getName();
+            fullResource = resource.getName().replace("\\", "/");
         }
         return fullResource;
     }
 
     private static String getRelativePath(BaseXSource source, String db_path, String fullResource) {
-        if (!source.equals(BaseXSource.DATABASE))
-            fullResource = CustomProtocolURLHandlerExtension.protocolFromSource(source) + "/" + fullResource;
         int resourceDepth = db_path.split("/").length;
         String[] resourceComponents = fullResource.split("/");
         StringJoiner joiner = new StringJoiner("/");
+        if (!source.equals(BaseXSource.DATABASE) && db_path.equals(""))
+            joiner.add(CustomProtocolURLHandlerExtension.protocolFromSource(source));
         for (int i = resourceDepth - 1; i < resourceComponents.length; i++) {
             joiner.add(resourceComponents[i]);
         }
