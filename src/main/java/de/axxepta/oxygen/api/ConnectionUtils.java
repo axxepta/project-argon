@@ -37,6 +37,8 @@ public final class ConnectionUtils {
     public static final String ENCODING = "ENCODING";
     /** Binary option */
     public static final String BINARY = "BINARY";
+    /** File owner variable */
+    public static final String OWNER = "OWNER";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }

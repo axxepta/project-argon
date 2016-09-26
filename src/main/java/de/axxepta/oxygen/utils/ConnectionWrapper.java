@@ -54,8 +54,17 @@ public final class ConnectionWrapper {
         }
     }
 
-    public static void save(boolean binary, URL url, byte[] bytes) throws IOException {
-        try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(binary, url)) {
+    public static void save(String owner, URL url, byte[] bytes, String encoding) throws IOException {
+        try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(owner, url, encoding)) {
+            os.write(bytes);
+        } catch (IOException ioe) {
+            logger.error("IO error saving to " + url.toString() + ": ", ioe.getMessage());
+            throw new IOException(ioe);
+        }
+    }
+
+    public static void save(String owner, boolean binary, URL url, byte[] bytes) throws IOException {
+        try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(owner, binary, url)) {
             os.write(bytes);
         } catch (IOException ioe) {
             logger.error("IO error saving to " + url.toString() + ": ", ioe.getMessage());
@@ -155,7 +164,8 @@ public final class ConnectionWrapper {
     public static void newDir(BaseXSource source, String path) {
         if (source.equals(BaseXSource.DATABASE)) {
             String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<empty/>";
-            String urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + "://" + path + "/.empty.xml";
+            String urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + "://" +
+                    path + "/" + ArgonConst.EMPTY_FILE;
             try {
                 URL url = new URL(urlString);
                 ConnectionWrapper.save(url, resource.getBytes(), "UTF-8");

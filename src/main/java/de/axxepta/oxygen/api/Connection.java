@@ -71,12 +71,13 @@ public interface Connection extends Closeable {
      * @param resource resource to be stored
      * @param binary flag whether resource should be stored binary
      * @param encoding encoding of XML type resource
+     * @param owner file owner
      * @param versionize flag whether version control should be used
      * @param versionUp flag whether version should be raised as String
      * @throws IOException I/O exception
      */
     void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
-             String versionize, String versionUp) throws IOException;
+             String owner, String versionize, String versionUp) throws IOException;
 
     /**
      * Creates a new directory. Only available for sources REPO and RESTXQ

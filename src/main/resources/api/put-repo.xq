@@ -6,6 +6,8 @@ declare variable $RESOURCE as xs:string external;
 declare variable $BINARY as xs:string external;
 (:~ Original encoding for XML. Irrelevant for Repo. :)
 declare variable $ENCODING as xs:string external;
+(:~ Owner of resource. :)
+declare variable $OWNER as xs:string external;
 (:~ Put copy in history and increase revision? :)
 declare variable $VERSIONIZE as xs:boolean external;
 (: increase version? :)

@@ -6,6 +6,8 @@ declare variable $RESOURCE as xs:string external;
 declare variable $BINARY as xs:string external;
 (:~ Original encoding for XML. :)
 declare variable $ENCODING as xs:string external;
+(:~ Owner of resource. :)
+declare variable $OWNER as xs:string external;
 (:~ Put copy in history and increase revision? :)
 declare variable $VERSIONIZE as xs:boolean external;
 (: increase version? :)
@@ -90,8 +92,11 @@ let $metaupdated := (
     if (empty(.//creationdate/text())) then (
         replace value of node .//creationdate with $timestamp
     ) else (),
-    if (empty(.//creationdate/text())) then (
+    if (empty(.//initialencoding/text())) then (
         replace value of node .//initialencoding with $ENCODING
+    ) else (),
+    if (empty(.//owner/text())) then (
+        replace value of node .//owner with $OWNER
     ) else (),
     replace value of node .//lastchange with $timestamp
 )

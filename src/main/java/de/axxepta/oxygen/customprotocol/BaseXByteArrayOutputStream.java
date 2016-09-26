@@ -23,6 +23,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private boolean useGlobalVersioninng = true;
     private boolean versionUp = false;
     private boolean binary = false;
+    private String owner = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, false);
 
     BaseXByteArrayOutputStream(URL url) {
         super();
@@ -37,10 +38,19 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
     }
 
-    public BaseXByteArrayOutputStream(boolean binary, URL url) {
+    public BaseXByteArrayOutputStream(String owner, boolean binary, URL url) {
         super();
         this.url = url;
         this.binary = binary;
+        this.owner = owner;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(String owner, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.owner = owner;
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
     }
 
@@ -92,7 +102,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             useVersioning = "false";
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            connection.put(this.source, path, savedBytes, binary, encoding, useVersioning, String.valueOf(versionUp));
+            connection.put(this.source, path, savedBytes, binary, encoding, owner, useVersioning, String.valueOf(versionUp));
             versionUp = false;
             //inform any interested party in save operation
             TopicHolder.saveFile.postMessage(this.url.toString());

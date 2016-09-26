@@ -91,13 +91,14 @@ public final class ClientConnection implements Connection {
 
     @Override
     public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
-                    String versionize, String versionUp)
+                    String owner, String versionize, String versionUp)
             throws IOException {
         final Query query = client.query(getQuery("put-" + source));
         query.bind(PATH, path, "");
         query.bind(RESOURCE, prepare(resource), "");
         query.bind(BINARY, Boolean.toString(binary), "");
         query.bind(ENCODING, encoding, "");
+        query.bind(OWNER, owner, "");
         query.bind(VERSIONIZE, versionize, "");
         query.bind(VERSION_UP, versionUp, "");
         query.execute();

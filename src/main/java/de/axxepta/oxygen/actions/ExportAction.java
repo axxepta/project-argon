@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.BaseXType;
@@ -65,8 +66,10 @@ public class ExportAction extends AbstractAction {
                             File newFile = new File(newFileName);
                             if (!newFile.getParentFile().exists())
                                 createdDir = newFile.getParentFile().mkdirs();
-                            FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
-                                            "://" + fullResource, newFileName);
+                            if (!fullResource.endsWith("/" + ArgonConst.EMPTY_FILE)) {
+                                FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
+                                        "://" + fullResource, newFileName);
+                            }
                         }
                     }
                     if (!createdDir)

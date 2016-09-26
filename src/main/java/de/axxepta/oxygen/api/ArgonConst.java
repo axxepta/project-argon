@@ -25,4 +25,5 @@ public class ArgonConst {
     // RESOURCE NAMES
     public static final String META_TEMPLATE = "MetaTemplate.xml";
     public static final String LOCK_FILE = "~usermanagement";
+    public static final String EMPTY_FILE = ".empty.xml";
 }

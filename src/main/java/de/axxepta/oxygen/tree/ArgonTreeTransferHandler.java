@@ -16,6 +16,7 @@ import java.awt.datatransfer.Transferable;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -157,16 +158,17 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             isByte = new byte[l];
             //noinspection ResultOfMethodCallIgnored
             is.read(isByte);
+            String owner = Files.getOwner(file.toPath()).getName().replace("\\", "_");
             try {
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                 // check for XML, check file content only if not enough info by file extension
                 if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(isByte))) {
-                    ConnectionWrapper.save(true, url, isByte);
+                    ConnectionWrapper.save(owner, true, url, isByte);
                 } else {
                     String encoding = XMLUtils.encodingFromBytes(isByte);
                     if (!encoding.equals("UTF-8") && !encoding.equals(""))
                         isByte = IOUtils.convertToUTF8(isByte, encoding);
-                    ConnectionWrapper.save(url, isByte, encoding);
+                    ConnectionWrapper.save(owner, url, isByte, encoding);
                 }
                 logger.info("Dropped file " + file.toString() + " to " + url.toString());
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
