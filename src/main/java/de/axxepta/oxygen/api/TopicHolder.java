@@ -14,5 +14,5 @@ public class TopicHolder {
     public static MsgTopic changedServerStatus = new MsgTopic("SERVER_STATUS_CHANGED");
     public static MsgTopic treeNodeRequested = new MsgTopic("REQUESTED_TREE_NODE");
     public static MsgTopic consoleNotified = new MsgTopic("MESSAGE_TO_CONSOLE");
-
+    public static MsgTopic listDir = new MsgTopic("LIST_DIR");
 }

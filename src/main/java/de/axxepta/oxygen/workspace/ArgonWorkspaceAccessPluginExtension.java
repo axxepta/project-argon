@@ -47,7 +47,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_CONNECTION));
         pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_LOGFILE));
 
-        ArgonEditorsWatchMap.init();
+        ArgonEditorsWatchMap.getInstance().init();
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 

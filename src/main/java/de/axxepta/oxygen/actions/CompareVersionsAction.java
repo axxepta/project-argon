@@ -1,8 +1,4 @@
 package de.axxepta.oxygen.actions;
-import de.axxepta.oxygen.api.ArgonConst;
-import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -25,7 +20,6 @@ public class CompareVersionsAction extends AbstractAction {
 
     private final JTable table;
     private static final Logger logger = LogManager.getLogger(CompareVersionsAction.class);
-    private boolean savedEditor;
 
     public CompareVersionsAction(String name, JTable table) {
         super(name);
@@ -35,16 +29,7 @@ public class CompareVersionsAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         URL[] urls = selectURLs();
-        ArgonEditorsWatchMap.addURL(urls[0]);
-        ArgonEditorsWatchMap.setAsked(urls[0]);
-        ArgonEditorsWatchMap.addURL(urls[1]);
-        ArgonEditorsWatchMap.setAsked(urls[1]);
         openDiffer(urls);
-        if (savedEditor) {  // editor was saved prior to comparison, these lines prevent it from being locked as read-only
-            ArgonEditorsWatchMap.removeURL(urls[0]);
-            ArgonEditorsWatchMap.addURL(urls[0]);
-            savedEditor = false;
-        }
     }
 
     private URL[] selectURLs() {
@@ -62,7 +47,6 @@ public class CompareVersionsAction extends AbstractAction {
                     "Save first to compare with current content.",  "Compare File Revisions", JOptionPane.PLAIN_MESSAGE);*/
             if (editorAccess.isModified()) {    // take current version editor instead
                 editorAccess.save();
-                savedEditor = true;
                 urls[0] = editorAccess.getEditorLocation();
             }
         } else {
@@ -116,31 +100,4 @@ public class CompareVersionsAction extends AbstractAction {
         }
     }
 
-    static URL obtainCurrentURLFromHistoryURL(URL url) {
-        URL currentURL;
-        StringBuilder urlStr = new StringBuilder(url.toString());
-        int endOfProtocolPos = urlStr.indexOf(":");
-        int endOfDBNamePos = urlStr.indexOf("/", endOfProtocolPos + 2);
-        if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(ArgonConst.BACKUP_REPO_BASE)) {
-            urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
-            urlStr.replace(0,endOfProtocolPos, ArgonConst.ARGON_REPO);
-        } else if (urlStr.substring(endOfProtocolPos + 2, endOfDBNamePos + 1).equals(ArgonConst.BACKUP_RESTXQ_BASE)) {
-            urlStr.delete(endOfProtocolPos + 1, endOfDBNamePos);
-            urlStr.replace(0,endOfProtocolPos, ArgonConst.ARGON_XQ);
-        } else {
-            urlStr.delete(endOfProtocolPos + 2, endOfProtocolPos + 2 + ArgonConst.BACKUP_DB_BASE.length());
-        }
-        int dotPos = urlStr.lastIndexOf(".");
-        int endOfFileNamePos = urlStr.lastIndexOf("-", dotPos);
-        endOfFileNamePos = urlStr.lastIndexOf("-", endOfFileNamePos - 1);
-        endOfFileNamePos = urlStr.lastIndexOf("_", endOfFileNamePos - 1);
-        urlStr.delete(endOfFileNamePos, dotPos);
-        try {
-            currentURL = new URL(urlStr.toString());
-        } catch (MalformedURLException e1) {
-            logger.error(e1);
-            currentURL = url;
-        }
-        return currentURL;
-    }
 }

@@ -10,13 +10,14 @@ declare variable $USER-FILE := '~usermanagement';
 let $user := user:current()
 let $lock-file := db:open($LOCK-DB, $USER-FILE)
 let $my-lock := if(exists($lock-file)) then (
-    $lock-file/*[name() = $SOURCE][text() = $PATH]
+    $lock-file//*[name() = $SOURCE][text() = $PATH]
 ) else ()
 
 let $locks := (
     if(exists($lock-file))
     then $lock-file
-    else document { <usermanagement><locks/><groups><group name="admin"><user>admin</user></group></groups></usermanagement> }
+    else document { <usermanagement><locks/><groups><group name="admin"><user>admin</user></group></groups>
+    <users><name>admin</name></users></usermanagement> }
 ) update (
 insert node element { $SOURCE } { attribute user { $user },  $PATH } into .//locks )
 

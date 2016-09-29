@@ -2,6 +2,7 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * @author Markus on 07.07.2016.
@@ -40,6 +42,7 @@ public class CheckOutAction extends AbstractAction {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             connection.lock(CustomProtocolURLHandlerExtension.sourceFromURLString(db_path),
                     CustomProtocolURLHandlerExtension.pathFromURLString(db_path));
+            ArgonEditorsWatchMap.getInstance().addURL(new URL(db_path), true);
         } catch (IOException ex) {
             logger.debug(ex);
         }

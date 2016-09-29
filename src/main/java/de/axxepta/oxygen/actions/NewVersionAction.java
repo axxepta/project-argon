@@ -40,7 +40,7 @@ public class NewVersionAction extends AbstractAction {
             if (handlerExtension.canCheckReadOnly(protocol) && !handlerExtension.isReadOnly(url)) {
                 byte[] outputArray = WorkspaceUtils.getEditorByteContent(editorAccess);
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
-                String encoding = ArgonEditorsWatchMap.getEncoding(url);
+                String encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
                 if (!encoding.equals("UTF-8"))
                     outputArray = IOUtils.convertToUTF8(outputArray, encoding);
                 updateFile(url, outputArray, encoding);

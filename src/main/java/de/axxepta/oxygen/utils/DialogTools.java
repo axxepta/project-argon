@@ -1,7 +1,5 @@
 package de.axxepta.oxygen.utils;
 
-import de.axxepta.oxygen.utils.ImageUtils;
-
 import javax.swing.*;
 import java.awt.*;
 

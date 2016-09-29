@@ -67,12 +67,11 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     @Override
     public void editorClosed(URL editorLocation) {
         if (editorLocation.toString().startsWith(ArgonConst.ARGON)) {
-            ArgonEditorsWatchMap.removeURL(editorLocation);
             //toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
                 String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
-                if (connection.lockedByUser(source, path)) {
+                if (connection.lockedByUser(source, path) && !ArgonEditorsWatchMap.getInstance().askedForCheckIn(editorLocation)) {
                     int checkInFile = JOptionPane.showConfirmDialog(null, "You just closed a checked out file.\n" +
                             "Do you want to check it in?", "Closed checked out file", JOptionPane.YES_NO_OPTION);
                     if (checkInFile == JOptionPane.YES_OPTION) {
@@ -82,6 +81,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
             } catch (IOException ioe) {
                 logger.debug(ioe.getMessage());
             }
+            ArgonEditorsWatchMap.getInstance().removeURL(editorLocation);
         }
     }
 
@@ -89,7 +89,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     public void editorOpened(URL editorLocation) {
         logger.debug("editor opened: " + editorLocation.toString());
         if (editorLocation.toString().startsWith(ArgonConst.ARGON))
-            ArgonEditorsWatchMap.addURL(editorLocation);
+            ArgonEditorsWatchMap.getInstance().addURL(editorLocation);
         toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
 

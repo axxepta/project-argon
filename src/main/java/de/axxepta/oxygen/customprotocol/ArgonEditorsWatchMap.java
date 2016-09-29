@@ -1,50 +1,121 @@
 package de.axxepta.oxygen.customprotocol;
 
+import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.core.ObserverInterface;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Markus on 28.10.2015.
- * The enwraped map contains information about which Argon URLs are opened in editors and their read-only status
- * (i.e. whether the user was asked to reload the URL after another user closed it, which should be asked only once)
+ * The enwraped map contains information about which Argon URLs are opened in editors
  */
-public class ArgonEditorsWatchMap {
+public class ArgonEditorsWatchMap implements ObserverInterface {
 
-    static private Map<URL, Boolean> URLMap;
+    private static ArgonEditorsWatchMap instance = new ArgonEditorsWatchMap();
 
-    public static void init() {
-        URLMap = new HashMap<>();
+    private Map<URL, EditorInfo> editorMap;
+    /**
+     * contains all Argon resources with locks, locks owned by current user marked with true value
+     */
+    private Map<URL, Boolean> lockMap;
+
+
+    private ArgonEditorsWatchMap() {}
+
+    public static ArgonEditorsWatchMap getInstance() {
+        return instance;
     }
 
-    public static void addURL(URL url) {
-        if (!isURLInMap(url) || !askedForAccess(url))
-            URLMap.put(url, false);
+    public void init() {
+        editorMap = new HashMap<>();
+        lockMap = new HashMap<>();
+        TopicHolder.newDir.register(this);
+        update("LIST_DIR", "");
     }
 
-    public static void removeURL(URL url) {
-        URLMap.remove(url);
+    private boolean isLockInMap(URL url) {
+        return !(lockMap.get(url) == null);
     }
 
-    public static void setAsked(URL url) {
-        URLMap.put(url, true);
+    public boolean hasOwnLock(URL url) {
+        return isLockInMap(url) && lockMap.get(url);
     }
 
-    static boolean askedForAccess(URL url) {
-        if (URLMap.get(url) == null) {
-            return false;
-        } else {
-            return URLMap.get(url);
+    public boolean hasOtherLock(URL url) {
+        return isLockInMap(url) && !lockMap.get(url);
+    }
+
+    public void addURL(URL url) {
+        if (!isURLInMap(url))
+            editorMap.put(url, new EditorInfo(false));
+    }
+
+    public void addURL(URL url, boolean checkedOut) {
+        if (isURLInMap(url))
+            editorMap.get(url).setCheckedOut(checkedOut);
+        else
+            editorMap.put(url, new EditorInfo(checkedOut));
+        if (checkedOut)
+            lockMap.put(url, true);
+    }
+
+    public void removeURL(URL url) {
+        editorMap.remove(url);
+        if (isLockInMap(url) && lockMap.get(url))
+            lockMap.remove(url);
+    }
+
+    private boolean isURLInMap(URL url) {
+        return !(editorMap.get(url) == null);
+    }
+
+    public String getEncoding(URL url) {
+        if (isURLInMap(url))
+            return "UTF-8";
+        else
+            return "";
+    }
+
+    public boolean askedForCheckIn(URL url) {
+        if (isURLInMap(url))
+            return editorMap.get(url).isAskedForCheckIn();
+        else
+            return true;
+    }
+
+    public void setAskedForCheckIn(URL url, boolean asked) {
+        if (isURLInMap(url))
+            editorMap.get(url).setAskedForCheckIn(asked);
+    }
+
+    @Override
+    public void update(String type, Object... message) {
+        //
+    }
+
+
+    private static class EditorInfo {
+
+        boolean checkedOut;
+        boolean askedForCheckIn = false;
+
+        EditorInfo(boolean checkedOut) {
+            this.checkedOut = checkedOut;
         }
-    }
 
-    static boolean isURLInMap(URL url) {
-        return !(URLMap.get(url) == null);
-    }
+        boolean isAskedForCheckIn() {
+            return askedForCheckIn;
+        }
 
-    public static String getEncoding(URL url) {
-        // ToDo:
-        return "UTF-8";
+        void setAskedForCheckIn(boolean askedForCheckIn) {
+            this.askedForCheckIn = askedForCheckIn;
+        }
+
+        void setCheckedOut(boolean checkedOut) {
+            this.checkedOut = checkedOut;
+        }
     }
 
 }

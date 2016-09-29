@@ -3,6 +3,7 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
@@ -43,13 +44,14 @@ public class CheckInAction extends AbstractAction {
         }
     }
 
-    protected static void checkIn(URL url) {
+    static void checkIn(URL url) {
         BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
         String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             if (connection.lockedByUser(source, path)) {
                 WSEditor editorAccess = PluginWorkspaceProvider.getPluginWorkspace().
                         getEditorAccess(url, StandalonePluginWorkspace.MAIN_EDITING_AREA);
+                ArgonEditorsWatchMap.getInstance().setAskedForCheckIn(url, true);
                 if (editorAccess != null)
                     editorAccess.close(true);
                 connection.unlock(source, path);
