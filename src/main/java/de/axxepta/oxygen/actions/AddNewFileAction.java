@@ -151,7 +151,10 @@ public class AddNewFileAction extends AbstractAction {
                     if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
                         try {
                             WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
-                            ConnectionWrapper.save(url, template.finish(), "UTF-8");
+                            if (ext.equals(".xml"))
+                                ConnectionWrapper.save(url, template.finish(), "UTF-8");
+                            else
+                                ConnectionWrapper.save(true, url, template.finish());
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                         } catch (IOException ex) {
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);

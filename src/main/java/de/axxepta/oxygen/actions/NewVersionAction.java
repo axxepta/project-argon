@@ -54,7 +54,10 @@ public class NewVersionAction extends AbstractAction {
 
     private static void updateFile(URL url, byte[] outputArray, String encoding) {
         try {
-            ConnectionWrapper.save(url, outputArray, encoding, true);
+            if (IOUtils.isXML(outputArray))
+                ConnectionWrapper.save(url, outputArray, encoding, true);
+            else
+                ConnectionWrapper.save(true, url, outputArray, true);
         } catch (IOException ex) {
             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             // ToDo: exchange by Oxygen dialog

@@ -3,6 +3,7 @@ package de.axxepta.oxygen.customprotocol;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
+import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.utils.XMLUtils;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +47,21 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
     }
 
+    public BaseXByteArrayOutputStream(boolean binary, URL url) {
+        super();
+        this.url = url;
+        this.binary = binary;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(boolean binary, URL url, boolean versionUp) {
+        super();
+        this.url = url;
+        this.binary = binary;
+        this.versionUp = versionUp;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
     public BaseXByteArrayOutputStream(String owner, URL url, String encoding) {
         super();
         this.url = url;
@@ -63,17 +79,17 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     /**
-     * allows to explicitly override the global versioning (swithc off only) for read-only databases
-     * @param useGlobalVersioninng set to false if no versioning should be used for the current data transfer
+     * allows to explicitly override the global versioning (switch off only) for read-only databases
+     * @param useGlobalVersioning set to false if no versioning should be used for the current data transfer
      * @param url resource url to store to
      * @param encoding encoding of the byte array
      */
-    public BaseXByteArrayOutputStream(boolean useGlobalVersioninng, URL url, String encoding) {
+    public BaseXByteArrayOutputStream(boolean useGlobalVersioning, URL url, String encoding) {
         super();
         this.url = url;
         this.encoding = encoding;
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-        this.useGlobalVersioninng = useGlobalVersioninng;
+        this.useGlobalVersioninng = useGlobalVersioning;
     }
 
     @Override
@@ -81,13 +97,19 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         super.close();
         byte[] savedBytes;
         savedBytes = toByteArray();
-        // if "Save" or "Save as URL" were called check for encoding
+        // if "Save" or "Save as URL" were called check for binary and encoding
         if (!binary && encoding.equals("")) {
-            encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
-            if (encoding.equals(""))
-                XMLUtils.encodingFromBytes(savedBytes);
-            if (!encoding.equals("UTF-8") && !encoding.equals(""))
-                savedBytes = IOUtils.convertToUTF8(savedBytes, encoding);
+            if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(savedBytes))) {
+                binary = true;
+            } else {
+                encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
+                if (encoding.equals(""))
+                    XMLUtils.encodingFromBytes(savedBytes);
+                if (!encoding.equals("UTF-8") && !encoding.equals(""))
+                    savedBytes = IOUtils.convertToUTF8(savedBytes, encoding);
+                if (encoding.equals(""))
+                    encoding = "UTF-8";
+            }
         }
         if (encoding.equals("UTF-8") && (savedBytes[0] == (byte)0xEF)) {
             savedBytes = removeBOM(savedBytes, 3);

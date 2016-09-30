@@ -72,6 +72,24 @@ public final class ConnectionWrapper {
         }
     }
 
+    public static void save(boolean binary, URL url, byte[] bytes) throws IOException {
+        try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(binary, url)) {
+            os.write(bytes);
+        } catch (IOException ioe) {
+            logger.error("IO error saving to " + url.toString() + ": ", ioe.getMessage());
+            throw new IOException(ioe);
+        }
+    }
+
+    public static void save(boolean binary, URL url, byte[] bytes, boolean versionUp) throws IOException {
+        try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(binary, url, versionUp)) {
+            os.write(bytes);
+        } catch (IOException ioe) {
+            logger.error("IO error saving to " + url.toString() + ": ", ioe.getMessage());
+            throw new IOException(ioe);
+        }
+    }
+
     public static List<BaseXResource> list(BaseXSource source, String path) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.list(source, path);

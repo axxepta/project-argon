@@ -4,7 +4,9 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
+import de.axxepta.oxygen.utils.XMLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorAccess;
@@ -87,7 +89,10 @@ public class StoreSnippetSelectionAction extends AbstractAction {
                 try {
                     byte[] bytes = text.getBytes("UTF-8");
                     try {
-                        ConnectionWrapper.save(url, bytes, "UTF-8");
+                        if (IOUtils.isXML(bytes))
+                            ConnectionWrapper.save(url, bytes, "UTF-8");
+                        else
+                            ConnectionWrapper.save(true, url, bytes);
                     } catch (IOException ioe) {
                         workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
                     }

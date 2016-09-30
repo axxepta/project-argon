@@ -148,14 +148,21 @@ public class WorkspaceUtils {
         String[] encodingString = WorkspaceUtils.editorStringEncoding(editorAccess);
         if (encodingString[0].equals(""))
             encodingString[0] = XMLUtils.encodingFromBytes(content);
-        switch (encodingString[0]) {
-            case "": {
-                ConnectionWrapper.save(url, IOUtils.returnUTF8Array(encodingString[1]), "UTF-8"); break;
+        if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(content))) {
+            ConnectionWrapper.save(true, url, content);
+        } else {
+            switch (encodingString[0]) {
+                case "": {
+                    ConnectionWrapper.save(url, IOUtils.returnUTF8Array(encodingString[1]), "UTF-8");
+                    break;
+                }
+                case "UTF-8": {
+                    ConnectionWrapper.save(url, content, "UTF-8");
+                    break;
+                }
+                default:
+                    ConnectionWrapper.save(url, IOUtils.convertToUTF8(content, encodingString[0]), encodingString[0]);
             }
-            case "UTF-8": {
-                ConnectionWrapper.save(url, content, "UTF-8"); break;
-            }
-            default: ConnectionWrapper.save(url, IOUtils.convertToUTF8(content, encodingString[0]), encodingString[0]);
         }
     }
 
