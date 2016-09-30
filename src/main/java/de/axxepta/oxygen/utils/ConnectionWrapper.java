@@ -132,6 +132,14 @@ public final class ConnectionWrapper {
         }
     }
 
+    public static void unlock(BaseXSource source, String path) {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            connection.unlock(source, path);
+        } catch (Throwable ioe) {
+            logger.error("Failed to unlock resource " + path + " in " + source.toString() + ": " + ioe.getMessage());
+        }
+    }
+
     public static boolean resourceExists(BaseXSource source, String resource) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.exists(source, resource);

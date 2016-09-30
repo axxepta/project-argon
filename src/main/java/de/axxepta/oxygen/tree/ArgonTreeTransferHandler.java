@@ -127,7 +127,9 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     } else {
                         if (overwriteChecker.newResourceOrOverwrite(source, newPath)) {
                             // ToDo: proper locking while storage process (transaction)
+                            ConnectionWrapper.lock(source, newPath);
                             copyFile(file, url);
+                            ConnectionWrapper.unlock(source, newPath);
                         }
                     }
 

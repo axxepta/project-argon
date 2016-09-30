@@ -150,14 +150,17 @@ public class AddNewFileAction extends AbstractAction {
                     // ToDo: proper locking while store process
                     if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
                         try {
+                            ConnectionWrapper.lock(source, resource);
                             WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                             if (ext.equals(".xml"))
                                 ConnectionWrapper.save(url, template.finish(), "UTF-8");
                             else
                                 ConnectionWrapper.save(true, url, template.finish());
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                            ConnectionWrapper.unlock(source, resource);
                         } catch (IOException ex) {
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                            ConnectionWrapper.unlock(source, resource);
                             pluginWorkspace.showInformationMessage("Couldn't create new file.");
                         }
                     }

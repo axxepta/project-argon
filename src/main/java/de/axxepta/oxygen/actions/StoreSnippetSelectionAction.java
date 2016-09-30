@@ -6,7 +6,6 @@ import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
-import de.axxepta.oxygen.utils.XMLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorAccess;
@@ -85,20 +84,27 @@ public class StoreSnippetSelectionAction extends AbstractAction {
             URL url = urls[0];
             BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
             String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
-            if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
-                try {
-                    byte[] bytes = text.getBytes("UTF-8");
+            if (ConnectionWrapper.isLocked(source, path)) {
+                workspace.showInformationMessage("Resource already exists and is locked by another user.");
+            } else {
+                if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
                     try {
-                        if (IOUtils.isXML(bytes))
-                            ConnectionWrapper.save(url, bytes, "UTF-8");
-                        else
-                            ConnectionWrapper.save(true, url, bytes);
-                    } catch (IOException ioe) {
-                        workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
-                    }
+                        byte[] bytes = text.getBytes("UTF-8");
+                        try {
+                            ConnectionWrapper.lock(source, path);
+                            if (IOUtils.isXML(bytes))
+                                ConnectionWrapper.save(url, bytes, "UTF-8");
+                            else
+                                ConnectionWrapper.save(true, url, bytes);
+                            ConnectionWrapper.unlock(source, path);
+                        } catch (IOException ioe) {
+                            ConnectionWrapper.unlock(source, path);
+                            workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
+                        }
 
-                } catch (UnsupportedEncodingException use) {
-                    logger.error(use.getMessage());
+                    } catch (UnsupportedEncodingException use) {
+                        logger.error(use.getMessage());
+                    }
                 }
             }
         }
