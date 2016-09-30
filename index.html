@@ -48,7 +48,7 @@
 
           <p>
             Argon Author is an <a href="http://oxygenxml.com/" title="http://oxygenxml.com/" rel="nofollow">Oxygen XML Editor</a> (v17) plugin 
-            that provides access to the <a href="http://basex.org" title="http://basex.org" rel="nofollow">BaseX XML database</a> (v8.4).</p>
+            that provides access to the <a href="http://basex.org" title="http://basex.org" rel="nofollow">BaseX XML database</a> (v8.5).</p>
          
           <p> For testing you can use the free online playground on <a href="http://argon.basex.io" title="http://argon.basex.io"
               rel="nofollow">argon.basex.io</a> where you will be provided with a hosted test database and 3 pre-set users and our DITA demo project.</p>
@@ -101,9 +101,10 @@
               After the other user has finished working on the file, you will be prompted (with some delay) to gain write access.
           </p>
           
-          <h4>Drag/Drop</h4>
+          <h4>Drag/Drop/Export</h4>
              <p>
-              You can drop files and whole directories from your file browser into the dabase tree.
+              You can drop files and whole directories from your file browser into the database tree.
+			  Use the <em>Export Files</em> entry in the context menu of the tree to copy files from the database into the file system.
            </p>
           
           <h4>Custom Protocol</h4>
@@ -113,7 +114,11 @@
             <p>
               User with admin rights are able to access BaseX special folders via <em>argonquery:/</em> for the RestXQ folder, <em>argonrepo:/</em> for the Repo folder.
             </p>
-          
+                    
+          <h4>Storing text snippets</h4>
+            <p>
+              In the editor's context menu you can choose <em>Store selected Snippet</em> to save selections directly to a database resource.
+            </p>
     
               <h4>Version control</h4>
           <p>
@@ -121,7 +126,7 @@
               Each time you save a file, a copy is stored in a hidden database as a new revision.
             </p>
           <p>
-              You can mark special progress in the file by setting it to a new version via context menu of the tree or the <em>Increase File Version</em> button in the toolbar.
+              You can mark special progress in the file by setting it to a new version via the <em>Increase File Version</em> button in the toolbar.
           </p>
           <p>
               You can open the version history via <em>Window\Show View\Argon Version History</em> and compare previous revisions with the current one or other older ones.
