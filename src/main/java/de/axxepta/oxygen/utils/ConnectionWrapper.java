@@ -152,7 +152,7 @@ public final class ConnectionWrapper {
     public static boolean pathContainsLockedResource(BaseXSource source, String path) {
         byte[] lockFile;
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            lockFile = connection.get(BaseXSource.DATABASE, ArgonConst.ARGON_DB + "/" + ArgonConst.LOCK_FILE);
+            lockFile = connection.get(BaseXSource.DATABASE, ArgonConst.ARGON_DB + "/" + ArgonConst.LOCK_FILE, false);
             Document dom = XMLUtils.docFromByteArray(lockFile);
             XPathExpression expression = XMLUtils.getXPathExpression("*//" + source.toString());
             NodeList lockedResources = (NodeList) expression.evaluate(dom, XPathConstants.NODESET);

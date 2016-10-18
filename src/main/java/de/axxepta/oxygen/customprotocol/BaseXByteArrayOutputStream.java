@@ -92,6 +92,22 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.useGlobalVersioninng = useGlobalVersioning;
     }
 
+    /**
+     * allows to explicitly override the global versioning (switch off only) for read-only databases
+     * @param owner file owner
+     * @param useGlobalVersioning set to false if no versioning should be used for the current data transfer
+     * @param url resource url to store to
+     * @param encoding encoding of the byte array
+     */
+    public BaseXByteArrayOutputStream(String owner, boolean useGlobalVersioning, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.owner = owner;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        this.useGlobalVersioninng = useGlobalVersioning;
+    }
+
     @Override
     public void close() throws IOException {
         super.close();
@@ -99,10 +115,10 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         savedBytes = toByteArray();
         // if "Save" or "Save as URL" were called check for binary and encoding
         if (!binary && encoding.equals("")) {
+            encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
             if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(savedBytes))) {
                 binary = true;
             } else {
-                encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
                 if (encoding.equals(""))
                     XMLUtils.encodingFromBytes(savedBytes);
                 if (!encoding.equals("UTF-8") && !encoding.equals(""))

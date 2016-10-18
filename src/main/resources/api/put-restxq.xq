@@ -31,7 +31,7 @@ let $dir := if($ntokens gt 1) then (
 
 let $path := file:resolve-path($restxqpath, file:resolve-path($webpath)) || $PATH
 let $dir-exists := file:exists($dir)
-return if(compare($BINARY, 'true') = 0) then (
+return if($BINARY eq 'false') then (
     if($dir-exists) then () else(file:create-dir($dir)),
     file:write-text($path, $RESOURCE)
 ) else (

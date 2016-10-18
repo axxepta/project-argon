@@ -44,10 +44,9 @@ public final class FileUtils {
 
         try (Connection connection = BaseXConnectionWrapper.getConnection())
         {
-            byte[] bytesToCopy = connection.get(source, path);
+            byte[] bytesToCopy = connection.get(source, path, true);
             try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
                 fos.write(bytesToCopy);
-                fos.close();
             } catch (IOException ioe) {
                 throw new IOException("Argon: Copying file to file system failed: " + destinationFile);
             }

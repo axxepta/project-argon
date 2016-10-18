@@ -58,10 +58,11 @@ public interface Connection extends Closeable {
      * Texts are encoded as UTF-8 and can be converted via {@link Token#string(byte[])}.
      * @param source data source
      * @param path path
+     * @param export file has to be prepared for export to file system
      * @return entry
      * @throws IOException I/O exception
      */
-    byte[] get(final BaseXSource source, final String path) throws IOException;
+    byte[] get(final BaseXSource source, final String path, boolean export) throws IOException;
 
     /**
      * Stores a resource.

@@ -88,7 +88,7 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
    */
     public boolean isReadOnly(URL url) {
         //return false;
-        return isInHiddenDB(url) || !ConnectionWrapper.isLockedByUser(BaseXSource.DATABASE, pathFromURL(url));
+        return isInHiddenDB(url) || !ConnectionWrapper.isLockedByUser(sourceFromURL(url), pathFromURL(url));
     }
 
     private static boolean isInHiddenDB(URL url) {

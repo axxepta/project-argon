@@ -43,7 +43,7 @@ class ArgonProtocolHandler extends URLStreamHandler {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 logger.info("Requested input stream: " + url.toString());
                 inputStream = new ByteArrayInputStream(connection.get(source,
-                        CustomProtocolURLHandlerExtension.pathFromURL(this.url)));
+                        CustomProtocolURLHandlerExtension.pathFromURL(this.url), false));
                 ArgonEditorsWatchMap.getInstance().addURL(url);
             }
             return inputStream;

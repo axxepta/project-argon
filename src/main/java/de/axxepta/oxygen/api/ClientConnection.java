@@ -83,7 +83,7 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public byte[] get(final BaseXSource source, final String path) throws IOException {
+    public byte[] get(final BaseXSource source, final String path, boolean export) throws IOException {
         final Query query = client.query(getQuery("get-" + source));
         query.bind(PATH, path, "");
         return query.binary();

@@ -85,7 +85,7 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public byte[] get(final BaseXSource source, final String path) throws IOException {
+    public byte[] get(final BaseXSource source, final String path, boolean export) throws IOException {
         return request(getQuery("get-" + source), PATH, path);
     }
 

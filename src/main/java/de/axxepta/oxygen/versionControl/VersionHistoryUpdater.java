@@ -61,7 +61,7 @@ public class VersionHistoryUpdater implements ObserverInterface {
     private void getAndParseMetaData(Connection connection, String resource, String historyPath) throws IOException,
             ParserConfigurationException, SAXException, XPathExpressionException {
         byte[] metaData;
-        metaData = connection.get(BaseXSource.DATABASE, resource);
+        metaData = connection.get(BaseXSource.DATABASE, resource, false);
         Document dom = XMLUtils.docFromByteArray(metaData);
         XPathExpression expression = XMLUtils.getXPathExpression("*//" + MetaInfoDefinition.HISTORY_FILE_TAG);
         NodeList historyFiles = (NodeList) expression.evaluate(dom, XPathConstants.NODESET);

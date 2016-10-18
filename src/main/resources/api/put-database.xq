@@ -74,6 +74,8 @@ let $histpath := if(contains($filename, '.')) then (
     concat($path, $hist-ext)
 )
 
+let $isXML := ($BINARY eq 'false')
+
 let $histuser := <historyuser>{user:current()}</historyuser>
 let $histfile := <historyfile>{$histpath}</historyfile>
 
@@ -92,7 +94,7 @@ let $metaupdated := (
     if (empty(.//creationdate/text())) then (
         replace value of node .//creationdate with $timestamp
     ) else (),
-    if (empty(.//initialencoding/text())) then (
+    if (empty(.//initialencoding/text()) and $isXML) then (
         replace value of node .//initialencoding with $ENCODING
     ) else (),
     if (empty(.//owner/text())) then (
@@ -101,7 +103,6 @@ let $metaupdated := (
     replace value of node .//lastchange with $timestamp
 )
 
-let $isXML := (compare($BINARY, 'false') = 0)
 let $xml := if($isXML) then (
     try {
         parse-xml($RESOURCE)
