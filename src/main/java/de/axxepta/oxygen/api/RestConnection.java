@@ -71,7 +71,7 @@ public class RestConnection implements Connection {
 
     @Override
     public void init() throws IOException {
-        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8")));
+        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8"), false));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class RestConnection implements Connection {
     public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
                     String owner, String versionize, String versionUp)
             throws IOException {
-        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource), BINARY, Boolean.toString(binary),
+        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource, binary), BINARY, Boolean.toString(binary),
                 ENCODING, encoding, OWNER, owner, VERSIONIZE, versionize, VERSION_UP, versionUp);
     }
 

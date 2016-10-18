@@ -59,7 +59,7 @@ public final class ClientConnection implements Connection {
     public void init() throws IOException {
         final Query query = client.query(getQuery("init"));
         byte[] resource = getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8");
-        query.bind(RESOURCE, prepare(resource), "");
+        query.bind(RESOURCE, prepare(resource, false), "");
         query.execute();
     }
 
@@ -95,7 +95,7 @@ public final class ClientConnection implements Connection {
             throws IOException {
         final Query query = client.query(getQuery("put-" + source));
         query.bind(PATH, path, "");
-        query.bind(RESOURCE, prepare(resource), "");
+        query.bind(RESOURCE, prepare(resource, binary), "");
         query.bind(BINARY, Boolean.toString(binary), "");
         query.bind(ENCODING, encoding, "");
         query.bind(OWNER, owner, "");

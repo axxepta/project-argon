@@ -66,8 +66,7 @@ public final class ConnectionUtils {
      * @param resource resource
      * @return resulting array
      */
-    public static String prepare(final byte[] resource) {
-        return Token.string(Token.startsWith(resource, '<') ? resource :
-                org.basex.util.Base64.encode(resource));
+    public static String prepare(final byte[] resource, boolean binary) {
+        return Token.string(binary ? org.basex.util.Base64.encode(resource) : resource);
     }
 }
