@@ -3,7 +3,6 @@ package de.axxepta.oxygen.tree;
 import de.axxepta.oxygen.actions.SearchInPathAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -17,14 +16,12 @@ import java.util.*;
 
 public class TreePane extends JPanel {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
     private DefaultMutableTreeNode root;
     private ArgonTree tree;
     private TreeListener tListener;
     private DefaultTreeModel treeModel;
 
-    public TreePane(StandalonePluginWorkspace pluginWorkspaceAccess) {
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+    public TreePane() {
         initView();
     }
 
@@ -49,7 +46,7 @@ public class TreePane extends JPanel {
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         setTreeState(tree, new TreePath(root), false);
 
-        final ArgonPopupMenu contextMenu = ClassFactory.getInstance().getTreePopupMenu(pluginWorkspaceAccess, tree, treeModel);
+        final ArgonPopupMenu contextMenu = ClassFactory.getInstance().getTreePopupMenu(tree, treeModel);
 
         tListener = new TreeListener(tree, treeModel, contextMenu);
         tree.addTreeWillExpandListener(tListener);
@@ -107,15 +104,15 @@ public class TreePane extends JPanel {
         DefaultMutableTreeNode root = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_root));
         root.setAllowsChildren(true);
         DefaultMutableTreeNode databases = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_DB),
-                ArgonConst.ARGON + ":/");
+                ArgonConst.ARGON + ":");
         databases.setAllowsChildren(true);
         root.add(databases);
         DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
-                ArgonConst.ARGON_XQ + ":/");
+                ArgonConst.ARGON_XQ + ":");
         queryFolder.setAllowsChildren(true);
         root.add(queryFolder);
         DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo),
-                ArgonConst.ARGON_REPO + ":/");
+                ArgonConst.ARGON_REPO + ":");
         queryFolder.setAllowsChildren(true);
         root.add(repoFolder);
         return root;

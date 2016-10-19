@@ -5,6 +5,8 @@ import de.axxepta.oxygen.utils.URLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.editor.ContentTypes;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -19,18 +21,16 @@ import java.util.Scanner;
  */
 public class BaseXRunQueryAction extends AbstractAction {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
     private static final Logger logger = LogManager.getLogger(BaseXRunQueryAction.class);
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-
-    public BaseXRunQueryAction (String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
+    public BaseXRunQueryAction (String name, Icon icon){
         super(name, icon);
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
+        WSEditor editorAccess = workspace.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
 
         if (editorAccess != null) {
             if (URLUtils.isQuery(editorAccess.getEditorLocation())) {
@@ -56,14 +56,14 @@ public class BaseXRunQueryAction extends AbstractAction {
                 }
 
                 // display result of query in a new editor window
-                pluginWorkspaceAccess.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
+                workspace.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
 
             } else {
-                pluginWorkspaceAccess.showInformationMessage("No XQuery in editor window!");
+                workspace.showInformationMessage("No XQuery in editor window!");
             }
 
         } else {
-            pluginWorkspaceAccess.showInformationMessage("No editor window opened!");
+            workspace.showInformationMessage("No editor window opened!");
         }
     }
 

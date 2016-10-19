@@ -190,7 +190,7 @@ public final class ConnectionWrapper {
     public static void newDir(BaseXSource source, String path) {
         if (source.equals(BaseXSource.DATABASE)) {
             String resource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<empty/>";
-            String urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + "://" +
+            String urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" +
                     path + "/" + ArgonConst.EMPTY_FILE;
             try {
                 URL url = new URL(urlString);

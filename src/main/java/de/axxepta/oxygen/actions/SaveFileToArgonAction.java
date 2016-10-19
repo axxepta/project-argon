@@ -6,8 +6,8 @@ import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,20 +21,19 @@ import java.net.URL;
  */
 public class SaveFileToArgonAction extends AbstractAction {
 
-    private StandalonePluginWorkspace workspaceAccess;
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public SaveFileToArgonAction(String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess) {
+    public SaveFileToArgonAction(String name, Icon icon) {
         super(name, icon);
-        workspaceAccess = pluginWorkspaceAccess;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspaceAccess.getParentFrame(),
+        ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
                 "Save File via BaseX Database Connection", ArgonChooserDialog.SAVE);
         URL[] url =  urlChooser.selectURLs();
 
-        WSEditor editorAccess = workspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+        WSEditor editorAccess = workspace.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
 
         if (url != null) {
             BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url[0]);
@@ -46,15 +45,15 @@ public class SaveFileToArgonAction extends AbstractAction {
                         ConnectionWrapper.lock(source, path);
                         WorkspaceUtils.saveEditorToBaseXURL(editorAccess, url[0]);
                         editorAccess.close(false);
-                        workspaceAccess.open(url[0]);
+                        workspace.open(url[0]);
                         WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                     } catch (IOException ioe) {
                         WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                        workspaceAccess.showErrorMessage("Resource " + url[0].toString() +
+                        workspace.showErrorMessage("Resource " + url[0].toString() +
                                 " could not be stored to BaseX connection: " + ioe.getMessage());
                     }
                 } else {
-                    workspaceAccess.showInformationMessage("Resource " + url[0].toString() +
+                    workspace.showInformationMessage("Resource " + url[0].toString() +
                             " already exists and is locked by another user");
                 }
             }

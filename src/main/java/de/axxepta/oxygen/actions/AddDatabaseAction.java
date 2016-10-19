@@ -1,9 +1,9 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.tree.TreeListener;
-import de.axxepta.oxygen.tree.TreeUtils;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
@@ -13,9 +13,6 @@ import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -28,21 +25,15 @@ public class AddDatabaseAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddDatabaseAction.class);
 
-    private TreeModel treeModel;
-    private TreeListener listener;
     private JDialog addDbDialog;
     private JTextField newDbNameTextField;
 
-    public AddDatabaseAction(String name, Icon icon, TreeModel treeModel, TreeListener listener){
+    public AddDatabaseAction(String name, Icon icon){
         super(name, icon);
-        this.treeModel = treeModel;
-        this.listener = listener;
     }
 
-    public AddDatabaseAction(TreeModel treeModel, TreeListener listener){
+    public AddDatabaseAction(){
         super();
-        this.treeModel = treeModel;
-        this.listener = listener;
     }
 
     @Override
@@ -82,19 +73,16 @@ public class AddDatabaseAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             String db = newDbNameTextField.getText();
             // ToDo: check, whether database already exists, otherwise duplicate node is inserted
-            TreeNode parentNode = listener.getNode();
             String chop = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
             String ftindex = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 connection.create(db, chop, ftindex);
-                TreeUtils.insertStrAsNodeLexi(treeModel, db, (DefaultMutableTreeNode) parentNode, false);
+                TopicHolder.newDir.postMessage(ArgonConst.ARGON + ":" + db);
             } catch (IOException | NullPointerException ex) {
                 String error = ex.getMessage();
                 if ((error == null) || error.equals("null"))
                     error = "Database connection could not be established.";
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to add new database: " + error);
-/*                JOptionPane.showMessageDialog(null, "Failed to add new database",
-                        "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);*/
                 logger.debug(ex.getMessage());
             }
             addDbDialog.dispose();

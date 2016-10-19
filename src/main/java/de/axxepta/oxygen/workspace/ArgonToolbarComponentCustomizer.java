@@ -8,7 +8,6 @@ import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.URLUtils;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer;
 import ro.sync.exml.workspace.api.standalone.ToolbarInfo;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -30,15 +29,11 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
     private final Action replyToAuthorComment;
     private final Action saveToArgonAction;
 
-    ArgonToolbarComponentCustomizer(StandalonePluginWorkspace pluginWorkspaceAccess) {
-        runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
-                ImageUtils.createImageIcon("/images/RunQuery.png"), pluginWorkspaceAccess);
-        newVersionAction = new NewVersionAction("Increase File Version",
-                ImageUtils.createImageIcon("/images/IncVersion.png"), pluginWorkspaceAccess);
-        replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
-                ImageUtils.createImageIcon("/images/ReplyComment.png"), pluginWorkspaceAccess);
-        saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol",
-                ImageUtils.createImageIcon("/images/AddFile16.gif"), pluginWorkspaceAccess);
+    ArgonToolbarComponentCustomizer() {
+        runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query", ImageUtils.createImageIcon("/images/RunQuery.png"));
+        newVersionAction = new NewVersionAction("Increase File Version", ImageUtils.createImageIcon("/images/IncVersion.png"));
+        replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment", ImageUtils.createImageIcon("/images/ReplyComment.png"));
+        saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol", ImageUtils.createImageIcon("/images/AddFile16.gif"));
     }
 
     @Override

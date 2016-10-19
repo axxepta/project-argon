@@ -19,12 +19,13 @@ import de.axxepta.oxygen.actions.RefreshTreeAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.core.ObserverInterface;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 
 /**
@@ -34,6 +35,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         KeyListener, ObserverInterface{
 
     private static final Logger logger = LogManager.getLogger(TreeListener.class);
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
     
     private ArgonTree tree;
     private TreeModel treeModel;
@@ -127,7 +129,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             source = TreeUtils.sourceFromTreePath(path);
 
             if (depth > 2)      // get path in source
-                db_path = (( (String) ((ArgonTreeNode) node).getTag() ).split("//"))[1] + "/";
+                db_path = (( (String) ((ArgonTreeNode) node).getTag() ).split(":/*"))[1] + "/";
             else
                 db_path = "";
 
@@ -139,8 +141,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 String error = er.getMessage();
                 if ((error == null) || error.equals(""))
                     error = "Database connection could not be established.";
-                JOptionPane.showMessageDialog(null, "Failed to get resource list from BaseX:\n" + error,
-                        "BaseX Communication Error", JOptionPane.PLAIN_MESSAGE);
+                workspace.showInformationMessage("Failed to get resource list from BaseX:\n" + error);
             }
             for (BaseXResource child : childList) {
                 newValues.add(child.getName());
@@ -228,7 +229,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 if (expanded || (i == path.length - 1)) { // update tree now only if file is in visible path
                     if (TreeUtils.isNodeAsStrChild(currNode, path[i]) == -1) {
                         isFile = (i + 1 == path.length) && type.equals("SAVE_FILE");
-                        TreeUtils.insertStrAsNodeLexi(treeModel, path[i], (MutableTreeNode) currNode, isFile);
+                        TreeUtils.insertStrAsNodeLexi(treeModel, path[i], (DefaultMutableTreeNode) currNode, isFile);
                         ((DefaultTreeModel) treeModel).reload(currNode);
                     }
                     currPath = TreeUtils.pathByAddingChildAsStr(currPath, path[i]);
@@ -289,7 +290,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         } else {
             for (BaseXResource newPossibleChild : newChildrenList){
                 if (!oldChildren.contains(newPossibleChild.getName())) {
-                    TreeUtils.insertStrAsNodeLexi(treeModel, newPossibleChild.getName(), (MutableTreeNode) node,
+                    TreeUtils.insertStrAsNodeLexi(treeModel, newPossibleChild.getName(), (DefaultMutableTreeNode) node,
                             !(newPossibleChild.getType().equals(BaseXType.DIRECTORY)));
                     treeChanged = true;
                 }
@@ -326,7 +327,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                                         new AddNewFileAction(tree).actionPerformed(null); break;
                                     }
                                     if (TreeUtils.isDbSource(path)) {
-                                        new AddDatabaseAction(treeModel, this).actionPerformed(null); break;
+                                        new AddDatabaseAction().actionPerformed(null); break;
                                     }
                                     break;
             default:

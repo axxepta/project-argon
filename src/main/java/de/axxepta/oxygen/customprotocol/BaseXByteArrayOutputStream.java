@@ -21,7 +21,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private final URL url;
     private BaseXSource source;
     private String encoding = "";
-    private boolean useGlobalVersioninng = true;
+    private boolean useGlobalVersioning = true;
     private boolean versionUp = false;
     private boolean binary = false;
     private String owner = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, false);
@@ -89,7 +89,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.url = url;
         this.encoding = encoding;
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-        this.useGlobalVersioninng = useGlobalVersioning;
+        this.useGlobalVersioning = useGlobalVersioning;
     }
 
     /**
@@ -105,7 +105,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
         this.encoding = encoding;
         this.owner = owner;
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-        this.useGlobalVersioninng = useGlobalVersioning;
+        this.useGlobalVersioning = useGlobalVersioning;
     }
 
     @Override
@@ -134,7 +134,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             savedBytes = removeBOM(savedBytes, 3);
         }
         String useVersioning;
-        if (useGlobalVersioninng)
+        if (useGlobalVersioning)
             useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
         else
             useVersioning = "false";

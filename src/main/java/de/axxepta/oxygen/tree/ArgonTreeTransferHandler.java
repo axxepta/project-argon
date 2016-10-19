@@ -25,8 +25,9 @@ import java.util.List;
  * @author Markus on 04.11.2015.
  */
 public class ArgonTreeTransferHandler extends TransferHandler {
-// ToDo: change all calls of JOptionPane.showMessageDialog to Oxygen dialogs
+
     private static final Logger logger = LogManager.getLogger(ArgonTreeTransferHandler.class);
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
     private final ArgonTree tree;
 
@@ -92,8 +93,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             } catch (Exception e1) {
                 logger.info(e1.getMessage());
                 java.awt.Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null, "Couldn't access transferred objects,\n see log file for details.",
-                        "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                workspace.showInformationMessage("Couldn't access transferred objects,\n see log file for details.");
                 return false;
             }
         }
@@ -148,8 +148,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             i++;
         }
         if (lockedFiles.size() > 0) {
-            JOptionPane.showMessageDialog(null, "The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles,
-                    "Drag&Drop Message", JOptionPane.PLAIN_MESSAGE);
+            workspace.showInformationMessage("The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles);
         }
     }
 
@@ -176,19 +175,16 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } catch (IOException ex) {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                JOptionPane.showMessageDialog(null, "Couldn't store transferred object\n" + file.toString()
-                        + "\nto database: " + ex.getMessage(), "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+                workspace.showErrorMessage("Couldn't store transferred object\n" + file.toString() + "\nto database: " + ex.getMessage());
             }
         } catch (IOException es) {
             logger.error(es);
-            JOptionPane.showMessageDialog(null, "Couldn't read transferred object\n" + file.toString()
-                    + ".", "Drag&Drop Error", JOptionPane.PLAIN_MESSAGE);
+            workspace. showErrorMessage("Couldn't read transferred object\n" + file.toString() + ".");
         }
     }
 
     private byte[] readTextFile(URL url) throws IOException {
         List<Integer> integerList = new ArrayList<>();
-        PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
         try (Reader urlReader = workspace.getUtilAccess().createReader(url, "UTF-8")) {
             while(urlReader.ready()) {

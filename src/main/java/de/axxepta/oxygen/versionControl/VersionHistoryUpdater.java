@@ -74,7 +74,7 @@ public class VersionHistoryUpdater implements ObserverInterface {
     private void parseHistoryEntry(String strEntry, String historyPath) {
         URL url = null;
         try {
-            url = new URL(ArgonConst.ARGON + "://" + historyPath + "/" + strEntry);
+            url = new URL(ArgonConst.ARGON + ":" + historyPath + "/" + strEntry);
         } catch (MalformedURLException e1) {
             logger.error(e1);
         }

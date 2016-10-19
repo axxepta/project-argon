@@ -13,7 +13,6 @@ import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 
 /**
@@ -25,18 +24,16 @@ public class ArgonPopupMenu extends PopupMenu {
 
     private static final Logger logger = LogManager.getLogger(ArgonPopupMenu.class);
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
     private ArgonTree tree;
     private final TreeModel treeModel;
 
     private ArrayList<String> itemNames;
     private ArrayList<JMenuItem> items;
 
-    public ArgonPopupMenu(final StandalonePluginWorkspace pluginWorkspaceAccess, final ArgonTree tree, final TreeModel treeModel) {
+    public ArgonPopupMenu(final ArgonTree tree, final TreeModel treeModel) {
         super();
         this.itemNames = new ArrayList<>();
         this.items = new ArrayList<>();
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
         this.tree = tree;
         this.treeModel = treeModel;
     }
@@ -123,8 +120,7 @@ public class ArgonPopupMenu extends PopupMenu {
 
         this.addSeparator();
 
-        Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD),
-                treeModel, tListener);
+        Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD));
         this.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
 
         Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE), tree);
@@ -152,7 +148,7 @@ public class ArgonPopupMenu extends PopupMenu {
         this.addSeparator();
 
         final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_search),
-                ImageUtils.getIcon(ImageUtils.SEARCH), pluginWorkspaceAccess, tree);
+                ImageUtils.getIcon(ImageUtils.SEARCH), tree);
         this.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
         Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {

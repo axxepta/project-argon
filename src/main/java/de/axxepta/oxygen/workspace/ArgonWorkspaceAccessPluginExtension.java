@@ -51,7 +51,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 
-        final ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer(pluginWorkspaceAccess);
+        final ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer();
         pluginWorkspaceAccess.addToolbarComponentsCustomizer(toolbarCustomizer);
 
         pluginWorkspaceAccess.addEditorChangeListener(new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),
@@ -74,7 +74,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
             if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                 //The view ID defined in the "plugin.xml"
-                viewInfo.setComponent(new TreePane(pluginWorkspaceAccess));
+                viewInfo.setComponent(new TreePane());
                 viewInfo.setTitle("Argon DB Connection");
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
                 viewInfo.setComponent(new VersionHistoryPanel());

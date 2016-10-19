@@ -5,7 +5,6 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.RestConnection;
 import de.axxepta.oxygen.customprotocol.ArgonChooserListCellRenderer;
 import de.axxepta.oxygen.tree.*;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 import javax.swing.*;
@@ -36,16 +35,16 @@ public class ClassFactory {
         return new ArgonTreeNode(obj, url);
     }
 
-    public ArgonPopupMenu getTreePopupMenu(StandalonePluginWorkspace pluginWorkspace, ArgonTree tree, TreeModel treeModel) {
-        return new ArgonPopupMenu(pluginWorkspace, tree, treeModel);
+    public ArgonPopupMenu getTreePopupMenu(ArgonTree tree, TreeModel treeModel) {
+        return new ArgonPopupMenu(tree, treeModel);
     }
 
     public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {
         return new RestConnection(host, port, user, password);
     }
 
-    public Action getSearchInPathAction(String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree) {
-        return new SearchInPathAction(name, icon, wsa, tree);
+    public Action getSearchInPathAction(String name, Icon icon, JTree tree) {
+        return new SearchInPathAction(name, icon, tree);
     }
 
     public TreeCellRenderer getTreeCellRenderer() {

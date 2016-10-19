@@ -8,6 +8,8 @@ import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -23,16 +25,15 @@ import java.net.URL;
  */
 public class NewVersionAction extends AbstractAction {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public NewVersionAction(String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
+    public NewVersionAction(String name, Icon icon){
         super(name, icon);
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
+        WSEditor editorAccess = workspace.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
         URL url = editorAccess.getEditorLocation();
         if (url.toString().startsWith(ArgonConst.ARGON)) {
             String protocol = CustomProtocolURLHandlerExtension.protocolFromURL(url);
@@ -46,8 +47,8 @@ public class NewVersionAction extends AbstractAction {
                 updateFile(url, outputArray, encoding);
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } else {
-                JOptionPane.showMessageDialog(null, "Couldn't update version of file\n" + url.toString() +
-                        ".\n File is locked by other user.", "Update Version Message", JOptionPane.PLAIN_MESSAGE);
+                 workspace.showInformationMessage("Couldn't update version of file\n" + url.toString() +
+                        ".\n File is locked by other user.");
             }
         }
     }
@@ -60,9 +61,7 @@ public class NewVersionAction extends AbstractAction {
                 ConnectionWrapper.save(true, url, outputArray, true);
         } catch (IOException ex) {
             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-            // ToDo: exchange by Oxygen dialog
-            JOptionPane.showMessageDialog(null, "Couldn't write updated version of file\n" + url.toString(),
-                    "Update Version Error", JOptionPane.PLAIN_MESSAGE);
+            workspace.showInformationMessage("Couldn't write updated version of file\n" + url.toString());
         }
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(url));
     }

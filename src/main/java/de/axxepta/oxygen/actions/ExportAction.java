@@ -68,7 +68,7 @@ public class ExportAction extends AbstractAction {
                                 createdDir = newFile.getParentFile().mkdirs();
                             if (!fullResource.endsWith("/" + ArgonConst.EMPTY_FILE)) {
                                 FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
-                                        "://" + fullResource, newFileName);
+                                        ":" + fullResource, newFileName);
                             }
                         }
                     }

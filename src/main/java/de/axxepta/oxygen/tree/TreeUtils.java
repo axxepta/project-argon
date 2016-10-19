@@ -19,15 +19,12 @@ public class TreeUtils {
         model = treeModel;
     }
 
-    public static void insertStrAsNodeLexi(TreeModel treeModel, String child, MutableTreeNode parent, Boolean childIsFile) {
+    public static void insertStrAsNodeLexi(TreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
-        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
-                ((ArgonTreeNode) parent).getTag().toString() + "/" + child);
-        if (childIsFile) childNode.setAllowsChildren(false);
-        else childNode.setAllowsChildren(true);
+        DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
         Boolean parentIsFile;
         boolean inserted = false;
-        for (int i=0; i<parent.getChildCount(); i++) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
             currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
             parentIsFile = !currNode.getAllowsChildren();
             if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
@@ -41,12 +38,9 @@ public class TreeUtils {
             ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-    public static DefaultMutableTreeNode insertStrAsNodeLexi(String child, MutableTreeNode parent, Boolean childIsFile) {
+    public static DefaultMutableTreeNode insertStrAsNodeLexi(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
-        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
-                ((ArgonTreeNode) parent).getTag().toString() + "/" + child);
-        if (childIsFile) childNode.setAllowsChildren(false);
-        else childNode.setAllowsChildren(true);
+        DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
         Boolean parentIsFile;
         boolean inserted = false;
         for (int i = 0; i < parent.getChildCount(); i++) {
@@ -61,6 +55,17 @@ public class TreeUtils {
         }
         if (!inserted)
             parent.insert(childNode, parent.getChildCount());
+        return childNode;
+    }
+
+    private static DefaultMutableTreeNode newChild(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+        String delim = (parent.getLevel() < 2) ? "" : "/";
+        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
+                ((ArgonTreeNode) parent).getTag().toString() + delim + child);
+        if (childIsFile)
+            childNode.setAllowsChildren(false);
+        else
+            childNode.setAllowsChildren(true);
         return childNode;
     }
 
@@ -146,13 +151,14 @@ public class TreeUtils {
     public static String urlStringFromTreePath(TreePath path) {
         StringBuilder db_path;
         if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
-            db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":");
         else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_repo)))
-            db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":");
         else
-            db_path = new StringBuilder(ArgonConst.ARGON + ":/");
+            db_path = new StringBuilder(ArgonConst.ARGON + ":");
         for (int i = 2; i < path.getPathCount(); i++) {
-            db_path.append('/');
+            if (i > 2)
+                db_path.append('/');
             db_path.append(path.getPathComponent(i).toString());
         }
         return db_path.toString();

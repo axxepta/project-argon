@@ -522,9 +522,9 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         if (!FileUtils.directoryExists(settingsPath)) {
             if (!settingsPath.mkdir()) {
                 noDirectory = true;
-                JOptionPane.showMessageDialog(null, "Couldn't create config directory 'argon' in user home path.\n" +
-                                "Please create it manually to store connection settings permanently.",
-                        "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+                PluginWorkspaceProvider.getPluginWorkspace().
+                        showErrorMessage("Couldn't create config directory 'argon' in user home path.\n" +
+                                "Please create it manually to store connection settings permanently.");
             }
         }
         if (!noDirectory) {
@@ -540,8 +540,8 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                 properties.store(fileOut, "Favorite Things");
             } catch (IOException ioe) {
                 logger.error(ioe.getMessage());
-                JOptionPane.showMessageDialog(null, "Couldn't store connection settings to file\n" + fileName,
-                        "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+                PluginWorkspaceProvider.getPluginWorkspace().
+                        showErrorMessage("Couldn't store connection settings to file\n" + fileName);
             }
         }
     }

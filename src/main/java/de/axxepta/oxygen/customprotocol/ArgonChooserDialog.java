@@ -221,8 +221,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
             pathString = "";
         else
             pathString = CustomProtocolURLHandlerExtension.protocolFromSource(getSourceFromElement(path.get(0))) +
-                    "://" + getResourceString() + "/" + selectedFileTextField.getText();
-        //pathString = pathString.replace("//", "/");
+                    ":" + getResourceString() + "/" + selectedFileTextField.getText();
+        pathString = pathString.replace(":/", ":");
     }
 
     private List<ArgonChooserListModel.Element> obtainNewList(BaseXSource source, String path) {

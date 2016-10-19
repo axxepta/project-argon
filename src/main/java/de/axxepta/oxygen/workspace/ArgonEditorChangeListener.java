@@ -72,11 +72,16 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
                 BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
                 String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
                 if (connection.lockedByUser(source, path) && !ArgonEditorsWatchMap.getInstance().askedForCheckIn(editorLocation)) {
-                    int checkInFile = JOptionPane.showConfirmDialog(null, "You just closed a checked out file.\n" +
-                            "Do you want to check it in?", "Closed checked out file", JOptionPane.YES_NO_OPTION);
-                    if (checkInFile == JOptionPane.YES_OPTION) {
+
+                    int checkInFile = pluginWorkspaceAccess.showConfirmDialog(
+                            "Closed checked out file",
+                            "You just closed a checked out file. Do you want to check it in?",
+                            new String[]{"Yes", "No"},
+                            new int[]{0, 1}, 0);
+                    if (checkInFile == 0) {
                         connection.unlock(source, path);
                     }
+
                 }
             } catch (IOException ioe) {
                 logger.debug(ioe.getMessage());

@@ -2,7 +2,7 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspace;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +21,10 @@ public class OpenListSelectionAction extends AbstractAction {
     private static final Logger logger = LogManager.getLogger(OpenListSelectionAction.class);
 
     JList<String> results;
-    StandalonePluginWorkspace wsa;
+    PluginWorkspace wsa;
     JDialog resultsDialog;
 
-    public OpenListSelectionAction(String name, StandalonePluginWorkspace wsa, JList<String> results,
+    public OpenListSelectionAction(String name, PluginWorkspace wsa, JList<String> results,
                                    JDialog resultsDialog) {
         super(name);
         this.results = results;

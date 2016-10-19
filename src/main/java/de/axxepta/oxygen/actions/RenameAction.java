@@ -13,6 +13,7 @@ import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
@@ -28,6 +29,7 @@ import java.awt.event.KeyEvent;
 public class RenameAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(RenameAction.class);
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
     private final TreeModel treeModel;
     private final TreeListener treeListener;
     private JDialog renameDialog;
@@ -102,14 +104,12 @@ public class RenameAction extends AbstractAction {
                             connection.rename(source, db_path, newPathString);
                             treeModel.valueForPathChanged(path, newPath);
                         } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Failed to rename resource",
-                                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                            workspace.showInformationMessage("Failed to rename resource");
                             logger.debug(ex.toString());
                         }
                     }
                 } else {
-                    PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage("Resource " + newPathString +
-                            " already exists and is locked by another user");
+                    workspace.showInformationMessage("Resource " + newPathString + " already exists and is locked by another user");
                 }
             }
             renameDialog.dispose();

@@ -3,7 +3,6 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
@@ -14,7 +13,8 @@ import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,10 +32,10 @@ import java.util.List;
 public class SearchInPathAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(SearchInPathAction.class);
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
     private JTree tree;
     private TreePath rootPath;
-    private StandalonePluginWorkspace wsa;
 
     private static final int SEARCH_DB = 1;
     private static final int SEARCH_ALL_DBS = 2;
@@ -43,11 +43,10 @@ public class SearchInPathAction extends AbstractAction {
     private static final int SEARCH_XQ = 8;
     public static final int SEARCH_ALL = 15;
 
-    public SearchInPathAction (String name, Icon icon, StandalonePluginWorkspace wsa, JTree tree){
+    public SearchInPathAction (String name, Icon icon, JTree tree){
         super(name, icon);
         this.tree = tree;
         rootPath = new TreePath(((DefaultMutableTreeNode) tree.getModel().getRoot()).getPath());
-        this.wsa = wsa;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -130,7 +129,7 @@ public class SearchInPathAction extends AbstractAction {
 
         JPanel buttonsPanel = new JPanel();
         JButton openButton = new JButton(
-                new OpenListSelectionAction("Open Resource(s)", this.wsa, resultList, resultsDialog));
+                new OpenListSelectionAction("Open Resource(s)", workspace, resultList, resultsDialog));
         buttonsPanel.add(openButton);
         JButton checkOutButton = new JButton(
                 new CheckOutListSelectionAction("Check out Resource(s)", resultList, resultsDialog));
@@ -162,7 +161,7 @@ public class SearchInPathAction extends AbstractAction {
                     TreePath currentPath = TreeUtils.pathByAddingChildAsStr(dbBasePath, db);
                     if (currentPath == null) {
                         currentPath = new TreePath(
-                                TreeUtils.insertStrAsNodeLexi(db, (MutableTreeNode) dbBasePath.getLastPathComponent(), false).
+                                TreeUtils.insertStrAsNodeLexi(db, (DefaultMutableTreeNode) dbBasePath.getLastPathComponent(), false).
                                         getPath());
                     }
                     allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter));
@@ -210,16 +209,13 @@ public class SearchInPathAction extends AbstractAction {
 
     private static List<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
         List<String> allResources;
-        JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
         try {
         //try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             allResources = new BaseXRequest("look", source, basePathStr, filter).getResult();
             //allResources = connection.search(source, basePathStr, filter);
         } catch (IOException io) {
             allResources = new ArrayList<>();
-            JOptionPane.showMessageDialog(parentFrame, "Failed to search for BaseX resources:\n" +
-                            io.getMessage(),
-                    "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+            workspace.showInformationMessage("Failed to search for BaseX resources:\n" + io.getMessage());
         }
         for (int i=0; i<allResources.size(); i++) {
             allResources.set(i, allResources.get(i).replaceAll("\\\\","/"));

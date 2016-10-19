@@ -50,13 +50,6 @@ public class BaseXRequest {
                         check = true;
                         break;
 
-                    case "unlock":
-                        result = new ArrayList<>();
-                        answer = "";
-                        check = false;
-                        connection.unlock(source, path);
-                        break;
-
                     case "look":
                         answer = "";
                         check = false;
