@@ -3,7 +3,9 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
+import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
@@ -22,6 +24,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Enumeration;
 
 /**
  * @author Markus on 02.11.2015.
@@ -88,6 +91,7 @@ public class RenameAction extends AbstractAction {
         RenameThisAction(String name){
             super(name);
         }
+        String urlString;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -102,6 +106,7 @@ public class RenameAction extends AbstractAction {
                     if (WorkspaceUtils.newResourceOrOverwrite(source, newPathString)) {
                         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                             connection.rename(source, db_path, newPathString);
+                            renameURLTag((ArgonTreeNode) path.getLastPathComponent(), newPathString);
                             treeModel.valueForPathChanged(path, newPath);
                         } catch (Exception ex) {
                             workspace.showInformationMessage("Failed to rename resource");
@@ -114,6 +119,23 @@ public class RenameAction extends AbstractAction {
             }
             renameDialog.dispose();
         }
+
+        private void renameURLTag(ArgonTreeNode node, String newPath) {
+            urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + newPath;
+            renameURLTagsRecursively(node, urlString);
+        }
+
+        private void renameURLTagsRecursively(ArgonTreeNode node, String newURLTag) {
+            node.setTag(newURLTag);
+            System.out.println(newURLTag);
+            if (node.getChildCount() > 0) {
+                for (Enumeration<ArgonTreeNode> children = node.children(); children.hasMoreElements();) {
+                    ArgonTreeNode child = children.nextElement();
+                    renameURLTagsRecursively(child, newURLTag + "/" + child.getUserObject().toString());
+                }
+            }
+        }
+
     }
 
 }

@@ -32,18 +32,8 @@ class ArgonToolbarComponentCustomizer implements ToolbarComponentsCustomizer {
                 toolbarInfo, -1);
 
         // Set title
-        if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID())) {
-            JComponent[] initialComponents = toolbarInfo.getComponents();
-            boolean hasInitialComponents = (initialComponents != null) && (initialComponents.length > 0);
-            String initialTitle = toolbarInfo.getTitle();
-            String title = "";
-            if (hasInitialComponents && initialTitle != null && initialTitle.trim().length() > 0) {
-                // Include initial tile
-                title += initialTitle + " | ";
-            }
-            title += "BaseX DB";
-            toolbarInfo.setTitle(title);
-        }
+        if ("ArgonWorkspaceAccessToolbarID".equals(toolbarInfo.getToolbarID()))
+            toolbarInfo.setTitle("BaseX DB Connection");
 
         addButtons("File", new JComponent[]{saveToArgonButton}, toolbarInfo, 2);
         addButtons("toolbar.review", new JComponent[]{replyCommentButton}, toolbarInfo, -1);
