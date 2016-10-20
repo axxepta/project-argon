@@ -18,6 +18,7 @@ import ro.sync.exml.workspace.api.editor.page.text.TextPopupMenuCustomizer;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -29,7 +30,6 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private static final Logger logger = LogManager.getLogger(ArgonEditorChangeListener.class);
 
     private StandalonePluginWorkspace pluginWorkspaceAccess;
-    private final ArgonToolbarComponentCustomizer toolbarCustomizer;
 
     private final Action snippetAction = new StoreSnippetSelectionAction();
 
@@ -38,28 +38,35 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private AuthorPopupMenuCustomizer authorPopupMenuCustomizer;
     private TextPopupMenuCustomizer textPopupMenuCustomizer;
 
-    ArgonEditorChangeListener(StandalonePluginWorkspace pluginWorkspace, final ArgonToolbarComponentCustomizer toolbarCustomizer) {
+    private ToolbarButton runQueryButton;
+    private ToolbarButton newVersionButton;
+    private ToolbarButton saveToArgonButton;
+
+    ArgonEditorChangeListener(StandalonePluginWorkspace pluginWorkspace, final ToolbarButton runQueryButton,
+                              final ToolbarButton newVersionButton, final ToolbarButton saveToArgonButton) {
         super();
+        this.runQueryButton = runQueryButton;
+        this.newVersionButton = newVersionButton;
+        this.saveToArgonButton = saveToArgonButton;
         this.pluginWorkspaceAccess = pluginWorkspace;
-        this.toolbarCustomizer = toolbarCustomizer;
     }
 
     @Override
     public void editorPageChanged(URL editorLocation) {
         customizeEditorPopupMenu();
-        toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+        checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
     }
 
     @Override
     public void editorSelected(URL editorLocation) {
-        toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+        checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
         customizeEditorPopupMenu();
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
     }
 
     @Override
     public void editorActivated(URL editorLocation) {
-        toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+        checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
         customizeEditorPopupMenu();
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
     }
@@ -67,7 +74,6 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     @Override
     public void editorClosed(URL editorLocation) {
         if (editorLocation.toString().startsWith(ArgonConst.ARGON)) {
-            //toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
                 String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
@@ -95,7 +101,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         logger.debug("editor opened: " + editorLocation.toString());
         if (editorLocation.toString().startsWith(ArgonConst.ARGON))
             ArgonEditorsWatchMap.getInstance().addURL(editorLocation);
-        toolbarCustomizer.checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
+        checkEditorDependentMenuButtonStatus(pluginWorkspaceAccess);
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
 
         customizeEditorPopupMenu();
@@ -136,6 +142,29 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         final JMenuItem storeSnippetItem = new JMenuItem(snippetAction);
         storeSnippetItem.setText("Store selected Snippet");
         return storeSnippetItem;
+    }
+
+    private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
+        WSEditor currentEditor = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+
+        if(currentEditor == null) {
+            runQueryButton.setEnabled(false);
+            newVersionButton.setEnabled(false);
+            saveToArgonButton.setEnabled(false);
+        } else {
+            saveToArgonButton.setEnabled(true);
+            URL url = currentEditor.getEditorLocation();
+            if (URLUtils.isArgon(url)) {
+                newVersionButton.setEnabled(true);
+            } else {
+                newVersionButton.setEnabled(false);
+            }
+            if (URLUtils.isQuery(currentEditor.getEditorLocation())) {
+                runQueryButton.setEnabled(true);
+            } else {
+                runQueryButton.setEnabled(false);
+            }
+        }
     }
 
 

@@ -11,7 +11,9 @@ import de.axxepta.oxygen.versioncontrol.VersionHistoryPanel;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.*;
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
+import javax.swing.*;
 import java.util.*;
 
 /**
@@ -19,16 +21,18 @@ import java.util.*;
  */
 public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPluginExtension {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private ToolbarButton runQueryButton;
+    private ToolbarButton newVersionButton;
+    private ToolbarButton saveToArgonButton;
+    private ToolbarButton replyCommentButton;
 
     @java.lang.Override
-    public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
+    public void applicationStarted(final StandalonePluginWorkspace wsa) {
 
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-        pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
+        wsa.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
 
         // init language pack
-        if (pluginWorkspaceAccess.getUserInterfaceLanguage().equals("de_DE"))
+        if (wsa.getUserInterfaceLanguage().equals("de_DE"))
             Lang.init(Locale.GERMAN);
         else
             Lang.init(Locale.UK);
@@ -39,22 +43,24 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // init connection
         BaseXConnectionWrapper.refreshFromOptions(false);
 
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HOST));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HTTP_PORT));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_TCP_PORT));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_USERNAME));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_PASSWORD));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_CONNECTION));
-        pluginWorkspaceAccess.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_LOGFILE));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HOST));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HTTP_PORT));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_TCP_PORT));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_USERNAME));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_PASSWORD));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_CONNECTION));
+        wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_LOGFILE));
 
         ArgonEditorsWatchMap.getInstance().init();
 
-        pluginWorkspaceAccess.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
+        wsa.addViewComponentCustomizer(new BaseXViewComponentCustomizer());
 
-        final ArgonToolbarComponentCustomizer toolbarCustomizer = new ArgonToolbarComponentCustomizer();
-        pluginWorkspaceAccess.addToolbarComponentsCustomizer(toolbarCustomizer);
+        initButtons();
+        final ArgonToolbarComponentCustomizer toolbarCustomizer =
+                new ArgonToolbarComponentCustomizer(runQueryButton, newVersionButton, saveToArgonButton, replyCommentButton);
+        wsa.addToolbarComponentsCustomizer(toolbarCustomizer);
 
-        pluginWorkspaceAccess.addEditorChangeListener(new ArgonEditorChangeListener(pluginWorkspaceAccess, toolbarCustomizer),
+        wsa.addEditorChangeListener(new ArgonEditorChangeListener(wsa, runQueryButton, newVersionButton, saveToArgonButton),
                 PluginWorkspace.MAIN_EDITING_AREA);
     }
 
@@ -62,6 +68,25 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     public boolean applicationClosing() {
         new CheckedOutFilesAction().actionPerformed(null);
         return true;
+    }
+
+    private void initButtons() {
+        Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
+                ImageUtils.createImageIcon("/images/RunQuery.png"));
+        Action newVersionAction = new NewVersionAction("Increase File Version",
+                ImageUtils.createImageIcon("/images/IncVersion.png"));
+        Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
+                ImageUtils.createImageIcon("/images/ReplyComment.png"));
+        Action saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol",
+                ImageUtils.createImageIcon("/images/AddFile16.gif"));
+        runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
+        runQueryButton.setText("");
+        newVersionButton = new ToolbarButton(newVersionAction, true);
+        newVersionButton.setText("");
+        saveToArgonButton = new ToolbarButton(saveToArgonAction, true);
+        saveToArgonButton.setText("");
+        replyCommentButton = new ToolbarButton(replyToAuthorComment, true);
+        replyCommentButton.setText("");
     }
 
 
