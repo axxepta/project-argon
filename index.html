@@ -13,11 +13,6 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    
-    <!-- -->
 
     <title>Argon Author by axxepta</title>
   </head>
@@ -117,7 +112,7 @@
                     
           <h4>Storing text snippets</h4>
             <p>
-              In the editor's context menu you can choose <em>Store selected Snippet</em> to save selections directly to a database resource.
+              In the editor's context menu you can choose <em>Store selected Snippet</em> to save selections directly to a database resource or.
             </p>
     
               <h4>Version control</h4>
@@ -144,7 +139,14 @@
             <p>
               When you are using the Author mode in Oxygen, you can reply to comments in the text.
               Your reply will be formatted into the comment in a way that is easily recognisable for your co-worker.</p>
-            
+          
+            <h4>Publish DITA directly out of databases</h4>
+          <p>
+              If you want to use DITA transformation scenarios with files in BaseX databases, you have to make some changes in the scenario settings.
+			  Click the toolbar button <em>Configure Transformation Scenario(s)</em> and edit the scenario you want to use. In the <em>Parameters</em> tab set
+			  <em>fix.external.refs.com.oxygenxml</em> to true. In the <em>Advanced</em> tab add
+			  <em>-Djava.protocol.handler.pkgs=de.axxepta.oxygen.customprotocol.ArgonProtocolHandler</em> to the <em>JVM Arguments</em> field.
+              </p>
  
 
             
