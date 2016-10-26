@@ -20,7 +20,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     */
     public URL[] chooseURLs(StandalonePluginWorkspace workspaceAccess) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspaceAccess.getParentFrame(),
-                "Open File via BaseX Database Connection", ArgonChooserDialog.OPEN);
+                "Open File via BaseX Database Connection", ArgonChooserDialog.Type.OPEN);
         return urlChooser.selectURLs();
     }
 

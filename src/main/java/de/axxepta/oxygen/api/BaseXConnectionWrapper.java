@@ -15,10 +15,12 @@ public class BaseXConnectionWrapper {
 
     private static final Logger logger = LogManager.getLogger(BaseXConnectionWrapper.class);
     static Connection connection;
+    private static String host = null;
 
     public static void refreshFromOptions(boolean defaults){
 
         String host = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_HOST, defaults);
+        BaseXConnectionWrapper.host = host;
         String user = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, defaults);
         String pass = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_PASSWORD, defaults);
         int port = Integer.parseInt(ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_HTTP_PORT, defaults));
@@ -55,7 +57,7 @@ public class BaseXConnectionWrapper {
 
     public static void refreshDefaults() {
         try {
-            connection = ClassFactory.getInstance().getRestConnection("localhost", 8984, "admin", "admin");
+            connection = ClassFactory.getInstance().getRestConnection("localhost:8984/rest", 8984, "admin", "admin");
         } catch (MalformedURLException er) {
             connection = null;
         }
@@ -70,6 +72,13 @@ public class BaseXConnectionWrapper {
     }
 
     public static Connection getConnection(){
+        if (host == null) {
+            refreshFromOptions(false);
+        }
+/*        if (connection == null) {
+            refreshDefaults();
+            logger.debug("Couldn't obtain connection settings from Options, loaded default.");
+        }*/
         return connection;
     }
 }

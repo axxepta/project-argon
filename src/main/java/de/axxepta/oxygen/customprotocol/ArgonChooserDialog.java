@@ -1,7 +1,9 @@
 package de.axxepta.oxygen.customprotocol;
 
+import de.axxepta.oxygen.actions.NewDirectoryAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
+import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.StringUtils;
@@ -25,17 +27,14 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
 /**
  * @author Markus on 27.07.2016.
  */
-public class ArgonChooserDialog extends JDialog implements MouseListener {
+public class ArgonChooserDialog extends JDialog implements MouseListener, ObserverInterface {
 
     private static final Logger logger = LogManager.getLogger(ArgonChooserDialog.class);
-
-    public final static int OPEN = 0;
-    public final static int SAVE = 1;
 
     private boolean singleClick  = true;
     private Timer timer;
 
-    private int type;
+    private Type type;
     private int depth = 0;
     private List<ArgonChooserListModel.Element> path = new ArrayList<>();
     private String pathString;
@@ -43,12 +42,13 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
 
     private boolean canceled = true;
 
+    private JButton newDirButton;
     private JLabel pathLabel;
     private JList resourceList;
     private ArgonChooserListModel model;
     private JTextField selectedFileTextField;
 
-    public ArgonChooserDialog(Frame parent, String title, int type) {
+    public ArgonChooserDialog(Frame parent, String title, Type type) {
         super(parent);
         setModal(true);
         setTitle(title);
@@ -62,6 +62,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         add(listPane, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.PAGE_END);
         pack();
+        TopicHolder.newDir.register(this);
         setLocationRelativeTo(null);
         timer = new javax.swing.Timer(300, e -> {
             timer.stop();
@@ -75,6 +76,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         JPanel panel = new JPanel();
         pathLabel = new JLabel();
         pathLabel.setText("");
+        newDirButton = new JButton(new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), path));
+        newDirButton.setEnabled(false);
 
         JScrollPane labelScrollPane = new JScrollPane(pathLabel);
         labelScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -83,6 +86,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         labelScrollPane.setPreferredSize(new Dimension(350,40));
         labelScrollPane.setMaximumSize(new Dimension(350,40));
         panel.add(labelScrollPane);
+        panel.add(newDirButton);
         return panel;
     }
 
@@ -182,10 +186,15 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         selectedFileTextField.setText("");
         buildSelectionString();
         pathLabel.setText(pathString);
+        if ((depth > 1) || ((depth == 1) && !(path.get(0).getType().equals(ArgonEntity.DB_BASE)))) {
+            newDirButton.setEnabled(true);
+        } else {
+            newDirButton.setEnabled(false);
+        }
     }
 
     private List<ArgonChooserListModel.Element> getNewList(ArgonChooserListModel.Element element) {
-        String resourcePath = getResourceString();
+        String resourcePath = getResourceString(path);
         BaseXSource source = getSourceFromElement(element);
         return obtainNewList(source, resourcePath);
     }
@@ -206,7 +215,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
         return source;
     }
 
-    private String getResourceString() {
+    public static String getResourceString(List<ArgonChooserListModel.Element> path) {
         StringBuilder resourceString = new StringBuilder("");
         for (int i = 1; i < path.size(); i++) {
             if (i != 1)
@@ -221,7 +230,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
             pathString = "";
         else
             pathString = CustomProtocolURLHandlerExtension.protocolFromSource(getSourceFromElement(path.get(0))) +
-                    ":" + getResourceString() + "/" + selectedFileTextField.getText();
+                    ":" + getResourceString(path) + "/" + selectedFileTextField.getText();
         pathString = pathString.replace(":/", ":");
     }
 
@@ -255,8 +264,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
 
     private void lock() {
         BaseXSource source = getSourceFromElement(path.get(0));
-        String path = getResourceString() + "/" + selectedFileTextField.getText();
-        ConnectionWrapper.lock(source, path);
+        String fullPath = getResourceString(path) + "/" + selectedFileTextField.getText();
+        ConnectionWrapper.lock(source, fullPath);
     }
 
     public URL[] selectURLs() {
@@ -276,6 +285,13 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
             return selectedURLs.toArray(new URL[selectedURLs.size()]);
         }
     }
+
+
+    public void update(String type, Object... message) {
+        String[] newEntry = ((String) message[0]).split(":|/");
+        model.insertElement(new ArgonChooserListModel.Element(ArgonEntity.DIR, newEntry[newEntry.length - 1]));
+    }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -316,6 +332,11 @@ public class ArgonChooserDialog extends JDialog implements MouseListener {
                 }
             }
         }
+    }
+
+    public enum Type {
+        OPEN,
+        SAVE
     }
 
 }

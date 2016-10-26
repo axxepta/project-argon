@@ -9,6 +9,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
@@ -34,6 +35,8 @@ public class WorkspaceUtils {
     private static final int OVERWRITE_NO = -1;
     private static final int OVERWRITE_NONE = -2;
 
+    private static JPanel treePanel;
+
     public static Cursor WAIT_CURSOR = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     public static Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 
@@ -53,6 +56,10 @@ public class WorkspaceUtils {
             content = new byte[0];
         }
         return content;
+    }
+
+    public static void setTreePanel(JPanel panel) {
+        treePanel = panel;
     }
 
     /**
@@ -108,6 +115,8 @@ public class WorkspaceUtils {
     public static void setCursor(Cursor cursor) {
         Component oxygenFrame = (Frame)workspaceAccess.getParentFrame();
         oxygenFrame.setCursor(cursor);
+        if (treePanel != null)
+            treePanel.setCursor(cursor);
     }
 
     private static boolean checkOverwrite() {

@@ -40,9 +40,6 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         // init icon map
         ImageUtils.init();
 
-        // init connection
-        BaseXConnectionWrapper.refreshFromOptions(false);
-
         wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HOST));
         wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_HTTP_PORT));
         wsa.getOptionsStorage().addOptionListener(new ArgonOptionListener(ArgonOptionPage.KEY_BASEX_TCP_PORT));

@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.basex.io.*;
 import org.basex.util.*;
 import org.basex.util.Base64;
@@ -22,6 +24,7 @@ public class RestConnection implements Connection {
     protected final IOUrl url;
     protected final URL sUrl;
     protected final String basicAuth;
+    private static final Logger logger = LogManager.getLogger(RestConnection.class);
 
     /**
      * Constructor.
@@ -208,9 +211,9 @@ public class RestConnection implements Connection {
                 out.write(tb.finish());
                 out.close();
             }
-
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
+            logger.debug("Connection failed to set query: ", ex.getMessage());
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
             throw BaseXQueryException.get(msg);
         } finally {

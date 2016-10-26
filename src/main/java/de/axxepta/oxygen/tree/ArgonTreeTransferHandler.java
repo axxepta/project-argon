@@ -31,9 +31,21 @@ public class ArgonTreeTransferHandler extends TransferHandler {
 
     private final ArgonTree tree;
 
+    private DataFlavor argonNodeFlavor;
+    private DataFlavor[] flavors = new DataFlavor[2];
+
     public ArgonTreeTransferHandler(ArgonTree tree) {
         super();
         this.tree = tree;
+        try {
+            String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\"" +
+                    ArgonTreeNode.class.getName() + "\"";
+            argonNodeFlavor = new DataFlavor(mimeType);
+            flavors[0] = argonNodeFlavor;
+            flavors[1] = DataFlavor.javaFileListFlavor;
+        } catch (ClassNotFoundException cn) {
+            logger.debug("Class not found creating DataFlavor");
+        }
     }
 
     // for expansion to drag handling via AspectJ
@@ -58,22 +70,21 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }*/
 
     public boolean canImport(TransferHandler.TransferSupport info) {
-        if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)  || !info.isDrop()) {
+        if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
+                info.isDataFlavorSupported(argonNodeFlavor)) || !info.isDrop()) {
             return false;
         }
-
+        info.setShowDropLocation(true);
         TreePath path = ((JTree.DropLocation) info.getDropLocation()).getPath();
         //DefaultTreeModel model = (DefaultTreeModel) ((JTree) info.getComponent()).getModel();
         return (!TreeUtils.isRoot(path) && !TreeUtils.isDbSource(path));
     }
 
     public boolean importData(TransferHandler.TransferSupport info) {
-        if (!info.isDrop()) {
+        if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
+                info.isDataFlavorSupported(argonNodeFlavor)) || !info.isDrop()) {
             return false;
         }
-
-        if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
-            return false;
 
         JTree.DropLocation dropLocation = (JTree.DropLocation) info.getDropLocation();
         TreePath path = dropLocation.getPath();

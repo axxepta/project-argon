@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <rewriteURI uriStartString="libs" rewritePrefix="."/>
+    <!--<rewriteURI uriStartString="libs" rewritePrefix="file:///E:/Programme/Oxygen%20XML%20Editor%2018.0.1/plugins/argon-c-rex/libs/"/>-->
+<!--    <rewriteURI uriStartString="argonpubs:/" rewritePrefix="convert:/processor=java;jars=file:/E:/Programme/Oxygen%20XML%20Editor%2018.0.1/plugins/argon-c-rex/libs;ccn=de.axxepta.oxygen.customprotocol.ArgonProcessor;username=xx/rprocessor=java;jars=file:/E:/Programme/Oxygen%20XML%20Editor%2018.0.1/plugins/argon-c-rex/libs;ccn=de.axxepta.oxygen.customprotocol.ArgonProcessor;username=xx!/"/>-->
+    <rewriteURI uriStartString="argonpubs:/" rewritePrefix="convert:/processor=java;jars=libs;ccn=de.axxepta.oxygen.customprotocol.ArgonProcessor;username=xx!/"/>
+</catalog>

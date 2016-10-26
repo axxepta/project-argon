@@ -5,7 +5,7 @@ import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -23,6 +23,7 @@ public class TreePane extends JPanel {
 
     public TreePane() {
         initView();
+        WorkspaceUtils.setTreePanel(this);
     }
 
     private void initView() {

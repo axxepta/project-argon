@@ -15,11 +15,11 @@ public class ArgonEditorsWatchMap implements ObserverInterface {
 
     private static ArgonEditorsWatchMap instance = new ArgonEditorsWatchMap();
 
-    private Map<URL, EditorInfo> editorMap;
+    private Map<URL, EditorInfo> editorMap = new HashMap<>();
     /**
      * contains all Argon resources with locks, locks owned by current user marked with true value
      */
-    private Map<URL, Boolean> lockMap;
+    private Map<URL, Boolean> lockMap = new HashMap<>();
 
 
     private ArgonEditorsWatchMap() {}
@@ -29,8 +29,6 @@ public class ArgonEditorsWatchMap implements ObserverInterface {
     }
 
     public void init() {
-        editorMap = new HashMap<>();
-        lockMap = new HashMap<>();
         TopicHolder.newDir.register(this);
         update("LIST_DIR", "");
     }

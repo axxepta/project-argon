@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Markus on 27.07.2016.
  */
-class ArgonChooserListModel extends AbstractListModel {
+public class ArgonChooserListModel extends AbstractListModel {
 
 
     private List<Element> data;
@@ -55,8 +55,26 @@ class ArgonChooserListModel extends AbstractListModel {
         fireIntervalAdded(this, 0, getSize() - 1);
     }
 
+    void insertElement(Element newElement) {
+        int oldSize = getSize();
+        boolean inserted = false;
+        for (int index = 1; index < oldSize; index++) {
+            if ((newElement.getName().compareTo(data.get(index).getName()) < 0) ||
+                    data.get(index).getType().equals(ArgonEntity.FILE)){
+                data.add(index, newElement);
+                fireIntervalAdded(this, index, index);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) {
+            data.add(newElement);
+            fireIntervalAdded(this, oldSize, oldSize);
+        }
+    }
 
-    static class Element {
+
+    public static class Element {
 
         private ArgonEntity type;
         private String name;

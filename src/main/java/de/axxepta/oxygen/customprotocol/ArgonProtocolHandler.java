@@ -6,10 +6,7 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -17,12 +14,12 @@ import java.net.URLStreamHandler;
 /**
  * @author Markus on 12.10.2015.
  */
-class ArgonProtocolHandler extends URLStreamHandler {
+public class ArgonProtocolHandler extends URLStreamHandler {
 
     private BaseXSource source;
     private static final Logger logger = LogManager.getLogger(ArgonProtocolHandler.class);
 
-    ArgonProtocolHandler(BaseXSource source) {
+    public ArgonProtocolHandler(BaseXSource source) {
         this.source = source;
     }
 
@@ -41,10 +38,14 @@ class ArgonProtocolHandler extends URLStreamHandler {
         public InputStream getInputStream() throws IOException {
             ByteArrayInputStream inputStream;
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                logger.info("Requested input stream: " + url.toString());
+                logger.info("Requested new InputStream: " + this.url.toString());
                 inputStream = new ByteArrayInputStream(connection.get(source,
                         CustomProtocolURLHandlerExtension.pathFromURL(this.url), false));
+                // ToDo: try to call OptionPage -> if not accessible, not in editor context (e.g., publishing process), don't add URL to watch map
                 ArgonEditorsWatchMap.getInstance().addURL(url);
+            } catch (IOException io) {
+                logger.debug("Failed to obtain InputStream: ", io.getMessage());
+                throw new IOException(io);
             }
             return inputStream;
         }
@@ -62,6 +63,10 @@ class ArgonProtocolHandler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
+        return new ArgonConnection(url, this.source);
+    }
+
+    public URLConnection provideConnection(URL url) throws IOException {
         return new ArgonConnection(url, this.source);
     }
 

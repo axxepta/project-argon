@@ -78,7 +78,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
 
     private void saveToArgon(String text) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
-                "Save File via BaseX Database Connection", ArgonChooserDialog.SAVE);
+                "Save File via BaseX Database Connection", ArgonChooserDialog.Type.SAVE);
         URL[] urls =  urlChooser.selectURLs();
         if (urls != null) {
             URL url = urls[0];

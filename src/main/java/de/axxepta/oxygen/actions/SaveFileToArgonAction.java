@@ -30,7 +30,7 @@ public class SaveFileToArgonAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
-                "Save File via BaseX Database Connection", ArgonChooserDialog.SAVE);
+                "Save File via BaseX Database Connection", ArgonChooserDialog.Type.SAVE);
         URL[] url =  urlChooser.selectURLs();
 
         WSEditor editorAccess = workspace.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
