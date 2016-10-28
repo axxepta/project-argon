@@ -287,6 +287,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
     }
 
 
+    @Override
     public void update(String type, Object... message) {
         String[] newEntry = ((String) message[0]).split(":|/");
         model.insertElement(new ArgonChooserListModel.Element(ArgonEntity.DIR, newEntry[newEntry.length - 1]));

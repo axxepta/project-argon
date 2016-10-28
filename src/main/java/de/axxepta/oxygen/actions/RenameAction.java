@@ -3,9 +3,9 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
-import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
@@ -19,12 +19,10 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Enumeration;
 
 /**
  * @author Markus on 02.11.2015.
@@ -86,54 +84,62 @@ public class RenameAction extends AbstractAction {
         }
     }
 
+    public static void rename(TreeModel treeModel, TreePath path, BaseXSource source, String db_path,
+                               String newPathString, String newName, PluginWorkspace workspace) throws Exception {
+        boolean isFile = TreeUtils.isFile(path);
+        if (!isFile && ConnectionWrapper.directoryExists(source, newPathString)) {
+            workspace.showInformationMessage("Target directory " + newPathString + " already exists. Cannot rename resource.");
+            // bulk handling not possible, would have to check every file for overwrite
+            return;
+        }
+        boolean locked;
+        locked = ConnectionWrapper.pathContainsLockedResource(source, db_path) ||
+                ConnectionWrapper.pathContainsLockedResource(source, newPathString);
+        if (!locked) {
+            boolean writable = true;
+            if (isFile)
+                writable = WorkspaceUtils.newResourceOrOverwrite(source, newPathString);
+            if (writable) {
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    connection.rename(source, db_path, newPathString);
+                    String newURLString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + newPathString;
+                    int endPosNewBase = Math.max( newURLString.lastIndexOf("/"), newURLString.indexOf(":"));
+                    TreePath newBasePath = TreeUtils.pathFromURLString(newURLString.substring(0, endPosNewBase));
+                    TreeUtils.insertStrAsNodeLexi(treeModel, newName,
+                            (DefaultMutableTreeNode) newBasePath.getLastPathComponent(), isFile);
+                    ((DefaultTreeModel) treeModel).removeNodeFromParent((MutableTreeNode) path.getLastPathComponent());
+                     TopicHolder.saveFile.postMessage(newURLString);
+                }
+            }
+        } else {
+            workspace.showInformationMessage("Source or target is locked or contains locked file. Check in before renaming.");
+        }
+    }
+
+
     private class RenameThisAction extends AbstractAction {
 
         RenameThisAction(String name){
             super(name);
         }
-        String urlString;
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String newPath = newFileNameTextField.getText();
-            if (!newPath.equals("")) {
+            String newName = newFileNameTextField.getText();
+            if (!newName.equals("")) {
                 String newPathString;
                 if (path.getPathCount() == 2)
-                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newPath;
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newName;
                 else
-                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
-                if (!ConnectionWrapper.isLocked(source, newPathString)) {
-                    if (WorkspaceUtils.newResourceOrOverwrite(source, newPathString)) {
-                        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                            connection.rename(source, db_path, newPathString);
-                            renameURLTag((ArgonTreeNode) path.getLastPathComponent(), newPathString);
-                            treeModel.valueForPathChanged(path, newPath);
-                        } catch (Exception ex) {
-                            workspace.showInformationMessage("Failed to rename resource");
-                            logger.debug(ex.toString());
-                        }
-                    }
-                } else {
-                    workspace.showInformationMessage("Resource " + newPathString + " already exists and is locked by another user");
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newName;
+                try {
+                    rename(treeModel, path, source, db_path, newPathString, newName, workspace);
+                } catch (Exception ex) {
+                    workspace.showInformationMessage("Failed to rename resource");
+                    logger.debug(ex.toString());
                 }
             }
             renameDialog.dispose();
-        }
-
-        private void renameURLTag(ArgonTreeNode node, String newPath) {
-            urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + newPath;
-            renameURLTagsRecursively(node, urlString);
-        }
-
-        private void renameURLTagsRecursively(ArgonTreeNode node, String newURLTag) {
-            node.setTag(newURLTag);
-            System.out.println(newURLTag);
-            if (node.getChildCount() > 0) {
-                for (Enumeration<ArgonTreeNode> children = node.children(); children.hasMoreElements();) {
-                    ArgonTreeNode child = children.nextElement();
-                    renameURLTagsRecursively(child, newURLTag + "/" + child.getUserObject().toString());
-                }
-            }
         }
 
     }

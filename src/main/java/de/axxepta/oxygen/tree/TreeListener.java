@@ -163,7 +163,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
      * methods for MouseAdapter
      */
 
-    private void singleClickHandler(ActionEvent e) { logger.debug("-- single click --"); }
+    private void singleClickHandler(ActionEvent e) {
+        logger.debug("-- single click --");
+    }
 
     private void doubleClickHandler(ActionEvent e) throws ParseException {
         logger.debug("-- double click --");

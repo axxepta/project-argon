@@ -1,6 +1,9 @@
 package de.axxepta.oxygen.tree;
 
-import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.actions.ExportAction;
+import de.axxepta.oxygen.actions.RenameAction;
+import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.*;
 import org.apache.logging.log4j.LogManager;
@@ -10,9 +13,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,22 +35,15 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
     private final ArgonTree tree;
+    private final TreeModel model;
 
-    private DataFlavor argonNodeFlavor;
-    private DataFlavor[] flavors = new DataFlavor[2];
+    private DataFlavor treePathFlavor;
 
     public ArgonTreeTransferHandler(ArgonTree tree) {
         super();
         this.tree = tree;
-        try {
-            String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\"" +
-                    ArgonTreeNode.class.getName() + "\"";
-            argonNodeFlavor = new DataFlavor(mimeType);
-            flavors[0] = argonNodeFlavor;
-            flavors[1] = DataFlavor.javaFileListFlavor;
-        } catch (ClassNotFoundException cn) {
-            logger.debug("Class not found creating DataFlavor");
-        }
+        model = tree.getModel();
+        treePathFlavor = ArgonTreeTransferable.getTreePathDataFlavor();
     }
 
     // for expansion to drag handling via AspectJ
@@ -61,55 +59,151 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
     public int getSourceActions(JComponent c) {
-        return COPY;
+        return COPY_OR_MOVE;
     }
 
-/*    Transferable createTransferable(JComponent c) {
-        InputStream inputStream = (new ArgonProtocolHandler(BaseXSource.DATABASE)).ArgonConnection().getInputStream();
-        return new StringSelection(c.getSelection());
-    }*/
+    public Transferable createTransferable(JComponent c) {
+/*        DefaultTreeModel model = (DefaultTreeModel) ((JTree) c).getModel();
+        TreeListener listener = (TreeListener) model.getListeners(TreeModelListener.class)[0];
+        return new ArgonTreeTransferable(listener.getPath()); */
+        return new ArgonTreeTransferable(getTreeSelection()[0]);
+    }
 
     public boolean canImport(TransferHandler.TransferSupport info) {
         if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                info.isDataFlavorSupported(argonNodeFlavor)) || !info.isDrop()) {
+                info.isDataFlavorSupported(treePathFlavor)) || !info.isDrop()) {
             return false;
         }
         info.setShowDropLocation(true);
         TreePath path = ((JTree.DropLocation) info.getDropLocation()).getPath();
         //DefaultTreeModel model = (DefaultTreeModel) ((JTree) info.getComponent()).getModel();
-        return (!TreeUtils.isRoot(path) && !TreeUtils.isDbSource(path));
+        if (!TreeUtils.isRoot(path) && !TreeUtils.isDbSource(path)) {
+            if (info.getDropAction() == COPY)
+                return true;
+            if (info.isDataFlavorSupported(treePathFlavor)) {
+                try {
+                    TreePath importPath = (TreePath) info.getTransferable().getTransferData(treePathFlavor);
+                    return canMoveInTree(path.getPath(), importPath.getPath());
+                } catch (IOException | UnsupportedFlavorException ex) {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // drop from move only if in same source and same database (if source = DATABASE)
+    private static boolean canMoveInTree(Object[] path, Object[] importPath) {
+        if (importPath[1].equals(path[1])) {
+            if (importPath[1].toString().equals(Lang.get(Lang.Keys.tree_DB))) {
+                return importPath[2].equals(path[2]);
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     public boolean importData(TransferHandler.TransferSupport info) {
         if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
-                info.isDataFlavorSupported(argonNodeFlavor)) || !info.isDrop()) {
+                info.isDataFlavorSupported(treePathFlavor)) || !info.isDrop()) {
             return false;
         }
 
         JTree.DropLocation dropLocation = (JTree.DropLocation) info.getDropLocation();
-        TreePath path = dropLocation.getPath();
-        if (!((DefaultMutableTreeNode) path.getLastPathComponent()).getAllowsChildren())
-            path = path.getParentPath();
+        TreePath targetPath = dropLocation.getPath();
+        if (!((DefaultMutableTreeNode) targetPath.getLastPathComponent()).getAllowsChildren())
+            targetPath = targetPath.getParentPath();
 
-        if (((ArgonTreeNode) path.getLastPathComponent()).getTag() instanceof String) {
-            String pathURLString = (String) ((ArgonTreeNode) path.getLastPathComponent()).getTag();
+        if (((ArgonTreeNode) targetPath.getLastPathComponent()).getTag() instanceof String) {
+            String pathURLString = (String) ((ArgonTreeNode) targetPath.getLastPathComponent()).getTag();
             Transferable transferable = info.getTransferable();
-            try {
-                List<File> transferList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-                ArrayList<File> transferData = new ArrayList<>(transferList.size());
-                transferData.addAll(transferList);
-                if (transferData.size() > 0) {
-                    transferFiles(transferData, path, pathURLString);
+
+            if (info.isDataFlavorSupported(treePathFlavor)) {
+                try {
+                    TreePath sourcePath = (TreePath) transferable.getTransferData(treePathFlavor);
+                    BaseXSource source = TreeUtils.sourceFromTreePath(sourcePath);
+                    String db_path = TreeUtils.resourceFromTreePath(sourcePath);
+
+                    if (info.getDropAction() == COPY) {
+                        copyInTree(source, db_path, sourcePath, pathURLString);
+                    } else {
+                        String newName = sourcePath.getLastPathComponent().toString();
+                        String newPathString = CustomProtocolURLHandlerExtension.pathFromURLString(pathURLString) + "/" + newName;
+                        RenameAction.rename(model, sourcePath, source, db_path, newPathString, newName, workspace);
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Error moving resources in tree: ", ex.getMessage());
                 }
-            } catch (Exception e1) {
-                logger.info(e1.getMessage());
-                java.awt.Toolkit.getDefaultToolkit().beep();
-                workspace.showInformationMessage("Couldn't access transferred objects,\n see log file for details.");
-                return false;
+
+            } else {
+                try {
+                    List<File> transferList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    ArrayList<File> transferData = new ArrayList<>(transferList.size());
+                    transferData.addAll(transferList);
+                    if (transferData.size() > 0) {
+                        transferFiles(transferData, targetPath, pathURLString);
+                    }
+                } catch (Exception e1) {
+                    logger.info(e1.getMessage());
+                    java.awt.Toolkit.getDefaultToolkit().beep();
+                    workspace.showInformationMessage("Couldn't access transferred objects,\n see log file for details.");
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    private static void copyInTree(BaseXSource source, String db_path, TreePath sourcePath, String pathURLString) throws Exception {
+        List<BaseXResource> resourceList = ExportAction.getExportResourceList(source, sourcePath, db_path);
+        for (BaseXResource resource : resourceList){
+            if (resource.getType().equals(BaseXType.RESOURCE)) {
+                String fullResourceName = ExportAction.getFullResource(sourcePath, source, resource);
+                String resourceURL = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" +
+                        fullResourceName;
+                String relativePath = ExportAction.getRelativePath(source, db_path, fullResourceName);
+                URL sourceURL = new URL(resourceURL);
+                String newURLString = pathURLString + "/" + relativePath;
+                URL targetURL = new URL(newURLString);
+                copyURLsInTree(sourceURL, targetURL);
+            }
+        }
+    }
+
+    private static void copyURLsInTree(URL sourceURL, URL targetURL) throws IOException {
+        byte[] buffer = new byte[16];
+        int len;
+        try (InputStream is = ConnectionWrapper.getInputStream(sourceURL)) {
+            len = is.read(buffer);
+            if (len != -1) {
+                // ToDo: check content type of input resource
+                if (buffer[0] == (byte)0x3c) {
+                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(targetURL, "UTF-8")) {
+                        os.write(buffer, 0, len);
+                        streamCopy(is, os);
+                    }
+                } else {
+                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(true, targetURL)) {
+                        os.write(buffer, 0, len);
+                        streamCopy(is, os);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void streamCopy(InputStream is, OutputStream os) throws IOException {
+        byte[] buffer = new byte[4096];
+        int len;
+        while ((len = is.read(buffer)) > 0) {
+            os.write(buffer, 0, len);
+        }
     }
 
     private void transferFiles(ArrayList<File> transferData, TreePath path, String pathURLString) {

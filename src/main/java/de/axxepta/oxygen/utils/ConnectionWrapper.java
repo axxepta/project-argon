@@ -13,8 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -90,15 +92,44 @@ public final class ConnectionWrapper {
         }
     }
 
+    public static InputStream getInputStream(URL url) throws IOException {
+        ByteArrayInputStream inputStream;
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            logger.info("Requested new InputStream: " + url.toString());
+            inputStream = new ByteArrayInputStream(connection.get(CustomProtocolURLHandlerExtension.sourceFromURL(url),
+                    CustomProtocolURLHandlerExtension.pathFromURL(url), false));
+        } catch (IOException io) {
+            logger.debug("Failed to obtain InputStream: ", io.getMessage());
+            throw new IOException(io);
+        }
+        return inputStream;
+    }
+
     public static List<BaseXResource> list(BaseXSource source, String path) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.list(source, path);
         }
     }
 
+    /**
+     * lists all resources in the path, including directories
+     * @param source
+     * @param path
+     * @return list of all resources in path, entries contain full path as name, for databases without the database name
+     * @throws IOException
+     */
     public static List<BaseXResource> listAll(BaseXSource source, String path) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.listAll(source, path);
+        }
+    }
+
+    public static boolean directoryExists(BaseXSource source, String path) {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            List<BaseXResource> resourceList = connection.list(source, path);
+            return (resourceList.size() != 0);
+        } catch (IOException ioe) {
+            return false;
         }
     }
 

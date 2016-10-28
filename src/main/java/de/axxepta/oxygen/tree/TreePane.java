@@ -62,6 +62,7 @@ public class TreePane extends JPanel {
 
         tree.setTransferHandler(ClassFactory.getInstance().getTransferHandler(tree));
         tree.setDropMode(DropMode.ON);
+        tree.setDragEnabled(true);
 
         tree.add(contextMenu);
 

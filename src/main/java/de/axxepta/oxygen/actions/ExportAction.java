@@ -47,14 +47,7 @@ public class ExportAction extends AbstractAction {
         String db_path = TreeUtils.resourceFromTreePath(path);
         if (source != null) {
             try {
-                List<BaseXResource> resourceList;
-                if (node.getAllowsChildren()) {
-                    resourceList = ConnectionWrapper.listAll(source, db_path);
-                } else {
-                    resourceList = new ArrayList<>();
-                    resourceList.add(new BaseXResource(getStrippedResourceFromPath(source, path),
-                            BaseXType.RESOURCE, source));
-                }
+                List<BaseXResource> resourceList = getExportResourceList(source, path, db_path);
                 File targetDirectory = workspace.chooseDirectory();
                 boolean createdDir = true;
                 if (targetDirectory != null) {
@@ -82,7 +75,19 @@ public class ExportAction extends AbstractAction {
         }
     }
 
-    private static String getStrippedResourceFromPath(BaseXSource source, TreePath path) {
+    public static List<BaseXResource> getExportResourceList(BaseXSource source, TreePath path, String db_path) throws IOException {
+        List<BaseXResource> resourceList;
+        if (!TreeUtils.isFile(path)) {
+            resourceList = ConnectionWrapper.listAll(source, db_path);
+        } else {
+            resourceList = new ArrayList<>();
+            resourceList.add(new BaseXResource(getStrippedResourceFromPath(source, path),
+                    BaseXType.RESOURCE, source));
+        }
+        return resourceList;
+    }
+
+    public static String getStrippedResourceFromPath(BaseXSource source, TreePath path) {
         StringJoiner joiner = new StringJoiner("/");
         int startIndex;
         if (source.equals(BaseXSource.DATABASE))
@@ -95,7 +100,14 @@ public class ExportAction extends AbstractAction {
         return joiner.toString();
     }
 
-    private static String getFullResource(TreePath path, BaseXSource source, BaseXResource resource) {
+    /**
+     * Builds resource name for BaseXResources obtained with ConnectionWrapper.listAll
+     * @param path path in source
+     * @param source BaseX source of resource
+     * @param resource resource of which the full name shall be obtained
+     * @return full resource name
+     */
+    public static String getFullResource(TreePath path, BaseXSource source, BaseXResource resource) {
         String fullResource;
         if (source.equals(BaseXSource.DATABASE)) {
             fullResource = path.getPathComponent(2) + "/" + resource.getName();
@@ -105,7 +117,7 @@ public class ExportAction extends AbstractAction {
         return fullResource;
     }
 
-    private static String getRelativePath(BaseXSource source, String db_path, String fullResource) {
+    public static String getRelativePath(BaseXSource source, String db_path, String fullResource) {
         int resourceDepth = db_path.split("/").length;
         String[] resourceComponents = fullResource.split("/");
         StringJoiner joiner = new StringJoiner("/");

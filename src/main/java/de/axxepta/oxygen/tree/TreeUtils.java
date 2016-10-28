@@ -22,13 +22,13 @@ public class TreeUtils {
     public static void insertStrAsNodeLexi(TreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
         DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
-        Boolean parentIsFile;
+        Boolean nextIsFile;
         boolean inserted = false;
         for (int i = 0; i < parent.getChildCount(); i++) {
             currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
-            parentIsFile = !currNode.getAllowsChildren();
-            if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
-                    (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
+            nextIsFile = !currNode.getAllowsChildren();
+            if (((currNode.getUserObject().toString().compareTo(child) > 0) && (nextIsFile.compareTo(childIsFile) == 0)) ||
+                    (nextIsFile.compareTo(childIsFile) > 0)) {    // dirs before files
                 ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, i);
                 inserted = true;
                 break;
@@ -41,13 +41,13 @@ public class TreeUtils {
     public static DefaultMutableTreeNode insertStrAsNodeLexi(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
         DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
-        Boolean parentIsFile;
+        Boolean nextIsFile;
         boolean inserted = false;
         for (int i = 0; i < parent.getChildCount(); i++) {
             currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
-            parentIsFile = !currNode.getAllowsChildren();
-            if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
-                    (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
+            nextIsFile = !currNode.getAllowsChildren();
+            if (((currNode.getUserObject().toString().compareTo(child) > 0) && (nextIsFile.compareTo(childIsFile) == 0)) ||
+                    (nextIsFile.compareTo(childIsFile) > 0)) {    // dirs before files
                 parent.insert(childNode, i);
                 inserted = true;
                 break;
@@ -212,8 +212,8 @@ public class TreeUtils {
     }
 
     public static boolean isFile(TreePath path) {
-        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-        return (!clickedNode.getAllowsChildren());
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        return (!node.getAllowsChildren());
     }
 
     public static boolean isDir(TreePath path) {
