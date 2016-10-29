@@ -1,8 +1,10 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.tree.ArgonTree;
+import de.axxepta.oxygen.tree.TreeListener;
 
 import javax.swing.*;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -36,7 +38,11 @@ public class RefreshTreeAction extends AbstractAction {
         DummyNode dummyTree = new DummyNode(rootPath.getPathComponent(0).toString(),
                 tree.isExpanded(rootPath));
         buildDummyTree(dummyTree, rootPath);
+        // cannot determine listener in constructor because it's not initialized yet
+        TreeListener listener = (TreeListener) tree.getListeners(TreeWillExpandListener.class)[0];
+        listener.setShowErrorMessages(false);
         expandTree(dummyTree, rootPath);
+        listener.setShowErrorMessages(true);
     }
 
     private void buildDummyTree(DummyNode node, TreePath path) {

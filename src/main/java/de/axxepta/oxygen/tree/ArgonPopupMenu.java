@@ -134,7 +134,7 @@ public class ArgonPopupMenu extends PopupMenu {
                 tree);
         this.add(add, Lang.get(Lang.Keys.cm_add));
 
-        Action newDir = new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), ImageUtils.getIcon(ImageUtils.FILE_ADD),
+        Action newDir = new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), ImageUtils.getIcon(ImageUtils.ADD_DIR),
                 tree);
         this.add(newDir, Lang.get(Lang.Keys.cm_newdir));
 
@@ -144,7 +144,7 @@ public class ArgonPopupMenu extends PopupMenu {
         this.addSeparator();
 
         final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_search),
-                ImageUtils.getIcon(ImageUtils.SEARCH), tree);
+                ImageUtils.getIcon(ImageUtils.SEARCH_PATH), tree);
         this.add(searchInPath, Lang.get(Lang.Keys.cm_search));
 
         Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {

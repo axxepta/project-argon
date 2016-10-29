@@ -41,6 +41,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
     private TreeModel treeModel;
     private TreePath path;
     private TreeNode node;
+    private boolean showErrorMessages = true;
     private boolean newExpandEvent;
     private boolean singleClick = true;
     private boolean doubleClickExpandEnabled = true;
@@ -70,6 +71,9 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         timer.setRepeats(false);
     }
 
+    public void setShowErrorMessages(boolean show) {
+        showErrorMessages = show;
+    }
 
     /*
      * methods of MouseAdapter
@@ -141,7 +145,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 String error = er.getMessage();
                 if ((error == null) || error.equals(""))
                     error = "Database connection could not be established.";
-                workspace.showInformationMessage("Failed to get resource list from BaseX:\n" + error);
+                if (showErrorMessages)
+                    workspace.showInformationMessage("Failed to get resource list from BaseX:\n" + error);
             }
             for (BaseXResource child : childList) {
                 newValues.add(child.getName());
