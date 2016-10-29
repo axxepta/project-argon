@@ -30,6 +30,7 @@ public class ImageUtils {
     public static final String URL_OPEN = "openurl16";
     public static final String FILE_ADD = "addfile16";
     public static final String DB_ADD = "addb16";
+    public static final String EXPORT = "export16";
     public static final String REMOVE = "remove16";
     public static final String RENAME = "rename16";
     public static final String INC_VER = "incversion16";
@@ -95,6 +96,7 @@ public class ImageUtils {
         iconMap.put(INC_VER, ImageUtils.createImageIcon("/images/IncVersion16.png"));
         iconMap.put(VER_HIST, ImageUtils.createImageIcon("/images/VerHistory.png"));
         iconMap.put(DB_ADD, ImageUtils.createImageIcon("/images/AddDb16.png"));
+        iconMap.put(EXPORT, ImageUtils.createImageIcon("/images/Export16.png"));
         iconMap.put(REMOVE, ImageUtils.createImageIcon("/images/Remove16.png"));
         iconMap.put(RENAME, ImageUtils.createImageIcon("/images/Rename16.png"));
         iconMap.put(REFRESH, ImageUtils.createImageIcon("/images/Refresh16.png"));

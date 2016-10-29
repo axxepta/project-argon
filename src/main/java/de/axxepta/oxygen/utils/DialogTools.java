@@ -41,6 +41,7 @@ public class DialogTools {
 
     public static JDialog getOxygenDialog(JFrame parentFrame, String title) {
         JDialog dialog = new JDialog(parentFrame, title);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         // ToDo: image from map
         dialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

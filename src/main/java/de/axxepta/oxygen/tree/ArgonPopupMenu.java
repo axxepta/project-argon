@@ -130,7 +130,7 @@ public class ArgonPopupMenu extends PopupMenu {
                 tree, tListener);
         this.add(rename, Lang.get(Lang.Keys.cm_rename));
 
-        Action export = new ExportAction(Lang.get(Lang.Keys.cm_export), ImageUtils.getIcon(ImageUtils.URL_OPEN),
+        Action export = new ExportAction(Lang.get(Lang.Keys.cm_export), ImageUtils.getIcon(ImageUtils.EXPORT),
                 tListener);
         this.add(export, Lang.get(Lang.Keys.cm_export));
 

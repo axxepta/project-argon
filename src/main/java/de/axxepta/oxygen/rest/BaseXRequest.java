@@ -16,10 +16,9 @@ import java.util.regex.Pattern;
  */
 public class BaseXRequest {
 
-    private final Logger logger = LogManager.getLogger(BaseXRequest.class);
+    private static final Logger logger = LogManager.getLogger(BaseXRequest.class);
 
     private List<String> result;
-    private String answer;
     private boolean check;
 
     public BaseXRequest(final String request, final BaseXSource source, final String path,
@@ -28,16 +27,8 @@ public class BaseXRequest {
             if (connection != null) {
                 switch (request) {
 
-                    case "query":
-                        result = new ArrayList<>();
-                        answer = "";
-                        check = false;
-                        answer = "<response>\n" + connection.xquery(path) + "\n</response>";
-                        break;
-
                     case "parse":
                         result = new ArrayList<>();
-                        answer = "";
                         check = false;
                         try {
                             connection.parse(path);
@@ -51,7 +42,6 @@ public class BaseXRequest {
                         break;
 
                     case "look":
-                        answer = "";
                         check = false;
                         StringBuilder regEx = new StringBuilder("");
                         for (int i = 0; i < params[0].length(); i++) {
@@ -84,7 +74,6 @@ public class BaseXRequest {
 
                     default:
                         result = new ArrayList<>();
-                        answer = "";
                         check = false;
                 }
             }
@@ -92,17 +81,12 @@ public class BaseXRequest {
         } catch (IOException er) {
             logger.warn("Argon connection exception", er.getMessage());
             result = new ArrayList<>();
-            answer = "";
             throw new IOException(er.getMessage());
         }
     }
 
     public List<String> getResult() {
         return result;
-    }
-
-    public String getAnswer() {
-        return answer;
     }
 
     public boolean isCheck() {

@@ -126,10 +126,11 @@ public interface Connection extends Closeable {
     /**
      * Evaluates a query.
      * @param query query to be evaluated
+     * @param args additional parameters as successive name--value pairs
      * @return result (string representation)
      * @throws IOException I/O exception
      */
-    String xquery(final String query) throws IOException;
+    String xquery(final String query, String... args) throws IOException;
 
     /**
      * Parses a query.

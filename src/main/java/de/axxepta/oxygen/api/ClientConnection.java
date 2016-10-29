@@ -146,8 +146,11 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public String xquery(final String query) throws IOException {
+    public String xquery(final String query, final String... args) throws IOException {
         final Query qu = client.query(query);
+        for (int i = 0; i < args.length; i = i + 2) {
+            qu.bind(args[i], args[i+1], "");
+        }
         try {
             return qu.execute();
         } catch(final IOException ex) {

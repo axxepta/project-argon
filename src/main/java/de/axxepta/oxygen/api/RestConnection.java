@@ -130,9 +130,9 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public String xquery(final String query) throws IOException {
+    public String xquery(final String query, final String... args) throws IOException {
         try {
-            return Token.string(request(query));
+            return Token.string(request(query, args));
         } catch(final IOException ex) {
             throw BaseXQueryException.get(ex);
         }

@@ -113,10 +113,10 @@ public final class ConnectionWrapper {
 
     /**
      * lists all resources in the path, including directories
-     * @param source
-     * @param path
+     * @param source source in which path resides
+     * @param path path to list
      * @return list of all resources in path, entries contain full path as name, for databases without the database name
-     * @throws IOException
+     * @throws IOException throws exception if connection returns an exception/error code
      */
     public static List<BaseXResource> listAll(BaseXSource source, String path) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
@@ -168,6 +168,12 @@ public final class ConnectionWrapper {
             connection.unlock(source, path);
         } catch (Throwable ioe) {
             logger.error("Failed to unlock resource " + path + " in " + source.toString() + ": " + ioe.getMessage());
+        }
+    }
+
+    public static String query(String query, String[] parameter) throws IOException {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            return "<response>\n" + connection.xquery(query, parameter) + "\n</response>";
         }
     }
 

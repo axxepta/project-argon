@@ -138,9 +138,11 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     }
                 } catch (Exception ex) {
                     logger.debug("Error moving resources in tree: ", ex.getMessage());
+                    return false;
                 }
 
-            } else {
+            }
+            if (info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                 try {
                     List<File> transferList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
                     ArrayList<File> transferData = new ArrayList<>(transferList.size());
