@@ -5,10 +5,10 @@ import java.net.URL;
 
 import javax.swing.Icon;
 
+import de.axxepta.oxygen.utils.ImageUtils;
 import ro.sync.exml.plugin.urlstreamhandler.URLChooserPluginExtension2;
 import ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.ui.Icons;
 
 /**
  * Plugin extension - custom protocol chooser extension
@@ -35,7 +35,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     * @see ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension#getToolbarIcon()
     */
     public Icon getToolbarIcon() {
-        return Icons.getIcon(Icons.OPEN_CUSTOM_PROTOCOL_TOOLBAR_STRING);
+        return ImageUtils.getIcon(ImageUtils.BASEX24);
     }
 
     /**

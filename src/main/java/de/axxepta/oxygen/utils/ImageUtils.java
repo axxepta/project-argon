@@ -43,6 +43,12 @@ public class ImageUtils {
     public static final String F_DATABASE = "f_db";
     public static final String T_DATABASE = "t_db";
     public static final String P_DATABASE = "p_db";
+    public static final String BASEX = "basex16";
+    public static final String BASEX_LOCKED = "basex16locked";
+    public static final String BASEX24 = "basex24";
+    public static final String BASEX24ADD = "basex24add";
+    public static final String UNLOCK = "unlock";
+    public static final String SNIPPET = "snippet";
     public static final String INSERT_TEMPLATE = "inserttemplate";
 
     public static void init() {
@@ -107,6 +113,12 @@ public class ImageUtils {
         iconMap.put(F_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogF16.png"));
         iconMap.put(T_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogT16.png"));
         iconMap.put(P_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogP16.png"));
+        iconMap.put(BASEX, ImageUtils.createImageIcon("/images/BaseX_16_tr.png"));
+        iconMap.put(BASEX_LOCKED, ImageUtils.createImageIcon("/images/BaseXlocked.png"));
+        iconMap.put(BASEX24, ImageUtils.createImageIcon("/images/BaseX24.png"));
+        iconMap.put(BASEX24ADD, ImageUtils.createImageIcon("/images/BaseX24add.png"));
+        iconMap.put(UNLOCK, ImageUtils.createImageIcon("/images/unlock.png"));
+        iconMap.put(SNIPPET, ImageUtils.createImageIcon("/images/snippet.png"));
         iconMap.put(INSERT_TEMPLATE, ImageUtils.createImageIcon("/images/InsertTemplate16.png"));
     }
 

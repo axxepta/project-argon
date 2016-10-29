@@ -1,9 +1,13 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.actions.CheckInAction;
+import de.axxepta.oxygen.actions.CheckOutAction;
 import de.axxepta.oxygen.actions.StoreSnippetSelectionAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +16,7 @@ import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.structure.AuthorPopupMenuCustomizer;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.TextPopupMenuCustomizer;
@@ -32,6 +37,8 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private StandalonePluginWorkspace pluginWorkspaceAccess;
 
     private final Action snippetAction = new StoreSnippetSelectionAction();
+    private final Action checkInAction = new CheckInAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.UNLOCK));
+    private final Action checkOutAction = new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.BASEX));
 
     private WSAuthorEditorPage currentCustomizedAuthorPageAccess;
     private WSTextEditorPage currentCustomizedTextPageAccess;
@@ -138,10 +145,19 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         }
     }
 
-    private JMenuItem createEditorPopUpAddition() {
+    private JMenuItem createSnippetEditorPopUpAddition() {
         final JMenuItem storeSnippetItem = new JMenuItem(snippetAction);
         storeSnippetItem.setText("Store selected Snippet");
+        storeSnippetItem.setIcon(ImageUtils.getIcon(ImageUtils.SNIPPET));
         return storeSnippetItem;
+    }
+
+    private JMenuItem createCheckInEditorPopUpAddition() {
+        return new JMenuItem(checkInAction);
+    }
+
+    private JMenuItem createCheckOutEditorPopUpAddition() {
+        return new JMenuItem(checkOutAction);
     }
 
     private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
@@ -172,10 +188,21 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
 
         @Override
         public void customizePopUpMenu(Object popUp, AuthorAccess authorAccess) {
+            String editorURLString = PluginWorkspaceProvider.getPluginWorkspace().
+                    getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation().toString();
             final String selectedText = authorAccess.getEditorAccess().getSelectedText();
             if ((selectedText != null) && (!selectedText.equals(""))) {
-                JMenuItem editorSelectionMenu = createEditorPopUpAddition();
+                JMenuItem editorSelectionMenu = createSnippetEditorPopUpAddition();
                 ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+            }
+            if (editorURLString.toLowerCase().startsWith("argon")) {
+                if (authorAccess.getEditorAccess().isEditable()) {
+                    JMenuItem editorSelectionMenu = createCheckInEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                } else {
+                    JMenuItem editorSelectionMenu = createCheckOutEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                }
             }
         }
     }
@@ -186,9 +213,20 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         @Override
         public void customizePopUpMenu(Object popUp, WSTextEditorPage textAccess) {
             final String selectedText = textAccess.getSelectedText();
+            String editorURLString = PluginWorkspaceProvider.getPluginWorkspace().
+                    getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation().toString();
             if ((selectedText != null) && (!selectedText.equals(""))) {
-                JMenuItem editorSelectionMenu = createEditorPopUpAddition();
+                JMenuItem editorSelectionMenu = createSnippetEditorPopUpAddition();
                 ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+            }
+            if (editorURLString.toLowerCase().startsWith("argon")) {
+                if (textAccess.isEditable()) {
+                    JMenuItem editorSelectionMenu = createCheckInEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                } else {
+                    JMenuItem editorSelectionMenu = createCheckOutEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                }
             }
         }
     }

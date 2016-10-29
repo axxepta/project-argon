@@ -27,21 +27,16 @@ public class CheckInAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(CheckInAction.class);
 
-    private TreeListener treeListener;
-
-    public CheckInAction(String name, Icon icon, TreeListener treeListener) {
+    public CheckInAction(String name, Icon icon) {
         super(name, icon);
-        this.treeListener = treeListener;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            URL url = new URL(((ArgonTreeNode) treeListener.getPath().getLastPathComponent()).getTag().toString());
+        URL url = PluginWorkspaceProvider.getPluginWorkspace().
+                getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation();
+        if (url != null)
             checkIn(url);
-        } catch (MalformedURLException mue) {
-            logger.debug(mue);
-        }
     }
 
     static void checkIn(URL url) {

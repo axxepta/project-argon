@@ -1,8 +1,8 @@
 package de.axxepta.oxygen.workspace;
 
 import de.axxepta.oxygen.actions.*;
-import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
+import de.axxepta.oxygen.customprotocol.ArgonInputURLChooserCustomizer;
 import de.axxepta.oxygen.tree.*;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
@@ -59,6 +59,8 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         wsa.addEditorChangeListener(new ArgonEditorChangeListener(wsa, runQueryButton, newVersionButton, saveToArgonButton),
                 PluginWorkspace.MAIN_EDITING_AREA);
+
+        wsa.addInputURLChooserCustomizer(new ArgonInputURLChooserCustomizer());
     }
 
     @java.lang.Override
@@ -75,7 +77,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
         Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
                 ImageUtils.createImageIcon("/images/ReplyComment.png"));
         Action saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol",
-                ImageUtils.createImageIcon("/images/AddFile16.gif"));
+                ImageUtils.getIcon(ImageUtils.BASEX24ADD));
         runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
         runQueryButton.setText("");
         newVersionButton = new ToolbarButton(newVersionAction, true);

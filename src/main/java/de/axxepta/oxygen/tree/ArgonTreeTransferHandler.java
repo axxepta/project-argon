@@ -153,7 +153,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 } catch (Exception e1) {
                     logger.info(e1.getMessage());
                     java.awt.Toolkit.getDefaultToolkit().beep();
-                    workspace.showInformationMessage("Couldn't access transferred objects,\n see log file for details.");
+                    workspace.showInformationMessage("Couldn't access transferred objects, see log file for details.");
                     return false;
                 }
             }
