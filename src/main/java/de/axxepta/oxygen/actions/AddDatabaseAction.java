@@ -1,9 +1,7 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.api.ArgonConst;
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
@@ -72,18 +70,22 @@ public class AddDatabaseAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
             String db = newDbNameTextField.getText();
-            // ToDo: check, whether database already exists, otherwise duplicate node is inserted
-            String chop = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
-            String ftindex = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
-            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                connection.create(db, chop, ftindex);
-                TopicHolder.newDir.postMessage(ArgonConst.ARGON + ":" + db);
-            } catch (IOException | NullPointerException ex) {
-                String error = ex.getMessage();
-                if ((error == null) || error.equals("null"))
-                    error = "Database connection could not be established.";
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to add new database: " + error);
-                logger.debug(ex.getMessage());
+            try {
+                ConnectionWrapper.list(BaseXSource.DATABASE, db);
+                String chop = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_CHOP, false).toLowerCase();
+                String ftindex = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_DB_CREATE_FTINDEX, false).toLowerCase();
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    connection.create(db, chop, ftindex);
+                    TopicHolder.newDir.postMessage(ArgonConst.ARGON + ":" + db);
+                } catch (IOException | NullPointerException ex) {
+                    String error = ex.getMessage();
+                    if ((error == null) || error.equals("null"))
+                        error = "Database connection could not be established.";
+                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to add new database: " + error);
+                    logger.debug(ex.getMessage());
+                }
+            } catch (IOException ie) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Database with this name already exists.");
             }
             addDbDialog.dispose();
         }

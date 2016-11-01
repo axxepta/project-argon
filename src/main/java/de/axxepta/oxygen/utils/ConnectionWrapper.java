@@ -3,6 +3,7 @@ package de.axxepta.oxygen.utils;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.tree.TreeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -18,7 +19,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Markus on 08.09.2016.
@@ -28,6 +32,14 @@ public final class ConnectionWrapper {
     private static final Logger logger = LogManager.getLogger(ConnectionWrapper.class);
 
     private ConnectionWrapper() {}
+
+    public static void init() {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            connection.init();
+        } catch (IOException | NullPointerException ex) {
+            logger.debug("Argon initialization failed!");
+        }
+    }
 
     public static void save(URL url, byte[] bytes) throws IOException {
         try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(url, "UTF-8")) {
@@ -169,6 +181,51 @@ public final class ConnectionWrapper {
         } catch (Throwable ioe) {
             logger.error("Failed to unlock resource " + path + " in " + source.toString() + ": " + ioe.getMessage());
         }
+    }
+
+    public static List<String> findFiles(BaseXSource source, String path, String filter) throws IOException {
+        List<String> result;
+        StringBuilder regEx = new StringBuilder("");
+        for (int i = 0; i < filter.length(); i++) {
+            char c = filter.charAt(i);
+            switch (c) {
+                case '*':
+                    regEx.append(".*");
+                    break;
+                case '?':
+                    regEx.append('.');
+                    break;
+                case '.':
+                    regEx.append("\\.");
+                    break;
+                default:
+                    regEx.append(c);
+            }
+        }
+        String regExString = regEx.toString();
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            result = connection.search(source, path, regExString);
+            for (int i = result.size() - 1; i > -1; i--) {
+                String foundPath = result.get(i);
+                String foundFile = TreeUtils.fileStringFromPathString(foundPath);
+                Matcher matcher = Pattern.compile(regExString).matcher(foundFile);
+                if (!matcher.find())
+                    result.remove(foundPath);
+            }
+        }
+        return result;
+    }
+
+    public static List<String> parse(String path) throws IOException {
+        List<String> result = new ArrayList<>();
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+            connection.parse(path);
+        } catch (BaseXQueryException ex) {
+            result.add(Integer.toString(ex.getLine()));
+            result.add(Integer.toString(ex.getColumn()));
+            result.add(ex.getInfo());
+        }
+        return result;
     }
 
     public static String query(String query, String[] parameter) throws IOException {

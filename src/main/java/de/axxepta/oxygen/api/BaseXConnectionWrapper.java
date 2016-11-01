@@ -1,11 +1,11 @@
 package de.axxepta.oxygen.api;
 
 import de.axxepta.oxygen.core.ClassFactory;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 
 /**
@@ -48,11 +48,8 @@ public class BaseXConnectionWrapper {
             }*/
         }
 
-        try {
-            connection.init();
-        } catch (IOException | NullPointerException ex) {
-            logger.debug("Argon initialization failed!");
-        }
+        ConnectionWrapper.init();
+
     }
 
     public static void refreshDefaults() {
@@ -75,10 +72,10 @@ public class BaseXConnectionWrapper {
         if (host == null) {
             refreshFromOptions(false);
         }
-/*        if (connection == null) {
+        if (connection == null) {
             refreshDefaults();
             logger.debug("Couldn't obtain connection settings from Options, loaded default.");
-        }*/
+        }
         return connection;
     }
 }

@@ -1,8 +1,5 @@
 package de.axxepta.oxygen.workspace;
 
-/**
- * Class defines option page for argon plugin connection details
- */
 
 import java.awt.*;
 import java.io.*;
@@ -57,7 +54,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_DB_CREATE_FTINDEX = "false";
 
     private static final String CONNECTION_SETTING_PATH = System.getProperty("user.home") + "/argon";
-    private static final String CONNECTION_SETTING_FILE_TYPE = ".csini";
+    private static final String CONNECTION_SETTING_FILE_TYPE = ".properties";
 
     private static final String CS_NAME = "CS_NAME";
     private static final String CS_HOST = "CS_HOST";
@@ -87,8 +84,8 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         if (!((String) baseXConnectionSettingsComboBox.getSelectedItem()).
                 matches(FileNameFieldListener.FILE_NAME_CHARS_WITHOUT_EXTENSION)) {
             java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null, "Choose a name suitable for a file (without ending) as\n" +
-                    "'Connection configuration'!", "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Choose a name suitable for a file (without white spaces or special characters)\n" +
+                    "as 'Connection configuration'!", "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
         } else {
 
             // save BaseX configs in the option storage

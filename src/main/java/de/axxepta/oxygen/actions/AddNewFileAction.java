@@ -157,7 +157,7 @@ public class AddNewFileAction extends AbstractAction {
                             else
                                 ConnectionWrapper.save(true, url, template.finish());
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                            ConnectionWrapper.unlock(source, resource);
+                            WorkspaceUtils.openURLString(urlString);
                         } catch (IOException ex) {
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                             ConnectionWrapper.unlock(source, resource);

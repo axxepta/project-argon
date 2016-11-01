@@ -3,7 +3,6 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.rest.BaseXRequest;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
@@ -209,9 +208,7 @@ public class SearchInPathAction extends AbstractAction {
     private static List<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
         List<String> allResources;
         try {
-        //try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            allResources = new BaseXRequest("look", source, basePathStr, filter).getResult();
-            //allResources = connection.search(source, basePathStr, filter);
+            allResources = ConnectionWrapper.findFiles(source, basePathStr, filter);
         } catch (IOException io) {
             allResources = new ArrayList<>();
             workspace.showInformationMessage("Failed to search for BaseX resources:\n" + io.getMessage());

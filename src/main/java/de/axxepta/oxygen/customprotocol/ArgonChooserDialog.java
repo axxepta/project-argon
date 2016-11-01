@@ -13,6 +13,8 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -21,13 +23,11 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
 
 /**
  * @author Markus on 27.07.2016.
  */
-public class ArgonChooserDialog extends JDialog implements MouseListener, ObserverInterface {
+public class ArgonChooserDialog extends JDialog implements MouseListener, ObserverInterface, DocumentListener {
 
     private static final Logger logger = LogManager.getLogger(ArgonChooserDialog.class);
 
@@ -43,7 +43,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
     private boolean canceled = true;
 
     private JButton newDirButton;
-    private JLabel pathLabel;
+    private JTextField pathTextField;
+    private boolean userChangedPathTextField =  false;
     private JList resourceList;
     private ArgonChooserListModel model;
     private JTextField selectedFileTextField;
@@ -73,20 +74,15 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
     }
 
     private JPanel createTopPanel() {
-        JPanel panel = new JPanel();
-        pathLabel = new JLabel();
-        pathLabel.setText("");
+        JPanel panel = new JPanel(new BorderLayout(5,5));
+        pathTextField = new JTextField();
+        pathTextField.setText("");
+        pathTextField.getDocument().addDocumentListener(this);
         newDirButton = new JButton(new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), path));
         newDirButton.setEnabled(false);
 
-        JScrollPane labelScrollPane = new JScrollPane(pathLabel);
-        labelScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        labelScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-        labelScrollPane.setMinimumSize(new Dimension(350,40));
-        labelScrollPane.setPreferredSize(new Dimension(350,40));
-        labelScrollPane.setMaximumSize(new Dimension(350,40));
-        panel.add(labelScrollPane);
-        panel.add(newDirButton);
+        panel.add(pathTextField, BorderLayout.CENTER);
+        panel.add(newDirButton, BorderLayout.EAST);
         return panel;
     }
 
@@ -185,7 +181,8 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
         model.setData(newList);
         selectedFileTextField.setText("");
         buildSelectionString();
-        pathLabel.setText(pathString);
+        pathTextField.setText(pathString);
+        userChangedPathTextField = false;
         if ((depth > 1) || ((depth == 1) && !(path.get(0).getType().equals(ArgonEntity.DB_BASE)))) {
             newDirButton.setEnabled(true);
         } else {
@@ -286,14 +283,37 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
         }
     }
 
+    /*
+     * methods for interface DocumentListener
+     */
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        userChangedPathTextField = true;
+    }
 
     @Override
-    public void update(String type, Object... message) {
-        String[] newEntry = ((String) message[0]).split(":|/");
-        model.insertElement(new ArgonChooserListModel.Element(ArgonEntity.DIR, newEntry[newEntry.length - 1]));
+    public void removeUpdate(DocumentEvent e) {
+        userChangedPathTextField = true;
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        userChangedPathTextField = true;
+
     }
 
 
+    /*
+     * method for interface ObserverInterface
+     */
+    @Override
+    public void update(String type, Object... message) {
+    }
+
+
+    /*
+     * methods for interface MouseListener
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 1) {

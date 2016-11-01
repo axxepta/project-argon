@@ -190,11 +190,12 @@ public class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     protected byte[] request(final String body, final String... bindings) throws IOException {
-        //final java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
-        sun.net.www.protocol.http.HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
+        //final HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
+        final HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
+            conn.setAllowUserInteraction(false);
             conn.setRequestMethod(POST.name());
             conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
 
