@@ -607,7 +607,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     }
 
     private void settingsChangedOverwrite() {
-        int index = baseXConnectionSettingsComboBox.getSelectedIndex();
+        final int index = baseXConnectionSettingsComboBox.getSelectedIndex();
         if (index == -1) { // new
             storeConnectionSettings();
             updateSettingsList((String) baseXConnectionSettingsComboBox.getSelectedItem(), index);
@@ -679,10 +679,16 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                 storeConnectionSettings();
             }
         }
+        int newIndex;
+        if (index == -1)
+            newIndex = connectionSettingNames.size() - 1;
+        else
+            newIndex = index;
         baseXConnectionSettingsComboBox.removeAllItems();
         for (String newName : connectionSettingNames) {
             baseXConnectionSettingsComboBox.addItem(newName);
         }
+        baseXConnectionSettingsComboBox.setSelectedIndex(newIndex);
     }
 
     private void updateSettingsList(String name, int index) {
@@ -698,6 +704,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         if (index == -1) {
             connectionSettingNames.add(name);
             connectionSettings.add(newSetting);
+            index = connectionSettingNames.size() - 1;
         } else {
             connectionSettingNames.set(index, name);
             connectionSettings.set(index, newSetting);
