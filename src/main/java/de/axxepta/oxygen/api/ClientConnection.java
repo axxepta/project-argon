@@ -69,9 +69,15 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public void create(final String database, final String chop, final String ftindex) throws IOException {
+    public void create(final String database, final String chop, final String ftindex, final String textindex,
+                       final String attrindex, final String tokenindex) throws IOException {
         final Query query = client.query(getQuery("create-database"));
         query.bind(DATABASE, database, "");
+        query.bind(CHOP, chop, "");
+        query.bind(FTINDEX, ftindex, "");
+        query.bind(TEXTINDEX, textindex, "");
+        query.bind(ATTRINDEX, attrindex, "");
+        query.bind(TOKENINDEX, tokenindex, "");
         query.execute();
     }
 

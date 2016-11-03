@@ -78,8 +78,10 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public void create(String database, String chop, String ftindex) throws IOException {
-        request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex);
+    public void create(final String database, final String chop, final String ftindex, final String textindex,
+                       final String attrindex, final String tokenindex) throws IOException {
+        request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex, TEXTINDEX, textindex,
+                ATTRINDEX, attrindex, TOKENINDEX, tokenindex);
     }
 
     @Override

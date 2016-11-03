@@ -36,7 +36,7 @@ public class AddNewFileAction extends AbstractAction {
     private JDialog newFileDialog;
 
     private JTextField newFileNameTextField;
-    private JComboBox newFileTypeComboBox;
+    private JComboBox<String> newFileTypeComboBox;
 
     public AddNewFileAction(String name, Icon icon, ArgonTree tree){
         super(name, icon);
@@ -147,7 +147,6 @@ public class AddNewFileAction extends AbstractAction {
                     pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
                                 "and is locked by another user.");
                 } else {
-                    // ToDo: proper locking while store process
                     if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
                         try {
                             ConnectionWrapper.lock(source, resource);

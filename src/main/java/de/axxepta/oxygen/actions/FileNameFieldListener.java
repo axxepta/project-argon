@@ -19,7 +19,7 @@ public class FileNameFieldListener implements DocumentListener {
     private final String fileNameChar;
     private final String fileNameChars;
 
-    FileNameFieldListener(JTextField textField, boolean withExtension) {
+    public FileNameFieldListener(JTextField textField, boolean withExtension) {
         this.textField = textField;
         if (withExtension) {
             fileNameChar = FILE_NAME_CHAR_WITH_EXTENSION;

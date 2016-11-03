@@ -42,9 +42,13 @@ public interface Connection extends Closeable {
      * @param database new database name
      * @param chop chop option as string
      * @param ftindex ftindex option as string
+     * @param textindex textindex option as string
+     * @param attrindex attrindex option as string
+     * @param tokenindex tokenindex option as string
      * @throws IOException I/O exception
      */
-    void create(final String database, final String chop, final String ftindex) throws IOException;
+    void create(final String database, final String chop, final String ftindex, final String textindex,
+                final String attrindex, final String tokenindex) throws IOException;
 
     /**
      * Creates a new database.

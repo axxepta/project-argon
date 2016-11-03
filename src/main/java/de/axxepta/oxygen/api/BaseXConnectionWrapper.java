@@ -72,10 +72,6 @@ public class BaseXConnectionWrapper {
         if (host == null) {
             refreshFromOptions(false);
         }
-        if (connection == null) {
-            refreshDefaults();
-            logger.debug("Couldn't obtain connection settings from Options, loaded default.");
-        }
         return connection;
     }
 }
