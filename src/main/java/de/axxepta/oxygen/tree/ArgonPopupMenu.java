@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import de.axxepta.oxygen.actions.*;
@@ -143,15 +142,12 @@ public class ArgonPopupMenu extends PopupMenu {
 
         this.addSeparator();
 
-        final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_search),
+        final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_find),
                 ImageUtils.getIcon(ImageUtils.SEARCH_PATH), tree);
-        this.add(searchInPath, Lang.get(Lang.Keys.cm_search));
+        this.add(searchInPath, Lang.get(Lang.Keys.cm_find));
 
-        Action searchInFiles = new AbstractAction("Search In Files", ImageUtils.getIcon(ImageUtils.SEARCH)) {
-            public void actionPerformed(ActionEvent e) {
-            }
-        };
-        this.add(searchInFiles, "Search In Files");
+        final Action searchInFiles = new SearchInFilesAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH), tree);
+        this.add(searchInFiles, Lang.get(Lang.Keys.cm_search));
     }
 
     public void prepareContextMenu(TreePath path){
@@ -222,11 +218,17 @@ public class ArgonPopupMenu extends PopupMenu {
                 else
                     this.setItemEnabled(i, false);
             }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_find))) {
                 if (isFile)
                     this.setItemEnabled(i, false);
                 else
                     this.setItemEnabled(i, true);
+            }
+            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
+                if (isDB || isInDB)
+                    this.setItemEnabled(i, true);
+                else
+                    this.setItemEnabled(i, false);
             }
         }
     }

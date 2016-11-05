@@ -282,6 +282,10 @@ public final class ConnectionWrapper {
     }
 
     public static String query(String query, String[] parameter) throws IOException {
+        return "<response>\n" + sendQuery(query, parameter) + "\n</response>";
+    }
+
+    private static String sendQuery(String query, String[] parameter) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return "<response>\n" + connection.xquery(query, parameter) + "\n</response>";
         } catch (NullPointerException npe) {
@@ -289,6 +293,42 @@ public final class ConnectionWrapper {
             throw new IOException("No database connection");
         }
     }
+
+    private static List<String> searchInFiles(String query, String path, String filter, boolean wholeMatch, boolean exactCase)
+            throws IOException {
+        String[] parameter = {"PATH", path, "FILTER", filter, "WHOLE", Boolean.toString(wholeMatch),
+                "EXACTCASE", Boolean.toString(exactCase)};
+        String result = sendQuery(query, parameter);
+        final ArrayList<String> list = new ArrayList<>();
+        if(!result.isEmpty()) {
+            final String[] results = result.split("\r?\n");
+            for(int r = 0, rl = results.length; r < rl; r ++) {
+                list.add(results[r]);
+            }
+        }
+        return list;
+    }
+
+    public static List<String> searchAttributes(String path, String filter, boolean wholeMatch, boolean exactCase)
+            throws IOException {
+        return searchInFiles(ConnectionUtils.getQuery("search-attributes"), path, filter, wholeMatch, exactCase);
+    }
+
+    public static List<String> searchAttributeValues(String path, String filter, boolean wholeMatch, boolean exactCase)
+            throws IOException {
+        return searchInFiles(ConnectionUtils.getQuery("search-attrvalues"), path, filter, wholeMatch, exactCase);
+    }
+
+    public static List<String> searchElements(String path, String filter, boolean wholeMatch, boolean exactCase)
+            throws IOException {
+        return searchInFiles(ConnectionUtils.getQuery("search-elements"), path, filter, wholeMatch, exactCase);
+    }
+
+    public static List<String> searchText(String path, String filter, boolean wholeMatch, boolean exactCase)
+            throws IOException {
+        return searchInFiles(ConnectionUtils.getQuery("search-text"), path, filter, wholeMatch, exactCase);
+    }
+
 
     public static boolean resourceExists(BaseXSource source, String resource) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {

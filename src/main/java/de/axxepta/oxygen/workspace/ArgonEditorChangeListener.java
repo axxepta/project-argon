@@ -197,11 +197,11 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
             }
             if (editorURLString.toLowerCase().startsWith("argon")) {
                 if (authorAccess.getEditorAccess().isEditable()) {
-                    JMenuItem editorSelectionMenu = createCheckInEditorPopUpAddition();
-                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                    JMenuItem checkInMenuItem = createCheckInEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(checkInMenuItem, 0);
                 } else {
-                    JMenuItem editorSelectionMenu = createCheckOutEditorPopUpAddition();
-                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                    JMenuItem checkOutMenuItem = createCheckOutEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(checkOutMenuItem, 0);
                 }
             }
         }
@@ -221,11 +221,11 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
             }
             if (editorURLString.toLowerCase().startsWith("argon")) {
                 if (textAccess.isEditable()) {
-                    JMenuItem editorSelectionMenu = createCheckInEditorPopUpAddition();
-                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                    JMenuItem checkInMenuItem = createCheckInEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(checkInMenuItem, 0);
                 } else {
-                    JMenuItem editorSelectionMenu = createCheckOutEditorPopUpAddition();
-                    ((JPopupMenu) popUp).add(editorSelectionMenu, 0);
+                    JMenuItem checkOutMenuItem = createCheckOutEditorPopUpAddition();
+                    ((JPopupMenu) popUp).add(checkOutMenuItem, 0);
                 }
             }
         }

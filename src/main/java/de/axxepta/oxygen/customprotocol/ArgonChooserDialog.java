@@ -118,7 +118,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
         JButton[] buttons;
         switch (type) {
             case OPEN: {
-                buttonNames = new String[]{"OPEN", "CHECK OUT", "CANCEL"};
+                buttonNames = new String[]{"Open", "Check out", "Cancel"};
                 buttons = createButtons(buttonNames);
                 buttons[0].addActionListener(selectionAction);
                 buttons[1].addActionListener(e -> {
@@ -131,7 +131,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
                 break;
             }
             default: {
-                buttonNames = new String[]{"SAVE", "CANCEL"};
+                buttonNames = new String[]{"Save", "Cancel"};
                 buttons = createButtons(buttonNames);
                 buttons[0].addActionListener(selectionAction);
                 buttons[1].addActionListener( e -> this.dispose() );

@@ -25,6 +25,7 @@ public class CheckOutAction extends AbstractAction {
     private static final Logger logger = LogManager.getLogger(CheckOutAction.class);
 
     private TreeListener treeListener;
+    private String urlString = null;
 
     public CheckOutAction(String name, Icon icon, TreeListener treeListener) {
         super(name, icon);
@@ -36,9 +37,17 @@ public class CheckOutAction extends AbstractAction {
         treeListener = null;
     }
 
+    public CheckOutAction(String name, Icon icon, String urlString) {
+        super(name, icon);
+        treeListener = null;
+        this.urlString = urlString;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (treeListener == null) {
+        if (this.urlString != null) {
+            checkOut(this.urlString);
+        } else if (treeListener == null) {
             URL url = PluginWorkspaceProvider.getPluginWorkspace().
                     getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation();
             checkOut(url.toString());

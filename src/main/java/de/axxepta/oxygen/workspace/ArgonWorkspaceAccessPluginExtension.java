@@ -59,6 +59,7 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
 
         wsa.addEditorChangeListener(new ArgonEditorChangeListener(wsa, runQueryButton, newVersionButton, saveToArgonButton),
                 PluginWorkspace.MAIN_EDITING_AREA);
+        wsa.addEditorChangeListener(new DitaMapManagerChangeListener(wsa), PluginWorkspace.DITA_MAPS_EDITING_AREA);
 
         wsa.addInputURLChooserCustomizer(new ArgonInputURLChooserCustomizer());
     }
