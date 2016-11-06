@@ -1,19 +1,22 @@
 package de.axxepta.oxygen.versioncontrol;
 
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
+import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.workspace.ArgonWorkspaceAccessPluginExtension;
+import de.axxepta.oxygen.utils.XMLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,56 +27,65 @@ import java.util.List;
  * @author Markus on 31.01.2016.
  */
 
-public final class VersionHistoryUpdater {
+public class VersionHistoryUpdater implements ObserverInterface {
 
-    private static final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
-    private static List<VersionHistoryEntry> historyList;
+    private final Logger logger = LogManager.getLogger(VersionHistoryUpdater.class);
 
-    private static ArgonWorkspaceAccessPluginExtension pluginWSAExtension;
+    private List<VersionHistoryEntry> historyList = new ArrayList<>();
+    private JTable versionHistoryTable;
 
-    private VersionHistoryUpdater() {
+    VersionHistoryUpdater(JTable versionHistoryTable) {
+        this.versionHistoryTable = versionHistoryTable;
         historyList = new ArrayList<>();
     }
 
-    public static void init(ArgonWorkspaceAccessPluginExtension plugin) {
-        pluginWSAExtension = plugin;
+    public void update(String type, Object... msg) {
+        // ToDo: store data permanently in editor watch map to avoid repeated traffic--refresh historyList if editor is saved
         historyList = new ArrayList<>();
-    }
-
-    public static void update(String urlString) {
-        historyList = new ArrayList<>();
-        if (!urlString.equals("") && (URLUtils.isXML(urlString) || URLUtils.isQuery(urlString))) {
-
+        if ((msg[0] instanceof String) && !(msg[0]).equals("")) {
+            String urlString = (String) msg[0];
             String resource = CustomProtocolURLHandlerExtension.pathFromURLString(urlString);
-            String pathStr = obtainHistoryPath(resource, urlString);
-            String fileName = urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."));
-            String extension = urlString.substring(urlString.lastIndexOf("."));
-
-            List<String> allVersions = obtainFileVersions(pathStr, fileName, extension);
-
-            for (String strEntry : allVersions) {
-                URL url = null;
-                try {
-                    url = new URL(CustomProtocolURLHandlerExtension.ARGON + ":/" + pathStr + "/" + strEntry);
-                } catch (MalformedURLException e1) {
-                    logger.error(e1);
-                }
-                int dotPos = strEntry.lastIndexOf(".");
-                int revPos = strEntry.lastIndexOf("r", dotPos);
-                int verPos = strEntry.lastIndexOf("v", dotPos);
-                int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
-                int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
-                Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
-                VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
-                historyList.add(versionHistoryEntry);
+            String historyPathStr = obtainHistoryRoot(resource, urlString);
+            String metaPathStr = obtainMetaPath(resource, urlString);
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                getAndParseMetaData(connection, metaPathStr, historyPathStr);
+            } catch (IOException ioe) {
+                logger.warn("Argon connection error while getting meta data from resource " + resource + ": ", ioe.getMessage());
+            } catch (Exception ex) {
+                logger.debug("Error while parsing history meta data from resource " + resource + ": ", ex.getMessage());
             }
         }
-        pluginWSAExtension.updateVersionHistory(historyList);
+        updateVersionHistory();
     }
 
-    private static void show() {
-        StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
-        pluginWorkspace.showView("ArgonWorkspaceAccessOutputID", true);
+    private void getAndParseMetaData(Connection connection, String resource, String historyPath) throws IOException,
+            ParserConfigurationException, SAXException, XPathExpressionException {
+        byte[] metaData;
+        metaData = connection.get(BaseXSource.DATABASE, resource, false);
+        Document dom = XMLUtils.docFromByteArray(metaData);
+        XPathExpression expression = XMLUtils.getXPathExpression("*//" + MetaInfoDefinition.HISTORY_FILE_TAG);
+        NodeList historyFiles = (NodeList) expression.evaluate(dom, XPathConstants.NODESET);
+        for (int i = 0; i < historyFiles.getLength(); i++) {
+            String historyFile = historyFiles.item(i).getTextContent();
+            parseHistoryEntry(historyFile, historyPath);
+        }
+    }
+
+    private void parseHistoryEntry(String strEntry, String historyPath) {
+        URL url = null;
+        try {
+            url = new URL(ArgonConst.ARGON + ":" + historyPath + "/" + strEntry);
+        } catch (MalformedURLException e1) {
+            logger.error(e1);
+        }
+        int dotPos = strEntry.lastIndexOf(".");
+        int revPos = strEntry.lastIndexOf("r", dotPos);
+        int verPos = strEntry.lastIndexOf("v", dotPos);
+        int version = Integer.parseInt(strEntry.substring(verPos + 1, revPos));
+        int revision = Integer.parseInt(strEntry.substring(revPos + 1, dotPos));
+        Date changeDate = parseDate(strEntry.substring(verPos - 17, verPos - 1));
+        VersionHistoryEntry versionHistoryEntry = new VersionHistoryEntry(url, version, revision, changeDate);
+        historyList.add(versionHistoryEntry);
     }
 
     private static Date parseDate(String dateStr) {
@@ -85,38 +97,46 @@ public final class VersionHistoryUpdater {
         return new Date(year, month, day, hour, min);
     }
 
-
-    private static String obtainHistoryPath(String resource, String urlString) {
+    private static String obtainMetaPath(String resource, String urlString) {
         StringBuilder pathStr;
-        if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_XQ)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRESTXYBase);
-        } else if (urlString.startsWith(CustomProtocolURLHandlerExtension.ARGON_REPO)) {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupRepoBase);
+        if (urlString.startsWith(ArgonConst.ARGON_XQ)) {
+            pathStr = new StringBuilder(ArgonConst.META_RESTXQ_BASE);
+        } else if (urlString.startsWith(ArgonConst.ARGON_REPO)) {
+            pathStr = new StringBuilder(ArgonConst.META_REPO_BASE);
         } else {
-            pathStr = new StringBuilder(BaseXByteArrayOutputStream.backupDBBase);
+            pathStr = new StringBuilder(ArgonConst.META_DB_BASE);
         }
-        if (resource.lastIndexOf("/") != -1)
-            pathStr.append(resource.substring(0, resource.lastIndexOf("/")));
+        pathStr.append(resource).append(".xml");
         return pathStr.toString();
     }
 
-    private static List<String> obtainFileVersions(String pathStr, String fileName, String extension) {
-        List<String> allVersions;
-        BaseXSource source = BaseXSource.DATABASE;
-        try {
-            allVersions = (new BaseXRequest("list", source, pathStr)).getResult();
-        } catch (Exception er) {
-            allVersions = new ArrayList<>();
+    private static String obtainHistoryRoot(String resource, String urlString) {
+        StringBuilder pathStr;
+        if (urlString.startsWith(ArgonConst.ARGON_XQ)) {
+            pathStr = new StringBuilder(ArgonConst.BACKUP_RESTXQ_BASE);
+        } else if (urlString.startsWith(ArgonConst.ARGON_REPO)) {
+            pathStr = new StringBuilder(ArgonConst.BACKUP_REPO_BASE);
+        } else {
+            pathStr = new StringBuilder(ArgonConst.BACKUP_DB_BASE);
+            if (resource.contains("/"))
+                pathStr.append(resource.substring(0, resource.indexOf("/")));
         }
+        return pathStr.toString();
+    }
 
-        String filter = fileName + "_[0-9]{4}-[0-1][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]_v[0-9]+r[0-9]+" + extension;
+    public static String checkVersionHistory(URL editorLocation) {
+        if ((editorLocation != null) && (URLUtils.isArgon(editorLocation)))
+            return editorLocation.toString();
+        else
+            return  "";
+    }
 
-        allVersions = allVersions.subList(0, allVersions.size() / 2);
-        for (int i=allVersions.size()-1; i>=0; i--) {
-            if (!allVersions.get(i).matches(filter))
-                allVersions.remove(i);
-        }
-        return allVersions;
+    private void updateVersionHistory() {
+        ((VersionHistoryTableModel) versionHistoryTable.getModel()).setNewContent(historyList);
+        versionHistoryTable.setFillsViewportHeight(true);
+        versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+        versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
     }
 
 }

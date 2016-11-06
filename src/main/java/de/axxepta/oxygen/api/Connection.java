@@ -2,6 +2,7 @@ package de.axxepta.oxygen.api;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.basex.util.*;
 
@@ -11,6 +12,7 @@ import org.basex.util.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public interface Connection extends Closeable {
+
     /**
      * Returns resources of the given data source and path.
      * @param source data source
@@ -18,24 +20,53 @@ public interface Connection extends Closeable {
      * @return entries
      * @throws IOException I/O exception
      */
-    BaseXResource[] list(final BaseXSource source, final String path) throws IOException;
+    List<BaseXResource> list(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Returns resources of the given data source and path and recursively all it's children.
+     * @param source data source
+     * @param path path
+     * @return entries
+     * @throws IOException I/O exception
+     */
+    List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Sets up a database for user management and copies a meta data template file into it.
+     * @throws IOException I/O exception
+     */
+    void init() throws IOException;
+
+    /**
+     * Creates a new database.
+     * @param database new database name
+     * @param chop chop option as string
+     * @param ftindex ftindex option as string
+     * @param textindex textindex option as string
+     * @param attrindex attrindex option as string
+     * @param tokenindex tokenindex option as string
+     * @throws IOException I/O exception
+     */
+    void create(final String database, final String chop, final String ftindex, final String textindex,
+                final String attrindex, final String tokenindex) throws IOException;
 
     /**
      * Creates a new database.
      * @param database new database name
      * @throws IOException I/O exception
      */
-    void create(final String database) throws IOException;
+    void drop(final String database) throws IOException;
 
     /**
      * Returns a resource in its binary representation.
      * Texts are encoded as UTF-8 and can be converted via {@link Token#string(byte[])}.
      * @param source data source
      * @param path path
+     * @param export file has to be prepared for export to file system
      * @return entry
      * @throws IOException I/O exception
      */
-    byte[] get(final BaseXSource source, final String path) throws IOException;
+    byte[] get(final BaseXSource source, final String path, boolean export) throws IOException;
 
     /**
      * Stores a resource.
@@ -43,9 +74,23 @@ public interface Connection extends Closeable {
      * @param source data source
      * @param path path
      * @param resource resource to be stored
+     * @param binary flag whether resource should be stored binary
+     * @param encoding encoding of XML type resource
+     * @param owner file owner
+     * @param versionize flag whether version control should be used
+     * @param versionUp flag whether version should be raised as String
      * @throws IOException I/O exception
      */
-    void put(final BaseXSource source, final String path, final byte[] resource) throws IOException;
+    void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+             String owner, String versionize, String versionUp) throws IOException;
+
+    /**
+     * Creates a new directory. Only available for sources REPO and RESTXQ
+     * @param source data source
+     * @param path path
+     * @throws IOException I/O exception
+     */
+    void newDir(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Deletes a resource.
@@ -54,6 +99,14 @@ public interface Connection extends Closeable {
      * @throws IOException I/O exception
      */
     void delete(final BaseXSource source, final String path) throws IOException;
+
+    /**
+     * Checks for existence of resource.
+     * @param source data source
+     * @param path path
+     * @throws IOException I/O exception
+     */
+    boolean exists(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Renames a resource.
@@ -77,10 +130,11 @@ public interface Connection extends Closeable {
     /**
      * Evaluates a query.
      * @param query query to be evaluated
+     * @param args additional parameters as successive name--value pairs
      * @return result (string representation)
      * @throws IOException I/O exception
      */
-    String xquery(final String query) throws IOException;
+    String xquery(final String query, String... args) throws IOException;
 
     /**
      * Parses a query.

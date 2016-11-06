@@ -5,4 +5,4 @@ let $system := db:system()
 let $webpath := $system//webpath/string()
 let $restxqpath := $system//restxqpath/string()
 let $path := file:resolve-path($restxqpath, file:resolve-path($webpath)) || $PATH
-return file:delete($path)
+return file:delete($path, true())

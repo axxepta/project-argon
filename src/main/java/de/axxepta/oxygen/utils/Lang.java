@@ -69,8 +69,27 @@ public class Lang {
     }
 
     public enum Keys {
-        tree_root, tree_DB, tree_repo, tree_restxq, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_delete,
-        cm_rename, cm_newversion, cm_showversion, cm_refresh, cm_search
+        tree_root, tree_DB, tree_repo, tree_restxq, cm_open, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_addsimple,
+        cm_addfile, cm_delete, cm_rename, cm_newversion, cm_showversion, cm_refresh, cm_search, cm_searchsimple, cm_find,
+        cm_newdir, cm_save, cm_ok, cm_cancel, cm_tofile, cm_todb, cm_export, cm_checkinselected, cm_exit, cm_saveas,
+        cm_replycomment, cm_runquery, cm_yes, cm_no, cm_all, cm_always, cm_never, cm_compare, cm_reset, cm_overwrite,
+        cm_nosave,
+        lbl_filename, lbl_filetype, lbl_filestocheck, lbl_delete, lbl_dir, lbl_searchpath, lbl_elements, lbl_text,
+        lbl_attributes, lbl_attrbvalues, lbl_scope, lbl_options, lbl_whole, lbl_casesens, lbl_snippet,
+        lbl_search1, lbl_search2, lbl_search3, lbl_search4, lbl_overwrite, lbl_version, lbl_revision, lbl_date, lbl_closed,
+        lbl_connection, lbl_host, lbl_user, lbl_pwd, lbl_vcs, lbl_dboptions, lbl_chop, lbl_ftindex, lbl_textindex,
+        lbl_attributeindex, lbl_tokenindex, lbl_fixdefault,
+        title_connection, title_connection2, title_history,
+        warn_failednewdb, warn_failednewfile, warn_faileddeletedb, warn_faileddelete,
+        warn_failedexport, warn_failednewversion, warn_norename, warn_resource, warn_storing, warn_locked, warn_nosnippet,
+        warn_nofile, warn_failedsearch, warn_failedlist, warn_notransfer, warn_transfernoread,
+        warn_transfernowrite1, warn_transfernowrite2, warn_connectionsettings1, warn_connectionsettings2, warn_settingspath1,
+        warn_settingspath2, warn_settingspath3,
+        msg_dbexists1, msg_dbexists2, msg_fileexists1, msg_fileexists2, msg_noquery, msg_noeditor, msg_checkpriordelete,
+        msg_noupdate1, msg_noupdate2, msg_norename1, msg_norename2, msg_norename3, msg_transferlocked, msg_nameexists,
+        msg_settingsexists,
+        dlg_addfileinto, dlg_externalquery, dlg_checkedout, dlg_delete, dlg_newdir, dlg_replycomment, dlg_saveas, dlg_open,
+        dlg_snippet, dlg_foundresources, dlg_overwrite, dlg_closed, dlg_overwritesetting, dlg_newsetting
     }
 
 }

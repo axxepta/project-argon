@@ -30,7 +30,7 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public BaseXResource[] list(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
         final Query query = client.query(getQuery("list-" + source));
         query.bind(PATH, path, "");
 
@@ -39,7 +39,28 @@ public final class ClientConnection implements Connection {
             final String type = query.next(), name = query.next();
             list.add(new BaseXResource(name, BaseXType.get(type), source));
         }
-        return list.toArray(new BaseXResource[list.size()]);
+        return list;
+    }
+
+    @Override
+    public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
+        final Query query = client.query(getQuery("listall-" + source));
+        query.bind(PATH, path, "");
+
+        final ArrayList<BaseXResource> list = new ArrayList<>();
+        while(query.more()) {
+            final String type = query.next(), name = query.next();
+            list.add(new BaseXResource(name, BaseXType.get(type), source));
+        }
+        return list;
+    }
+
+    @Override
+    public void init() throws IOException {
+        final Query query = client.query(getQuery("init"));
+        byte[] resource = getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8");
+        query.bind(RESOURCE, prepare(resource, false), "");
+        query.execute();
     }
 
     @Override
@@ -48,27 +69,54 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public void create(final String database) throws IOException {
+    public void create(final String database, final String chop, final String ftindex, final String textindex,
+                       final String attrindex, final String tokenindex) throws IOException {
         final Query query = client.query(getQuery("create-database"));
+        query.bind(DATABASE, database, "");
+        query.bind(CHOP, chop, "");
+        query.bind(FTINDEX, ftindex, "");
+        query.bind(TEXTINDEX, textindex, "");
+        query.bind(ATTRINDEX, attrindex, "");
+        query.bind(TOKENINDEX, tokenindex, "");
+        query.execute();
+    }
+
+    @Override
+    public void drop(final String database) throws IOException {
+        final Query query = client.query(getQuery("drop-database"));
         query.bind(DATABASE, database, "");
         query.execute();
     }
 
     @Override
-    public byte[] get(final BaseXSource source, final String path) throws IOException {
+    public byte[] get(final BaseXSource source, final String path, boolean export) throws IOException {
         final Query query = client.query(getQuery("get-" + source));
         query.bind(PATH, path, "");
         return query.binary();
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource)
+    public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+                    String owner, String versionize, String versionUp)
             throws IOException {
-
         final Query query = client.query(getQuery("put-" + source));
         query.bind(PATH, path, "");
-        query.bind(RESOURCE, prepare(resource), "");
+        query.bind(RESOURCE, prepare(resource, binary), "");
+        query.bind(BINARY, Boolean.toString(binary), "");
+        query.bind(ENCODING, encoding, "");
+        query.bind(OWNER, owner, "");
+        query.bind(VERSIONIZE, versionize, "");
+        query.bind(VERSION_UP, versionUp, "");
         query.execute();
+    }
+
+    @Override
+    public void newDir(final BaseXSource source, final String path) throws IOException {
+        if (!source.equals(BaseXSource.DATABASE)) {
+            final Query query = client.query(getQuery("newdir-" + source));
+            query.bind(PATH, path, "");
+            query.execute();
+        }
     }
 
     @Override
@@ -76,6 +124,13 @@ public final class ClientConnection implements Connection {
         final Query query = client.query(getQuery("delete-" + source));
         query.bind(PATH, path, "");
         query.execute();
+    }
+
+    @Override
+    public boolean exists(final BaseXSource source, final String path) throws IOException {
+        final Query query = client.query(getQuery("exists-" + source));
+        query.bind(PATH, path, "");
+        return query.execute().equals("true");
     }
 
     @Override
@@ -97,8 +152,11 @@ public final class ClientConnection implements Connection {
     }
 
     @Override
-    public String xquery(final String query) throws IOException {
+    public String xquery(final String query, final String... args) throws IOException {
         final Query qu = client.query(query);
+        for (int i = 0; i < args.length; i = i + 2) {
+            qu.bind(args[i], args[i+1], "");
+        }
         try {
             return qu.execute();
         } catch(final IOException ex) {

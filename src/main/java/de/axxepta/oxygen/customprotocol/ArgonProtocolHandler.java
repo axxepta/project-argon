@@ -6,10 +6,7 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -19,7 +16,7 @@ import java.net.URLStreamHandler;
  */
 public class ArgonProtocolHandler extends URLStreamHandler {
 
-    BaseXSource source;
+    private BaseXSource source;
     private static final Logger logger = LogManager.getLogger(ArgonProtocolHandler.class);
 
     public ArgonProtocolHandler(BaseXSource source) {
@@ -30,7 +27,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
         BaseXSource source;
 
-        protected ArgonConnection(URL url, BaseXSource source) {
+        ArgonConnection(URL url, BaseXSource source) {
             super(url);
             this.source = source;
             // Allow output
@@ -39,16 +36,23 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
         @Override
         public InputStream getInputStream() throws IOException {
-            Connection connection = BaseXConnectionWrapper.getConnection();
-            logger.info("Requested input stream: " + url.toString());
-            ArgonEditorsWatchMap.addURL(url);
-            return new ByteArrayInputStream(connection.get(source,
-                    CustomProtocolURLHandlerExtension.pathFromURL(this.url)));
+            ByteArrayInputStream inputStream;
+            try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                logger.info("Requested new InputStream: " + this.url.toString());
+                inputStream = new ByteArrayInputStream(connection.get(source,
+                        CustomProtocolURLHandlerExtension.pathFromURL(this.url), false));
+                // ToDo: try to call OptionPage -> if not accessible, not in editor context (e.g., publishing process), don't add URL to watch map
+                ArgonEditorsWatchMap.getInstance().addURL(url);
+            } catch (IOException io) {
+                logger.debug("Failed to obtain InputStream: ", io.getMessage());
+                throw new IOException(io);
+            }
+            return inputStream;
         }
 
         @Override
         public OutputStream getOutputStream() throws IOException {
-            return new BaseXByteArrayOutputStream(this.source, url);
+            return new BaseXByteArrayOutputStream(url);
         }
 
         @Override
@@ -59,6 +63,10 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
+        return new ArgonConnection(url, this.source);
+    }
+
+    public URLConnection provideConnection(URL url) throws IOException {
         return new ArgonConnection(url, this.source);
     }
 

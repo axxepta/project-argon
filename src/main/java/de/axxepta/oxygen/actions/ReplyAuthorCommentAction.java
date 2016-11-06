@@ -1,14 +1,15 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.utils.Lang;
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -20,16 +21,15 @@ import java.awt.event.ActionEvent;
  */
 public class ReplyAuthorCommentAction extends AbstractAction {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public ReplyAuthorCommentAction(String name, Icon icon, final StandalonePluginWorkspace pluginWorkspaceAccess){
+    public ReplyAuthorCommentAction(String name, Icon icon){
         super(name, icon);
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+        WSEditor editorAccess = workspace.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
         if (editorAccess.getCurrentPageID().equals(EditorPageConstants.PAGE_AUTHOR)) {
             WSEditorPage editorPage = editorAccess.getCurrentPage();
             AuthorAccess authorAccess = ((WSAuthorEditorPage) editorPage).getAuthorAccess();
@@ -58,7 +58,7 @@ public class ReplyAuthorCommentAction extends AbstractAction {
                     // add response to comment, hiding that you're working in text mode
                     editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
                     JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
-                    String reply = JOptionPane.showInputDialog(parentFrame, "Reply to comment:", "Review", JOptionPane.PLAIN_MESSAGE);
+                    String reply = JOptionPane.showInputDialog(parentFrame, Lang.get(Lang.Keys.dlg_replycomment), "Review", JOptionPane.PLAIN_MESSAGE);
                     editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
                     if (reply != null) {
                         try {

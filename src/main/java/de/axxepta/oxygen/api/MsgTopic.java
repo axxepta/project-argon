@@ -12,12 +12,12 @@ import java.util.List;
 public class MsgTopic implements SubjectInterface {
 
     private List<ObserverInterface> observers;
-    private String message;
+    private Object[] message;
     private String type;
     private boolean changed;
     private final Object MUTEX= new Object();
 
-    public MsgTopic(String msgType){
+    MsgTopic(String msgType){
         this.observers=new ArrayList<>();
         this.type = msgType;
     }
@@ -58,8 +58,8 @@ public class MsgTopic implements SubjectInterface {
     }*/
 
     //method to post message to the topic
-    public void postMessage(String msg){
-        System.out.println("Message Posted to Topic: "+msg);
+    public void postMessage(Object... msg){
+        System.out.println("Message Posted to Topic: "+msg[0].toString());
         this.message=msg;
         this.changed=true;
         notifyObservers();

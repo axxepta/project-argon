@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * @author Markus on 27.10.2015.
  */
-public class NewFileListCellRenderer extends DefaultListCellRenderer {
+class NewFileListCellRenderer extends DefaultListCellRenderer {
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

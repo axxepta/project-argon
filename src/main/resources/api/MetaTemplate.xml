@@ -1,0 +1,33 @@
+<argon-meta>
+    <argon-ver>0.0.3</argon-ver>
+    <creationdate/>
+    <lastchange/>
+    <versioning>
+        <version/>
+        <revision/>
+        <history/>
+    </versioning>
+    <owner/>
+    <ownergroup/>
+    <initialencoding/>
+    <mimetype/>
+    <doctype/>
+    <status/>
+    <rights>
+        <fileowner>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </fileowner>
+        <group>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </group>
+        <others>
+            <read>true</read>
+            <write>true</write>
+            <exec>false</exec>
+        </others>
+    </rights>
+</argon-meta>

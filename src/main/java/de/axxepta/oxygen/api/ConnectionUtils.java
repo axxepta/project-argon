@@ -12,19 +12,39 @@ import org.basex.util.*;
  */
 public final class ConnectionUtils {
     /** Database variable. */
-    static final String DATABASE = "DB";
+    public static final String DATABASE = "DB";
     /** Path variable. */
-    static final String PATH = "PATH";
+    public static final String PATH = "PATH";
     /** Path variable for moved/renamed resources. */
-    static final String NEWPATH = "NEWPATH";
+    public static final String NEWPATH = "NEWPATH";
     /** Source variable. */
-    static final String SOURCE = "SOURCE";
+    public static final String SOURCE = "SOURCE";
     /** Resource variable. */
-    static final String RESOURCE = "RESOURCE";
+    public static final String RESOURCE = "RESOURCE";
     /** Query string variable */
-    static final String XQUERY = "XQUERY";
+    public static final String XQUERY = "XQUERY";
     /** Search filter variable */
-    static final String FILTER = "FILTER";
+    public static final String FILTER = "FILTER";
+    /** Create database chop option */
+    public static final String CHOP = "CHOP";
+    /** Create database ftindex option */
+    public static final String FTINDEX = "FTINDEX";
+    /** Create database ftindex option */
+    public static final String TEXTINDEX = "TEXTINDEX";
+    /** Create database ftindex option */
+    public static final String ATTRINDEX = "ATTRINDEX";
+    /** Create database ftindex option */
+    public static final String TOKENINDEX = "TOKENINDEX";
+    /** Use version control option */
+    public static final String VERSIONIZE = "VERSIONIZE";
+    /** Increase file version option */
+    public static final String VERSION_UP = "VERSION-UP";
+    /** Encoding variable */
+    public static final String ENCODING = "ENCODING";
+    /** Binary option */
+    public static final String BINARY = "BINARY";
+    /** File owner variable */
+    public static final String OWNER = "OWNER";
 
     /** Private constructor (prevents instantiation). */
     private ConnectionUtils() { }
@@ -36,7 +56,12 @@ public final class ConnectionUtils {
      * @throws IOException I/O exception
      */
     public static String getQuery(final String path) throws IOException {
-        final String resource = "/api/" + path + ".xq";
+        final String resource = path + ".xq";
+        return(getAPIResource(resource));
+    }
+
+    public static String getAPIResource(final String path) throws IOException {
+        final String resource = "/api/" + path;
         final InputStream is = ConnectionUtils.class.getResourceAsStream(resource);
         if(is == null) throw new IOException("Resource not found: " + resource);
         return Token.string(new IOStream(is).read());
@@ -47,8 +72,7 @@ public final class ConnectionUtils {
      * @param resource resource
      * @return resulting array
      */
-    static String prepare(final byte[] resource) {
-        return Token.string(Token.startsWith(resource, '<') ? resource :
-                org.basex.util.Base64.encode(resource));
+    public static String prepare(final byte[] resource, boolean binary) {
+        return Token.string(binary ? org.basex.util.Base64.encode(resource) : resource);
     }
 }

@@ -5,6 +5,7 @@ declare variable $PATH as xs:string external;
 
 (:~ Lock database. :)
 declare variable $LOCK-DB := '~argon';
+declare variable $USER-FILE := '~usermanagement';
 
 let $user := user:current()
-return db:exists($LOCK-DB, $LOCK-DB) and db:open($LOCK-DB)/*[name() = $SOURCE][text() = $PATH][@user = $user]
+return db:exists($LOCK-DB, $USER-FILE) and max(db:open($LOCK-DB, $USER-FILE)//[name() = $SOURCE and text() = $PATH and @user = $user])

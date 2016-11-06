@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.utils;
 
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ui.Icons;
@@ -21,19 +21,37 @@ public class ImageUtils {
 
     static private Map<String, Icon> iconMap;
 
+    // CAVE: String constants as Icon keys must be lowercase because the get function makes lowercase of requested keys!
     public static final String DB_CONNECTION = "dbconnection16";
     public static final String DB_CATALOG = "dbcatalog16";
     public static final String DB_HTTP = "dbhttp16";
     public static final String DB_FOLDER = "dbfolder16";
+    public static final String FOLDER = "folderclosed16";
     public static final String URL_OPEN = "openurl16";
     public static final String FILE_ADD = "addfile16";
     public static final String DB_ADD = "addb16";
+    public static final String ADD_DIR = "add_dir16";
+    public static final String EXPORT = "export16";
     public static final String REMOVE = "remove16";
     public static final String RENAME = "rename16";
     public static final String INC_VER = "incversion16";
     public static final String VER_HIST = "verhistory";
     public static final String REFRESH = "refresh16";
-    public static final String SEARCH = "searchinpath16";
+    public static final String SEARCH_PATH = "searchinpath16";
+    public static final String SEARCH = "search16";
+    public static final String TEAM_LIBRARY = "teamlibrary";
+    public static final String SHARED = "shared";
+    public static final String S_DATABASE = "s_db";
+    public static final String F_DATABASE = "f_db";
+    public static final String T_DATABASE = "t_db";
+    public static final String P_DATABASE = "p_db";
+    public static final String BASEX = "basex16";
+    public static final String BASEX_LOCKED = "basex16locked";
+    public static final String BASEX24 = "basex24";
+    public static final String BASEX24ADD = "basex24add";
+    public static final String UNLOCK = "unlock";
+    public static final String SNIPPET = "snippet";
+    public static final String INSERT_TEMPLATE = "inserttemplate";
 
     public static void init() {
         iconMap = new HashMap<>();
@@ -80,15 +98,32 @@ public class ImageUtils {
         iconMap.put(DB_CATALOG, ImageUtils.createImageIcon("/images/DbCatalog16.gif"));
         iconMap.put(DB_HTTP, ImageUtils.createImageIcon("/images/DBHttp16.png"));
         iconMap.put(DB_FOLDER, ImageUtils.createImageIcon("/images/DbFolder16.png"));
+        iconMap.put(FOLDER, ImageUtils.createImageIcon("/images/FolderClosed16.png"));
         iconMap.put(URL_OPEN, ImageUtils.createImageIcon("/images/OpenURL16.gif"));
-        iconMap.put(FILE_ADD, ImageUtils.createImageIcon("/images/AddFile16.gif"));
+        iconMap.put(FILE_ADD, ImageUtils.createImageIcon("/images/AddFile16.png"));
         iconMap.put(INC_VER, ImageUtils.createImageIcon("/images/IncVersion16.png"));
         iconMap.put(VER_HIST, ImageUtils.createImageIcon("/images/VerHistory.png"));
-        iconMap.put(DB_ADD, ImageUtils.createImageIcon("/images/AddDb16.png"));
+        iconMap.put(DB_ADD, ImageUtils.createImageIcon("/images/AddDb.png"));
+        iconMap.put(ADD_DIR, ImageUtils.createImageIcon("/images/AddDir.png"));
+        iconMap.put(EXPORT, ImageUtils.createImageIcon("/images/Export16.png"));
         iconMap.put(REMOVE, ImageUtils.createImageIcon("/images/Remove16.png"));
         iconMap.put(RENAME, ImageUtils.createImageIcon("/images/Rename16.png"));
         iconMap.put(REFRESH, ImageUtils.createImageIcon("/images/Refresh16.png"));
-        iconMap.put(SEARCH, ImageUtils.createImageIcon("/images/SearchInPath16.png"));
+        iconMap.put(SEARCH_PATH, ImageUtils.createImageIcon("/images/SearchInPath16.png"));
+        iconMap.put(SEARCH, ImageUtils.createImageIcon("/images/SearchInFiles16.png"));
+        iconMap.put(SHARED, ImageUtils.createImageIcon("/images/DbCatalogShared16.png"));
+        iconMap.put(TEAM_LIBRARY, ImageUtils.createImageIcon("/images/DbCatalogTeam16.png"));
+        iconMap.put(S_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogS16.png"));
+        iconMap.put(F_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogF16.png"));
+        iconMap.put(T_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogT16.png"));
+        iconMap.put(P_DATABASE, ImageUtils.createImageIcon("/images/DbCatalogP16.png"));
+        iconMap.put(BASEX, ImageUtils.createImageIcon("/images/BaseX_16_tr.png"));
+        iconMap.put(BASEX_LOCKED, ImageUtils.createImageIcon("/images/BaseXlocked.png"));
+        iconMap.put(BASEX24, ImageUtils.createImageIcon("/images/BaseX24.png"));
+        iconMap.put(BASEX24ADD, ImageUtils.createImageIcon("/images/BaseX24add.png"));
+        iconMap.put(UNLOCK, ImageUtils.createImageIcon("/images/unlock.png"));
+        iconMap.put(SNIPPET, ImageUtils.createImageIcon("/images/snippet.png"));
+        iconMap.put(INSERT_TEMPLATE, ImageUtils.createImageIcon("/images/InsertTemplate16.png"));
     }
 
     public static Icon getIcon(String extension) {
@@ -123,7 +158,7 @@ public class ImageUtils {
     }
 
     public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = BasexTree.class.getResource(path);
+        java.net.URL imgURL = ArgonTree.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {

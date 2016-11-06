@@ -1,141 +1,159 @@
-/**
- *
- */
 package de.axxepta.oxygen.customprotocol;
 
-
-import de.axxepta.oxygen.versioncontrol.VersionRevisionUpdater;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
-import de.axxepta.oxygen.rest.BaseXRequest;
+import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.URLUtils;
-import de.axxepta.oxygen.workspace.BaseXOptionPage;
+import de.axxepta.oxygen.utils.XMLUtils;
+import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
 
 
-/**
- * @author Daniel Altiparmak
- */
 public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
 
     private static final Logger logger = LogManager.getLogger(BaseXByteArrayOutputStream.class);
-    public static final String backupDBBase = "~history_";
-    public static final String backupRESTXYBase = "~history_~restxq/";
-    public static final String backupRepoBase = "~history_~repo/";
 
     private final URL url;
     private BaseXSource source;
-    private boolean revisionUpdated;
-    private boolean fromTransferHandler;
-    private long[] verRev = {1,1};
+    private String encoding = "";
+    private boolean useGlobalVersioning = true;
+    private boolean versionUp = false;
+    private boolean binary = false;
+    private String owner = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, false);
 
-    public BaseXByteArrayOutputStream(BaseXSource source, URL url) {
+    BaseXByteArrayOutputStream(URL url) {
         super();
         this.url = url;
-        this.source = source;
-        this.revisionUpdated = false;
-        this.fromTransferHandler = false;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
     }
 
-    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean revisionUpdated, long[] verRev) {
+    public BaseXByteArrayOutputStream(URL url, String encoding) {
         super();
         this.url = url;
-        this.source = source;
-        this.revisionUpdated = revisionUpdated;
-        this.verRev[0] = verRev[0];     this.verRev[1] = verRev[1];
-        this.fromTransferHandler = false;
+        this.encoding = encoding;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
     }
 
-    public BaseXByteArrayOutputStream(BaseXSource source, URL url, boolean fromTransferHandler) {
+    public BaseXByteArrayOutputStream(String owner, boolean binary, URL url) {
         super();
         this.url = url;
-        this.source = source;
-        this.revisionUpdated = false;
-        this.fromTransferHandler = fromTransferHandler;
+        this.binary = binary;
+        this.owner = owner;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(boolean binary, URL url) {
+        super();
+        this.url = url;
+        this.binary = binary;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(boolean binary, URL url, boolean versionUp) {
+        super();
+        this.url = url;
+        this.binary = binary;
+        this.versionUp = versionUp;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(String owner, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.owner = owner;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+    }
+
+    public BaseXByteArrayOutputStream(URL url, String encoding, boolean versionUp) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        this.versionUp = versionUp;
+    }
+
+    /**
+     * allows to explicitly override the global versioning (switch off only) for read-only databases
+     * @param useGlobalVersioning set to false if no versioning should be used for the current data transfer
+     * @param url resource url to store to
+     * @param encoding encoding of the byte array
+     */
+    public BaseXByteArrayOutputStream(boolean useGlobalVersioning, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        this.useGlobalVersioning = useGlobalVersioning;
+    }
+
+    /**
+     * allows to explicitly override the global versioning (switch off only) for read-only databases
+     * @param owner file owner
+     * @param useGlobalVersioning set to false if no versioning should be used for the current data transfer
+     * @param url resource url to store to
+     * @param encoding encoding of the byte array
+     */
+    public BaseXByteArrayOutputStream(String owner, boolean useGlobalVersioning, URL url, String encoding) {
+        super();
+        this.url = url;
+        this.encoding = encoding;
+        this.owner = owner;
+        this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
+        this.useGlobalVersioning = useGlobalVersioning;
     }
 
     @Override
     public void close() throws IOException {
         super.close();
         byte[] savedBytes;
-        VersionRevisionUpdater updater;
-        boolean useVersioning =
-                Boolean.parseBoolean(BaseXOptionPage.getOption(BaseXOptionPage.KEY_BASEX_VERSIONING, false));
-        if (!useVersioning || revisionUpdated || !(URLUtils.isXML(url) || (URLUtils.isQuery(url)))) {
-            savedBytes = toByteArray();
-        } else {
-            String fileType = URLUtils.isXML(url) ? VersionRevisionUpdater.XML : VersionRevisionUpdater.XQUERY;
-            if (fromTransferHandler)
-                updater = new VersionRevisionUpdater(toByteArray(), fileType);
-            else        // get document from current editor window for direct update (called by SAVE or SAVE TO URL commands)
-                updater = new VersionRevisionUpdater(fileType);
-            savedBytes = updater.update(false);
-            this.verRev = updater.getVersionAndRevision();
+        savedBytes = toByteArray();
+        // if "Save" or "Save as URL" were called check for binary and encoding
+        if (!binary && encoding.equals("")) {
+            encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
+            if (!URLUtils.isXML(url) && (URLUtils.isBinary(url) || !IOUtils.isXML(savedBytes))) {
+                binary = true;
+            } else {
+                if (encoding.equals(""))
+                    XMLUtils.encodingFromBytes(savedBytes);
+                if (!encoding.equals("UTF-8") && !encoding.equals(""))
+                    savedBytes = IOUtils.convertToUTF8(savedBytes, encoding);
+                if (encoding.equals(""))
+                    encoding = "UTF-8";
+            }
         }
+        if (encoding.equals("UTF-8") && (savedBytes[0] == (byte)0xEF)) {
+            savedBytes = removeBOM(savedBytes, 3);
+        }
+        if (encoding.startsWith("UTF-16") && ((savedBytes[0] == (byte)0xFE) || (savedBytes[0] == (byte)0xFF))) {
+            savedBytes = removeBOM(savedBytes, 3);
+        }
+        String useVersioning;
+        if (useGlobalVersioning)
+            useVersioning = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_VERSIONING, false);
+        else
+            useVersioning = "false";
         String path = CustomProtocolURLHandlerExtension.pathFromURL(this.url);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            connection.put(this.source, path, savedBytes);
-            TopicHolder.saveFile.postMessage(this.url.getProtocol() + ":" + this.url.getPath());
-            if (useVersioning) {
-                // ToDo: catch IOException for getBackupPath() independently
-                String backupPath = getBackupPath(path);
-                connection.put(BaseXSource.DATABASE, backupPath, savedBytes);
-            }
+            connection.put(this.source, path, savedBytes, binary, encoding, owner, useVersioning, String.valueOf(versionUp));
+            versionUp = false;
+            //inform any interested party in save operation
+            TopicHolder.saveFile.postMessage(this.url.toString());
         } catch (IOException ex) {
             logger.error(ex);
-            throw(ex);
+            throw (ex);
         }
     }
 
-    private String getBackupPath(String path) throws IOException {
-        StringBuilder backupPath;
-        backupPath = new StringBuilder(backupDBBase);
-        if (source.equals(BaseXSource.REPO)) {
-            backupPath = new StringBuilder(backupRepoBase);
-        } else if (source.equals(BaseXSource.RESTXQ)) {
-            backupPath = new StringBuilder(backupRESTXYBase);
-        } else {
-            backupPath = new StringBuilder(backupDBBase);
-        }
-        Date date = new Date();
-        StringBuilder dateRevisionStr = new StringBuilder("_");
-        dateRevisionStr.append(date.getYear()+1900);     dateRevisionStr.append("-");
-        if ((date.getMonth()+1)<10)
-            dateRevisionStr.append("0");
-        dateRevisionStr.append(date.getMonth()+1);    dateRevisionStr.append("-");
-        if ((date.getDate())<10)
-            dateRevisionStr.append("0");
-        dateRevisionStr.append(date.getDate());     dateRevisionStr.append("_");
-        if ((date.getHours())<10)
-            dateRevisionStr.append("0");
-        dateRevisionStr.append(date.getHours());     dateRevisionStr.append("-");
-        if ((date.getMinutes())<10)
-            dateRevisionStr.append("0");
-        dateRevisionStr.append(date.getMinutes());
-        // ToDo: version and revision for non-XML/non-Query files??
-        dateRevisionStr.append("_v");               dateRevisionStr.append(this.verRev[0]);
-        dateRevisionStr.append("r");                dateRevisionStr.append(this.verRev[1]);
-        if (path.contains(".")) {
-            int fileSepPosition = path.lastIndexOf(".");
-            backupPath.append(path.substring(0,fileSepPosition));
-            backupPath.append(dateRevisionStr);
-            backupPath.append(".");
-            backupPath.append(path.substring(fileSepPosition+1, path.length()));
-        } else {
-            backupPath.append(path);
-            backupPath.append(dateRevisionStr);
-        }
-        System.out.println(backupPath);
-        String backupDBPath = backupPath.toString();
-        // ToDo: insert create for non-existing databases in connection.put
-        new BaseXRequest("create", BaseXSource.DATABASE, backupDBPath.substring(0,backupDBPath.indexOf("/")));
-        return backupDBPath;
+    private static byte[] removeBOM(byte[] savedBytes, int BOMlength) {
+        byte[] tempArray = new byte[savedBytes.length - BOMlength];
+        System.arraycopy(savedBytes, BOMlength, tempArray, 0, savedBytes.length - BOMlength);
+        return tempArray;
     }
 
 }

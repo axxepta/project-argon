@@ -1,21 +1,28 @@
 package de.axxepta.oxygen.actions;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.rest.BaseXRequest;
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.api.Connection;
+import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * @author Markus on 02.11.2015.
@@ -23,19 +30,18 @@ import java.awt.event.ActionEvent;
 public class RenameAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(RenameAction.class);
-    final BasexTree tree;
-    final DefaultTreeModel treeModel;
-    final TreeListener treeListener;
-    JDialog renameDialog;
-    JTextField newFileNameTextField;
-    BaseXSource source;
-    TreePath path;
-    String db_path;
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
+    private final TreeModel treeModel;
+    private final TreeListener treeListener;
+    private JDialog renameDialog;
+    private JTextField newFileNameTextField;
+    private BaseXSource source;
+    private TreePath path;
+    private String db_path;
 
-    public RenameAction(String name, Icon icon, BasexTree tree, TreeListener treeListener){
+    public RenameAction(String name, Icon icon, ArgonTree tree, TreeListener treeListener){
         super(name, icon);
-        this.tree = tree;
-        this.treeModel = (DefaultTreeModel) tree.getModel();
+        this.treeModel = tree.getModel();
         this.treeListener = treeListener;
     }
 
@@ -45,61 +51,97 @@ public class RenameAction extends AbstractAction {
         source = TreeUtils.sourceFromTreePath(path);
         db_path = TreeUtils.resourceFromTreePath(path);
         if ((source != null) && (!db_path.equals(""))) {
-            Frame parentFrame = (Frame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+            JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
-            renameDialog = new JDialog(parentFrame, Lang.get(Lang.Keys.cm_rename));
-            renameDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-            renameDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            String urlString = TreeUtils.urlStringFromTreePath(path);
+            int filePosition = urlString.lastIndexOf("/");
+            if (filePosition == -1)
+                filePosition = urlString.indexOf(":");
+            String fileName = urlString.substring(filePosition + 1);
+            String filePath = urlString.substring(0, filePosition + 1);
+
+            renameDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_rename) + " in " + filePath);
 
             JPanel content = new JPanel(new BorderLayout(10,10));
+
+            RenameThisAction renameThisAction = new RenameThisAction(Lang.get(Lang.Keys.cm_rename));
 
             newFileNameTextField = new JTextField();
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, true));
             content.add(newFileNameTextField, BorderLayout.NORTH);
+            newFileNameTextField.setText(fileName);
+            newFileNameTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+            newFileNameTextField.getActionMap().put("confirm", renameThisAction);
 
             JPanel btnPanel = new JPanel();
-            JButton addBtn = new JButton(new renameThisAction("Rename"));
+            JButton addBtn = new JButton(renameThisAction);
             btnPanel.add(addBtn, BorderLayout.WEST);
-            JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", renameDialog));
+            JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), renameDialog));
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
-            content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            renameDialog.setContentPane(content);
-            renameDialog.pack();
-            renameDialog.setLocationRelativeTo(parentFrame);
-            renameDialog.setVisible(true);
+            DialogTools.wrapAndShow(renameDialog, content, parentFrame);
         }
     }
 
-    private class renameThisAction extends AbstractAction {
+    public static void rename(TreeModel treeModel, TreePath path, BaseXSource source, String db_path,
+                               String newPathString, String newName, PluginWorkspace workspace) throws Exception {
+        boolean isFile = TreeUtils.isFile(path);
+        if (!isFile && ConnectionWrapper.directoryExists(source, newPathString)) {
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_norename1) + " " + newPathString + " " + Lang.get(Lang.Keys.msg_norename2));
+            // bulk handling not possible, would have to check every file for overwrite
+            return;
+        }
+        boolean locked;
+        locked = ConnectionWrapper.pathContainsLockedResource(source, db_path) ||
+                ConnectionWrapper.pathContainsLockedResource(source, newPathString);
+        if (!locked) {
+            boolean writable = true;
+            if (isFile)
+                writable = WorkspaceUtils.newResourceOrOverwrite(source, newPathString);
+            if (writable) {
+                try (Connection connection = BaseXConnectionWrapper.getConnection()) {
+                    connection.rename(source, db_path, newPathString);
+                    String newURLString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + newPathString;
+                    int endPosNewBase = Math.max( newURLString.lastIndexOf("/"), newURLString.indexOf(":"));
+                    TreePath newBasePath = TreeUtils.pathFromURLString(newURLString.substring(0, endPosNewBase));
+                    TreeUtils.insertStrAsNodeLexi(treeModel, newName,
+                            (DefaultMutableTreeNode) newBasePath.getLastPathComponent(), isFile);
+                    ((DefaultTreeModel) treeModel).removeNodeFromParent((MutableTreeNode) path.getLastPathComponent());
+                     TopicHolder.saveFile.postMessage(newURLString);
+                }
+            }
+        } else {
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_norename3));
+        }
+    }
 
-        public renameThisAction(String name){
+
+    private class RenameThisAction extends AbstractAction {
+
+        RenameThisAction(String name){
             super(name);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String newPath = newFileNameTextField.getText();
-            if (!newPath.equals("")) {
+            String newName = newFileNameTextField.getText();
+            if (!newName.equals("")) {
                 String newPathString;
                 if (path.getPathCount() == 2)
-                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newPath;
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + newName;
                 else
-                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newPath;
-                System.out.println(db_path);
-                System.out.println(newPathString);
+                    newPathString = TreeUtils.resourceFromTreePath(path.getParentPath()) + "/" + newName;
                 try {
-                    new BaseXRequest("rename", source, db_path, newPathString);
-                    treeModel.valueForPathChanged(path, newPath);
+                    rename(treeModel, path, source, db_path, newPathString, newName, workspace);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Failed to rename resource",
-                            "BaseX Connection Error", JOptionPane.PLAIN_MESSAGE);
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.warn_norename));
                     logger.debug(ex.toString());
                 }
             }
             renameDialog.dispose();
         }
+
     }
 
 }

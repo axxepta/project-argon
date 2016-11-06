@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="DEBUG">
+<configuration status="DEBUG" packages="org.apache.logging.log4j.core,com.getsentry.raven.log4j2">
 	<appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</Console>
-
-		<File name="File" fileName="argon.log">
-			<PatternLayout
-				pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		<Raven name="Sentry">
+            <dsn>https://8b28c95482ff498689ab89ac26ee0bc9:9bda6496fc7b470dba31543c5c73d1c6@sentry.basex.io/12</dsn>
+            <tags>tag1:value1,tag2:value2</tags>
+		</Raven>
+        <!-- <File name="File" fileName="${env:ARGON_HOME}/argon.log"> -->
+        <File name="File" fileName="${env:APPDATA}/Argon/argon.log">
+			<PatternLayout pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</File>
 	</appenders>
 
 	<Loggers>
 		<Logger name="de.axxepta.oxygen" level="debug" additivity="false">
-			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+            <AppenderRef ref="Sentry" />
 		</Logger>
+        <!-- <Logger name="de.axxepta" level="debug" additivity="false">
+            <AppenderRef ref="Sentry" />
+        </Logger> -->
 		<Root level="error">
 			<AppenderRef ref="Console" />
 		</Root>

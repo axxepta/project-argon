@@ -1,61 +1,89 @@
 package de.axxepta.oxygen.tree;
 
+import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.Lang;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 /**
  * Utility class for tree related operations
  */
 public class TreeUtils {
 
-    private static DefaultTreeModel model;
+    private static TreeModel model;
 
-    public static void init(DefaultTreeModel treeModel) {
+    public static void init(TreeModel treeModel) {
         model = treeModel;
     }
 
-    public static void insertStrAsNodeLexi(DefaultTreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+    public static void insertStrAsNodeLexi(TreeModel treeModel, String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
         DefaultMutableTreeNode currNode;
-        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
-        if (childIsFile) childNode.setAllowsChildren(false);
-        else childNode.setAllowsChildren(true);
-        Boolean parentIsFile;
+        DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
+        Boolean nextIsFile;
         boolean inserted = false;
-        for (int i=0; i<parent.getChildCount(); i++) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
             currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
-            parentIsFile = !currNode.getAllowsChildren();
-            if ((currNode.getUserObject().toString().compareTo(child) > 0) &&
-                    (parentIsFile.compareTo(childIsFile) >= 0)) {    // dirs before files
-                treeModel.insertNodeInto(childNode, parent, i);
+            nextIsFile = !currNode.getAllowsChildren();
+            if (((currNode.getUserObject().toString().compareTo(child) > 0) && (nextIsFile.compareTo(childIsFile) == 0)) ||
+                    (nextIsFile.compareTo(childIsFile) > 0)) {    // dirs before files
+                ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, i);
                 inserted = true;
                 break;
             }
         }
-        if (!inserted) treeModel.insertNodeInto(childNode, parent, parent.getChildCount());
+        if (!inserted)
+            ((DefaultTreeModel) treeModel).insertNodeInto(childNode, parent, parent.getChildCount());
     }
 
-    public static boolean isNodeAsStrChild(DefaultMutableTreeNode parent, String child) {
-        for (int i=0; i<parent.getChildCount(); i++) {
-            if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
-                return true;
+    public static DefaultMutableTreeNode insertStrAsNodeLexi(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+        DefaultMutableTreeNode currNode;
+        DefaultMutableTreeNode childNode = newChild(child, parent, childIsFile);
+        Boolean nextIsFile;
+        boolean inserted = false;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            currNode = (DefaultMutableTreeNode) parent.getChildAt(i);
+            nextIsFile = !currNode.getAllowsChildren();
+            if (((currNode.getUserObject().toString().compareTo(child) > 0) && (nextIsFile.compareTo(childIsFile) == 0)) ||
+                    (nextIsFile.compareTo(childIsFile) > 0)) {    // dirs before files
+                parent.insert(childNode, i);
+                inserted = true;
+                break;
             }
         }
-        return false;
+        if (!inserted)
+            parent.insert(childNode, parent.getChildCount());
+        return childNode;
+    }
+
+    private static DefaultMutableTreeNode newChild(String child, DefaultMutableTreeNode parent, Boolean childIsFile) {
+        String delim = (parent.getLevel() < 2) ? "" : "/";
+        DefaultMutableTreeNode childNode = ClassFactory.getInstance().getTreeNode(child,
+                ((ArgonTreeNode) parent).getTag().toString() + delim + child);
+        if (childIsFile)
+            childNode.setAllowsChildren(false);
+        else
+            childNode.setAllowsChildren(true);
+        return childNode;
+    }
+
+    public static int isNodeAsStrChild(TreeNode parent, String child) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(child)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static TreePath pathByAddingChildAsStr(TreePath currPath, String child) {
         // returns TreePath to child given by String, if child doesn't exist returns null!
         DefaultMutableTreeNode currNode = (DefaultMutableTreeNode)currPath.getLastPathComponent();
-        for (int i=0; i<currNode.getChildCount(); i++) {
-            if (((DefaultMutableTreeNode)currNode.getChildAt(i)).getUserObject().toString().equals(child)) {
-                return new TreePath(((DefaultMutableTreeNode) currNode.getChildAt(i)).getPath());
-            }
-        }
+        int childNodeIndex = isNodeAsStrChild(currNode, child);
+        if (childNodeIndex != -1)
+            return new TreePath(((DefaultMutableTreeNode) currNode.getChildAt(childNodeIndex)).getPath());
         return null;
     }
 
@@ -67,7 +95,7 @@ public class TreeUtils {
             case RESTXQ: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_restxq)); break;
             default: path = pathByAddingChildAsStr(path, Lang.get(Lang.Keys.tree_DB));
         }
-        String[] protocolResource = urlString.split(":/?");
+        String[] protocolResource = urlString.split(":/*");
         if (protocolResource.length > 1) {
             String[] pathParts = protocolResource[1].split("/");
             for (String res: pathParts) {
@@ -96,11 +124,11 @@ public class TreeUtils {
         if (path.getPathCount() > 1) {
             String sourceStr = path.getPathComponent(1).toString();
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_DB)))
-                return CustomProtocolURLHandlerExtension.ARGON;
+                return ArgonConst.ARGON;
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_restxq)))
-                return CustomProtocolURLHandlerExtension.ARGON_XQ;
+                return ArgonConst.ARGON_XQ;
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_repo)))
-                return CustomProtocolURLHandlerExtension.ARGON_REPO;
+                return ArgonConst.ARGON_REPO;
             return null;
         } else {
             return null;
@@ -123,13 +151,14 @@ public class TreeUtils {
     public static String urlStringFromTreePath(TreePath path) {
         StringBuilder db_path;
         if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":");
+            db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":");
         else if (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_repo)))
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":");
+            db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":");
         else
-            db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
+            db_path = new StringBuilder(ArgonConst.ARGON + ":");
         for (int i = 2; i < path.getPathCount(); i++) {
-            db_path.append('/');
+            if (i > 2)
+                db_path.append('/');
             db_path.append(path.getPathComponent(i).toString());
         }
         return db_path.toString();
@@ -149,12 +178,12 @@ public class TreeUtils {
 
         if (components.length > 2) {
             if (components[1].equals(Lang.get(Lang.Keys.tree_restxq)))
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_XQ + ":");
+                db_path = new StringBuilder(ArgonConst.ARGON_XQ + ":");
             else if (components[1].equals(Lang.get(Lang.Keys.tree_repo)))
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON_REPO + ":");
+                db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":");
             else
-                db_path = new StringBuilder(CustomProtocolURLHandlerExtension.ARGON + ":");
-            db_path.append(treeString.substring(components[0].length()+components[1].length()+1));
+                db_path = new StringBuilder(ArgonConst.ARGON + ":");
+            db_path.append(treeString.substring(components[0].length() + components[1].length() + 2));
         } else {
             db_path = new StringBuilder("");
         }
@@ -183,8 +212,8 @@ public class TreeUtils {
     }
 
     public static boolean isFile(TreePath path) {
-        DefaultMutableTreeNode clickedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-        return (!clickedNode.getAllowsChildren());
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        return (!node.getAllowsChildren());
     }
 
     public static boolean isDir(TreePath path) {
@@ -209,7 +238,7 @@ public class TreeUtils {
                 (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_DB)));
     }
 
-    public static boolean isInRestXY(TreePath path) {
+    public static boolean isInRestXQ(TreePath path) {
         int pathCount = path.getPathCount();
         return (pathCount > 2) &&
                 (path.getPathComponent(1).toString().equals(Lang.get(Lang.Keys.tree_restxq)));

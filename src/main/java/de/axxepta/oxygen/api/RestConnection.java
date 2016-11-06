@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.basex.io.*;
 import org.basex.util.*;
 import org.basex.util.Base64;
@@ -17,10 +19,12 @@ import org.basex.util.http.*;
  *
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
-public final class RestConnection implements Connection {
+public class RestConnection implements Connection {
     /** URI. */
-    private final IOUrl url;
-    private final String basicAuth;
+    protected final IOUrl url;
+    protected final URL sUrl;
+    protected final String basicAuth;
+    private static final Logger logger = LogManager.getLogger(RestConnection.class);
 
     /**
      * Constructor.
@@ -34,7 +38,7 @@ public final class RestConnection implements Connection {
         //url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
         url = new IOUrl("http://" + user + ":" + password + "@" + server );
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
-
+        sUrl = new URL("http://" + user + ":" + password + "@" + server );
     }
 
     @Override
@@ -43,7 +47,7 @@ public final class RestConnection implements Connection {
     }
 
     @Override
-    public BaseXResource[] list(final BaseXSource source, final String path) throws IOException {
+    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
         final String result = Token.string(request(getQuery("list-" + source), PATH, path));
         final ArrayList<BaseXResource> list = new ArrayList<>();
         if(!result.isEmpty()) {
@@ -52,28 +56,67 @@ public final class RestConnection implements Connection {
                 list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
             }
         }
-        return list.toArray(new BaseXResource[list.size()]);
+        return list;
     }
 
     @Override
-    public void create(String database) throws IOException {
-        request(getQuery("create-database"), DATABASE, database);
+    public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
+        final String result = Token.string(request(getQuery("listall-" + source), PATH, path));
+        final ArrayList<BaseXResource> list = new ArrayList<>();
+        if(!result.isEmpty()) {
+            final String[] results = result.split("\r?\n");
+            for(int r = 0, rl = results.length; r < rl; r += 2) {
+                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
+            }
+        }
+        return list;
     }
 
     @Override
-    public byte[] get(final BaseXSource source, final String path) throws IOException {
+    public void init() throws IOException {
+        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8"), false));
+    }
+
+    @Override
+    public void create(final String database, final String chop, final String ftindex, final String textindex,
+                       final String attrindex, final String tokenindex) throws IOException {
+        request(getQuery("create-database"), DATABASE, database, CHOP, chop, FTINDEX, ftindex, TEXTINDEX, textindex,
+                ATTRINDEX, attrindex, TOKENINDEX, tokenindex);
+    }
+
+    @Override
+    public void drop(String database) throws IOException {
+        request(getQuery("drop-database"), DATABASE, database);
+    }
+
+    @Override
+    public byte[] get(final BaseXSource source, final String path, boolean export) throws IOException {
         return request(getQuery("get-" + source), PATH, path);
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource)
+    public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+                    String owner, String versionize, String versionUp)
             throws IOException {
-        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource));
+        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource, binary), BINARY, Boolean.toString(binary),
+                ENCODING, encoding, OWNER, owner, VERSIONIZE, versionize, VERSION_UP, versionUp);
+    }
+
+    @Override
+    public void newDir(final BaseXSource source, final String path) throws IOException {
+        if (!source.equals(BaseXSource.DATABASE))
+            request(getQuery("newdir-" + source), PATH, path);
     }
 
     @Override
     public void delete(final BaseXSource source, final String path) throws IOException {
         request(getQuery("delete-" + source), PATH, path);
+    }
+
+    @Override
+    public boolean exists(final BaseXSource source, final String path) throws IOException {
+        final byte[] result = request(getQuery("exists-" + source), PATH, path);
+        return Token.string(result).equals("true");
     }
 
     @Override
@@ -89,9 +132,9 @@ public final class RestConnection implements Connection {
     }
 
     @Override
-    public String xquery(final String query) throws IOException {
+    public String xquery(final String query, final String... args) throws IOException {
         try {
-            return Token.string(request(query));
+            return Token.string(request(query, args));
         } catch(final IOException ex) {
             throw BaseXQueryException.get(ex);
         }
@@ -148,11 +191,13 @@ public final class RestConnection implements Connection {
      * @return string result, or {@code null} for a failure.
      * @throws IOException I/O exception
      */
-    private byte[] request(final String body, final String... bindings) throws IOException {
-        final HttpURLConnection conn = (HttpURLConnection) url.connection();
+    protected byte[] request(final String body, final String... bindings) throws IOException {
+        //final HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
+        final HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
+            conn.setAllowUserInteraction(false);
             conn.setRequestMethod(POST.name());
             conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
 
@@ -165,13 +210,13 @@ public final class RestConnection implements Connection {
                 tb.add(toEntities(bindings[b + 1])).add("'/>\n");
             }
             tb.add("</query>");
-
             try(final OutputStream out = conn.getOutputStream()) {
                 out.write(tb.finish());
                 out.close();
             }
             return new IOStream(conn.getInputStream()).read();
         } catch(final IOException ex) {
+            logger.debug("Connection failed to set query: ", ex.getMessage());
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
             throw BaseXQueryException.get(msg);
         } finally {
@@ -184,8 +229,9 @@ public final class RestConnection implements Connection {
      * @param string input string
      * @return resulting string
      */
-    private static String toEntities(final String string) {
+    protected static String toEntities(final String string) {
         return string.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;").
                 replace("<", "&lt;").replace(">", "&gt;");
     }
+
 }

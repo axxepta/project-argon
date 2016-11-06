@@ -1,26 +1,27 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
-import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-import de.axxepta.oxygen.tree.BasexTree;
+import de.axxepta.oxygen.tree.ArgonTree;
+import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
-import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.DialogTools;
+import de.axxepta.oxygen.utils.Lang;
+import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.util.TokenBuilder;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -31,46 +32,50 @@ public class AddNewFileAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(AddNewFileAction.class);
 
-    StandalonePluginWorkspace wsa;
-    BasexTree tree;
-    JDialog newFileDialog;
+    private ArgonTree tree;
+    private JDialog newFileDialog;
 
-    JTextField newFileNameTextField;
-    JComboBox newFileTypeComboBox;
+    private JTextField newFileNameTextField;
+    private JComboBox<String> newFileTypeComboBox;
 
-    public AddNewFileAction(String name, Icon icon, StandalonePluginWorkspace wsa, BasexTree tree){
+    public AddNewFileAction(String name, Icon icon, ArgonTree tree){
         super(name, icon);
-        this.wsa = wsa;
+        this.tree = tree;
+    }
+
+    public AddNewFileAction(ArgonTree tree){
+        super();
         this.tree = tree;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        TreePath path = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
+        TreeListener listener = ((TreeListener) tree.getTreeSelectionListeners()[0]);
+        TreePath path = listener.getPath();
         String db_path = TreeUtils.resourceFromTreePath(path);
-        String pathString = TreeUtils.protocolFromTreePath(path) + ":/" + db_path;
+        String urlString = ((ArgonTreeNode) path.getLastPathComponent()).getTag().toString();
 
-        if (((TreeListener) tree.getTreeSelectionListeners()[0]).getNode().getAllowsChildren()) {
+        if (listener.getNode().getAllowsChildren()) {
 
-            // show dialog
             JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-            newFileDialog = new JDialog(parentFrame, "Add new File to " + pathString);
-            newFileDialog.setIconImage(ImageUtils.createImage("/images/Oxygen16.png"));
-            newFileDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            newFileDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_addfileinto) + " " + urlString);
 
+            AddNewSpecFileAction addFile = new AddNewSpecFileAction(Lang.get(Lang.Keys.cm_addfile), path, db_path);
 
             JPanel content = new JPanel(new BorderLayout(10,10));
-
             JPanel namePanel = new JPanel(new GridLayout());
-            JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
+            JLabel nameLabel = new JLabel(Lang.get(Lang.Keys.lbl_filename), JLabel.LEFT);
             namePanel.add(nameLabel);
             newFileNameTextField = new JTextField();
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, false));
             namePanel.add(newFileNameTextField);
             content.add(namePanel, BorderLayout.NORTH);
 
+            newFileNameTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+            newFileNameTextField.getActionMap().put("confirm", addFile);
+
             JPanel extPanel = new JPanel(new GridLayout());
-            JLabel extLabel = new JLabel("File Type", JLabel.LEFT);
+            JLabel extLabel = new JLabel(Lang.get(Lang.Keys.lbl_filetype), JLabel.LEFT);
             extPanel.add(extLabel);
             String[] fileTypes = {"XML Document (*.xml)", "XQuery (*.xquery)",
                     "XQuery Module (*.xqm)"};
@@ -80,18 +85,13 @@ public class AddNewFileAction extends AbstractAction {
             content.add(extPanel, BorderLayout.CENTER);
 
             JPanel btnPanel = new JPanel();
-            JButton addBtn = new JButton(new AddNewSpecFileAction("Add File", path, db_path));
+            JButton addBtn = new JButton(addFile);
             btnPanel.add(addBtn, BorderLayout.WEST);
-            JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", newFileDialog));
+            JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), newFileDialog));
             btnPanel.add(cancelBtn, BorderLayout.EAST);
             content.add(btnPanel, BorderLayout.SOUTH);
 
-            content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            newFileDialog.setContentPane(content);
-            newFileDialog.pack();
-            newFileDialog.setLocationRelativeTo(parentFrame);
-            //DialogTools.CenterDialogRelativeToParent(newFileDialog);
-            newFileDialog.setVisible(true);
+            DialogTools.wrapAndShow(newFileDialog, content, parentFrame);
         }
     }
 
@@ -128,33 +128,40 @@ public class AddNewFileAction extends AbstractAction {
                         template.add("xquery version \"3.0\";\n module namespace " + name + " = \"" + name + "\";");
                         break;
                     default:
-                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                        template.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a/>");
                 }
                 // add file
                 BaseXSource source = TreeUtils.sourceFromTreePath(path);
-                String protocol = TreeUtils.protocolFromTreePath(path);
-
+                String resource = TreeUtils.resourceFromTreePath(path) + "/" + name + ext;
                 String urlString = TreeUtils.urlStringFromTreePath(path) + "/" + name + ext;
-                URL url = null;
+                URL url;
                 try {
                     url = new URL(urlString);
                 } catch (MalformedURLException e1) {
                     logger.error(e1);
+                    return;
                 }
-
-                CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
-                if (handlerExtension.canCheckReadOnly(protocol) && handlerExtension.isReadOnly(url)) {
-                    JOptionPane.showMessageDialog(null, "Couldn't create new file. Resource already exists\n" +
-                                    "and is locked by another user.", "File locked",
-                            JOptionPane.PLAIN_MESSAGE);
+                PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+                boolean isLocked = ConnectionWrapper.isLocked(source, resource);
+                if (isLocked) {
+                    pluginWorkspace.showInformationMessage(Lang.get(Lang.Keys.msg_fileexists1) + "\n" +
+                            Lang.get(Lang.Keys.msg_fileexists2));
                 } else {
-                    // ToDo: proper locking while store process
-                    try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(source, url, true)) {
-                        os.write(template.finish());
-                    } catch (IOException ex) {
-                        logger.error(ex.getMessage());
-                        JOptionPane.showMessageDialog(null, "Couldn't create new file", "BaseX Connection Error",
-                                JOptionPane.PLAIN_MESSAGE);
+                    if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
+                        try {
+                            ConnectionWrapper.lock(source, resource);
+                            WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
+                            if (ext.equals(".xml"))
+                                ConnectionWrapper.save(url, template.finish(), "UTF-8");
+                            else
+                                ConnectionWrapper.save(true, url, template.finish());
+                            WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                            WorkspaceUtils.openURLString(urlString);
+                        } catch (IOException ex) {
+                            WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
+                            ConnectionWrapper.unlock(source, resource);
+                            pluginWorkspace.showInformationMessage(Lang.get(Lang.Keys.warn_failednewfile));
+                        }
                     }
                 }
             }

@@ -9,19 +9,24 @@ import javax.swing.event.DocumentListener;
  */
 public class FileNameFieldListener implements DocumentListener {
 
-    boolean textFieldResetInProgress;
-    JTextField textField;
-    final String fileNameChar;
-    final String fileNameChars;
+    private final static String FILE_NAME_CHAR_WITH_EXTENSION = "\\w|_|-|\\.";
+    private final static String FILE_NAME_CHARS_WITH_EXTENSION ="(\\w|_|-|\\.)*";
+    private final static String FILE_NAME_CHAR_WITHOUT_EXTENSION = "\\w|_|-";
+    public final static String FILE_NAME_CHARS_WITHOUT_EXTENSION = "(\\w|_|-)*";
+
+    private boolean textFieldResetInProgress;
+    private JTextField textField;
+    private final String fileNameChar;
+    private final String fileNameChars;
 
     public FileNameFieldListener(JTextField textField, boolean withExtension) {
         this.textField = textField;
         if (withExtension) {
-            fileNameChar = "\\w|_|-|\\.";
-            fileNameChars = "(\\w|_|-|\\.)*";
+            fileNameChar = FILE_NAME_CHAR_WITH_EXTENSION;
+            fileNameChars = FILE_NAME_CHARS_WITH_EXTENSION;
         } else {
-            fileNameChar = "\\w|_|-";
-            fileNameChars = "(\\w|_|-)*";
+            fileNameChar = FILE_NAME_CHAR_WITHOUT_EXTENSION;
+            fileNameChars = FILE_NAME_CHARS_WITHOUT_EXTENSION;
         }
     }
 
@@ -58,7 +63,7 @@ public class FileNameFieldListener implements DocumentListener {
         }
     }
 
-    public void resetTextField(final String name) {
+    private void resetTextField(final String name) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 textField.setText(name);
