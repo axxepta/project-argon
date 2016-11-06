@@ -4,7 +4,6 @@ import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
-import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -42,7 +41,7 @@ public class AddDatabaseAction extends AbstractAction {
 
         JPanel content = new JPanel(new BorderLayout(10,10));
 
-        AddDbAction addDB = new AddDbAction("Add");
+        AddDbAction addDB = new AddDbAction(Lang.get(Lang.Keys.cm_addsimple));
 
         newDbNameTextField = new JTextField();
         newDbNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newDbNameTextField, true));
@@ -72,13 +71,14 @@ public class AddDatabaseAction extends AbstractAction {
             String db = newDbNameTextField.getText();
             try {   // not the nice way, but catch exception with no database error message
                 ConnectionWrapper.list(BaseXSource.DATABASE, db);
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Database with this name already exists or\n" +
-                        " connection could not be established.");
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.msg_dbexists1 ) + "\n " +
+                        Lang.get(Lang.Keys.msg_dbexists2));
             } catch (IOException ie) {
                 try {
                     ConnectionWrapper.create(db);
                 } catch (IOException ex) {
-                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to add new database: " + ex.getMessage());
+                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.warn_failednewdb) +
+                            " " + ex.getMessage());
                     logger.debug(ex.getMessage());
                 }
             }

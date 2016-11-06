@@ -6,6 +6,7 @@ import java.net.URL;
 import javax.swing.Icon;
 
 import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.Lang;
 import ro.sync.exml.plugin.urlstreamhandler.URLChooserPluginExtension2;
 import ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -20,7 +21,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     */
     public URL[] chooseURLs(StandalonePluginWorkspace workspaceAccess) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspaceAccess.getParentFrame(),
-                "Open File via BaseX Database Connection", ArgonChooserDialog.Type.OPEN);
+                Lang.get(Lang.Keys.dlg_open), ArgonChooserDialog.Type.OPEN);
         return urlChooser.selectURLs();
     }
 
@@ -28,7 +29,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     * @return A menu name.
     */
     public String getMenuName() {
-        return "Open using Argon Protocol";
+        return Lang.get(Lang.Keys.dlg_open);
     }
 
     /**
@@ -42,6 +43,6 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     * @see ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension#getToolbarTooltip()
     */
     public String getToolbarTooltip() {
-        return "Open with Argon Protocol";
+        return Lang.get(Lang.Keys.dlg_open);
     }
 }

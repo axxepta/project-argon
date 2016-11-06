@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.utils.ImageUtils;
+import de.axxepta.oxygen.utils.Lang;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.InputURLChooser;
 import ro.sync.exml.workspace.api.standalone.InputURLChooserCustomizer;
@@ -21,7 +22,7 @@ public class ArgonInputURLChooserCustomizer implements InputURLChooserCustomizer
             public void actionPerformed(ActionEvent e) {
                 ArgonChooserDialog urlChooser = new ArgonChooserDialog(
                         (Frame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                        "Open File via BaseX Database Connection", ArgonChooserDialog.Type.OPEN);
+                        Lang.get(Lang.Keys.dlg_open), ArgonChooserDialog.Type.OPEN);
                 URL chosenResource = urlChooser.selectURLs()[0];
                 if (chosenResource != null) {
                     inputURLChooser.urlChosen(chosenResource);

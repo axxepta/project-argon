@@ -88,7 +88,7 @@ public class RenameAction extends AbstractAction {
                                String newPathString, String newName, PluginWorkspace workspace) throws Exception {
         boolean isFile = TreeUtils.isFile(path);
         if (!isFile && ConnectionWrapper.directoryExists(source, newPathString)) {
-            workspace.showInformationMessage("Target directory " + newPathString + " already exists. Cannot rename resource.");
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_norename1) + " " + newPathString + " " + Lang.get(Lang.Keys.msg_norename2));
             // bulk handling not possible, would have to check every file for overwrite
             return;
         }
@@ -112,7 +112,7 @@ public class RenameAction extends AbstractAction {
                 }
             }
         } else {
-            workspace.showInformationMessage("Source or target is locked or contains locked file. Check in before renaming.");
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_norename3));
         }
     }
 
@@ -135,7 +135,7 @@ public class RenameAction extends AbstractAction {
                 try {
                     rename(treeModel, path, source, db_path, newPathString, newName, workspace);
                 } catch (Exception ex) {
-                    workspace.showInformationMessage("Failed to rename resource");
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.warn_norename));
                     logger.debug(ex.toString());
                 }
             }

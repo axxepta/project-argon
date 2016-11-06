@@ -71,13 +71,13 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
     }
 
     private void initButtons() {
-        Action runBaseXQueryAction = new BaseXRunQueryAction("Run BaseX Query",
+        Action runBaseXQueryAction = new BaseXRunQueryAction(Lang.get(Lang.Keys.cm_runquery),
                 ImageUtils.createImageIcon("/images/RunQuery.png"));
-        Action newVersionAction = new NewVersionAction("Increase File Version",
+        Action newVersionAction = new NewVersionAction(Lang.get(Lang.Keys.cm_newversion),
                 ImageUtils.createImageIcon("/images/IncVersion.png"));
-        Action replyToAuthorComment = new ReplyAuthorCommentAction("Reply Author Comment",
+        Action replyToAuthorComment = new ReplyAuthorCommentAction(Lang.get(Lang.Keys.cm_replycomment),
                 ImageUtils.createImageIcon("/images/ReplyComment.png"));
-        Action saveToArgonAction = new SaveFileToArgonAction("Save As with Argon Protocol",
+        Action saveToArgonAction = new SaveFileToArgonAction(Lang.get(Lang.Keys.cm_saveas),
                 ImageUtils.getIcon(ImageUtils.BASEX24ADD));
         runQueryButton = new ToolbarButton(runBaseXQueryAction, true);
         runQueryButton.setText("");
@@ -100,10 +100,10 @@ public class ArgonWorkspaceAccessPluginExtension implements WorkspaceAccessPlugi
             if ("ArgonWorkspaceAccessID".equals(viewInfo.getViewID())) {
                 //The view ID defined in the "plugin.xml"
                 viewInfo.setComponent(new TreePane());
-                viewInfo.setTitle("Argon DB Connection");
+                viewInfo.setTitle(Lang.get(Lang.Keys.title_connection));
             } else if ("ArgonWorkspaceAccessOutputID".equals(viewInfo.getViewID())) {
                 viewInfo.setComponent(new VersionHistoryPanel());
-                viewInfo.setTitle("Argon Version History");
+                viewInfo.setTitle(Lang.get(Lang.Keys.title_history));
             }
         }
     }

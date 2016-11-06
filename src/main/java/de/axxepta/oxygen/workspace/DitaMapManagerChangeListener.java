@@ -10,7 +10,6 @@ import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
-import ro.sync.ecss.extensions.api.node.AuthorDocument;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 import ro.sync.ecss.extensions.api.node.AttrValue;
@@ -105,7 +104,6 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
                 refUp++;
         }
         if (refUp > (baseComponents.length - 2)) {
-            logger.debug("Cannot resolve DITAMap link URL.");
             throw new IllegalArgumentException("Cannot resolve DITAMap link URL.");
         }
         StringBuilder absoluteURL = (new StringBuilder(baseComponents[0])).append(":");
@@ -142,7 +140,9 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
                                 String urlString = getAbsoluteURLString(baseUrl, refName);
                                 JMenuItem checkOutMenuItem = createCheckOutEditorPopUpAddition(urlString);
                                 ((JPopupMenu) popUp).add(checkOutMenuItem, 0);
-                            } catch (IllegalArgumentException iae) {}
+                            } catch (IllegalArgumentException iae) {
+                                logger.debug("Cannot resolve DITAMap link URL.");
+                            }
                         }
                     }
                 }

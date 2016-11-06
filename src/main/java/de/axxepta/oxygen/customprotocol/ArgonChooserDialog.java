@@ -108,7 +108,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
 
     private JPanel createBottomPanel() {
         JPanel panel = new JPanel(new FlowLayout());
-        JLabel fileNameLabel = new JLabel("File Name:");
+        JLabel fileNameLabel = new JLabel(Lang.get(Lang.Keys.lbl_filename) +":");
         selectedFileTextField = new JTextField();
         selectedFileTextField.setEditable(false);
         selectedFileTextField.setColumns(25);
@@ -118,7 +118,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
         JButton[] buttons;
         switch (type) {
             case OPEN: {
-                buttonNames = new String[]{"Open", "Check out", "Cancel"};
+                buttonNames = new String[]{Lang.get(Lang.Keys.cm_open), Lang.get(Lang.Keys.cm_checkout), Lang.get(Lang.Keys.cm_cancel)};
                 buttons = createButtons(buttonNames);
                 buttons[0].addActionListener(selectionAction);
                 buttons[1].addActionListener(e -> {
@@ -131,7 +131,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
                 break;
             }
             default: {
-                buttonNames = new String[]{"Save", "Cancel"};
+                buttonNames = new String[]{Lang.get(Lang.Keys.cm_save), Lang.get(Lang.Keys.cm_cancel)};
                 buttons = createButtons(buttonNames);
                 buttons[0].addActionListener(selectionAction);
                 buttons[1].addActionListener( e -> this.dispose() );
@@ -245,7 +245,7 @@ public class ArgonChooserDialog extends JDialog implements MouseListener, Observ
                     newList.add(new ArgonChooserListModel.Element(ArgonEntity.FILE, resource.getName()));
             }
         } catch (IOException ioe) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to get resource list from BaseX server: " +
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.warn_failedlist) + " " +
                     ioe.getMessage());
         }
         return newList;

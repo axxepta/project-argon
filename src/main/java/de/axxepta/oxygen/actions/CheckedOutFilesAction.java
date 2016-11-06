@@ -2,6 +2,7 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.utils.DialogTools;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -40,13 +41,13 @@ public class CheckedOutFilesAction extends AbstractAction {
         final ResourceListModel listModel = new ResourceListModel(files);
         final JList resultList = new JList(listModel);
 
-        final JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, "Checked out files");
+        final JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_checkedout));
 
-        JPanel content = SearchInPathAction.createSelectionListPanel("Choose files to check in.", resultList);
+        JPanel content = SearchInPathAction.createSelectionListPanel(Lang.get(Lang.Keys.lbl_filestocheck), resultList);
         resultList.setSelectionInterval(0, resultList.getModel().getSize() - 1);
 
         JPanel buttonsPanel = new JPanel();
-        JButton checkInButton = new JButton(new AbstractAction("Check in selected files") {
+        JButton checkInButton = new JButton(new AbstractAction(Lang.get(Lang.Keys.cm_checkinselected)) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int fileIndex : resultList.getSelectedIndices()) {
@@ -61,7 +62,7 @@ public class CheckedOutFilesAction extends AbstractAction {
             }
         });
         buttonsPanel.add(checkInButton);
-        JButton exitButton = new JButton(new CloseDialogAction("Exit", resultsDialog));
+        JButton exitButton = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_exit), resultsDialog));
         buttonsPanel.add(exitButton);
         content.add(buttonsPanel, BorderLayout.SOUTH);
 

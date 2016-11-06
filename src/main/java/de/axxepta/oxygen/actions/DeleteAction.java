@@ -6,6 +6,7 @@ import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.Lang;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -49,9 +50,9 @@ public class DeleteAction extends AbstractAction {
                     if (!ConnectionWrapper.pathContainsLockedResource(source, db_path)) {
 
                         int dialogResult = pluginWorkspace.showConfirmDialog(
-                                "Delete Resource(s)",
-                                "Do you really want to delete the resource(s)\n" + TreeUtils.urlStringFromTreePath(path),
-                                new String[]{"Yes", "All"},
+                                Lang.get(Lang.Keys.dlg_delete),
+                                Lang.get(Lang.Keys.lbl_delete) + "\n" + TreeUtils.urlStringFromTreePath(path),
+                                new String[]{Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_all)},
                                 new int[]{0, 1}, 0);
                         if (dialogResult == 0) {
                             if (TreeUtils.isDB(path)) {
@@ -59,7 +60,7 @@ public class DeleteAction extends AbstractAction {
                                         connection.drop(db_path);
                                         ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
                                 } catch (Exception er) {
-                                    pluginWorkspace.showErrorMessage("Failed to delete database: " + er.getMessage());
+                                    pluginWorkspace.showErrorMessage(Lang.get(Lang.Keys.warn_faileddeletedb) + " " + er.getMessage());
                                 }
                             } else if (TreeUtils.isDir(path) || TreeUtils.isFile(path)) {
                                 deleteFile(source, db_path, path);
@@ -67,7 +68,7 @@ public class DeleteAction extends AbstractAction {
                         }
 
                     } else {
-                        pluginWorkspace.showInformationMessage("Path contains locked resource(s). Check in all files prior to deleting.");
+                        pluginWorkspace.showInformationMessage(Lang.get(Lang.Keys.msg_checkpriordelete));
                     }
                 }
             }
@@ -79,7 +80,8 @@ public class DeleteAction extends AbstractAction {
             connection.delete(source, db_path);
             ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
         } catch (Exception er) {
-            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage("Failed to delete resource: " + er.getMessage());
+            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(Lang.get(Lang.Keys.warn_faileddelete) +
+                    " " + er.getMessage());
         }
     }
 

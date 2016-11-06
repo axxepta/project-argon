@@ -42,7 +42,7 @@ public final class BaseXResource {
 
     public String getURLString() {
         StringBuilder url = new StringBuilder(CustomProtocolURLHandlerExtension.protocolFromSource(source));
-        url.append("://");
+        url.append(":");
         url.append(name);
         return url.toString();
     }

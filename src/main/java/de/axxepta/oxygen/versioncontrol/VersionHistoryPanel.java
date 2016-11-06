@@ -3,6 +3,7 @@ package de.axxepta.oxygen.versioncontrol;
 import de.axxepta.oxygen.actions.CompareVersionsAction;
 import de.axxepta.oxygen.actions.RollbackVersionAction;
 import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.utils.Lang;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,9 +30,9 @@ public class VersionHistoryPanel extends JPanel {
         TopicHolder.changedEditorStatus.register(versionHistoryUpdater);
 
         // Two Buttons (with filler) in Pane in Top Box
-        JButton compareRevisionsButton = new JButton(new CompareVersionsAction("Compare", versionHistoryTable));
+        JButton compareRevisionsButton = new JButton(new CompareVersionsAction(Lang.get(Lang.Keys.cm_compare), versionHistoryTable));
         compareRevisionsButton.setEnabled(false);
-        JButton replaceRevisionButton = new JButton(new RollbackVersionAction("Reset to", versionHistoryTable));
+        JButton replaceRevisionButton = new JButton(new RollbackVersionAction(Lang.get(Lang.Keys.cm_reset), versionHistoryTable));
         replaceRevisionButton.setEnabled(false);
         JPanel versionHistoryButtonPanel = new JPanel();
         versionHistoryButtonPanel.setLayout(new BoxLayout(versionHistoryButtonPanel, BoxLayout.X_AXIS));

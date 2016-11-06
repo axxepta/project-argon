@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -110,8 +109,8 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         if (!((String) baseXConnectionSettingsComboBox.getSelectedItem()).
                 matches(FileNameFieldListener.FILE_NAME_CHARS_WITHOUT_EXTENSION)) {
             java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null, "Choose a name suitable for a file (without white spaces or special characters)\n" +
-                    "as 'Connection configuration'!", "Store Connection Settings Error", JOptionPane.ERROR_MESSAGE);
+            pluginWorkspace.showErrorMessage(Lang.get(Lang.Keys.warn_connectionsettings1) + "\n" +
+                    Lang.get(Lang.Keys.warn_connectionsettings2));
         } else {
 
             // save BaseX configs in the option storage
@@ -229,7 +228,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         GridBagConstraints c = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
-        JLabel saveTmpLocationLbl = new JLabel("BaseX server connection configuration");
+        JLabel saveTmpLocationLbl = new JLabel(Lang.get(Lang.Keys.title_connection2));
         saveTmpLocationLbl.setFont(saveTmpLocationLbl.getFont().deriveFont(Font.BOLD));
 
         c.gridx = 0;
@@ -245,7 +244,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXConnectionSettingsComboBoxLbl = new JLabel("Connection configuration:");
+        JLabel baseXConnectionSettingsComboBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_connection));
         panel.add(baseXConnectionSettingsComboBoxLbl, c);
 
         baseXConnectionSettingsComboBox = new JComboBox(connectionSettingNames.toArray());
@@ -303,7 +302,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXHostTextFieldLbl = new JLabel("BaseX Host:");
+        JLabel baseXHostTextFieldLbl = new JLabel(Lang.get(Lang.Keys.lbl_host));
         panel.add(baseXHostTextFieldLbl, c);
 
         baseXHostTextField = new JTextField();
@@ -351,7 +350,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXUsernameTextFieldLbl = new JLabel("BaseX Username:");
+        JLabel baseXUsernameTextFieldLbl = new JLabel(Lang.get(Lang.Keys.lbl_user));
         panel.add(baseXUsernameTextFieldLbl, c);
 
         baseXUsernameTextField = new JTextField();
@@ -367,7 +366,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXPasswordTextFieldLbl = new JLabel("BaseX Password:");
+        JLabel baseXPasswordTextFieldLbl = new JLabel(Lang.get(Lang.Keys.lbl_pwd));
         panel.add(baseXPasswordTextFieldLbl, c);
 
         baseXPasswordTextField = new JTextField();
@@ -402,7 +401,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXVersioningCheckBoxLbl = new JLabel("Version Control:");
+        JLabel baseXVersioningCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_vcs));
         panel.add(baseXVersioningCheckBoxLbl, c);
 
         baseXVersioningCheckBox = new JCheckBox();
@@ -455,7 +454,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateOptionsLbl = new JLabel("Options for creating new databases");
+        JLabel baseXDBCreateOptionsLbl = new JLabel(Lang.get(Lang.Keys.lbl_dboptions));
         baseXDBCreateOptionsLbl.setFont(baseXDBCreateOptionsLbl.getFont().deriveFont(Font.BOLD));
         panel.add(baseXDBCreateOptionsLbl, c);
 
@@ -464,7 +463,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateChopCheckBoxLbl = new JLabel("Chop whitespaces");
+        JLabel baseXDBCreateChopCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_chop));
         panel.add(baseXDBCreateChopCheckBoxLbl, c);
 
         baseXDBCreateChopCheckBox = new JCheckBox();
@@ -479,7 +478,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateFTIndexCheckBoxLbl = new JLabel("Full-text index:");
+        JLabel baseXDBCreateFTIndexCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_ftindex));
         panel.add(baseXDBCreateFTIndexCheckBoxLbl, c);
 
         baseXDBCreateFTIndexCheckBox = new JCheckBox();
@@ -494,7 +493,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateTextIndexCheckBoxLbl = new JLabel("Text index:");
+        JLabel baseXDBCreateTextIndexCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_textindex));
         panel.add(baseXDBCreateTextIndexCheckBoxLbl, c);
 
         baseXDBCreateTextIndexCheckBox = new JCheckBox();
@@ -509,7 +508,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateAttrIndexCheckBoxLbl = new JLabel("Attribute index:");
+        JLabel baseXDBCreateAttrIndexCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_attributeindex));
         panel.add(baseXDBCreateAttrIndexCheckBoxLbl, c);
 
         baseXDBCreateAttrIndexCheckBox = new JCheckBox();
@@ -524,7 +523,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
          */
         c.gridx = 0;
         c.gridy++;
-        JLabel baseXDBCreateTokenIndexCheckBoxLbl = new JLabel("Token index:");
+        JLabel baseXDBCreateTokenIndexCheckBoxLbl = new JLabel(Lang.get(Lang.Keys.lbl_tokenindex));
         panel.add(baseXDBCreateTokenIndexCheckBoxLbl, c);
 
         baseXDBCreateTokenIndexCheckBox = new JCheckBox();
@@ -626,9 +625,9 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                     if (index == 0) {
                         overwrite = 1;
                     } else {
-                        overwrite = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog("Overwrite connection setting?",
-                                "The connection setting already exists. Overwrite or rename?",
-                                new String[]{"Overwrite", "Rename"},
+                        overwrite = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(Lang.get(Lang.Keys.dlg_overwritesetting),
+                                Lang.get(Lang.Keys.msg_settingsexists),
+                                new String[]{Lang.get(Lang.Keys.cm_overwrite), Lang.get(Lang.Keys.cm_rename)},
                                 new int[]{0, 1}, 0);
                     }
                     if (overwrite == 0) {
@@ -636,9 +635,9 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                         updateSettingsList((String) baseXConnectionSettingsComboBox.getSelectedItem(), index);
                     } else {
                         JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
-                        JDialog renameDialog = DialogTools.getOxygenDialog(parentFrame, "New connection setting name");
+                        JDialog renameDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_newsetting));
                         JPanel content = new JPanel(new BorderLayout(10,10));
-                        content.add(new JLabel("Note that you cannot overwrite the default setting."));
+                        content.add(new JLabel(Lang.get(Lang.Keys.lbl_fixdefault)));
                         JTextField settingNameTextField = new JTextField();
                         settingNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(settingNameTextField, true));
                         content.add(settingNameTextField, BorderLayout.NORTH);
@@ -647,7 +646,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                             public void actionPerformed(ActionEvent e) {
                                 String newName = settingNameTextField.getText();
                                 if (connectionSettingNames.contains(newName)) {
-                                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("New name already exists");
+                                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.msg_nameexists));
                                 } else {
                                     if (newName.equals("")) {
                                         storeConnectionSettings();
@@ -667,9 +666,9 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
 
                         JPanel btnPanel = new JPanel();
                         JButton addBtn = new JButton(renameThisAction);
-                        addBtn.setText("Ok");
+                        addBtn.setText(Lang.get(Lang.Keys.cm_ok));
                         btnPanel.add(addBtn, BorderLayout.WEST);
-                        JButton cancelBtn = new JButton(new CloseDialogAction("Don't save", renameDialog));
+                        JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_nosave), renameDialog));
                         btnPanel.add(cancelBtn, BorderLayout.EAST);
                         content.add(btnPanel, BorderLayout.SOUTH);
                         DialogTools.wrapAndShow(renameDialog, content, parentFrame);
@@ -752,8 +751,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             if (!settingsPath.mkdir()) {
                 noDirectory = true;
                 PluginWorkspaceProvider.getPluginWorkspace().
-                        showErrorMessage("Couldn't create config directory 'argon' in user home path.\n" +
-                                "Please create it manually to store connection settings permanently.");
+                        showErrorMessage(Lang.get(Lang.Keys.warn_settingspath1) + "\n" + Lang.get(Lang.Keys.warn_settingspath2));
             }
         }
         if (!noDirectory) {
@@ -776,7 +774,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             } catch (IOException ioe) {
                 logger.error(ioe.getMessage());
                 PluginWorkspaceProvider.getPluginWorkspace().
-                        showErrorMessage("Couldn't store connection settings to file\n" + fileName);
+                        showErrorMessage(Lang.get(Lang.Keys.warn_settingspath3) + "\n" + fileName);
             }
         }
     }

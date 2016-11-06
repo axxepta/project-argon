@@ -9,6 +9,7 @@ import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.FileUtils;
+import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -70,7 +71,7 @@ public class ExportAction extends AbstractAction {
                 }
             } catch (IOException ioe) {
                 logger.error("Failed to export resources from database", ioe.getMessage());
-                workspace.showErrorMessage("Failed to export resources from database: " + ioe.getMessage());
+                workspace.showErrorMessage(Lang.get(Lang.Keys.warn_failedexport) + " " + ioe.getMessage());
             }
         }
     }

@@ -4,6 +4,7 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
+import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -30,7 +31,7 @@ public class SaveFileToArgonAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
-                "Save File via BaseX Database Connection", ArgonChooserDialog.Type.SAVE);
+                Lang.get(Lang.Keys.dlg_saveas), ArgonChooserDialog.Type.SAVE);
         URL[] url =  urlChooser.selectURLs();
 
         WSEditor editorAccess = workspace.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
@@ -49,12 +50,12 @@ public class SaveFileToArgonAction extends AbstractAction {
                         WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                     } catch (IOException ioe) {
                         WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                        workspace.showErrorMessage("Resource " + url[0].toString() +
-                                " could not be stored to BaseX connection: " + ioe.getMessage());
+                        workspace.showErrorMessage(Lang.get(Lang.Keys.warn_resource) + " " + url[0].toString()
+                                + " " + Lang.get(Lang.Keys.warn_storing) + ": " + ioe.getMessage());
                     }
                 } else {
-                    workspace.showInformationMessage("Resource " + url[0].toString() +
-                            " already exists and is locked by another user");
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.warn_resource) + " " + url[0].toString() +
+                            " " + Lang.get(Lang.Keys.warn_locked));
                 }
             }
         }

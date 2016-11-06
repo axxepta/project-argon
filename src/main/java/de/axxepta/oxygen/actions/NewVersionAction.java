@@ -6,6 +6,7 @@ import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
+import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -47,8 +48,8 @@ public class NewVersionAction extends AbstractAction {
                 updateFile(url, outputArray, encoding);
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } else {
-                 workspace.showInformationMessage("Couldn't update version of file\n" + url.toString() +
-                        ".\n File is locked by other user.");
+                 workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noupdate1) + " " + url.toString() + ".\n" +
+                         Lang.get(Lang.Keys.msg_noupdate2));
             }
         }
     }
@@ -61,7 +62,7 @@ public class NewVersionAction extends AbstractAction {
                 ConnectionWrapper.save(true, url, outputArray, true);
         } catch (IOException ex) {
             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-            workspace.showInformationMessage("Couldn't write updated version of file\n" + url.toString());
+            workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failednewversion) + "\n" + url.toString());
         }
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(url));
     }

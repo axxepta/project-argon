@@ -153,7 +153,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 } catch (Exception e1) {
                     logger.info(e1.getMessage());
                     java.awt.Toolkit.getDefaultToolkit().beep();
-                    workspace.showInformationMessage("Couldn't access transferred objects, see log file for details.");
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.warn_notransfer));
                     return false;
                 }
             }
@@ -255,7 +255,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             i++;
         }
         if (lockedFiles.size() > 0) {
-            workspace.showInformationMessage("The following target URLs are locked by another user and could not be overwritten:\n" + lockedFiles);
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_transferlocked) + "\n" + lockedFiles);
         }
     }
 
@@ -282,11 +282,12 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } catch (IOException ex) {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                workspace.showErrorMessage("Couldn't store transferred object\n" + file.toString() + "\nto database: " + ex.getMessage());
+                workspace.showErrorMessage(Lang.get(Lang.Keys.warn_transfernowrite1) + "\n" + file.toString() + "\n" +
+                        Lang.get(Lang.Keys.warn_transfernowrite2) + " " + ex.getMessage());
             }
         } catch (IOException es) {
             logger.error(es);
-            workspace. showErrorMessage("Couldn't read transferred object\n" + file.toString() + ".");
+            workspace. showErrorMessage(Lang.get(Lang.Keys.warn_transfernoread) + "\n" + file.toString() + ".");
         }
     }
 

@@ -1,5 +1,7 @@
 package de.axxepta.oxygen.versioncontrol;
 
+import de.axxepta.oxygen.utils.Lang;
+
 import javax.swing.table.AbstractTableModel;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,7 +13,8 @@ import java.util.List;
 
 public class VersionHistoryTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMN_NAMES = {"Version", "Revision", "Date"};
+    private static final String[] COLUMN_NAMES =
+            {Lang.get(Lang.Keys.lbl_version), Lang.get(Lang.Keys.lbl_revision), Lang.get(Lang.Keys.lbl_date)};
 
     private List<VersionHistoryEntry> data;
 

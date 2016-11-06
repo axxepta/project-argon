@@ -76,7 +76,7 @@ public class NewDirectoryAction extends AbstractAction {
 
     private void createNewDirDialog(BaseXSource source, String resource, String urlString) {
         JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-        newDirectoryDialog = DialogTools.getOxygenDialog(parentFrame, "Add new Directory to " + urlString);
+        newDirectoryDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_newdir) + " " + urlString);
 
         JPanel content = new JPanel(new BorderLayout(10,10));
 
@@ -84,7 +84,7 @@ public class NewDirectoryAction extends AbstractAction {
                 source, resource, urlString);
 
         JPanel namePanel = new JPanel(new GridLayout());
-        JLabel nameLabel = new JLabel("Directory Name", JLabel.LEFT);
+        JLabel nameLabel = new JLabel(Lang.get(Lang.Keys.lbl_dir), JLabel.LEFT);
         namePanel.add(nameLabel);
         newDirectoryNameTextField = new JTextField();
         newDirectoryNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newDirectoryNameTextField, false));

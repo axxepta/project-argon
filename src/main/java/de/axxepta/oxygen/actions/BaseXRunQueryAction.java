@@ -69,11 +69,11 @@ public class BaseXRunQueryAction extends AbstractAction {
                 workspace.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);
 
             } else {
-                workspace.showInformationMessage("No XQuery in editor window!");
+                workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noquery));
             }
 
         } else {
-            workspace.showInformationMessage("No editor window opened!");
+            workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noeditor));
         }
     }
 
@@ -124,7 +124,7 @@ public class BaseXRunQueryAction extends AbstractAction {
         List<String> arguments = new ArrayList<>();
 
         JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-        JDialog parametersDialog = DialogTools.getOxygenDialog(parentFrame, "External XQuery parameters");
+        JDialog parametersDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_externalquery));
 
         JPanel content = new JPanel(new BorderLayout(10,10));
 
@@ -138,7 +138,7 @@ public class BaseXRunQueryAction extends AbstractAction {
         content.add(parameterPanel, BorderLayout.NORTH);
 
         JPanel btnPanel = new JPanel();
-        JButton okBtn = new JButton("OK");
+        JButton okBtn = new JButton(Lang.get(Lang.Keys.cm_ok));
         okBtn.addActionListener(e -> {
             for (int i = 0; i < parameters.length; i++) {
                 arguments.add(parameters[i]);

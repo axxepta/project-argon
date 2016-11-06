@@ -4,6 +4,7 @@ import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
+import de.axxepta.oxygen.utils.Lang;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -47,12 +48,12 @@ public class SearchInFilesAction extends AbstractAction {
         path = TreeUtils.resourceFromTreePath(treePath);
         JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
-        searchDialog = DialogTools.getOxygenDialog(parentFrame, "Search in database resources");
+        searchDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_search));
         JPanel content = new JPanel(new BorderLayout(5,5));
 
         JPanel termPanel = new JPanel();
         termPanel.setLayout(new BoxLayout(termPanel, BoxLayout.Y_AXIS));
-        termPanel.add(new Label("Search path: " + path));
+        termPanel.add(new Label(Lang.get(Lang.Keys.lbl_searchpath) + " " + path));
         searchTermTextField = new JTextField();
         termPanel.add(searchTermTextField);
         content.add(termPanel, BorderLayout.NORTH);
@@ -60,26 +61,27 @@ public class SearchInFilesAction extends AbstractAction {
         JPanel allSettingsPanel = new JPanel(new GridLayout(2,1));
 
         JPanel settingsPanel = new JPanel(new GridLayout(2,2));
-        elementCheckBox = new JCheckBox("Tags");
+        elementCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_elements));
         settingsPanel.add(elementCheckBox);
-        textCheckBox = new JCheckBox("Text content");
+        textCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_text));
         settingsPanel.add(textCheckBox);
-        attributeCheckBox = new JCheckBox("Attributes");
+        attributeCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_attributes));
         settingsPanel.add(attributeCheckBox);
-        attrValueCheckBox = new JCheckBox("Attribute values");
+        attrValueCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_attrbvalues));
         settingsPanel.add(attrValueCheckBox);
-        TitledBorder titleScope = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.darkGray), "Scope");
+        TitledBorder titleScope = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.darkGray),
+                Lang.get(Lang.Keys.lbl_scope));
         titleScope.setTitleJustification(TitledBorder.LEADING);
         settingsPanel.setBorder(titleScope);
         allSettingsPanel.add(settingsPanel);
-        //content.add(settingsPanel, BorderLayout.CENTER);
 
         JPanel modSettingsPanel = new JPanel(new GridLayout(1,2));
-        wholeCheckBox = new JCheckBox("Whole entry match");
+        wholeCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_whole));
         modSettingsPanel.add(wholeCheckBox);
-        caseCheckBox = new JCheckBox("Case sensitive");
+        caseCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_casesens));
         modSettingsPanel.add(caseCheckBox);
-        TitledBorder titleOptions = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.darkGray), "Options");
+        TitledBorder titleOptions = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.darkGray),
+                Lang.get(Lang.Keys.lbl_options));
         titleOptions.setTitleJustification(TitledBorder.LEADING);
         modSettingsPanel.setBorder(titleOptions);
         allSettingsPanel.add(modSettingsPanel);
@@ -96,9 +98,9 @@ public class SearchInFilesAction extends AbstractAction {
                 searchDialog.dispose();
             }
         });
-        applyBtn.setText("Search");
+        applyBtn.setText(Lang.get(Lang.Keys.cm_searchsimple));
         btnPanel.add(applyBtn, BorderLayout.EAST);
-        JButton cancelBtn = new JButton(new CloseDialogAction("Cancel", searchDialog));
+        JButton cancelBtn = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), searchDialog));
         btnPanel.add(cancelBtn, BorderLayout.WEST);
 
         content.add(btnPanel, BorderLayout.SOUTH);

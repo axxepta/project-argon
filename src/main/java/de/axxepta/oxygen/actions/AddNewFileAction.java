@@ -58,13 +58,13 @@ public class AddNewFileAction extends AbstractAction {
         if (listener.getNode().getAllowsChildren()) {
 
             JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
-            newFileDialog = DialogTools.getOxygenDialog(parentFrame, "Add new File to " + urlString);
+            newFileDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_addfileinto) + " " + urlString);
 
-            AddNewSpecFileAction addFile = new AddNewSpecFileAction("Add File", path, db_path);
+            AddNewSpecFileAction addFile = new AddNewSpecFileAction(Lang.get(Lang.Keys.cm_addfile), path, db_path);
 
             JPanel content = new JPanel(new BorderLayout(10,10));
             JPanel namePanel = new JPanel(new GridLayout());
-            JLabel nameLabel = new JLabel("File Name", JLabel.LEFT);
+            JLabel nameLabel = new JLabel(Lang.get(Lang.Keys.lbl_filename), JLabel.LEFT);
             namePanel.add(nameLabel);
             newFileNameTextField = new JTextField();
             newFileNameTextField.getDocument().addDocumentListener(new FileNameFieldListener(newFileNameTextField, false));
@@ -75,7 +75,7 @@ public class AddNewFileAction extends AbstractAction {
             newFileNameTextField.getActionMap().put("confirm", addFile);
 
             JPanel extPanel = new JPanel(new GridLayout());
-            JLabel extLabel = new JLabel("File Type", JLabel.LEFT);
+            JLabel extLabel = new JLabel(Lang.get(Lang.Keys.lbl_filetype), JLabel.LEFT);
             extPanel.add(extLabel);
             String[] fileTypes = {"XML Document (*.xml)", "XQuery (*.xquery)",
                     "XQuery Module (*.xqm)"};
@@ -144,8 +144,8 @@ public class AddNewFileAction extends AbstractAction {
                 PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
                 boolean isLocked = ConnectionWrapper.isLocked(source, resource);
                 if (isLocked) {
-                    pluginWorkspace.showInformationMessage("Couldn't create new file. Resource already exists\n" +
-                                "and is locked by another user.");
+                    pluginWorkspace.showInformationMessage(Lang.get(Lang.Keys.msg_fileexists1) + "\n" +
+                            Lang.get(Lang.Keys.msg_fileexists2));
                 } else {
                     if (WorkspaceUtils.newResourceOrOverwrite(source, resource)) {
                         try {
@@ -160,7 +160,7 @@ public class AddNewFileAction extends AbstractAction {
                         } catch (IOException ex) {
                             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
                             ConnectionWrapper.unlock(source, resource);
-                            pluginWorkspace.showInformationMessage("Couldn't create new file.");
+                            pluginWorkspace.showInformationMessage(Lang.get(Lang.Keys.warn_failednewfile));
                         }
                     }
                 }

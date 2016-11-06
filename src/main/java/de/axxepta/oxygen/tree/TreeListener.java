@@ -146,7 +146,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 if ((error == null) || error.equals(""))
                     error = "Database connection could not be established.";
                 if (showErrorMessages)
-                    workspace.showInformationMessage("Failed to get resource list from BaseX:\n" + error);
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failedlist) + "\n" + error);
             }
             for (BaseXResource child : childList) {
                 newValues.add(child.getName());

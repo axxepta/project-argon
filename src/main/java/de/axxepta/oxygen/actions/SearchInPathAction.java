@@ -120,19 +120,19 @@ public class SearchInPathAction extends AbstractAction {
     private void showSearchResults(ArrayList<String> allResources, String pathStr, JFrame parentFrame, String filter) {
         JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
 
-        JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, "Open/Find Resources");
+        JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_foundresources));
 
-        JPanel content = createSelectionListPanel("Search for '" + filter + "' in '" + pathStr + "' found " +
-                allResources.size() + " resource(s).", resultList);
+        JPanel content = createSelectionListPanel(Lang.get(Lang.Keys.lbl_search1) + filter + Lang.get(Lang.Keys.lbl_search2) +
+                pathStr + Lang.get(Lang.Keys.lbl_search3) + " " + allResources.size() + " " + Lang.get(Lang.Keys.lbl_search4), resultList);
 
         JPanel buttonsPanel = new JPanel();
         JButton openButton = new JButton(
-                new OpenListSelectionAction("Open Resource(s)", workspace, resultList, resultsDialog));
+                new OpenListSelectionAction(Lang.get(Lang.Keys.cm_open), workspace, resultList, resultsDialog));
         buttonsPanel.add(openButton);
         JButton checkOutButton = new JButton(
-                new CheckOutListSelectionAction("Check out Resource(s)", resultList, resultsDialog));
+                new CheckOutListSelectionAction(Lang.get(Lang.Keys.cm_checkout), resultList, resultsDialog));
         buttonsPanel.add(checkOutButton);
-        JButton cancelButton = new JButton(new CloseDialogAction("Cancel", resultsDialog));
+        JButton cancelButton = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_cancel), resultsDialog));
         buttonsPanel.add(cancelButton);
 
         content.add(buttonsPanel, BorderLayout.SOUTH);
@@ -211,7 +211,7 @@ public class SearchInPathAction extends AbstractAction {
             allResources = ConnectionWrapper.findFiles(source, basePathStr, filter);
         } catch (IOException io) {
             allResources = new ArrayList<>();
-            workspace.showInformationMessage("Failed to search for BaseX resources:\n" + io.getMessage());
+            workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failedsearch) + "\n" + io.getMessage());
         }
         for (int i=0; i<allResources.size(); i++) {
             allResources.set(i, allResources.get(i).replaceAll("\\\\","/"));

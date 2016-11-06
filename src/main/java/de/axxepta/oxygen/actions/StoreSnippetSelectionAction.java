@@ -5,6 +5,7 @@ import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
 import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
+import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,9 +66,9 @@ public class StoreSnippetSelectionAction extends AbstractAction {
             selection = textPage.getSelectedText();
         } else return;
 
-        String[] buttons = { "File", "Argon", "Cancel"};
+        String[] buttons = {Lang.get(Lang.Keys.cm_tofile), Lang.get(Lang.Keys.cm_todb), Lang.get(Lang.Keys.cm_cancel)};
         int[] responseIDs = { 0, 1, -1};
-        int saveTo = workspace.showConfirmDialog("Save Snippet", "Save snippet to", buttons, responseIDs, 0);
+        int saveTo = workspace.showConfirmDialog(Lang.get(Lang.Keys.dlg_snippet), Lang.get(Lang.Keys.lbl_snippet), buttons, responseIDs, 0);
         if (saveTo == -1)
             return;
         if (saveTo == 0)
@@ -78,14 +79,14 @@ public class StoreSnippetSelectionAction extends AbstractAction {
 
     private void saveToArgon(String text) {
         ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
-                "Save File via BaseX Database Connection", ArgonChooserDialog.Type.SAVE);
+                Lang.get(Lang.Keys.dlg_saveas), ArgonChooserDialog.Type.SAVE);
         URL[] urls =  urlChooser.selectURLs();
         if (urls != null) {
             URL url = urls[0];
             BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
             String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
             if (ConnectionWrapper.isLocked(source, path)) {
-                workspace.showInformationMessage("Resource already exists and is locked by another user.");
+                workspace.showInformationMessage(Lang.get(Lang.Keys.warn_resource) + " " +Lang.get(Lang.Keys.warn_locked));
             } else {
                 if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
                     try {
@@ -99,7 +100,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
                             ConnectionWrapper.unlock(source, path);
                         } catch (IOException ioe) {
                             ConnectionWrapper.unlock(source, path);
-                            workspace.showErrorMessage("Failed to store snippet to BaseX: " + ioe.getMessage());
+                            workspace.showErrorMessage(Lang.get(Lang.Keys.warn_nosnippet) +" " + ioe.getMessage());
                         }
 
                     } catch (UnsupportedEncodingException use) {
@@ -111,7 +112,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
     }
 
     private void saveToFile(String text) {
-        File file = workspace.chooseFile(null, "Save Snippet to File",  new String[] {"*"}, "All Files", true);
+        File file = workspace.chooseFile(null, Lang.get(Lang.Keys.dlg_snippet),  new String[] {"*"}, "All Files", true);
         if (file != null) {
             try {
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
@@ -119,7 +120,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } catch (IOException ioe) {
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
-                workspace.showErrorMessage("Failed to store snippet to File: " + ioe.getMessage());
+                workspace.showErrorMessage(Lang.get(Lang.Keys.warn_nofile) + " " + ioe.getMessage());
             }
         }
     }

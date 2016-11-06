@@ -120,14 +120,14 @@ public class WorkspaceUtils {
     }
 
     private static boolean checkOverwrite() {
-        int save = workspaceAccess.showConfirmDialog("Overwrite resource?", "Resource already exists. Overwrite?",
-                new String[] {"Yes", "No"}, new int[] { OVERWRITE_YES, OVERWRITE_NO }, 0);
+        int save = workspaceAccess.showConfirmDialog(Lang.get(Lang.Keys.dlg_overwrite), Lang.get(Lang.Keys.lbl_overwrite),
+                new String[] {Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_no)}, new int[] { OVERWRITE_YES, OVERWRITE_NO }, 0);
         return (save == OVERWRITE_YES);
     }
 
     private static int checkOverwriteAll() {
-        return workspaceAccess.showConfirmDialog("Overwrite resource?", "Resource already exists. Overwrite?",
-                new String[] {"Yes", "Always", "No", "Never"},
+        return workspaceAccess.showConfirmDialog(Lang.get(Lang.Keys.dlg_overwrite), Lang.get(Lang.Keys.lbl_overwrite),
+                new String[] {Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_always), Lang.get(Lang.Keys.cm_no), Lang.get(Lang.Keys.cm_never)},
                 new int[] { OVERWRITE_YES, OVERWRITE_ALL, OVERWRITE_NO, OVERWRITE_NONE }, 2);
     }
 

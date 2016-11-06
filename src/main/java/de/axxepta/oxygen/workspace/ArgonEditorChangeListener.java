@@ -87,9 +87,9 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
                 if (connection.lockedByUser(source, path) && !ArgonEditorsWatchMap.getInstance().askedForCheckIn(editorLocation)) {
 
                     int checkInFile = pluginWorkspaceAccess.showConfirmDialog(
-                            "Closed checked out file",
-                            "You just closed a checked out file. Do you want to check it in?",
-                            new String[]{"Yes", "No"},
+                            Lang.get(Lang.Keys.dlg_closed),
+                            Lang.get(Lang.Keys.lbl_closed),
+                            new String[]{Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_no)},
                             new int[]{0, 1}, 0);
                     if (checkInFile == 0) {
                         connection.unlock(source, path);
@@ -147,7 +147,7 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
 
     private JMenuItem createSnippetEditorPopUpAddition() {
         final JMenuItem storeSnippetItem = new JMenuItem(snippetAction);
-        storeSnippetItem.setText("Store selected Snippet");
+        storeSnippetItem.setText(Lang.get(Lang.Keys.dlg_snippet));
         storeSnippetItem.setIcon(ImageUtils.getIcon(ImageUtils.SNIPPET));
         return storeSnippetItem;
     }
