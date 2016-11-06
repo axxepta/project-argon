@@ -95,7 +95,10 @@ public class SearchInPathAction extends AbstractAction {
         String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in \n" +
                 pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
         if ((filter != null) && (!filter.equals(""))) {
-            ArrayList<String> allResources = search(rootPath, search_type, source, path, filter);
+            List<String> allResources = search(rootPath, search_type, source, path, filter);
+            for (int i = 0; i < allResources.size(); i++) {
+                allResources.set(i, TreeUtils.urlStringFromTreeString(allResources.get(i)));
+            }
             showSearchResults(allResources, pathStr, parentFrame, filter);
         }
     }
@@ -117,7 +120,7 @@ public class SearchInPathAction extends AbstractAction {
         return content;
     }
 
-    private void showSearchResults(ArrayList<String> allResources, String pathStr, JFrame parentFrame, String filter) {
+    protected static void showSearchResults(List<String> allResources, String pathStr, JFrame parentFrame, String filter) {
         JList<String> resultList = new JList<>(allResources.toArray(new String[allResources.size()]));
 
         JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_foundresources));
@@ -127,7 +130,7 @@ public class SearchInPathAction extends AbstractAction {
 
         JPanel buttonsPanel = new JPanel();
         JButton openButton = new JButton(
-                new OpenListSelectionAction(Lang.get(Lang.Keys.cm_open), workspace, resultList, resultsDialog));
+                new OpenListSelectionAction(Lang.get(Lang.Keys.cm_open), resultList, resultsDialog));
         buttonsPanel.add(openButton);
         JButton checkOutButton = new JButton(
                 new CheckOutListSelectionAction(Lang.get(Lang.Keys.cm_checkout), resultList, resultsDialog));

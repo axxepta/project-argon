@@ -4,6 +4,7 @@ declare variable $PATH as xs:string external;
 declare variable $FILTER as xs:string external;
 (:~ Whole word. :)
 declare variable $WHOLE as xs:string external;
+(:~ Exact Case. :)
 declare variable $EXACTCASE as xs:string external;
 
 let $whole := ($WHOLE eq 'true')
@@ -19,11 +20,19 @@ db:list($db)
 ) else (
 db:list($db, $path)
 )
+
 for $resource in $resources
 let $conn := db:open($db, $resource)
-
 return if ($whole) then (
-  if ($conn//*[name()=$FILTER]) then ($resource) else ()
+    if ($exactcase) then (
+        if ($conn//*[name()=$FILTER]) then ($resource) else ()
+    ) else (
+        if ($conn//*[lower-case(name())=lower-case($FILTER)]) then ($resource) else ()
+    )
 ) else (
-  if ($conn//*[contains(lower-case(./name()), lower-case($FILTER))]) then ($resource) else ()
+    if ($exactcase) then (
+        if ($conn//*[contains(./name(), $FILTER)]) then ($resource) else ()
+    ) else (
+        if ($conn//*[contains(lower-case(./name()), lower-case($FILTER))]) then ($resource) else ()
+    )
 )

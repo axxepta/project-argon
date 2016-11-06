@@ -1,4 +1,4 @@
-set versionnumber=7
+set versionnumber=8
 copy extension.xml build\release
 copy plugin.xml build\release\project-argon
 del build\release\project-argon\libs\argon*.jar

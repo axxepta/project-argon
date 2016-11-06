@@ -183,7 +183,7 @@ public class TreeUtils {
                 db_path = new StringBuilder(ArgonConst.ARGON_REPO + ":");
             else
                 db_path = new StringBuilder(ArgonConst.ARGON + ":");
-            db_path.append(treeString.substring(components[0].length()+components[1].length()+1));
+            db_path.append(treeString.substring(components[0].length() + components[1].length() + 2));
         } else {
             db_path = new StringBuilder("");
         }

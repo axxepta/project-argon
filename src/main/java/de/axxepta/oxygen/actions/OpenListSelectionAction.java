@@ -1,11 +1,11 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,16 +19,14 @@ import java.util.ArrayList;
 public class OpenListSelectionAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(OpenListSelectionAction.class);
+    private static final PluginWorkspace wsa = PluginWorkspaceProvider.getPluginWorkspace();
 
     JList<String> results;
-    PluginWorkspace wsa;
     JDialog resultsDialog;
 
-    public OpenListSelectionAction(String name, PluginWorkspace wsa, JList<String> results,
-                                   JDialog resultsDialog) {
+    public OpenListSelectionAction(String name, JList<String> results, JDialog resultsDialog) {
         super(name);
         this.results = results;
-        this.wsa = wsa;
         this.resultsDialog = resultsDialog;
     }
 
@@ -38,8 +36,7 @@ public class OpenListSelectionAction extends AbstractAction {
         selectedResources.addAll(results.getSelectedValuesList());
 
         for (String resource : selectedResources) {
-            String db_path = TreeUtils.urlStringFromTreeString(resource);
-            WorkspaceUtils.openURLString(db_path);
+            WorkspaceUtils.openURLString(resource);
         }
         resultsDialog.dispose();
     }

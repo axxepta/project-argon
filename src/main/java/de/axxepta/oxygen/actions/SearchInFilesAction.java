@@ -6,8 +6,6 @@ import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -22,7 +20,6 @@ import java.util.List;
  * @author Markus on 03.11.2016.
  */
 public class SearchInFilesAction extends AbstractAction {
-    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
     private JTree tree;
     private String path = "";
@@ -35,6 +32,7 @@ public class SearchInFilesAction extends AbstractAction {
     private JCheckBox attrValueCheckBox;
     private JCheckBox wholeCheckBox;
     private JCheckBox caseCheckBox;
+    private JFrame parentFrame;
 
 
     public SearchInFilesAction (String name, Icon icon, JTree tree){
@@ -46,7 +44,7 @@ public class SearchInFilesAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         TreePath treePath = ((TreeListener) tree.getTreeSelectionListeners()[0]).getPath();
         path = TreeUtils.resourceFromTreePath(treePath);
-        JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
+        parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
         searchDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_search));
         JPanel content = new JPanel(new BorderLayout(5,5));
@@ -120,7 +118,7 @@ public class SearchInFilesAction extends AbstractAction {
                 fileMatches.addAll(ConnectionWrapper.searchAttributes(path, filter, wholeMatch, caseSensitive));
             if (attrValue)
                 fileMatches.addAll(ConnectionWrapper.searchAttributeValues(path, filter, wholeMatch, caseSensitive));
-
+            SearchInPathAction.showSearchResults(fileMatches, path, parentFrame, filter);
         } catch (IOException ie) {
             //
         }

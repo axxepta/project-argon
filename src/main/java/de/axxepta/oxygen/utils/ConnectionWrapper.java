@@ -287,7 +287,7 @@ public final class ConnectionWrapper {
 
     private static String sendQuery(String query, String[] parameter) throws IOException {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            return "<response>\n" + connection.xquery(query, parameter) + "\n</response>";
+            return connection.xquery(query, parameter);
         } catch (NullPointerException npe) {
             logger.info("Error sending query: no database connection");
             throw new IOException("No database connection");
@@ -299,11 +299,12 @@ public final class ConnectionWrapper {
         String[] parameter = {"PATH", path, "FILTER", filter, "WHOLE", Boolean.toString(wholeMatch),
                 "EXACTCASE", Boolean.toString(exactCase)};
         String result = sendQuery(query, parameter);
+        String db_name = (path.split("/"))[0];
         final ArrayList<String> list = new ArrayList<>();
         if(!result.isEmpty()) {
             final String[] results = result.split("\r?\n");
-            for(int r = 0, rl = results.length; r < rl; r ++) {
-                list.add(results[r]);
+            for(String res : results) {
+                list.add("argon:" + db_name + "/" + res);
             }
         }
         return list;
@@ -328,7 +329,6 @@ public final class ConnectionWrapper {
             throws IOException {
         return searchInFiles(ConnectionUtils.getQuery("search-text"), path, filter, wholeMatch, exactCase);
     }
-
 
     public static boolean resourceExists(BaseXSource source, String resource) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
