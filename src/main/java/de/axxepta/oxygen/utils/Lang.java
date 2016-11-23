@@ -87,7 +87,7 @@ public class Lang {
         warn_settingspath2, warn_settingspath3,
         msg_dbexists1, msg_dbexists2, msg_fileexists1, msg_fileexists2, msg_noquery, msg_noeditor, msg_checkpriordelete,
         msg_noupdate1, msg_noupdate2, msg_norename1, msg_norename2, msg_norename3, msg_transferlocked, msg_nameexists,
-        msg_settingsexists,
+        msg_settingsexists, msg_noscopeselected,
         dlg_addfileinto, dlg_externalquery, dlg_checkedout, dlg_delete, dlg_newdir, dlg_replycomment, dlg_saveas, dlg_open,
         dlg_snippet, dlg_foundresources, dlg_overwrite, dlg_closed, dlg_overwritesetting, dlg_newsetting
     }

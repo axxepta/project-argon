@@ -6,6 +6,8 @@ import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -20,6 +22,8 @@ import java.util.List;
  * @author Markus on 03.11.2016.
  */
 public class SearchInFilesAction extends AbstractAction {
+
+    private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
     private JTree tree;
     private String path = "";
@@ -90,10 +94,15 @@ public class SearchInFilesAction extends AbstractAction {
         JButton applyBtn = new JButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                search(path, searchTermTextField.getText(), elementCheckBox.isSelected(), textCheckBox.isSelected(),
-                        attributeCheckBox.isSelected(), attrValueCheckBox.isSelected(),
-                        wholeCheckBox.isSelected(), caseCheckBox.isSelected());
-                searchDialog.dispose();
+                if (!(elementCheckBox.isSelected() || textCheckBox.isSelected() ||
+                        attributeCheckBox.isSelected() || attrValueCheckBox.isSelected())) {
+                    workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noscopeselected));
+                } else {
+                    search(path, searchTermTextField.getText(), elementCheckBox.isSelected(), textCheckBox.isSelected(),
+                            attributeCheckBox.isSelected(), attrValueCheckBox.isSelected(),
+                            wholeCheckBox.isSelected(), caseCheckBox.isSelected());
+                    searchDialog.dispose();
+                }
             }
         });
         applyBtn.setText(Lang.get(Lang.Keys.cm_searchsimple));

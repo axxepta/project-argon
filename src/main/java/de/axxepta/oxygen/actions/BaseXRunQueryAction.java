@@ -1,9 +1,6 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.utils.ConnectionWrapper;
-import de.axxepta.oxygen.utils.DialogTools;
-import de.axxepta.oxygen.utils.Lang;
-import de.axxepta.oxygen.utils.URLUtils;
+import de.axxepta.oxygen.utils.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -63,7 +60,7 @@ public class BaseXRunQueryAction extends AbstractAction {
                     queryRes = ConnectionWrapper.query(editorContent, arguments);
                 } catch (Exception er) {
                     logger.error("query to BaseX failed");
-                    queryRes = "";
+                    queryRes = "<error>" + StringUtils.LF + er.getMessage() + StringUtils.LF + "</error>";
                 }
 
                 workspace.createNewEditor("xml", ContentTypes.XML_CONTENT_TYPE, queryRes);

@@ -79,7 +79,6 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     private static final String CS_ATTR = "CS_ATTR";
     private static final String CS_TOKEN = "CS_TOKEN";
 
-
     /**
      * BaseX JTextFields
      */
@@ -114,7 +113,6 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         } else {
 
             // save BaseX configs in the option storage
-            //ToDo: clear ComboBox, if entries in the corresponding fields have been changed
             settingsChangedOverwrite();
 
             pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_CONNECTION_SETTING,
@@ -270,7 +268,6 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
         panel.add(baseXConnectionSettingsComboBox, c);
-
         c.gridx = 0;
         c.gridy++;
         panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
@@ -287,7 +284,6 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0, 5, 0, 5);
         panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
-
         c.gridx = 0;
         c.gridy++;
         panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
@@ -710,7 +706,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         }
     }
 
-    public static List loadConnectionSettings() {
+    private static List loadConnectionSettings() {
         List<String[]> connectionSettings = new ArrayList<>();
         String[] conn = {"default" , DEF_BASEX_HOST, DEF_BASEX_USERNAME, DEF_BASEX_PASSWORD, DEF_BASEX_VERSIONING,
                         DEF_BASEX_DB_CREATE_CHOP, DEF_BASEX_DB_CREATE_FTINDEX, DEF_BASEX_DB_CREATE_TEXTINDEX,
@@ -744,7 +740,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         return connectionSettings;
     }
 
-    public void storeConnectionSettings() {
+    private void storeConnectionSettings() {
         File settingsPath = new File(CONNECTION_SETTING_PATH);
         boolean noDirectory = false;
         if (!FileUtils.directoryExists(settingsPath)) {

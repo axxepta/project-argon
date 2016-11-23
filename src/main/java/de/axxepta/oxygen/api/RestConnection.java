@@ -90,14 +90,24 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public byte[] get(final BaseXSource source, final String path, boolean export) throws IOException {
+    public byte[] get(final BaseXSource source, final String inPath, boolean export) throws IOException {
+        String path;
+        if (inPath.startsWith("/"))
+            path = inPath.substring(1);
+        else
+            path = inPath;
         return request(getQuery("get-" + source), PATH, path);
     }
 
     @Override
-    public void put(final BaseXSource source, final String path, final byte[] resource, boolean binary, String encoding,
+    public void put(final BaseXSource source, final String inPath, final byte[] resource, boolean binary, String encoding,
                     String owner, String versionize, String versionUp)
             throws IOException {
+        String path;
+        if (inPath.startsWith("/"))
+            path = inPath.substring(1);
+        else
+            path = inPath;
         request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource, binary), BINARY, Boolean.toString(binary),
                 ENCODING, encoding, OWNER, owner, VERSIONIZE, versionize, VERSION_UP, versionUp);
     }

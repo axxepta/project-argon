@@ -63,9 +63,6 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
     public Transferable createTransferable(JComponent c) {
-/*        DefaultTreeModel model = (DefaultTreeModel) ((JTree) c).getModel();
-        TreeListener listener = (TreeListener) model.getListeners(TreeModelListener.class)[0];
-        return new ArgonTreeTransferable(listener.getPath()); */
         return new ArgonTreeTransferable(getTreeSelection()[0]);
     }
 
@@ -149,6 +146,8 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                     transferData.addAll(transferList);
                     if (transferData.size() > 0) {
                         transferFiles(transferData, targetPath, pathURLString);
+                        /*Thread transferThread = new Thread(new TransferRunnable(transferData, targetPath, pathURLString));
+                        transferThread.run();*/
                     }
                 } catch (Exception e1) {
                     logger.info(e1.getMessage());
@@ -259,14 +258,17 @@ public class ArgonTreeTransferHandler extends TransferHandler {
         }
     }
 
-    private void copyFile(File file, URL url) throws MalformedURLException {
+    private void copyFile(File file, URL url) {
         byte[] isByte;
         try (InputStream is = new FileInputStream(file)) {
             int l = is.available();
             isByte = new byte[l];
             //noinspection ResultOfMethodCallIgnored
             is.read(isByte);
-            String owner = Files.getOwner(file.toPath()).getName().replace("\\", "_");
+            String owner = Files.getOwner(file.toPath()).getName();
+            int domainSeparator = owner.indexOf("\\");
+            if (domainSeparator != -1)
+                owner = owner.substring(domainSeparator + 1);
             try {
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
                 // check for XML, check file content only if not enough info by file extension
@@ -287,9 +289,11 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             }
         } catch (IOException es) {
             logger.error(es);
-            workspace. showErrorMessage(Lang.get(Lang.Keys.warn_transfernoread) + "\n" + file.toString() + ".");
+            workspace.showErrorMessage(Lang.get(Lang.Keys.warn_transfernoread) + "\n" + file.toString() + ".");
         }
     }
+
+
 
     private byte[] readTextFile(URL url) throws IOException {
         List<Integer> integerList = new ArrayList<>();
@@ -308,6 +312,24 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             index++;
         }
         return bytes;
+    }
+
+
+    private class TransferRunnable implements Runnable {
+
+        private ArrayList<File> transferData;
+        private TreePath path;
+        private String pathURLString;
+
+        TransferRunnable(ArrayList<File> transferData, TreePath path, String pathURLString) {
+            this.transferData = transferData;
+            this.path = path;
+            this.pathURLString = pathURLString;
+        }
+
+        public void run() {
+            transferFiles(transferData, path, pathURLString);
+        }
     }
 
 }

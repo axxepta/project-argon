@@ -10,6 +10,7 @@ import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,11 +44,7 @@ public class CheckedOutFilesAction extends AbstractAction {
 
         final JDialog resultsDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_checkedout));
 
-        JPanel content = SearchInPathAction.createSelectionListPanel(Lang.get(Lang.Keys.lbl_filestocheck), resultList);
-        resultList.setSelectionInterval(0, resultList.getModel().getSize() - 1);
-
-        JPanel buttonsPanel = new JPanel();
-        JButton checkInButton = new JButton(new AbstractAction(Lang.get(Lang.Keys.cm_checkinselected)) {
+        AbstractAction checkInAction = new AbstractAction(Lang.get(Lang.Keys.cm_checkinselected)) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int fileIndex : resultList.getSelectedIndices()) {
@@ -60,7 +57,15 @@ public class CheckedOutFilesAction extends AbstractAction {
                 }
                 resultsDialog.dispose();
             }
-        });
+        };
+
+        JPanel content = SearchInPathAction.createSelectionListPanel(Lang.get(Lang.Keys.lbl_filestocheck), resultList);
+        resultList.setSelectionInterval(0, resultList.getModel().getSize() - 1);
+        resultList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirm");
+        resultList.getActionMap().put("confirm", checkInAction);
+
+        JPanel buttonsPanel = new JPanel();
+        JButton checkInButton = new JButton(checkInAction);
         buttonsPanel.add(checkInButton);
         JButton exitButton = new JButton(new CloseDialogAction(Lang.get(Lang.Keys.cm_exit), resultsDialog));
         buttonsPanel.add(exitButton);

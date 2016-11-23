@@ -5,6 +5,8 @@ package de.axxepta.oxygen.utils;
  */
 public final class StringUtils {
 
+    public static final String LF = System.getProperty("line.separator");
+
     private StringUtils() {}
 
     public static boolean isEmpty(String s) {
