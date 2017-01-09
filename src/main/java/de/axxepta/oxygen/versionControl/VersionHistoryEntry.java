@@ -12,7 +12,7 @@ public class VersionHistoryEntry {
     private int revision;
     private Date changeDate;
 
-    VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
+    public VersionHistoryEntry(URL url, int version, int revision, Date changeDate) {
         this.url = url;
         this.version = version;
         this.revision = revision;

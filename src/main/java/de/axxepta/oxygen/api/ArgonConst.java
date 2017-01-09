@@ -22,6 +22,8 @@ public class ArgonConst {
     public static final String META_RESTXQ_BASE = "~meta_~restxq/";
     public static final String META_REPO_BASE = "~meta_~repo/";
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd_HH-mm";
+
     // RESOURCE NAMES
     public static final String META_TEMPLATE = "MetaTemplate.xml";
     public static final String LOCK_FILE = "~usermanagement";

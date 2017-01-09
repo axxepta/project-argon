@@ -1,5 +1,7 @@
 package de.axxepta.oxygen.utils;
 
+import java.util.Date;
+
 /**
  * @author Markus on 28.07.2016.
  */

@@ -1,6 +1,11 @@
 package de.axxepta.oxygen.api;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.basex.io.*;
 import org.basex.util.*;
@@ -74,5 +79,23 @@ public final class ConnectionUtils {
      */
     public static String prepare(final byte[] resource, boolean binary) {
         return Token.string(binary ? org.basex.util.Base64.encode(resource) : resource);
+    }
+
+    public static HttpURLConnection getConnection(URL url) throws IOException{
+        if("http".equals(url.getProtocol())
+                || "https".equals(url.getProtocol())){
+            try{
+                Constructor constructor = Class.forName("sun.net.www.protocol.http.HttpURLConnection").
+                        getConstructor(new Class[]{URL.class, Proxy.class});
+                return (HttpURLConnection) constructor.newInstance(new Object[]{url, null});
+            } catch(InvocationTargetException ex){
+                //Constructor threw an IO Exception
+                throw (IOException)ex.getTargetException();
+            } catch(Throwable th){
+                //Probably SUN class disappeared, use connection from URL.
+            }
+        }
+        //Probably SUN class disappeared, use connection from URL.
+        return (HttpURLConnection) url.openConnection();
     }
 }

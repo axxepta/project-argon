@@ -5,8 +5,12 @@ import static org.basex.util.http.HttpMethod.*;
 
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.basex.io.*;
@@ -21,8 +25,7 @@ import org.basex.util.http.*;
  */
 public class RestConnection implements Connection {
     /** URI. */
-    protected final IOUrl url;
-    protected final URL sUrl;
+    protected final URL url;
     protected final String basicAuth;
     private static final Logger logger = LogManager.getLogger(RestConnection.class);
 
@@ -35,10 +38,8 @@ public class RestConnection implements Connection {
      */
     public RestConnection(final String server, final int port, final String user,
                           final String password) throws MalformedURLException {
-        //url = new IOUrl("http://" + user + ":" + password + "@" + server + ":" + port + "/rest");
-        url = new IOUrl("http://" + user + ":" + password + "@" + server );
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
-        sUrl = new URL("http://" + user + ":" + password + "@" + server );
+        url = new URL("http://" + user + ":" + password + "@" + server );
     }
 
     @Override
@@ -151,6 +152,25 @@ public class RestConnection implements Connection {
     }
 
     @Override
+    public List<VersionHistoryEntry> getHistory(final String path) throws IOException {
+        final String result = Token.string(request(getQuery("get-history"), PATH, path));
+        final ArrayList<VersionHistoryEntry> list = new ArrayList<>();
+        if(!result.isEmpty()) {
+            DateFormat format = new SimpleDateFormat(ArgonConst.DATE_FORMAT);
+            final String[] results = result.split("\r?\n");
+            for(int r = 0, rl = results.length; r < rl; r += 4) {
+                try {
+                    list.add(new VersionHistoryEntry(new URL(results[r]), Integer.parseInt(results[r + 1]),
+                            Integer.parseInt(results[r + 2]), format.parse(results[r + 3])));
+                } catch (ParseException pe) {
+                    throw new IOException(pe.getMessage());
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
     public void parse(final String xquery) throws IOException {
         request(getQuery("parse"), XQUERY, xquery);
     }
@@ -202,8 +222,7 @@ public class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     protected byte[] request(final String body, final String... bindings) throws IOException {
-        //final HttpURLConnection conn = (java.net.HttpURLConnection) url.connection();
-        final HttpURLConnection conn = new sun.net.www.protocol.http.HttpURLConnection(sUrl, null);
+        final HttpURLConnection conn = ConnectionUtils.getConnection(url);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);

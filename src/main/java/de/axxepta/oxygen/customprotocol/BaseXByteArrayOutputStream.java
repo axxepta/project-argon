@@ -131,7 +131,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
             savedBytes = removeBOM(savedBytes, 3);
         }
         if (encoding.startsWith("UTF-16") && ((savedBytes[0] == (byte)0xFE) || (savedBytes[0] == (byte)0xFF))) {
-            savedBytes = removeBOM(savedBytes, 3);
+            savedBytes = removeBOM(savedBytes, 2);
         }
         String useVersioning;
         if (useGlobalVersioning)
