@@ -26,7 +26,7 @@ public class BaseXByteArrayOutputStream extends ByteArrayOutputStream {
     private boolean binary = false;
     private String owner = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, false);
 
-    BaseXByteArrayOutputStream(URL url) {
+    public BaseXByteArrayOutputStream(URL url) {
         super();
         this.url = url;
         this.source = CustomProtocolURLHandlerExtension.sourceFromURL(url);

@@ -52,6 +52,7 @@ public class ImageUtils {
     public static final String UNLOCK = "unlock";
     public static final String SNIPPET = "snippet";
     public static final String INSERT_TEMPLATE = "inserttemplate";
+    public static final String SINGLE_UPDATE = "singleupdate";
 
     public static void init() {
         iconMap = new HashMap<>();
@@ -93,6 +94,7 @@ public class ImageUtils {
         iconMap.put("sql", ro.sync.ui.Icons.getIcon(Icons.SQL_TEMPLATE));
         iconMap.put("php", ro.sync.ui.Icons.getIcon(Icons.PHP_TEMPLATE));
         iconMap.put("xspec", ro.sync.ui.Icons.getIcon(Icons.XSPEC_TEMPLATE));
+        iconMap.put("tpl", ImageUtils.createImageIcon("/images/TPL16.png"));
         iconMap.put("file", ImageUtils.createImageIcon("/images/file16.png"));
         iconMap.put(DB_CONNECTION, ImageUtils.createImageIcon("/images/DbConnection16.gif"));
         iconMap.put(DB_CATALOG, ImageUtils.createImageIcon("/images/DbCatalog16.gif"));
@@ -124,6 +126,7 @@ public class ImageUtils {
         iconMap.put(UNLOCK, ImageUtils.createImageIcon("/images/unlock.png"));
         iconMap.put(SNIPPET, ImageUtils.createImageIcon("/images/snippet.png"));
         iconMap.put(INSERT_TEMPLATE, ImageUtils.createImageIcon("/images/InsertTemplate16.png"));
+        iconMap.put(SINGLE_UPDATE, ImageUtils.createImageIcon("/images/UpdateSingleDocument16.png"));
     }
 
     public static Icon getIcon(String extension) {

@@ -42,6 +42,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     public static final String KEY_BASEX_PASSWORD = "KEY_BASEX_PASSWORD";
     public static final String KEY_BASEX_CONNECTION = "KEY_BASEX_CONNECTION";
     public static final String KEY_BASEX_VERSIONING = "KEY_BASEX_VERSIONING";
+    public static final String KEY_BASEX_FILTER_EXCLUDE = "KEY_BASEX_FILTER_EXCLUDE";
     public static final String KEY_BASEX_LOGFILE = "KEY_BASEX_LOGFILE";
     public static final String KEY_BASEX_DB_CREATE_CHOP = "KEY_BASEX_DB_CREATE_CHOP";
     public static final String KEY_BASEX_DB_CREATE_FTINDEX = "KEY_BASEX_DB_CREATE_FTINDEX";
@@ -57,6 +58,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     private static final String DEF_BASEX_PASSWORD = "admin";
     private static final String DEF_BASEX_CONNECTION = "HTTP";
     private static final String DEF_BASEX_VERSIONING = "true";
+    private static final String DEF_BASEX_FILTER_EXCLUDE = "";
     private static final String DEF_BASEX_LOGFILE = System.getProperty("user.home") + "/argon.log";
             //"/tmp/argon.log";
     private static final String DEF_BASEX_DB_CREATE_CHOP = "false";
@@ -72,6 +74,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     private static final String CS_HOST = "CS_HOST";
     private static final String CS_USER = "CS_USER";
     private static final String CS_PWD = "CS_PWD";
+    private static final String CS_FE = "CS_FE";
     private static final String CS_VCS = "CS_VCS";
     private static final String CS_CHOP = "CS_CHOP";
     private static final String CS_FT = "CS_FT";
@@ -90,6 +93,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
     private JTextField baseXPasswordTextField;
     private JComboBox baseXConnectionTypeComboBox;
     private JCheckBox baseXVersioningCheckBox;
+    private JTextField baseXFilterExcludeTextField;
     private JTextField baseXLogfileTextField;
     private JCheckBox baseXDBCreateChopCheckBox;
     private JCheckBox baseXDBCreateFTIndexCheckBox;
@@ -140,6 +144,8 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_VERSIONING,
                     baseXVersioningCheckBox.isSelected() ? "true" : "false");
 
+            pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_FILTER_EXCLUDE, baseXFilterExcludeTextField.getText());
+
 /*        pluginWorkspace.getOptionsStorage().setOption(KEY_BASEX_LOGFILE,
                 !"".equals(baseXLogfileTextField.getText()) ? baseXLogfileTextField.getText() : DEF_BASEX_LOGFILE);*/
 
@@ -174,6 +180,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         baseXPasswordTextField.setText(DEF_BASEX_PASSWORD);
 /*        baseXConnectionTypeComboBox.setSelectedItem(DEF_BASEX_CONNECTION);*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_VERSIONING));
+        baseXFilterExcludeTextField.setText(DEF_BASEX_FILTER_EXCLUDE);
 /*        baseXLogfileTextField.setText(DEF_BASEX_LOGFILE);*/
         baseXDBCreateChopCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_DB_CREATE_CHOP));
         baseXDBCreateFTIndexCheckBox.setSelected(Boolean.parseBoolean(DEF_BASEX_DB_CREATE_FTINDEX));
@@ -207,6 +214,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         String baseXPassword = getOption(KEY_BASEX_PASSWORD, false);
 /*        String baseXConnection = getOption(KEY_BASEX_CONNECTION, false);*/
         String baseXVersioning = getOption(KEY_BASEX_VERSIONING, false);
+        String baseXFilterExclude = getOption(KEY_BASEX_FILTER_EXCLUDE, false);
 /*        String baseXLogfile = getOption(KEY_BASEX_LOGFILE, false);*/
         String baseXDBCreateChop = getOption(KEY_BASEX_DB_CREATE_CHOP, false);
         String baseXDBCreateFTIndex = getOption(KEY_BASEX_DB_CREATE_FTINDEX, false);
@@ -260,6 +268,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                     baseXDBCreateTextIndexCheckBox.setSelected(connectionSettings.get(newSelection)[7].equals("true"));
                     baseXDBCreateAttrIndexCheckBox.setSelected(connectionSettings.get(newSelection)[8].equals("true"));
                     baseXDBCreateTokenIndexCheckBox.setSelected(connectionSettings.get(newSelection)[9].equals("true"));
+                    baseXFilterExcludeTextField.setText(connectionSettings.get(newSelection)[10]);
                 } catch (NullPointerException | IndexOutOfBoundsException ex) {}
             }
         });
@@ -407,6 +416,27 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         c.insets = new Insets(0, 5, 0, 5);
         panel.add(baseXVersioningCheckBox, c);
 
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(new JSeparator(JSeparator.HORIZONTAL), c);
+
+
+        /**
+         * DBs to be excluded from filter
+         */
+        c.gridx = 0;
+        c.gridy++;
+        JLabel baseXFilterExcludeTextFieldLbl = new JLabel(Lang.get(Lang.Keys.lbl_fe));
+        panel.add(baseXFilterExcludeTextFieldLbl, c);
+
+        baseXFilterExcludeTextField = new JTextField();
+        baseXFilterExcludeTextField.setToolTipText(Lang.get(Lang.Keys.tt_fe));
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 5, 0, 5);
+        panel.add(baseXFilterExcludeTextField, c);
+
         /**
          * BaseX Logfile
          */
@@ -553,6 +583,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             baseXConnectionTypeComboBox.setSelectedItem(connectionTypes[0]);
         }*/
         baseXVersioningCheckBox.setSelected(Boolean.parseBoolean(baseXVersioning));
+        baseXFilterExcludeTextField.setText(baseXFilterExclude != null ? baseXFilterExclude : "");
 /*        baseXLogfileTextField.setText(baseXLogfile != null ? baseXLogfile : "");*/
         baseXDBCreateChopCheckBox.setSelected(Boolean.parseBoolean(baseXDBCreateChop));
         baseXDBCreateFTIndexCheckBox.setSelected(Boolean.parseBoolean(baseXDBCreateFTIndex));
@@ -574,6 +605,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             case KEY_BASEX_PASSWORD: defaultValue = DEF_BASEX_PASSWORD; break;
             case KEY_BASEX_CONNECTION: defaultValue = DEF_BASEX_CONNECTION; break;
             case KEY_BASEX_VERSIONING: defaultValue = DEF_BASEX_VERSIONING; break;
+            case KEY_BASEX_FILTER_EXCLUDE: defaultValue = DEF_BASEX_FILTER_EXCLUDE; break;
             case KEY_BASEX_LOGFILE: defaultValue = DEF_BASEX_LOGFILE; break;
             case KEY_BASEX_DB_CREATE_CHOP: defaultValue = DEF_BASEX_DB_CREATE_CHOP; break;
             case KEY_BASEX_DB_CREATE_FTINDEX: defaultValue = DEF_BASEX_DB_CREATE_FTINDEX; break;
@@ -616,7 +648,9 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                         !Boolean.toString(baseXDBCreateFTIndexCheckBox.isSelected()).equals(connectionSettings.get(index)[6]) ||
                         !Boolean.toString(baseXDBCreateTextIndexCheckBox.isSelected()).equals(connectionSettings.get(index)[7]) ||
                         !Boolean.toString(baseXDBCreateAttrIndexCheckBox.isSelected()).equals(connectionSettings.get(index)[8]) ||
-                        !Boolean.toString(baseXDBCreateTokenIndexCheckBox.isSelected()).equals(connectionSettings.get(index)[9])) {
+                        !Boolean.toString(baseXDBCreateTokenIndexCheckBox.isSelected()).equals(connectionSettings.get(index)[9]) ||
+                        !baseXFilterExcludeTextField.getText().equals(connectionSettings.get(index)[10]))
+                {
                     int overwrite;
                     if (index == 0) {
                         overwrite = 1;
@@ -694,7 +728,8 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                 baseXDBCreateFTIndexCheckBox.isSelected() ? "true" : "false",
                 baseXDBCreateTextIndexCheckBox.isSelected() ? "true" : "false",
                 baseXDBCreateAttrIndexCheckBox.isSelected() ? "true" : "false",
-                baseXDBCreateTokenIndexCheckBox.isSelected() ? "true" : "false"
+                baseXDBCreateTokenIndexCheckBox.isSelected() ? "true" : "false",
+                baseXFilterExcludeTextField.getText()
         };
         if (index == -1) {
             connectionSettingNames.add(name);
@@ -710,7 +745,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
         List<String[]> connectionSettings = new ArrayList<>();
         String[] conn = {"default" , DEF_BASEX_HOST, DEF_BASEX_USERNAME, DEF_BASEX_PASSWORD, DEF_BASEX_VERSIONING,
                         DEF_BASEX_DB_CREATE_CHOP, DEF_BASEX_DB_CREATE_FTINDEX, DEF_BASEX_DB_CREATE_TEXTINDEX,
-                        DEF_BASEX_DB_CREATE_ATTRINDEX, DEF_BASEX_DB_CREATE_TOKENINDEX};
+                        DEF_BASEX_DB_CREATE_ATTRINDEX, DEF_BASEX_DB_CREATE_TOKENINDEX, DEF_BASEX_FILTER_EXCLUDE};
         connectionSettings.add(conn);
         File settingsPath = new File(CONNECTION_SETTING_PATH);
         if (FileUtils.directoryExists(settingsPath)) {
@@ -729,7 +764,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
                         String[] connSetting = {properties.getProperty(CS_NAME), properties.getProperty(CS_HOST),
                                 properties.getProperty(CS_USER), properties.getProperty(CS_PWD), properties.getProperty(CS_VCS),
                                 properties.getProperty(CS_CHOP), properties.getProperty(CS_FT), properties.getProperty(CS_TEXT),
-                                properties.getProperty(CS_ATTR), properties.getProperty(CS_TOKEN)};
+                                properties.getProperty(CS_ATTR), properties.getProperty(CS_TOKEN), properties.getProperty(CS_FE) };
                         connectionSettings.add(connSetting);
                     } catch (IOException ioe) {
                         logger.debug(ioe.getMessage());
@@ -765,6 +800,7 @@ public class ArgonOptionPage extends OptionPagePluginExtension {
             properties.setProperty(CS_TEXT, baseXDBCreateTextIndexCheckBox.isSelected() ? "true" : "false");
             properties.setProperty(CS_ATTR, baseXDBCreateAttrIndexCheckBox.isSelected() ? "true" : "false");
             properties.setProperty(CS_TOKEN, baseXDBCreateTokenIndexCheckBox.isSelected() ? "true" : "false");
+            properties.setProperty(CS_FE, baseXFilterExcludeTextField.getText());
             try (FileOutputStream fileOut = new FileOutputStream(settingsFile)) {
                 properties.store(fileOut, "Favorite Things");
             } catch (IOException ioe) {

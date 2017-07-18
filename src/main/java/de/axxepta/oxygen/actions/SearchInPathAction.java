@@ -9,6 +9,7 @@ import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
+import de.axxepta.oxygen.workspace.ArgonOptionPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.component.AuthorComponentFactory;
@@ -95,7 +96,7 @@ public class SearchInPathAction extends AbstractAction {
         String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in \n" +
                 pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
         if ((filter != null) && (!filter.equals(""))) {
-            List<String> allResources = search(rootPath, search_type, source, path, filter);
+            List<String> allResources = search(rootPath, search_type, false, source, path, filter);
             for (int i = 0; i < allResources.size(); i++) {
                 allResources.set(i, TreeUtils.urlStringFromTreeString(allResources.get(i)));
             }
@@ -143,11 +144,13 @@ public class SearchInPathAction extends AbstractAction {
         DialogTools.wrapAndShow(resultsDialog, content, parentFrame, 700, 300);
     }
 
-    // made public for access via AspectJ
     @SuppressWarnings("all")
-    public static ArrayList<String> search(TreePath rootPath, int type, BaseXSource source, TreePath path, String filter) {
+    public static ArrayList<String> search(TreePath rootPath, int type, boolean restricted,
+                                           BaseXSource source, TreePath path, String filter) {
         ArrayList<String> allResources = new ArrayList<>();
         WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
+        String filterExcludeOption = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_FILTER_EXCLUDE, false);
+        List<String> filterExlucdeDBs = new ArrayList(Arrays.asList(filterExcludeOption.split("\\s*(;|,|\\s)\\s*"))) ;
         switch (type) {
             case SEARCH_ALL: {
                 TreePath currentPath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_repo));
@@ -159,13 +162,15 @@ public class SearchInPathAction extends AbstractAction {
                 List<String> dbList = getDatabases();
                 TreePath dbBasePath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_DB));
                 for (String db : dbList) {
-                    TreePath currentPath = TreeUtils.pathByAddingChildAsStr(dbBasePath, db);
-                    if (currentPath == null) {
-                        currentPath = new TreePath(
-                                TreeUtils.insertStrAsNodeLexi(db, (DefaultMutableTreeNode) dbBasePath.getLastPathComponent(), false).
-                                        getPath());
+                    if (!restricted || !filterExlucdeDBs.contains(db)) {
+                        TreePath currentPath = TreeUtils.pathByAddingChildAsStr(dbBasePath, db);
+                        if (currentPath == null) {
+                            currentPath = new TreePath(
+                                    TreeUtils.insertStrAsNodeLexi(db, (DefaultMutableTreeNode) dbBasePath.getLastPathComponent(), false).
+                                            getPath());
+                        }
+                        allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter));
                     }
-                    allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter));
                 }
                 break;
             }
@@ -214,7 +219,9 @@ public class SearchInPathAction extends AbstractAction {
             allResources = ConnectionWrapper.findFiles(source, basePathStr, filter);
         } catch (IOException io) {
             allResources = new ArrayList<>();
-            workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failedsearch) + "\n" + io.getMessage());
+            String message = io.getMessage();
+            if (!message.contains(ArgonConst.BXERR_PERMISSION))
+                workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failedsearch) + "\n" + message);
         }
         for (int i=0; i<allResources.size(); i++) {
             allResources.set(i, allResources.get(i).replaceAll("\\\\","/"));

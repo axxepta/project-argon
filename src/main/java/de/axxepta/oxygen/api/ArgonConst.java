@@ -28,4 +28,6 @@ public class ArgonConst {
     public static final String META_TEMPLATE = "MetaTemplate.xml";
     public static final String LOCK_FILE = "~usermanagement";
     public static final String EMPTY_FILE = ".empty.xml";
+
+    public static final String BXERR_PERMISSION = "BASX0001";
 }

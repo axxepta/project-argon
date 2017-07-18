@@ -154,7 +154,7 @@ public class TreePane extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ArrayList<String> resourceList = SearchInPathAction.search(rootPath, SearchInPathAction.SEARCH_ALL,
+            ArrayList<String> resourceList = SearchInPathAction.search(rootPath, SearchInPathAction.SEARCH_ALL, true,
                     BaseXSource.DATABASE, null, filterField.getText());
             buildFilteredTree(resourceList);
             model.setRoot(newRoot);

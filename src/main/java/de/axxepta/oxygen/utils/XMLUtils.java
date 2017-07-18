@@ -54,7 +54,9 @@ public final class XMLUtils {
                 return "UTF-16LE";
             } else if ((content[0] == (byte)0xEF) && (content[1] == (byte)0xBB) && (content[2] == (byte)0xBF)) {  // check for UTF-8 BOM
                 return "UTF-8";
-            } else if ((content[0] == (byte)0x3c) && (content[content.length - 1] == (byte)0x3e)) {
+//            } else if ((content[0] == (byte)0x3c) && (content[content.length - 1] == (byte)0x3e)) {
+                // ToDo: trim byte array and check for last byte
+            } else if (content[0] == (byte)0x3c) {
                 String contentString = IOUtils.returnUTF8String(content);
                 encoding = encodingFromPrologue(contentString);
             }
