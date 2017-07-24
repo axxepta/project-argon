@@ -52,7 +52,7 @@ public class DeleteAction extends AbstractAction {
                         int dialogResult = pluginWorkspace.showConfirmDialog(
                                 Lang.get(Lang.Keys.dlg_delete),
                                 Lang.get(Lang.Keys.lbl_delete) + "\n" + TreeUtils.urlStringFromTreePath(path),
-                                new String[]{Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_all)},
+                                new String[]{Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_no)},
                                 new int[]{0, 1}, 0);
                         if (dialogResult == 0) {
                             if (TreeUtils.isDB(path)) {

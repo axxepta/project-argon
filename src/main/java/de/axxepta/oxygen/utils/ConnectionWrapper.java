@@ -230,9 +230,9 @@ public final class ConnectionWrapper {
         }
     }
 
-    public static List<String> findFiles(BaseXSource source, String path, String filter) throws IOException {
+    public static List<String> findFiles(BaseXSource source, String path, String filter, boolean caseSensitive) throws IOException {
         List<String> result;
-        StringBuilder regEx = new StringBuilder("");
+        StringBuilder regEx = new StringBuilder(caseSensitive ? "" : "(?i)");
         for (int i = 0; i < filter.length(); i++) {
             char c = filter.charAt(i);
             switch (c) {

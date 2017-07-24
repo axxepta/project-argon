@@ -96,7 +96,7 @@ public class SearchInPathAction extends AbstractAction {
         String filter = JOptionPane.showInputDialog(parentFrame, "Find resource in \n" +
                 pathStr, "Search in Path", JOptionPane.PLAIN_MESSAGE);
         if ((filter != null) && (!filter.equals(""))) {
-            List<String> allResources = search(rootPath, search_type, false, source, path, filter);
+            List<String> allResources = search(rootPath, search_type, false, source, path, filter, true);
             for (int i = 0; i < allResources.size(); i++) {
                 allResources.set(i, TreeUtils.urlStringFromTreeString(allResources.get(i)));
             }
@@ -146,7 +146,7 @@ public class SearchInPathAction extends AbstractAction {
 
     @SuppressWarnings("all")
     public static ArrayList<String> search(TreePath rootPath, int type, boolean restricted,
-                                           BaseXSource source, TreePath path, String filter) {
+                                           BaseXSource source, TreePath path, String filter, boolean caseSensitive) {
         ArrayList<String> allResources = new ArrayList<>();
         WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
         String filterExcludeOption = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_FILTER_EXCLUDE, false);
@@ -154,9 +154,9 @@ public class SearchInPathAction extends AbstractAction {
         switch (type) {
             case SEARCH_ALL: {
                 TreePath currentPath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_repo));
-                allResources.addAll(searchResourcesInPath(BaseXSource.REPO, currentPath, filter));
+                allResources.addAll(searchResourcesInPath(BaseXSource.REPO, currentPath, filter, caseSensitive));
                 currentPath = TreeUtils.pathByAddingChildAsStr(rootPath, Lang.get(Lang.Keys.tree_restxq));
-                allResources.addAll(searchResourcesInPath(BaseXSource.RESTXQ, currentPath, filter));
+                allResources.addAll(searchResourcesInPath(BaseXSource.RESTXQ, currentPath, filter, caseSensitive));
             }
             case SEARCH_ALL_DBS: {
                 List<String> dbList = getDatabases();
@@ -169,13 +169,13 @@ public class SearchInPathAction extends AbstractAction {
                                     TreeUtils.insertStrAsNodeLexi(db, (DefaultMutableTreeNode) dbBasePath.getLastPathComponent(), false).
                                             getPath());
                         }
-                        allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter));
+                        allResources.addAll(searchResourcesInPath(BaseXSource.DATABASE, currentPath, filter, caseSensitive));
                     }
                 }
                 break;
             }
             default : {
-                allResources.addAll(searchResourcesInPath(source, path, filter));
+                allResources.addAll(searchResourcesInPath(source, path, filter, caseSensitive));
             }
         }
         WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
@@ -199,9 +199,9 @@ public class SearchInPathAction extends AbstractAction {
         return databases;
     }
 
-    private static List<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter) {
+    private static List<String> searchResourcesInPath(BaseXSource source, TreePath path, String filter, boolean caseSensitive) {
         String basePathStr = TreeUtils.resourceFromTreePath(path);
-        List<String> allResources = searchResourcesInPathString(source, basePathStr, filter);
+        List<String> allResources = searchResourcesInPathString(source, basePathStr, filter, caseSensitive);
         String searchRoot;
         if (source.equals(BaseXSource.DATABASE))
             searchRoot = TreeUtils.treeStringFromTreePath(TreeUtils.pathToDepth(path,2))+"/";
@@ -213,10 +213,11 @@ public class SearchInPathAction extends AbstractAction {
         return allResources;
     }
 
-    private static List<String> searchResourcesInPathString(BaseXSource source, String basePathStr, String filter) {
+    private static List<String> searchResourcesInPathString(BaseXSource source, String basePathStr,
+                                                            String filter, boolean caseSensitive) {
         List<String> allResources;
         try {
-            allResources = ConnectionWrapper.findFiles(source, basePathStr, filter);
+            allResources = ConnectionWrapper.findFiles(source, basePathStr, filter, caseSensitive);
         } catch (IOException io) {
             allResources = new ArrayList<>();
             String message = io.getMessage();
