@@ -77,8 +77,8 @@ public class Lang {
         lbl_filename, lbl_filetype, lbl_filestocheck, lbl_delete, lbl_dir, lbl_searchpath, lbl_elements, lbl_text,
         lbl_attributes, lbl_attrbvalues, lbl_scope, lbl_options, lbl_whole, lbl_casesens, lbl_snippet,
         lbl_search1, lbl_search2, lbl_search3, lbl_search4, lbl_overwrite, lbl_version, lbl_revision, lbl_date, lbl_closed,
-        lbl_connection, lbl_host, lbl_user, lbl_pwd, lbl_vcs, lbl_dboptions, lbl_chop, lbl_ftindex, lbl_textindex,
-        lbl_attributeindex, lbl_tokenindex, lbl_fixdefault,
+        lbl_connection, lbl_host, lbl_user, lbl_pwd, lbl_vcs, lbl_fe, lbl_dboptions, lbl_chop, lbl_ftindex, lbl_textindex,
+        lbl_attributeindex, lbl_tokenindex, lbl_fixdefault, tt_fe,
         title_connection, title_connection2, title_history,
         warn_failednewdb, warn_failednewfile, warn_faileddeletedb, warn_faileddelete,
         warn_failedexport, warn_failednewversion, warn_norename, warn_resource, warn_storing, warn_locked, warn_nosnippet,
@@ -87,7 +87,7 @@ public class Lang {
         warn_settingspath2, warn_settingspath3,
         msg_dbexists1, msg_dbexists2, msg_fileexists1, msg_fileexists2, msg_noquery, msg_noeditor, msg_checkpriordelete,
         msg_noupdate1, msg_noupdate2, msg_norename1, msg_norename2, msg_norename3, msg_transferlocked, msg_nameexists,
-        msg_settingsexists,
+        msg_settingsexists, msg_noscopeselected,
         dlg_addfileinto, dlg_externalquery, dlg_checkedout, dlg_delete, dlg_newdir, dlg_replycomment, dlg_saveas, dlg_open,
         dlg_snippet, dlg_foundresources, dlg_overwrite, dlg_closed, dlg_overwritesetting, dlg_newsetting
     }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 import org.basex.util.*;
 
 /**
@@ -135,6 +136,14 @@ public interface Connection extends Closeable {
      * @throws IOException I/O exception
      */
     String xquery(final String query, String... args) throws IOException;
+
+    /**
+     * Returns the list of history entries to the resource given by path, extracted from meta file
+     * @param path path
+     * @return List of VersionHistoryEntry
+     * @throws IOException
+     */
+    List<VersionHistoryEntry> getHistory(final String path) throws IOException;
 
     /**
      * Parses a query.

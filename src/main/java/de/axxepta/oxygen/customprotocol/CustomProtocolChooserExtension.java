@@ -28,6 +28,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     /**
     * @return A menu name.
     */
+    @Override
     public String getMenuName() {
         return Lang.get(Lang.Keys.dlg_open);
     }
@@ -35,6 +36,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     /**
     * @see ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension#getToolbarIcon()
     */
+    @Override
     public Icon getToolbarIcon() {
         return ImageUtils.getIcon(ImageUtils.BASEX24);
     }
@@ -42,6 +44,7 @@ public class CustomProtocolChooserExtension implements URLChooserPluginExtension
     /**
     * @see ro.sync.exml.plugin.urlstreamhandler.URLChooserToolbarExtension#getToolbarTooltip()
     */
+    @Override
     public String getToolbarTooltip() {
         return Lang.get(Lang.Keys.dlg_open);
     }

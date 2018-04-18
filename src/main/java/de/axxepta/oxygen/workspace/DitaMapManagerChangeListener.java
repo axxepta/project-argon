@@ -135,7 +135,8 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
                     if (attrValue != null) {
                         String baseUrl = selectedNode.getXMLBaseURL().toString();
                         String refName = attrValue.getRawValue();
-                        if (baseUrl.startsWith("argon") && !refName.contains(":")) {
+                        if (baseUrl.startsWith("argon") &&
+                                (!refName.contains(":") || (refName.contains(":") && refName.startsWith("argon")))) {
                             try {
                                 String urlString = getAbsoluteURLString(baseUrl, refName);
                                 JMenuItem checkOutMenuItem = createCheckOutEditorPopUpAddition(urlString);

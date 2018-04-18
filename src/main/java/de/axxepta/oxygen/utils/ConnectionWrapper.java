@@ -15,10 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -233,9 +230,9 @@ public final class ConnectionWrapper {
         }
     }
 
-    public static List<String> findFiles(BaseXSource source, String path, String filter) throws IOException {
+    public static List<String> findFiles(BaseXSource source, String path, String filter, boolean caseSensitive) throws IOException {
         List<String> result;
-        StringBuilder regEx = new StringBuilder("");
+        StringBuilder regEx = new StringBuilder(caseSensitive ? "" : "(?i)");
         for (int i = 0; i < filter.length(); i++) {
             char c = filter.charAt(i);
             switch (c) {

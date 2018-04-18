@@ -199,7 +199,7 @@ public class WorkspaceUtils {
                     return false;
                 int check;
                 check = WorkspaceUtils.checkOverwriteAll();
-                if ((check == OVERWRITE_ALL) || (checkFlag == OVERWRITE_NONE))
+                if ((check == OVERWRITE_ALL) || (check == OVERWRITE_NONE))
                     checkFlag = check;
                 return ((check == OVERWRITE_YES) || (check == OVERWRITE_ALL));
             } else {

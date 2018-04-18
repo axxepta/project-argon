@@ -3,9 +3,14 @@ package de.axxepta.oxygen.api;
 import static de.axxepta.oxygen.api.ConnectionUtils.*;
 
 import java.io.*;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import de.axxepta.oxygen.api.BaseXClient.*;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 
 /**
  * BaseX client implementation for the Argon connection interface.
@@ -162,6 +167,27 @@ public final class ClientConnection implements Connection {
         } catch(final IOException ex) {
             throw BaseXQueryException.get(ex);
         }
+    }
+
+    @Override
+    public List<VersionHistoryEntry> getHistory(final String path) throws IOException {
+        final Query query = client.query(getQuery("get-history"));
+        query.bind(PATH, path, "");
+        final ArrayList<VersionHistoryEntry> list = new ArrayList<>();
+        DateFormat format = new SimpleDateFormat(ArgonConst.DATE_FORMAT);
+        Date date;
+        while(query.more()) {
+            URL url = new URL(query.next());
+            final String versionStr = query.next(), revisionStr = query.next();
+            try {
+                date = format.parse(query.next());
+            } catch (ParseException pe) {
+                throw new IOException(pe.getMessage());
+            }
+            list.add(new VersionHistoryEntry(url, Integer.parseInt(versionStr),
+                    Integer.parseInt(revisionStr), date));
+        }
+        return list;
     }
 
     @Override

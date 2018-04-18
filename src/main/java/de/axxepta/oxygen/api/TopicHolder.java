@@ -11,6 +11,7 @@ public class TopicHolder {
     public static MsgTopic newDir = new MsgTopic("NEW_DIR");
     public static MsgTopic deleteFile = new MsgTopic("DELETE_FILE");
     public static MsgTopic changedEditorStatus = new MsgTopic("EDITOR_STATUS_CHANGED");
+    public static MsgTopic templateUpdateRequested = new MsgTopic("TEMPLATE_UPDATE_REQUESTED");
     public static MsgTopic changedServerStatus = new MsgTopic("SERVER_STATUS_CHANGED");
     public static MsgTopic treeNodeRequested = new MsgTopic("REQUESTED_TREE_NODE");
     public static MsgTopic consoleNotified = new MsgTopic("MESSAGE_TO_CONSOLE");
