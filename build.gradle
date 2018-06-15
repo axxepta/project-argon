@@ -8,7 +8,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 group = 'de.axxepta'
-version = '0.0.10'
+version = '0.0.11'
 
 repositories {
     mavenCentral()
