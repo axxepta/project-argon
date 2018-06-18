@@ -3,9 +3,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension id="Argon">
-        <xt:location href="Argon-0.0.8.jar"/>
-        <xt:version>0.0.8</xt:version>
-        <xt:oxy_version>17.0+</xt:oxy_version>
+        <xt:location href="Argon-0.0.11.jar"/>
+        <xt:version>0.0.11</xt:version>
+        <xt:oxy_version>18.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>axxepta solutions GmbH</xt:author>
         <xt:name>Argon Author</xt:name>
