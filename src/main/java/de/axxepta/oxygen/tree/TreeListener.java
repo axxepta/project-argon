@@ -88,13 +88,21 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
     }
 
+    private static boolean isRightClick(MouseEvent e) {
+        return (e.getButton()==MouseEvent.BUTTON3 ||
+                (System.getProperty("os.name").contains("Mac OS") &&
+                        (e.getModifiers() & InputEvent.BUTTON1_MASK) != 0 &&
+                        (e.getModifiers() & InputEvent.CTRL_MASK) != 0));
+    }
+
     @Override public void mouseReleased( MouseEvent e ) {
         path = tree.getPathForLocation(e.getX(), e.getY());
         try {
             if (path != null)
                 node = (TreeNode) path.getLastPathComponent();
         } catch (NullPointerException er) {er.printStackTrace();}
-        if ( e.isPopupTrigger() )
+       // if ( e.isPopupTrigger() )
+        if (isRightClick(e))
             contextMenu.show(e.getComponent(), e.getX(), e.getY(), path);
     }
 
