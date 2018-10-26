@@ -1,4 +1,5 @@
 package de.axxepta.oxygen.actions;
+
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,14 +68,12 @@ public class CompareVersionsAction extends AbstractAction {
                 Method invokerMethod = null;
                 for (Method method : methods) {
                     if (method.getReturnType().toString().equals(clazz.toString()) &&
-                            Modifier.toString(method.getModifiers()).contains("static"))
-                    {
+                            Modifier.toString(method.getModifiers()).contains("static")) {
                         getInstanceMethod = method;
                     }
                     Class<?>[] parameterTypes = method.getParameterTypes();
                     if ((parameterTypes.length == 2) && parameterTypes[0].toString().equals(urlString) &&
-                            parameterTypes[1].toString().equals(urlString))
-                    {
+                            parameterTypes[1].toString().equals(urlString)) {
                         invokerMethod = method;
                     }
                 }
@@ -84,9 +83,9 @@ public class CompareVersionsAction extends AbstractAction {
                     try {
                         Object fileDiffer = getInstanceMethod.invoke(null);
                         invokerMethod.invoke(fileDiffer, urls[0], urls[1]);
-                    } catch(IllegalAccessException iae) {
+                    } catch (IllegalAccessException iae) {
                         logger.error("No access granted to getInstance method of File Differ!");
-                    } catch(InvocationTargetException ite) {
+                    } catch (InvocationTargetException ite) {
                         logger.error("Target of getInstance method of File Differ not set!");
                     }
                 } else {

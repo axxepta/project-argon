@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,27 +75,29 @@ public class CheckedOutFilesAction extends AbstractAction {
     }
 
     private static List<BaseXResource> getCheckedOutFiles() {
-        List<BaseXResource> fileList = new ArrayList<>();
-        String checkedOut;
+//        final List<BaseXResource> fileList = new ArrayList<>();
+//        String checkedOut;
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            checkedOut = connection.xquery(ConnectionUtils.getQuery("checked-out-files"));
+            // FIXME this should just get a list of all checked-out files
+//            checkedOut = connection.xquery(ConnectionUtils.getQuery("checked-out-files"));
+            return Collections.emptyList();
         } catch (IOException ioe) {
             logger.debug("Failed to get list of checked out files. ", ioe.getMessage());
-            return fileList;
+            return Collections.emptyList();
         }
-        if (!checkedOut.equals("")) {
-            final String[] results = checkedOut.split("\r?\n");
-            for(int r = 0, rl = results.length; r < rl; r += 2) {
-                fileList.add(new BaseXResource(results[r + 1], BaseXType.RESOURCE, BaseXSource.get(results[r])));
-            }
-        }
-        return fileList;
+//        if (!checkedOut.equals("")) {
+//            final String[] results = checkedOut.split("\r?\n");
+//            for (int r = 0, rl = results.length; r < rl; r += 2) {
+//                fileList.add(new BaseXResource(results[r + 1], BaseXType.RESOURCE, BaseXSource.get(results[r])));
+//            }
+//        }
+//        return fileList;
     }
 
 
     private class ResourceListModel extends AbstractListModel {
 
-        private List<BaseXResource> data;
+        private final List<BaseXResource> data;
 
         ResourceListModel(List<BaseXResource> data) {
             this.data = data;

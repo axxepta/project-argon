@@ -1,6 +1,7 @@
 package de.axxepta.oxygen.api;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Resource types.
@@ -8,22 +9,24 @@ import java.util.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public enum BaseXType {
-    /** Directory. */
+    /**
+     * Directory.
+     */
     DIRECTORY,
-    /** Resource. */
+    /**
+     * Resource.
+     */
     RESOURCE;
 
-    /**
-     * Returns a resource.
-     * @param string string representation
-     * @return enumeration
-     */
-    public static BaseXType get(final String string) {
-        return BaseXType.valueOf(string.toUpperCase(Locale.ENGLISH));
+    @JsonCreator
+    public static BaseXType deserialize(String name) {
+        return BaseXType.valueOf(name);
     }
 
+    @JsonValue
     @Override
     public String toString() {
-        return name().toLowerCase(Locale.ENGLISH);
+        return this.name();
     }
+
 }

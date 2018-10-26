@@ -1,24 +1,29 @@
 package de.axxepta.oxygen.api;
 
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
-
 /**
  * BaseX resource.
  *
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public final class BaseXResource {
-    /** Entry name. */
+    /**
+     * Entry name.
+     */
     public final String name;
-    /** Entry type. */
+    /**
+     * Entry type.
+     */
     public final BaseXType type;
-    /** Source. */
+    /**
+     * Source.
+     */
     public final BaseXSource source;
 
     /**
      * Constructor.
-     * @param name name
-     * @param type type
+     *
+     * @param name   name
+     * @param type   type
      * @param source source
      */
     public BaseXResource(final String name, final BaseXType type, final BaseXSource source) {
@@ -41,9 +46,6 @@ public final class BaseXResource {
     }
 
     public String getURLString() {
-        StringBuilder url = new StringBuilder(CustomProtocolURLHandlerExtension.protocolFromSource(source));
-        url.append(":");
-        url.append(name);
-        return url.toString();
+        return source.getProtocol() + ":" + name;
     }
 }

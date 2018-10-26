@@ -3,7 +3,7 @@ package de.axxepta.oxygen.actions;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryTableModel;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ import java.util.Scanner;
 public class RollbackVersionAction extends AbstractAction {
 
     private static final Logger logger = LogManager.getLogger(RollbackVersionAction.class);
-    private JTable table;
+    private final JTable table;
     private WSEditor editorAccess;
 
     public RollbackVersionAction(String name, JTable table) {
@@ -65,8 +65,8 @@ public class RollbackVersionAction extends AbstractAction {
         String oldDocumentString = null;
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             InputStream oldRevisionStream = new ByteArrayInputStream(connection.get(BaseXSource.DATABASE,
-                    CustomProtocolURLHandlerExtension.pathFromURL(url), false));
-            oldDocumentString = new Scanner(oldRevisionStream,"UTF-8").useDelimiter("\\A").next();
+                    CustomProtocolURLUtils.pathFromURL(url), false));
+            oldDocumentString = new Scanner(oldRevisionStream, "UTF-8").useDelimiter("\\A").next();
         } catch (IOException ex) {
             logger.error("Couldn't access old file revision during Reset To");
         }
@@ -78,16 +78,9 @@ public class RollbackVersionAction extends AbstractAction {
             replaceWholeDocument(newDoc);
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        replaceWholeDocument(newDoc);
-                    }
-                });
-            } catch (InvocationTargetException ite) {
+                SwingUtilities.invokeAndWait(() -> replaceWholeDocument(newDoc));
+            } catch (InvocationTargetException | InterruptedException ite) {
                 logger.error(ite);
-            } catch (InterruptedException ie) {
-                logger.error(ie);
             }
         }
     }

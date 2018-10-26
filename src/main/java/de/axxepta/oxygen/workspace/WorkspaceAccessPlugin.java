@@ -4,13 +4,12 @@ import ro.sync.exml.plugin.Plugin;
 import ro.sync.exml.plugin.PluginDescriptor;
 
 /**
+ * Workspace access plugin.
+ *
  * @author daltiparmak on 02.04.15.
  */
-
-/**
- * Workspace access plugin.
- */
 public class WorkspaceAccessPlugin extends Plugin {
+
     /**
      * The static plugin instance.
      */
@@ -38,4 +37,5 @@ public class WorkspaceAccessPlugin extends Plugin {
     public static WorkspaceAccessPlugin getInstance() {
         return instance;
     }
+
 }

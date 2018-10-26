@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d3d30828-18d3-4a8c-bd47-23932b0e0ca8" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/argon.iws" beforeDir="false" afterPath="$PROJECT_DIR$/argon.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build_release.bat" beforeDir="false" afterPath="$PROJECT_DIR$/build_release.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extension.xml" beforeDir="false" afterPath="$PROJECT_DIR$/extension.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugin.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java" afterDir="false" />
     </list>
     <ignored path="argon.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -109,15 +106,13 @@
       <file leaf-file-name="TreeListener.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="104" column="28" lean-forward="true" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
+            <state relative-caret-position="1309">
+              <caret line="104" column="28" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#TreeListener#0;class#TreeListener#0" />
                 <element signature="e#2621#2622#0" expanded="true" />
                 <element signature="e#2661#2662#0" expanded="true" />
-                <element signature="e#5629#5630#0" expanded="true" />
-                <element signature="e#5679#5680#0" expanded="true" />
                 <element signature="method#updateExpandedNode#0;class#TreeListener#0" />
                 <element signature="method#keyPressed#0;class#TreeListener#0" />
               </folding>
@@ -125,20 +120,38 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build.gradle">
+      <file leaf-file-name="build_release.bat" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/build_release.bat">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-238">
-              <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
+            <state relative-caret-position="136">
+              <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build_release.bat" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/build_release.bat">
+      <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="20" selection-start-column="20" selection-end-column="20" />
+            <state relative-caret-position="119">
+              <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="442">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="extension.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/extension.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -290,9 +303,9 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5911529929351" />
+        <entry key="$PROJECT_DIR$" value="5911533163990" />
         <entry key="$PROJECT_DIR$/.gradle" value="0" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="1658740045" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="3289798043" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="3883967377" />
         <entry key="$PROJECT_DIR$/settings.gradle" value="2789215106" />
       </map>
@@ -455,6 +468,7 @@
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/plugin.xml" />
         <option value="$PROJECT_DIR$/build_release.bat" />
+        <option value="$PROJECT_DIR$/extension.xml" />
       </list>
     </option>
   </component>
@@ -466,10 +480,10 @@
     <option name="LAST_EDITED_TAB_NAME" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-76" />
-    <option name="y" value="-1047" />
-    <option name="width" value="2278" />
-    <option name="height" value="1103" />
+    <option name="x" value="100" />
+    <option name="y" value="-1307" />
+    <option name="width" value="1932" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -485,7 +499,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -502,7 +517,7 @@
               <item name="argon" type="b2602c69:ProjectViewProjectNode" />
               <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="build" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
+              <item name="release" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="argon" type="b2602c69:ProjectViewProjectNode" />
@@ -513,6 +528,19 @@
               <item name="argon" type="b2602c69:ProjectViewProjectNode" />
               <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="argon" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="argon" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+              <item name="argon" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="argon" type="b2602c69:ProjectViewProjectNode" />
@@ -529,8 +557,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -712,16 +739,6 @@
       <option name="PREFERRED_AVD" value="" />
       <method />
     </configuration>
-    <configuration default="true" type="BatchConfigurationType" factoryName="Batch">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <module name="" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <method />
-    </configuration>
     <configuration default="true" type="JUnitTestDiscovery" factoryName="JUnit Test Discovery" changeList="All">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -813,8 +830,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-60" y="-1297" width="2278" height="1103" extended-state="0" />
-    <editor active="true" />
+    <frame x="100" y="-1307" width="1932" height="1047" extended-state="0" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -824,12 +840,12 @@
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50680786" side_tool="true" weight="0.4799358" />
       <window_info anchor="right" id="Maven Projects" order="5" weight="0.32996207" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.18138042" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49319214" visible="true" weight="0.19416499" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49319214" weight="0.35287845" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.39019188" />
       <window_info id="Capture Tool" order="3" />
       <window_info anchor="right" id="Designer" order="4" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16357206" />
-      <window_info anchor="right" id="Gradle" order="6" visible="true" weight="0.11229001" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19311064" />
+      <window_info anchor="right" id="Gradle" order="6" visible="true" weight="0.13256785" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.30163935" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24989465" />
       <window_info id="UI Designer" order="2" />
@@ -853,13 +869,13 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Application Servers" order="11" />
       <window_info anchor="right" id="Gradle" order="6" weight="0.1068814" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49601874" weight="0.28336078" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21855828" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49601874" weight="0.28336078" />
       <window_info anchor="right" id="Designer" order="4" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -867,7 +883,7 @@
       <window_info anchor="bottom" id="Terminal" order="10" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5039813" side_tool="true" weight="0.23425926" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Messages" order="9" />
       <window_info anchor="right" id="Maven Projects" order="5" />
@@ -906,13 +922,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/BaseXByteArrayOutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="85" column="28" selection-start-line="85" selection-start-column="24" selection-end-line="85" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/workspace/WorkspaceAccessPlugin.java">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -978,8 +987,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/out/production/argon/Argon_de_DE.properties">
-      <provider editor-type-id="ResourceBundle" />
       <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="ResourceBundle" />
     </entry>
     <entry file="file://$PROJECT_DIR$/out/production/argon/log4j2.xml">
       <provider selected="true" editor-type-id="text-editor" />
@@ -1171,20 +1180,35 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/build/release">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="104" column="28" lean-forward="true" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
+        <state relative-caret-position="1309">
+          <caret line="104" column="28" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#TreeListener#0;class#TreeListener#0" />
             <element signature="e#2621#2622#0" expanded="true" />
             <element signature="e#2661#2662#0" expanded="true" />
-            <element signature="e#5629#5630#0" expanded="true" />
-            <element signature="e#5679#5680#0" expanded="true" />
             <element signature="method#updateExpandedNode#0;class#TreeListener#0" />
             <element signature="method#keyPressed#0;class#TreeListener#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extension.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
         </state>
       </provider>
     </entry>
@@ -1195,24 +1219,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/extension.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="22" lean-forward="true" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-238">
-          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build_release.bat">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="20" selection-start-column="20" selection-end-column="20" />
+        <state relative-caret-position="136">
+          <caret line="8" column="8" lean-forward="true" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
         </state>
       </provider>
     </entry>

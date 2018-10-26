@@ -12,7 +12,7 @@ import java.util.List;
 public class ArgonChooserListModel extends AbstractListModel {
 
 
-    private List<Element> data;
+    private final List<Element> data;
 
     ArgonChooserListModel(List<Element> data) {
         this.data = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ArgonChooserListModel extends AbstractListModel {
         boolean inserted = false;
         for (int index = 1; index < oldSize; index++) {
             if ((newElement.getName().compareTo(data.get(index).getName()) < 0) ||
-                    data.get(index).getType().equals(ArgonEntity.FILE)){
+                    data.get(index).getType().equals(ArgonEntity.FILE)) {
                 data.add(index, newElement);
                 fireIntervalAdded(this, index, index);
                 inserted = true;
@@ -76,8 +76,8 @@ public class ArgonChooserListModel extends AbstractListModel {
 
     public static class Element {
 
-        private ArgonEntity type;
-        private String name;
+        private final ArgonEntity type;
+        private final String name;
 
         Element(ArgonEntity type, String name) {
             this.type = type;

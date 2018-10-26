@@ -23,7 +23,7 @@ public class ReplyAuthorCommentAction extends AbstractAction {
 
     private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public ReplyAuthorCommentAction(String name, Icon icon){
+    public ReplyAuthorCommentAction(String name, Icon icon) {
         super(name, icon);
     }
 
@@ -38,23 +38,23 @@ public class ReplyAuthorCommentAction extends AbstractAction {
             int currentOffset = authorAccess.getEditorAccess().getCaretOffset();
             // change to Text mode
             editorAccess.changePage(EditorPageConstants.PAGE_TEXT);
-            WSTextEditorPage textPage = (WSTextEditorPage)editorAccess.getCurrentPage();
+            WSTextEditorPage textPage = (WSTextEditorPage) editorAccess.getCurrentPage();
             // check whether current cursor position is in a comment
             int currentPos = textPage.getSelectionStart();
             Document doc = textPage.getDocument();
             String docStr;
             try {
-                docStr = doc.getText(0,doc.getLength());
+                docStr = doc.getText(0, doc.getLength());
             } catch (BadLocationException ex) {
                 docStr = "";
             }
-            int commentStart = docStr.lastIndexOf("<?oxy_comment_start",currentPos);
+            int commentStart = docStr.lastIndexOf("<?oxy_comment_start", currentPos);
             if (commentStart != -1) {
                 int commentEnd = docStr.indexOf("<?oxy_comment_end", commentStart);
                 if (commentEnd > currentPos) {
                     // identify position of end of comment attribute in processing instruction
                     int endCommentEnd = docStr.indexOf("comment=", commentStart);
-                    endCommentEnd = docStr.indexOf("\"", endCommentEnd+9);
+                    endCommentEnd = docStr.indexOf("\"", endCommentEnd + 9);
                     // add response to comment, hiding that you're working in text mode
                     editorAccess.changePage(EditorPageConstants.PAGE_AUTHOR);
                     JFrame parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
@@ -63,7 +63,7 @@ public class ReplyAuthorCommentAction extends AbstractAction {
                     if (reply != null) {
                         try {
                             doc.insertString(endCommentEnd, " ----------------------------- "
-                                    +"Response [" + System.getProperty("user.name") + "]: " + reply, null);
+                                    + "Response [" + System.getProperty("user.name") + "]: " + reply, null);
                         } catch (BadLocationException ex) {/*ToDo? should be in safe range due to previous ifs*/}
                     }
                 }

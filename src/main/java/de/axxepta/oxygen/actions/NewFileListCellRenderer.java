@@ -17,7 +17,7 @@ class NewFileListCellRenderer extends DefaultListCellRenderer {
         String fileType = value.toString();
         int ind1 = fileType.indexOf("(");
         int ind2 = fileType.indexOf(")");
-        String ext = fileType.substring(ind1+3, ind2);
+        String ext = fileType.substring(ind1 + 3, ind2);
         Icon icon = ImageUtils.getIcon(ext);
         label.setIcon(icon);
         return label;

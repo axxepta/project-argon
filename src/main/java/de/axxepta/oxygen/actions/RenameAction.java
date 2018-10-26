@@ -4,7 +4,6 @@ import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
 import de.axxepta.oxygen.api.TopicHolder;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
@@ -39,7 +38,7 @@ public class RenameAction extends AbstractAction {
     private TreePath path;
     private String db_path;
 
-    public RenameAction(String name, Icon icon, ArgonTree tree, TreeListener treeListener){
+    public RenameAction(String name, Icon icon, ArgonTree tree, TreeListener treeListener) {
         super(name, icon);
         this.treeModel = tree.getModel();
         this.treeListener = treeListener;
@@ -62,7 +61,7 @@ public class RenameAction extends AbstractAction {
 
             renameDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_rename) + " in " + filePath);
 
-            JPanel content = new JPanel(new BorderLayout(10,10));
+            JPanel content = new JPanel(new BorderLayout(10, 10));
 
             RenameThisAction renameThisAction = new RenameThisAction(Lang.get(Lang.Keys.cm_rename));
 
@@ -85,7 +84,7 @@ public class RenameAction extends AbstractAction {
     }
 
     public static void rename(TreeModel treeModel, TreePath path, BaseXSource source, String db_path,
-                               String newPathString, String newName, PluginWorkspace workspace) throws Exception {
+                              String newPathString, String newName, PluginWorkspace workspace) throws Exception {
         boolean isFile = TreeUtils.isFile(path);
         if (!isFile && ConnectionWrapper.directoryExists(source, newPathString)) {
             workspace.showInformationMessage(Lang.get(Lang.Keys.msg_norename1) + " " + newPathString + " " + Lang.get(Lang.Keys.msg_norename2));
@@ -102,13 +101,13 @@ public class RenameAction extends AbstractAction {
             if (writable) {
                 try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                     connection.rename(source, db_path, newPathString);
-                    String newURLString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + newPathString;
-                    int endPosNewBase = Math.max( newURLString.lastIndexOf("/"), newURLString.indexOf(":"));
+                    String newURLString = source.getProtocol() + ":" + newPathString;
+                    int endPosNewBase = Math.max(newURLString.lastIndexOf("/"), newURLString.indexOf(":"));
                     TreePath newBasePath = TreeUtils.pathFromURLString(newURLString.substring(0, endPosNewBase));
                     TreeUtils.insertStrAsNodeLexi(treeModel, newName,
                             (DefaultMutableTreeNode) newBasePath.getLastPathComponent(), isFile);
                     ((DefaultTreeModel) treeModel).removeNodeFromParent((MutableTreeNode) path.getLastPathComponent());
-                     TopicHolder.saveFile.postMessage(newURLString);
+                    TopicHolder.saveFile.postMessage(newURLString);
                 }
             }
         } else {
@@ -119,7 +118,7 @@ public class RenameAction extends AbstractAction {
 
     private class RenameThisAction extends AbstractAction {
 
-        RenameThisAction(String name){
+        RenameThisAction(String name) {
             super(name);
         }
 

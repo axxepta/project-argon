@@ -11,11 +11,11 @@ import java.util.ArrayList;
  */
 
 // made public for access via AspectJ
-@SuppressWarnings("all")
+//@SuppressWarnings("all")
 public class CheckOutListSelectionAction extends AbstractAction {
 
-    JList<String> results;
-    JDialog resultsDialog;
+    private final JList<String> results;
+    private final JDialog resultsDialog;
 
     public CheckOutListSelectionAction(String name, JList<String> results, JDialog resultsDialog) {
         super(name);
@@ -25,11 +25,10 @@ public class CheckOutListSelectionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ArrayList<String> selectedResources = new ArrayList<>();
-        selectedResources.addAll(results.getSelectedValuesList());
+        final ArrayList<String> selectedResources = new ArrayList<>(results.getSelectedValuesList());
 
         for (Object resource : selectedResources) {
-            String db_path = TreeUtils.urlStringFromTreeString(resource.toString());
+            final String db_path = TreeUtils.urlStringFromTreeString(resource.toString());
             CheckOutAction.checkOut(db_path);
         }
         resultsDialog.dispose();

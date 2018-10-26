@@ -1,22 +1,27 @@
 package de.axxepta.oxygen.api;
 
-import static de.axxepta.oxygen.api.ConnectionUtils.*;
-import static org.basex.util.http.HttpMethod.*;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.basex.io.IOStream;
+import org.basex.util.Base64;
+import org.basex.util.Token;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.basex.util.http.HttpMethod;
 
 import java.io.*;
 import java.net.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.basex.io.*;
-import org.basex.util.*;
-import org.basex.util.Base64;
-import org.basex.util.http.*;
+import static de.axxepta.oxygen.api.ConnectionUtils.*;
+import static org.basex.util.http.HttpMethod.GET;
 
 /**
  * BaseX REST implementation for the Argon connection interface.
@@ -24,22 +29,37 @@ import org.basex.util.http.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public class RestConnection implements Connection {
-    /** URI. */
-    protected final URL url;
-    protected final String basicAuth;
+
     private static final Logger logger = LogManager.getLogger(RestConnection.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
+    static {
+        mapper.findAndRegisterModules();
+    }
+    /**
+     * URI.
+     */
+    protected final URL url;
+    protected final URI uri;
+    protected final String basicAuth;
+    private final CustomProtocolURLHandlerExtension lockCache = new CustomProtocolURLHandlerExtension();
 
     /**
      * Constructor.
-     * @param server server name
-     * @param port connection port
-     * @param user user string
+     *
+     * @param server   server name
+     * @param port     connection port
+     * @param user     user string
      * @param password password string
      */
     public RestConnection(final String server, final int port, final String user,
                           final String password) throws MalformedURLException {
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
-        url = new URL("http://" + user + ":" + password + "@" + server );
+        url = new URL("http://" + user + ":" + password + "@" + server);
+        try {
+            uri = url.toURI();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
+        }
     }
 
     @Override
@@ -48,26 +68,36 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
-        final String result = Token.string(request(getQuery("list-" + source), PATH, path));
-        final ArrayList<BaseXResource> list = new ArrayList<>();
-        if(!result.isEmpty()) {
-            final String[] results = result.split("\r?\n");
-            for(int r = 0, rl = results.length; r < rl; r += 2) {
-                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
-            }
-        }
+    public List<Resource> list(final BaseXSource source, final String path) throws IOException {
+        logger.info("list " + source + " [" +  path + "]");
+        final Resource resource = getResourceMetadata(path);
+        final List<Resource> list = resource.children;
+//        final String result = Token.string(request);
+//        final ArrayList<BaseXResource> list = new ArrayList<>();
+//        if (!result.isEmpty()) {
+//            final String[] results = result.split("\r?\n");
+//            for (int r = 0, rl = results.length; r < rl; r += 2) {
+//                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
+//            }
+//        }
         return list;
+    }
+
+    private Resource getResourceMetadata(String path) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        final byte[] request = request("list/" + path);
+        return mapper.readValue(request, Resource.class);
     }
 
     @Override
     public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
+        logger.info("listAll " + source + " [" +  path + "]");
         final String result = Token.string(request(getQuery("listall-" + source), PATH, path));
         final ArrayList<BaseXResource> list = new ArrayList<>();
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             final String[] results = result.split("\r?\n");
-            for(int r = 0, rl = results.length; r < rl; r += 2) {
-                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
+            for (int r = 0, rl = results.length; r < rl; r += 2) {
+                list.add(new BaseXResource(results[r + 1], BaseXType.valueOf(results[r]), source));
             }
         }
         return list;
@@ -75,7 +105,8 @@ public class RestConnection implements Connection {
 
     @Override
     public void init() throws IOException {
-        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8"), false));
+        logger.info("init");
+//        request(getQuery("init"), RESOURCE, prepare(getAPIResource(ArgonConst.META_TEMPLATE).getBytes("UTF-8"), false));
     }
 
     @Override
@@ -92,25 +123,60 @@ public class RestConnection implements Connection {
 
     @Override
     public byte[] get(final BaseXSource source, final String inPath, boolean export) throws IOException {
-        String path;
-        if (inPath.startsWith("/"))
-            path = inPath.substring(1);
-        else
-            path = inPath;
-        return request(getQuery("get-" + source), PATH, path);
+        final String path = inPath.startsWith("/") ? inPath.substring(1) : inPath;
+//        return request(getQuery("get-" + source), PATH, path);
+        return request("file/" + path);
     }
 
     @Override
     public void put(final BaseXSource source, final String inPath, final byte[] resource, boolean binary, String encoding,
                     String owner, String versionize, String versionUp)
             throws IOException {
-        String path;
-        if (inPath.startsWith("/"))
-            path = inPath.substring(1);
-        else
-            path = inPath;
-        request(getQuery("put-" + source), PATH, path, RESOURCE, prepare(resource, binary), BINARY, Boolean.toString(binary),
-                ENCODING, encoding, OWNER, owner, VERSIONIZE, versionize, VERSION_UP, versionUp);
+        final String path = inPath.startsWith("/") ? inPath.substring(1) : inPath;
+//        request(getQuery("put-" + source),
+//                PATH, path,
+//                RESOURCE, prepare(resource, binary),
+//                BINARY, Boolean.toString(binary),
+//                ENCODING, encoding,
+//                OWNER, owner,
+//                VERSIONIZE, versionize,
+//                VERSION_UP, versionUp);
+        final String action = "file";
+        final URI uri = addParameter(this.uri.resolve(action + "/" + path), "version=" + versionUp);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpEntity entity = new ByteArrayEntity(resource);
+            final HttpPut putRequest = new HttpPut(uri);
+            putRequest.setEntity(entity);
+            logger.info("Update " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200 || statusCode == 204) {
+                logger.info("Update successful");
+            } else {
+                logger.info("Update failed");
+                readError(response);
+            }
+        }
+    }
+
+    private URI addParameter(final URI base, final String query) {
+        try {
+            return new URI(base.getScheme(), base.getUserInfo(), base.getHost(), base.getPort(), base.getPath(),
+                    query, base.getFragment());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private void readError(HttpResponse response) throws IOException {
+//        try (InputStream error = response.getEntity().getContent()) {
+//            final ObjectMapper mapper = new ObjectMapper();
+//            mapper.readValue(error, Map.class);
+//            throw new IOException("Got " + response.getStatusLine().getStatusCode());
+//        }
+        try (BufferedReader error = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+            error.lines().forEach(logger::error);
+        }
     }
 
     @Override
@@ -122,12 +188,41 @@ public class RestConnection implements Connection {
     @Override
     public void delete(final BaseXSource source, final String path) throws IOException {
         request(getQuery("delete-" + source), PATH, path);
+        final String action = "file";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpDelete putRequest = new HttpDelete(uri.resolve(action + "/" + path));
+            logger.info("Delete " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
+                logger.info("Delete successful");
+            } else {
+                logger.info("Delete failed");
+                readError(response);
+            }
+        }
     }
 
     @Override
     public boolean exists(final BaseXSource source, final String path) throws IOException {
-        final byte[] result = request(getQuery("exists-" + source), PATH, path);
-        return Token.string(result).equals("true");
+//        final byte[] result = request(getQuery("exists-" + source), PATH, path);
+//        return Token.string(result).equals("true");
+        final String action = "list";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpGet putRequest = new HttpGet(uri.resolve(action + "/" + path));
+            logger.info("Check existence " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            if (response.getStatusLine().getStatusCode() == 200) { // 204
+                logger.info("Found metadata");
+                return true;
+            } else if (response.getStatusLine().getStatusCode() == 404) {
+                return false;
+            } else {
+                logger.info("Checking existence failed");
+                readError(response);
+                return false;
+            }
+        }
     }
 
     @Override
@@ -144,30 +239,29 @@ public class RestConnection implements Connection {
 
     @Override
     public String xquery(final String query, final String... args) throws IOException {
-        try {
-            return Token.string(request(query, args));
-        } catch(final IOException ex) {
-            throw BaseXQueryException.get(ex);
-        }
+        throw new UnsupportedOperationException();
+//        try {
+//            return Token.string(request(query, args));
+//        } catch (final IOException ex) {
+//            throw BaseXQueryException.get(ex);
+//        }
     }
 
     @Override
     public List<VersionHistoryEntry> getHistory(final String path) throws IOException {
-        final String result = Token.string(request(getQuery("get-history"), PATH, path));
-        final ArrayList<VersionHistoryEntry> list = new ArrayList<>();
-        if(!result.isEmpty()) {
-            DateFormat format = new SimpleDateFormat(ArgonConst.DATE_FORMAT);
-            final String[] results = result.split("\r?\n");
-            for(int r = 0, rl = results.length; r < rl; r += 4) {
-                try {
-                    list.add(new VersionHistoryEntry(new URL(results[r]), Integer.parseInt(results[r + 1]),
-                            Integer.parseInt(results[r + 2]), format.parse(results[r + 3])));
-                } catch (ParseException pe) {
-                    throw new IOException(pe.getMessage());
-                }
+        final String action = "history";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpGet putRequest = new HttpGet(uri.resolve(action + "/" + path));
+            final HttpResponse response = httpClient.execute(putRequest);
+            if (response.getStatusLine().getStatusCode() == 200) { // 204
+                return Arrays.asList(mapper.readValue(response.getEntity().getContent(), VersionHistoryEntry[].class));
+            } else if (response.getStatusLine().getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                readError(response);
+                return Collections.emptyList();
             }
         }
-        return list;
     }
 
     @Override
@@ -182,24 +276,75 @@ public class RestConnection implements Connection {
 
     @Override
     public void lock(final BaseXSource source, final String path) throws IOException {
-        request(getQuery("lock"), SOURCE, source.toString(), PATH, path);
+        final String action = "lock";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpPut putRequest = new HttpPut(uri.resolve(action + "/" + path));
+            logger.info("Lock " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            if (response.getStatusLine().getStatusCode() == 200) { // 204
+                logger.info("Locking successful");
+                lockCache.lock(new URL(source.getProtocol() + ":" + path));
+            } else {
+                logger.info("Locking failed");
+                readError(response);
+            }
+//            request("lock/" + path, HttpMethod.PUT);
+        }
     }
 
     @Override
     public void unlock(final BaseXSource source, final String path) throws IOException {
-        request(getQuery("unlock"), SOURCE, source.toString(), PATH, path);
+//        request(getQuery("unlock"), SOURCE, source.toString(), PATH, path);
+        final String action = "lock";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpDelete putRequest = new HttpDelete(uri.resolve(action + "/" + path));
+            logger.info("Unlock " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            if (response.getStatusLine().getStatusCode() == 200) { // 204
+                logger.info("Unlocking successful");
+                lockCache.unlock(new URL(source.getProtocol() + ":" + path));
+            } else {
+                logger.info("Unlocking failed");
+                readError(response);
+            }
+        }
+//        request("lock/" + path, HttpMethod.DELETE);
     }
 
     @Override
     public boolean locked(final BaseXSource source, final String path) throws IOException {
-        final byte[] result = request(getQuery("locked"), SOURCE, source.toString(), PATH, path);
-        return Token.string(result).equals("true");
+//        final ObjectMapper mapper = new ObjectMapper();
+//        final byte[] request = request("list/" + path);
+//        return mapper.readValue(request, Resource.class).locked;
+        return lockedByUser(source, path);
     }
 
     @Override
     public boolean lockedByUser(final BaseXSource source, final String path) throws IOException {
-        final byte[] result = request(getQuery("lockedByUser"), SOURCE, source.toString(), PATH, path);
-        return Token.string(result).equals("true");
+//        final byte[] result = request(getQuery("lockedByUser"), SOURCE, source.toString(), PATH, path);
+//        return Token.string(result).equals("true");
+        final String action = "lock";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final HttpGet putRequest = new HttpGet(uri.resolve(action + "/" + path));
+            logger.info("Check lock " + putRequest.getURI());
+            final HttpResponse response = httpClient.execute(putRequest);
+            if (response.getStatusLine().getStatusCode() == 200) { // 204
+                logger.info("Found lock");
+                // FIXME this really should get info who has the lock
+//                try (InputStream error = entity.getContent()) {
+//                    final ObjectMapper mapper = new ObjectMapper();
+//                    mapper.readValue(error, Map.class);
+//                    throw new IOException("Got " + response.getStatusLine().getStatusCode());
+//                }
+                return true;
+            } else if (response.getStatusLine().getStatusCode() == 404) {
+                return false;
+            } else {
+                logger.info("Checking lock failed");
+                readError(response);
+                return true;
+            }
+        }
     }
 
     @Override
@@ -216,35 +361,43 @@ public class RestConnection implements Connection {
 
     /**
      * Executes the specified HTTP request and returns the result.
-     * @param body request body
+     *
+     * @param body     request body
      * @param bindings keys and values
      * @return string result, or {@code null} for a failure.
      * @throws IOException I/O exception
      */
     protected byte[] request(final String body, final String... bindings) throws IOException {
+        logger.info("request " + body.split("\n")[0] + " " + String.join(",", bindings));
+        final StringWriter buf = new StringWriter();
+        new UnsupportedOperationException().printStackTrace(new PrintWriter(buf));
+        logger.error(buf);
+        if (true) return new byte[]{};
         final HttpURLConnection conn = ConnectionUtils.getConnection(url);
         try {
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setDoOutput(true);
+            conn.setDoInput(false);
             conn.setAllowUserInteraction(false);
-            conn.setRequestMethod(POST.name());
-            conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
+//            conn.setRequestMethod(POST.name());
+            conn.setRequestMethod(GET.name());
+//            conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
 
             // build and send query
-            final TokenBuilder tb = new TokenBuilder();
-            tb.add("<query xmlns='http://basex.org/rest'>\n");
-            tb.add("<text>").add(toEntities(body)).add("</text>\n");
-            for(int b = 0, bl = bindings.length; b < bl; b += 2) {
-                tb.add("<variable name='").add(bindings[b]).add("' value='");
-                tb.add(toEntities(bindings[b + 1])).add("'/>\n");
-            }
-            tb.add("</query>");
-            try(final OutputStream out = conn.getOutputStream()) {
-                out.write(tb.finish());
-                out.close();
-            }
+//            final TokenBuilder tb = new TokenBuilder();
+//            tb.add("<query xmlns='http://basex.org/rest'>\n");
+//            tb.add("<text>").add(toEntities(body)).add("</text>\n");
+//            for (int b = 0, bl = bindings.length; b < bl; b += 2) {
+//                tb.add("<variable name='").add(bindings[b]).add("' value='");
+//                tb.add(toEntities(bindings[b + 1])).add("'/>\n");
+//            }
+//            tb.add("</query>");
+//            try (final OutputStream out = conn.getOutputStream()) {
+//                out.write(tb.finish());
+//                out.close();
+//            }
             return new IOStream(conn.getInputStream()).read();
-        } catch(final IOException ex) {
+        } catch (final IOException ex) {
             logger.debug("Connection failed to set query: ", ex.getMessage());
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
             throw BaseXQueryException.get(msg);
@@ -254,7 +407,50 @@ public class RestConnection implements Connection {
     }
 
     /**
+     * Executes the specified HTTP request and returns the result.
+     *
+     * @return string result, or {@code null} for a failure.
+     * @throws IOException I/O exception
+     */
+    protected byte[] request(final String path) throws IOException {
+        return request(path, GET);
+    }
+
+    /**
+     * Executes the specified HTTP request and returns the result.
+     *
+     * @return string result, or {@code null} for a failure.
+     * @throws IOException I/O exception
+     */
+    protected byte[] request(final String path, final HttpMethod method) throws IOException {
+        try {
+            logger.info(method.name() + " "
+//                    + url + " " + path + " -> "
+                    + url.toURI().resolve(path).toURL());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        HttpURLConnection conn = null;
+        try {
+            conn = ConnectionUtils.getConnection(url.toURI().resolve(path).toURL());
+            conn.setRequestProperty("Authorization", basicAuth);
+            conn.setAllowUserInteraction(false);
+            conn.setRequestMethod(method.name());
+            return new IOStream(conn.getInputStream()).read();
+        } catch (final IOException ex) {
+            logger.debug("Connection failed to set query: ", ex.getMessage());
+            final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
+            throw BaseXQueryException.get(msg);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(path);
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    /**
      * Encodes entities in a string.
+     *
      * @param string input string
      * @return resulting string
      */

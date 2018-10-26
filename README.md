@@ -1,8 +1,9 @@
-# Project Argon
-Author technical content with oXygen + BaseX 
+# Kuhnuri CMS Oxygen Plugin 
 
-How to install and use the plugin:
+Plugin to Oxygen XML editor to add support for Kuhnuri CMS.
 
-http://argon-author.com
+## License
 
-Information for working with the source code can be found in the [wiki](https://github.com/axxepta/project-argon/wiki).
+Kuhnuri CMS Oxygen Plugin is licensed for use under [The MIT License][1].
+
+[1]: https://opensource.org/licenses/MIT

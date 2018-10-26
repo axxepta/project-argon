@@ -1,33 +1,39 @@
 package de.axxepta.oxygen.tree;
 
-import javax.swing.*;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.util.ArrayList;
-
 import de.axxepta.oxygen.actions.*;
 import de.axxepta.oxygen.core.ClassFactory;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.standalone.ui.PopupMenu;
 
+import javax.swing.*;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+
+import static de.axxepta.oxygen.utils.ImageUtils.getIcon;
+import static de.axxepta.oxygen.utils.Lang.Keys.*;
+
 /**
  * PopupMenu class which holds extra ArrayLists for MenuItems and their names, providing access methods
- *  for enabling the items via name keys.
+ * for enabling the items via name keys.
  */
-@SuppressWarnings("all")  // CAVE: keep access modifiers public because class is subject to modification by AspectJ
+//@SuppressWarnings("all")  // CAVE: keep access modifiers public because class is subject to modification by AspectJ
 public class ArgonPopupMenu extends PopupMenu {
 
     private static final Logger logger = LogManager.getLogger(ArgonPopupMenu.class);
 
-    private ArgonTree tree;
+    private final ArgonTree tree;
     private final TreeModel treeModel;
 
-    private ArrayList<String> itemNames;
-    private ArrayList<JMenuItem> items;
+    private final ArrayList<String> itemNames;
+    private final ArrayList<JMenuItem> items;
 
     public ArgonPopupMenu(final ArgonTree tree, final TreeModel treeModel) {
         super();
@@ -72,7 +78,7 @@ public class ArgonPopupMenu extends PopupMenu {
         return jItem;
     }
 
-    public void show(Component invoker, int x, int y, TreePath path){
+    public void show(Component invoker, int x, int y, TreePath path) {
         // set entries in menu to (un)visible outside of the class because used constants are not inherent
         prepareContextMenu(path);
         tree.setSelectionPath(path);
@@ -84,73 +90,70 @@ public class ArgonPopupMenu extends PopupMenu {
     }
 
     public String getItemName(int i) {
-        if (this.itemNames.size() > i)
+        if (this.itemNames.size() > i) {
             return this.itemNames.get(i);
-        else
+        } else {
             throw new NullPointerException("Tried to access ArgonPopupMenu item number not in list");
+        }
     }
 
     public void setItemEnabled(int i, boolean b) {
-        if (this.itemNames.size() > i)
+        if (this.itemNames.size() > i) {
             items.get(i).setEnabled(b);
-        else
+        } else {
             throw new NullPointerException("Tried to access ArgonPopupMenu item number not in list");
-    }
-
-/*    public void setItemEnabled(String name, boolean b) {
-        if (this.itemNames.contains(name)) {
-            items.get(this.itemNames.indexOf(name)).setEnabled(b);
         }
-    }*/
+    }
 
     public void init(final TreeListener tListener) {
         // Populate context menu
-        Action open = new OpenFileAction(Lang.get(Lang.Keys.cm_open), ImageUtils.getIcon(ImageUtils.BASEX_LOCKED),
-                tListener);
-        this.add(open, Lang.get(Lang.Keys.cm_open));
+        final Action open = new OpenFileAction(Lang.get(cm_open), getIcon(ImageUtils.BASEX_LOCKED), tListener);
+        this.add(open, Lang.get(cm_open));
 
-        Action checkOut = new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.BASEX),
-                tListener);
-        this.add(checkOut, Lang.get(Lang.Keys.cm_checkout));
+        final Action checkOut = new CheckOutAction(Lang.get(cm_checkout), getIcon(ImageUtils.BASEX), tListener);
+        this.add(checkOut, Lang.get(cm_checkout));
+
+        final Action checkIn = new CheckInAction(Lang.get(cm_checkin), getIcon(ImageUtils.BASEX), tListener);
+        this.add(checkIn, Lang.get(cm_checkin));
 
         this.addSeparator();
 
-        Action newDatabase = new AddDatabaseAction(Lang.get(Lang.Keys.cm_adddb), ImageUtils.getIcon(ImageUtils.DB_ADD));
-        this.add(newDatabase, Lang.get(Lang.Keys.cm_adddb));
+        final Action newDatabase = new AddDatabaseAction(Lang.get(cm_adddb), getIcon(ImageUtils.DB_ADD));
+        this.add(newDatabase, Lang.get(cm_adddb));
 
-        Action delete = new DeleteAction(Lang.get(Lang.Keys.cm_delete), ImageUtils.getIcon(ImageUtils.REMOVE), tree);
-        this.add(delete, Lang.get(Lang.Keys.cm_delete));
+        final Action delete = new DeleteAction(Lang.get(cm_delete), getIcon(ImageUtils.REMOVE), tree);
+        this.add(delete, Lang.get(cm_delete));
 
-        Action rename = new RenameAction(Lang.get(Lang.Keys.cm_rename), ImageUtils.getIcon(ImageUtils.RENAME),
+        final Action rename = new RenameAction(Lang.get(cm_rename), getIcon(ImageUtils.RENAME),
                 tree, tListener);
-        this.add(rename, Lang.get(Lang.Keys.cm_rename));
+        this.add(rename, Lang.get(cm_rename));
 
-        Action export = new ExportAction(Lang.get(Lang.Keys.cm_export), ImageUtils.getIcon(ImageUtils.EXPORT),
+        final Action export = new ExportAction(Lang.get(cm_export), getIcon(ImageUtils.EXPORT),
                 tListener);
-        this.add(export, Lang.get(Lang.Keys.cm_export));
+        this.add(export, Lang.get(cm_export));
 
-        Action add = new AddNewFileAction(Lang.get(Lang.Keys.cm_add), ImageUtils.getIcon(ImageUtils.FILE_ADD),
+        final Action add = new AddNewFileAction(Lang.get(cm_add), getIcon(ImageUtils.FILE_ADD),
                 tree);
-        this.add(add, Lang.get(Lang.Keys.cm_add));
+        this.add(add, Lang.get(cm_add));
 
-        Action newDir = new NewDirectoryAction(Lang.get(Lang.Keys.cm_newdir), ImageUtils.getIcon(ImageUtils.ADD_DIR),
+        final Action newDir = new NewDirectoryAction(Lang.get(cm_newdir), getIcon(ImageUtils.ADD_DIR),
                 tree);
-        this.add(newDir, Lang.get(Lang.Keys.cm_newdir));
+        this.add(newDir, Lang.get(cm_newdir));
 
-        final Action refresh = new RefreshTreeAction(Lang.get(Lang.Keys.cm_refresh), ImageUtils.getIcon(ImageUtils.REFRESH), tree);
-        this.add(refresh, Lang.get(Lang.Keys.cm_refresh));
+        final Action refresh = new RefreshTreeAction(Lang.get(cm_refresh), getIcon(ImageUtils.REFRESH), tree);
+        this.add(refresh, Lang.get(cm_refresh));
 
         this.addSeparator();
 
-        final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(Lang.Keys.cm_find),
-                ImageUtils.getIcon(ImageUtils.SEARCH_PATH), tree);
-        this.add(searchInPath, Lang.get(Lang.Keys.cm_find));
+        final Action searchInPath = ClassFactory.getInstance().getSearchInPathAction(Lang.get(cm_find),
+                getIcon(ImageUtils.SEARCH_PATH), tree);
+        this.add(searchInPath, Lang.get(cm_find));
 
-        final Action searchInFiles = new SearchInFilesAction(Lang.get(Lang.Keys.cm_search), ImageUtils.getIcon(ImageUtils.SEARCH), tree);
-        this.add(searchInFiles, Lang.get(Lang.Keys.cm_search));
+//        final Action searchInFiles = new SearchInFilesAction(Lang.get(cm_search), ImageUtils.getIcon(ImageUtils.SEARCH), tree);
+//        this.add(searchInFiles, Lang.get(cm_search));
     }
 
-    public void prepareContextMenu(TreePath path){
+    public void prepareContextMenu(TreePath path) {
         // at what kind of node was the context menu invoked?
         boolean isFile = TreeUtils.isFile(path);
         boolean isDir = TreeUtils.isDir(path);
@@ -159,76 +162,44 @@ public class ArgonPopupMenu extends PopupMenu {
         boolean isRoot = TreeUtils.isRoot(path);
         boolean isDbSource = TreeUtils.isDbSource(path);
         boolean isFileSource = TreeUtils.isFileSource(path);
+        final URL url;
+        try {
+            url = new URL(TreeUtils.urlStringFromTreePath(path));
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
+        final CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+        boolean isLocked = handlerExtension.canCheckReadOnly(url.getProtocol()) && !handlerExtension.isReadOnly(url);
 
         // check whether items apply to node
         int itemCount = this.getItemCount();
-        for (int i=0; i<itemCount; i++){
-
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_open))) {
-                if (isFile)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_checkout))) {
-                if (isFile)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_adddb))) {
-                if (TreeUtils.isDbSource(path))
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_delete))) {
-                if (isFile || isDir || isDB)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_rename))) {
-                if (isFile || (isDir && !TreeUtils.isWEBINF(path)))  // never! try to change the name of a WEB-INF folder
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_export))) {
-                if (!isRoot && !isDbSource)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_add))) {
-                if (isDir || isDB || isFileSource)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_newdir))) {
-                if (isDir || isDB || isFileSource)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_showversion))) {
-                if (isFile)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_find))) {
-                if (isFile)
-                    this.setItemEnabled(i, false);
-                else
-                    this.setItemEnabled(i, true);
-            }
-            if ( this.getItemName(i).equals(Lang.get(Lang.Keys.cm_search))) {
-                if (isDB || isInDB)
-                    this.setItemEnabled(i, true);
-                else
-                    this.setItemEnabled(i, false);
+        for (int i = 0; i < itemCount; i++) {
+            final String itemName = this.getItemName(i);
+            if (itemName.equals(Lang.get(cm_open))) {
+                this.setItemEnabled(i, isFile);
+            } else if (itemName.equals(Lang.get(cm_checkout))) {
+                this.setItemEnabled(i, isFile && !isLocked);
+            } else if (itemName.equals(Lang.get(cm_checkin))) {
+                this.setItemEnabled(i, isFile && isLocked);
+            } else if (itemName.equals(Lang.get(cm_adddb))) {
+                this.setItemEnabled(i, TreeUtils.isDbSource(path));
+            } else if (itemName.equals(Lang.get(cm_delete))) {
+                this.setItemEnabled(i, isFile || isDir || isDB);
+            } else if (itemName.equals(Lang.get(cm_rename))) {
+                // never! try to change the name of a WEB-INF folder
+                this.setItemEnabled(i, isFile || (isDir && !TreeUtils.isWEBINF(path)));
+            } else if (itemName.equals(Lang.get(cm_export))) {
+                this.setItemEnabled(i, !isRoot && !isDbSource);
+            } else if (itemName.equals(Lang.get(cm_add))) {
+                this.setItemEnabled(i, isDir || isDB || isFileSource);
+            } else if (itemName.equals(Lang.get(cm_newdir))) {
+                this.setItemEnabled(i, isDir || isDB || isFileSource);
+            } else if (itemName.equals(Lang.get(cm_showversion))) {
+                this.setItemEnabled(i, isFile);
+            } else if (itemName.equals(Lang.get(cm_find))) {
+                this.setItemEnabled(i, !isFile);
+            } else if (itemName.equals(Lang.get(cm_search))) {
+                this.setItemEnabled(i, isDB || isInDB);
             }
         }
     }

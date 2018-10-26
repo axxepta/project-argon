@@ -1,12 +1,15 @@
 package de.axxepta.oxygen.customprotocol;
 
+import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -16,7 +19,7 @@ import java.net.URLStreamHandler;
  */
 public class ArgonProtocolHandler extends URLStreamHandler {
 
-    private BaseXSource source;
+    private final BaseXSource source;
     private static final Logger logger = LogManager.getLogger(ArgonProtocolHandler.class);
 
     public ArgonProtocolHandler(BaseXSource source) {
@@ -25,7 +28,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
     private static class ArgonConnection extends URLConnection {
 
-        BaseXSource source;
+        final BaseXSource source;
 
         ArgonConnection(URL url, BaseXSource source) {
             super(url);
@@ -40,7 +43,7 @@ public class ArgonProtocolHandler extends URLStreamHandler {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
                 logger.info("Requested new InputStream: " + this.url.toString());
                 inputStream = new ByteArrayInputStream(connection.get(source,
-                        CustomProtocolURLHandlerExtension.pathFromURL(this.url), false));
+                        CustomProtocolURLUtils.pathFromURL(this.url), false));
                 // ToDo: try to call OptionPage -> if not accessible, not in editor context (e.g., publishing process), don't add URL to watch map
                 ArgonEditorsWatchMap.getInstance().addURL(url);
             } catch (IOException io) {
@@ -63,10 +66,6 @@ public class ArgonProtocolHandler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
-        return new ArgonConnection(url, this.source);
-    }
-
-    public URLConnection provideConnection(URL url) throws IOException {
         return new ArgonConnection(url, this.source);
     }
 

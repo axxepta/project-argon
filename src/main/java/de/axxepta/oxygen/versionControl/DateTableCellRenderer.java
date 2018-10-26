@@ -1,12 +1,14 @@
 package de.axxepta.oxygen.versioncontrol;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 /**
@@ -14,23 +16,20 @@ import java.util.Locale;
  */
 public class DateTableCellRenderer extends DefaultTableCellRenderer {
 
+    private static final Logger logger = LogManager.getLogger(DateTableCellRenderer.class);
+
     @Override
     public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
                                                    final boolean hasFocus, final int row, final int column) {
-        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        final Date date = (Date) value;
-        String dateString;
-        SimpleDateFormat formatter;
-        String currentLocaleStr = PluginWorkspaceProvider.getPluginWorkspace().getUserInterfaceLanguage();
+        final LocalDateTime date = (LocalDateTime) value;
+        final DateTimeFormatter formatter;
+        final String currentLocaleStr = PluginWorkspaceProvider.getPluginWorkspace().getUserInterfaceLanguage();
         if (currentLocaleStr.equals("de_DE")) {
-            String pattern = "dd.MM.yyyy, hh:mm";
-            formatter = new SimpleDateFormat(pattern, Locale.GERMAN);
+            formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, hh:mm").withLocale(Locale.GERMAN);
         } else {
-            String pattern = "MMM d, yyyy, h:mm a";
-            formatter = new SimpleDateFormat(pattern, Locale.UK);
+            formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a").withLocale(Locale.UK);
         }
-        dateString = formatter.format(date);
-        setText(dateString);
-        return this;
+        final String dateString = date.format(formatter);
+        return super.getTableCellRendererComponent(table, dateString, isSelected, hasFocus, row, column);
     }
 }

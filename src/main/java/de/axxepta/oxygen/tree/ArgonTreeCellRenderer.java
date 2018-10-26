@@ -1,98 +1,86 @@
 package de.axxepta.oxygen.tree;
 
-
-import java.awt.*;
+import de.axxepta.oxygen.utils.ImageUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import de.axxepta.oxygen.utils.ImageUtils;
-import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
+import java.awt.*;
 
 public class ArgonTreeCellRenderer extends TreeCellRenderer {
 
-	private static final long serialVersionUID = 1L;
-	TreeCellRenderer defaultRenderer = new TreeCellRenderer();
+    private static final Logger logger = LogManager.getLogger(ArgonTreeCellRenderer.class);
 
-	@Override
-	public Component getTreeCellRendererComponent(JTree aTree, Object aValue,
-			boolean aSelected, boolean aExpanded, boolean aLeaf, int aRow,
-			boolean aHasFocus) {
+    private static final long serialVersionUID = 1L;
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && aLeaf) {
-			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, true, aRow, aHasFocus);
-			String thisLeafFileType = fileType(aValue.toString());
-			setIcon(ImageUtils.getIcon(thisLeafFileType));
-			return this;
-		}
+    @Override
+    public Component getTreeCellRendererComponent(JTree aTree, Object aValue,
+                                                  boolean aSelected, boolean aExpanded, boolean aLeaf, int aRow,
+                                                  boolean aHasFocus) {
+//        if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode)) {
+            if (aLeaf) {
+                super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, true, aRow, aHasFocus);
+                String thisLeafFileType = fileType(aValue.toString());
+                setIcon(ImageUtils.getIcon(thisLeafFileType));
+                return this;
+            } else if (isRoot(aTree, aValue)) {
+                super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, true, aRow, aHasFocus);
+                setIcon(ImageUtils.getIcon(ImageUtils.DB_CONNECTION));
+                return this;
+            } else if (isDatabase(aTree, aValue)) {
+                super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, true, aRow, aHasFocus);
+                setIcon(ImageUtils.getIcon(ImageUtils.DB_CATALOG));
+                return this;
+            } else if (isDBSource(aTree, aValue)) {
+                super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, true, aRow, aHasFocus);
+                setIcon(ImageUtils.getIcon(ImageUtils.DB_HTTP));
+                return this;
+//            } else if (isSourceDir(aTree, aValue)) {
+//                super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, true, aRow, aHasFocus);
+//                setIcon(ImageUtils.getIcon(ImageUtils.DB_FOLDER));
+//                return this;
+            }
+//        }
+        // For everything else use default renderer.
+        return super.getTreeCellRendererComponent(aTree, aValue, aSelected, aExpanded, aLeaf, aRow, aHasFocus);
+    }
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isRoot(aTree, aValue)) {
-			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.getIcon(ImageUtils.DB_CONNECTION));
-			return this;
-		}
+    public static String fileType(String leafStr) {
+        if (leafStr.contains(".")) {
+            return leafStr.substring(leafStr.lastIndexOf(".") + 1);
+        } else {
+            return "";
+        }
+    }
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDatabase(aTree, aValue)) {
-			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.getIcon(ImageUtils.DB_CATALOG));
-			return this;
-		}
+    private boolean isRoot(JTree tree, Object value) {
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        return node.equals(root);
+    }
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isDBSource(aTree, aValue)) {
-			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.getIcon(ImageUtils.DB_HTTP));
-			return this;
-		}
+    private boolean isDatabase(JTree tree, Object value) {
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        final DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
+        return node.getParent().equals(db);
+    }
 
-		if ((aValue != null) && (aValue instanceof DefaultMutableTreeNode) && isSourceDir(aTree, aValue)) {
-			super.getTreeCellRendererComponent(aTree, aValue, aSelected,
-					aExpanded, true, aRow, aHasFocus);
-			setIcon(ImageUtils.getIcon(ImageUtils.DB_FOLDER));
-			return this;
-		}
+    private boolean isDBSource(JTree tree, Object value) {
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        final DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
+        return node.equals(db);
+    }
 
-		// For everything else use default renderer.
-		return defaultRenderer.getTreeCellRendererComponent(aTree, aValue,
-				aSelected, aExpanded, aLeaf, aRow, aHasFocus);
-	}
-
-	public static String fileType(String leafStr) {
-		if (leafStr.contains(".")) {
-			return leafStr.substring(leafStr.lastIndexOf(".") + 1);
-		} else
-			return "";
-	}
-
-	protected boolean isRoot(JTree tree, Object value) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-		return node.equals(root);
-	}
-
-	protected boolean isDatabase(JTree tree, Object value) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-		DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
-		return node.getParent().equals(db);
-	}
-
-	protected boolean isDBSource(JTree tree, Object value) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-		DefaultMutableTreeNode db = (DefaultMutableTreeNode) tree.getModel().getChild(root, 0);
-		return node.equals(db);
-	}
-
-	protected boolean isSourceDir(JTree tree, Object value) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-		DefaultMutableTreeNode restxq = (DefaultMutableTreeNode) tree.getModel().getChild(root, 1);
-		DefaultMutableTreeNode repo = (DefaultMutableTreeNode) tree.getModel().getChild(root, 2);
-		return (node.equals(restxq) || node.equals(repo));
-	}
+    private boolean isSourceDir(JTree tree, Object value) {
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        final DefaultMutableTreeNode restxq = (DefaultMutableTreeNode) tree.getModel().getChild(root, 1);
+        final DefaultMutableTreeNode repo = (DefaultMutableTreeNode) tree.getModel().getChild(root, 2);
+        return (node.equals(restxq) || node.equals(repo));
+    }
 
 }

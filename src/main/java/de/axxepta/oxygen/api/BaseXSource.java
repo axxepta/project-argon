@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.api;
 
-import java.util.*;
+import java.util.Locale;
 
 /**
  * Resource types.
@@ -8,15 +8,34 @@ import java.util.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public enum BaseXSource {
-    /** Database. */
-    DATABASE,
-    /** RESTXQ. */
-    RESTXQ,
-    /** Repository. */
-    REPO;
+
+    /**
+     * Database.
+     */
+    DATABASE("argon"),
+//    /**
+//     * RESTXQ.
+//     */
+//    RESTXQ("argonquery"),
+    /**
+     * Repository.
+     */
+    REPO("argonrepo");
+
+    private final String protocol;
+
+    BaseXSource(String protocol) {
+
+        this.protocol = protocol;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
 
     /**
      * Returns a source.
+     *
      * @param string string representation
      * @return enumeration
      */

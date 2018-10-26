@@ -14,5 +14,6 @@ public final class MetaInfoDefinition {
     public static final String RIGHTS_GROUP_TAG = "group";
     public static final String RIGHTS_OTHERS_TAG = "others";
 
-    private MetaInfoDefinition() {}
+    private MetaInfoDefinition() {
+    }
 }

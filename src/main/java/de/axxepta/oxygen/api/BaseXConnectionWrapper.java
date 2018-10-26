@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 
+import static de.axxepta.oxygen.workspace.ArgonOptionPage.*;
+
 /**
  * Wrapper class for connection with BaseX server, loading authentication data from Options
  */
@@ -17,35 +19,18 @@ public class BaseXConnectionWrapper {
     static Connection connection;
     private static String host = null;
 
-    public static void refreshFromOptions(boolean defaults){
-
-        String host = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_HOST, defaults);
+    public static void refreshFromOptions(boolean defaults) {
+        final String host = ArgonOptionPage.getOption(KEY_BASEX_HOST, defaults);
         BaseXConnectionWrapper.host = host;
-        String user = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_USERNAME, defaults);
-        String pass = ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_PASSWORD, defaults);
-        int port = Integer.parseInt(ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_HTTP_PORT, defaults));
-//        int tcpport = Integer.parseInt(ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_TCP_PORT, defaults));
+        final String user = ArgonOptionPage.getOption(KEY_BASEX_USERNAME, defaults);
+        final String pass = ArgonOptionPage.getOption(KEY_BASEX_PASSWORD, defaults);
+        final int port = Integer.parseInt(ArgonOptionPage.getOption(KEY_BASEX_HTTP_PORT, defaults));
 
-        String connType = "REST";
-/*        String connType;
-        if (ArgonOptionPage.getOption(ArgonOptionPage.KEY_BASEX_CONNECTION, defaults).equals("HTTP")) {
-            connType = "REST";
-        } else {
-            connType = "CLIENT";
-        }*/
-
-        if (connType.equals("REST")) {
-            try {
-                connection = ClassFactory.getInstance().getRestConnection(host, port, user, pass);
-            } catch (MalformedURLException er) {
-                connection = null;
-            }
-        } else {
-/*            try {
-                connection = new ClientConnection(host, tcpport, user, pass);
-            } catch (IOException er) {
-                connection = null;
-            }*/
+        logger.info("refreshFromOptions " + host + " " + port + " " +  user + " " +  pass);
+        try {
+            connection = ClassFactory.getInstance().getRestConnection(host, port, user, pass);
+        } catch (MalformedURLException er) {
+            connection = null;
         }
 
         ConnectionWrapper.init();
@@ -68,7 +53,7 @@ public class BaseXConnectionWrapper {
         }
     }
 
-    public static Connection getConnection(){
+    public static Connection getConnection() {
         if (host == null) {
             refreshFromOptions(false);
         }

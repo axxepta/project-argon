@@ -1,18 +1,19 @@
 package de.axxepta.oxygen.workspace;
 
+import de.axxepta.oxygen.actions.CheckInAction;
 import de.axxepta.oxygen.actions.CheckOutAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
+import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
-import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.ditamap.DITAMapPopupMenuCustomizer;
@@ -24,6 +25,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 
+import static de.axxepta.oxygen.utils.WorkspaceUtils.booleanDialog;
+
 /**
  * @author Markus on 05.11.2016.
  */
@@ -31,7 +34,7 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
 
 
     private static final Logger logger = LogManager.getLogger(DitaMapManagerChangeListener.class);
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private final StandalonePluginWorkspace pluginWorkspaceAccess;
 
     DitaMapManagerChangeListener(StandalonePluginWorkspace pluginWorkspace) {
         super();
@@ -59,15 +62,15 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
     public void editorClosed(URL editorLocation) {
         if (editorLocation.toString().startsWith(ArgonConst.ARGON)) {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
-                String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
+                BaseXSource source = CustomProtocolURLUtils.sourceFromURL(editorLocation);
+                String path = CustomProtocolURLUtils.pathFromURL(editorLocation);
                 if (connection.lockedByUser(source, path) && !ArgonEditorsWatchMap.getInstance().askedForCheckIn(editorLocation)) {
 
-                    int checkInFile = pluginWorkspaceAccess.showConfirmDialog(
+                    int checkInFile = booleanDialog(pluginWorkspaceAccess,
                             "Closed checked out file",
                             "You just closed a checked out file. Do you want to check it in?",
-                            new String[]{"Yes", "No"},
-                            new int[]{0, 1}, 0);
+                            "Yes", 0,
+                            "No", 1, 0);
                     if (checkInFile == 0) {
                         connection.unlock(source, path);
                     }
@@ -92,7 +95,11 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
     }
 
     private JMenuItem createCheckOutEditorPopUpAddition(String urlString) {
-        return new JMenuItem(new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.BASEX), urlString));
+        return new JMenuItem(new CheckOutAction(Lang.get(Lang.Keys.cm_checkout), ImageUtils.getIcon(ImageUtils.UNLOCK), urlString));
+    }
+
+    private JMenuItem createCheckInEditorPopUpAddition(String urlString) {
+        return new JMenuItem(new CheckInAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.BASEX_LOCKED), urlString));
     }
 
     private static String getAbsoluteURLString(String baseURL, String refName) throws IllegalArgumentException {
@@ -100,26 +107,29 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
         String[] refComponents = refName.split("/");
         int refUp = 0;
         for (String refComponent : refComponents) {
-            if (refComponent.equals(".."))
+            if (refComponent.equals("..")) {
                 refUp++;
+            }
         }
         if (refUp > (baseComponents.length - 2)) {
             throw new IllegalArgumentException("Cannot resolve DITAMap link URL.");
         }
         StringBuilder absoluteURL = (new StringBuilder(baseComponents[0])).append(":");
-        for (int i = 1; i < baseComponents.length - 1 - refUp; i++)
+        for (int i = 1; i < baseComponents.length - 1 - refUp; i++) {
             absoluteURL.append(baseComponents[i]).append("/");
+        }
         for (int i = refUp; i < refComponents.length; i++) {
             absoluteURL.append(refComponents[i]);
-            if (i < (refComponents.length - 1))
+            if (i < (refComponents.length - 1)) {
                 absoluteURL.append("/");
+            }
         }
         return absoluteURL.toString();
     }
 
     private class ArgonDitaPopupMenuCustomizer implements DITAMapPopupMenuCustomizer {
 
-        private WSDITAMapEditorPage ditaMapEditorPage;
+        private final WSDITAMapEditorPage ditaMapEditorPage;
 
         ArgonDitaPopupMenuCustomizer(WSDITAMapEditorPage editorPage) {
             ditaMapEditorPage = editorPage;
@@ -141,6 +151,9 @@ class DitaMapManagerChangeListener extends WSEditorChangeListener {
                                 String urlString = getAbsoluteURLString(baseUrl, refName);
                                 JMenuItem checkOutMenuItem = createCheckOutEditorPopUpAddition(urlString);
                                 ((JPopupMenu) popUp).add(checkOutMenuItem, 0);
+
+                                JMenuItem checkInMenuItem = createCheckInEditorPopUpAddition(urlString);
+                                ((JPopupMenu) popUp).add(checkInMenuItem, 1);
                             } catch (IllegalArgumentException iae) {
                                 logger.debug("Cannot resolve DITAMap link URL.");
                             }

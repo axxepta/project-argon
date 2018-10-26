@@ -2,11 +2,13 @@ package de.axxepta.oxygen.customprotocol;
 
 import ro.sync.net.protocol.convert.ConversionProvider;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 
 /**
- * @author  Markus on 21.10.2016.
+ * @author Markus on 21.10.2016.
  */
 public class ArgonProcessor implements ConversionProvider {
 

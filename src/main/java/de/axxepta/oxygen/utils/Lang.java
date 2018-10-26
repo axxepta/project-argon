@@ -2,77 +2,105 @@ package de.axxepta.oxygen.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Markus on 03.11.2015.
- * Note: Couldn't use class ResourceBundle because ResourceBundle.getBundle searches for property files in the Oxygen.jar,
- * so had to implement a Bundle class which mimics ResouceBundle behavior
  */
 public class Lang {
 
     private static final Logger logger = LogManager.getLogger(Lang.class);
 
     private static final String PATH = "/Argon";
-    private static final Map<Locale, Bundle> availableResourceBundles = new HashMap<>();
-    private static final String MISSING_KEY = "?";
-    private static final String MISSING_RESOURCE = "??";
+    private static final String MISSING_KEY = "missing_key:";
+    private static final String MISSING_RESOURCE = "missing_resource:";
+    private static PluginResourceBundle bundle = null;
 
-    private static Bundle currentBundle = null;
+    private static final Map<Locale, Bundle> availableResourceBundles = new HashMap<>();
+    static {
+        loadBundle(Locale.GERMANY);
+        loadBundle(Locale.UK);
+    }
+    private static Bundle currentBundle = availableResourceBundles.get(Locale.UK);
 
     public static void init() {
         init(Locale.UK);
     }
 
     public static void init(Locale locale) {
-        loadBundle(Locale.GERMANY);
-        loadBundle(Locale.UK);
         setLocale(locale);
     }
 
     private static void loadBundle(final Locale locale) {
-        try
-        {
+        try {
             final Bundle bundle = new Bundle(PATH, locale);
             availableResourceBundles.put(locale, bundle);
-        }
-        catch (final IOException ex)
-        {
+        } catch (final IOException ex) {
             logger.warn("Failed to read resource '" + PATH + "' for locale: '" + locale + "'", ex);
-        }
-        catch (final NullPointerException ex) {
+        } catch (final NullPointerException ex) {
             logger.warn("Missing resource '" + PATH + "' for locale: '" + locale + "'", ex);
         }
     }
 
     public static void setLocale(Locale locale) {
-        if (locale.equals(Locale.GERMANY) || locale.equals(Locale.GERMAN))
+        if (locale.equals(Locale.GERMANY) || locale.equals(Locale.GERMAN)) {
             currentBundle = availableResourceBundles.get(Locale.GERMANY);
-        else
+        } else {
             currentBundle = availableResourceBundles.get(Locale.UK);
+        }
+    }
+    
+    public static void init(StandalonePluginWorkspace wsa) {
+        bundle = wsa.getResourceBundle();
     }
 
-    public static String get(Keys key){
+    public static String get(Keys key) {
+        if (bundle != null) {
+            return bundle.getMessage(key.name());
+        }
         if (currentBundle != null) {
             String val = currentBundle.getString(key.name());
-            if (val != null)
+            if (val != null) {
                 return val;
-            else
+            } else {
+                try {
+                    throw new RuntimeException();
+                } catch (RuntimeException e) {
+                    logger.error("Missing key", e);
+                }
                 return MISSING_KEY + key;
+            }
         } else {
+            try {
+                throw new RuntimeException();
+            } catch (RuntimeException e) {
+                logger.error("Missing bundle", e);
+            }
             return MISSING_RESOURCE + key;
         }
     }
 
     public enum Keys {
-        tree_root, tree_DB, tree_repo, tree_restxq, cm_open, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_addsimple,
+        tree_root, tree_DB,
+        tree_repo,
+//        tree_restxq,
+        cm_open, cm_checkout, cm_checkin, cm_adddb, cm_add, cm_addsimple,
         cm_addfile, cm_delete, cm_rename, cm_newversion, cm_showversion, cm_refresh, cm_search, cm_searchsimple, cm_find,
         cm_newdir, cm_save, cm_ok, cm_cancel, cm_tofile, cm_todb, cm_export, cm_checkinselected, cm_exit, cm_saveas,
-        cm_replycomment, cm_runquery, cm_yes, cm_no, cm_all, cm_always, cm_never, cm_compare, cm_reset, cm_overwrite,
+        cm_replycomment,
+        cm_runquery,
+        cm_yes, cm_no, cm_all, cm_always, cm_never, cm_compare, cm_reset, cm_overwrite,
         cm_nosave,
         lbl_filename, lbl_filetype, lbl_filestocheck, lbl_delete, lbl_dir, lbl_searchpath, lbl_elements, lbl_text,
         lbl_attributes, lbl_attrbvalues, lbl_scope, lbl_options, lbl_whole, lbl_casesens, lbl_snippet,
@@ -94,15 +122,20 @@ public class Lang {
 
 }
 
+/**
+ * Couldn't use class ResourceBundle because ResourceBundle.getBundle searches for property files in the Oxygen.jar,
+ * so had to implement a Bundle class which mimics ResouceBundle behavior
+ */
 class Bundle {
-    private Properties bundleMap;
+    private final Properties bundleMap;
 
-    public Bundle (String path, Locale locale) throws IOException {
+    public Bundle(String path, Locale locale) throws IOException {
         StringBuilder propFile = new StringBuilder(path);
-        if (locale.equals(Locale.GERMANY))
+        if (locale.equals(Locale.GERMANY)) {
             propFile.append("_de_DE");
-        else
+        } else {
             propFile.append("_en_GB");
+        }
         propFile.append(".properties");
         Reader inReader = new InputStreamReader(getClass().getResourceAsStream(propFile.toString()));
         bundleMap = new Properties();

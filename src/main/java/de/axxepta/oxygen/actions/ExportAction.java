@@ -4,7 +4,6 @@ import de.axxepta.oxygen.api.ArgonConst;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.BaseXType;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.TreeListener;
 import de.axxepta.oxygen.tree.TreeUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
@@ -35,7 +34,7 @@ public class ExportAction extends AbstractAction {
     private final TreeListener treeListener;
     private final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public ExportAction(String name, Icon icon, TreeListener treeListener){
+    public ExportAction(String name, Icon icon, TreeListener treeListener) {
         super(name, icon);
         this.treeListener = treeListener;
     }
@@ -61,7 +60,7 @@ public class ExportAction extends AbstractAction {
                             if (!newFile.getParentFile().exists())
                                 createdDir = newFile.getParentFile().mkdirs();
                             if (!fullResource.endsWith("/" + ArgonConst.EMPTY_FILE)) {
-                                FileUtils.copyFromBaseXToFile(CustomProtocolURLHandlerExtension.protocolFromSource(source) +
+                                FileUtils.copyFromBaseXToFile(source.getProtocol() +
                                         ":" + fullResource, newFileName);
                             }
                         }
@@ -103,8 +102,9 @@ public class ExportAction extends AbstractAction {
 
     /**
      * Builds resource name for BaseXResources obtained with ConnectionWrapper.listAll
-     * @param path path in source
-     * @param source BaseX source of resource
+     *
+     * @param path     path in source
+     * @param source   BaseX source of resource
      * @param resource resource of which the full name shall be obtained
      * @return full resource name
      */
@@ -123,7 +123,7 @@ public class ExportAction extends AbstractAction {
         String[] resourceComponents = fullResource.split("/");
         StringJoiner joiner = new StringJoiner("/");
         if (!source.equals(BaseXSource.DATABASE) && db_path.equals(""))
-            joiner.add(CustomProtocolURLHandlerExtension.protocolFromSource(source));
+            joiner.add(source.getProtocol());
         for (int i = resourceDepth - 1; i < resourceComponents.length; i++) {
             joiner.add(resourceComponents[i]);
         }

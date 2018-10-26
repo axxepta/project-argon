@@ -11,7 +11,7 @@ public class CloseDialogAction extends AbstractAction {
 
     private JDialog dialog;
 
-    public CloseDialogAction(String name, JDialog dialog){
+    public CloseDialogAction(String name, JDialog dialog) {
         super(name);
         this.dialog = dialog;
     }

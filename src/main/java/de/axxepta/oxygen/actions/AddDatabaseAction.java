@@ -1,6 +1,6 @@
 package de.axxepta.oxygen.actions;
 
-import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.DialogTools;
 import de.axxepta.oxygen.utils.Lang;
@@ -25,11 +25,11 @@ public class AddDatabaseAction extends AbstractAction {
     private JDialog addDbDialog;
     private JTextField newDbNameTextField;
 
-    public AddDatabaseAction(String name, Icon icon){
+    public AddDatabaseAction(String name, Icon icon) {
         super(name, icon);
     }
 
-    public AddDatabaseAction(){
+    public AddDatabaseAction() {
         super();
     }
 
@@ -39,7 +39,7 @@ public class AddDatabaseAction extends AbstractAction {
 
         addDbDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_adddb));
 
-        JPanel content = new JPanel(new BorderLayout(10,10));
+        JPanel content = new JPanel(new BorderLayout(10, 10));
 
         AddDbAction addDB = new AddDbAction(Lang.get(Lang.Keys.cm_addsimple));
 
@@ -62,7 +62,7 @@ public class AddDatabaseAction extends AbstractAction {
 
     private class AddDbAction extends AbstractAction {
 
-        AddDbAction(String name){
+        AddDbAction(String name) {
             super(name);
         }
 
@@ -71,7 +71,7 @@ public class AddDatabaseAction extends AbstractAction {
             String db = newDbNameTextField.getText();
             try {   // not the nice way, but catch exception with no database error message
                 ConnectionWrapper.list(BaseXSource.DATABASE, db);
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.msg_dbexists1 ) + "\n " +
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Lang.get(Lang.Keys.msg_dbexists1) + "\n " +
                         Lang.get(Lang.Keys.msg_dbexists2));
             } catch (IOException ie) {
                 try {

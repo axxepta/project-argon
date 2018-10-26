@@ -1,7 +1,8 @@
 package de.axxepta.oxygen.api;
 
-import java.io.*;
-import java.util.regex.*;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * BaseX resource.
@@ -9,24 +10,37 @@ import java.util.regex.*;
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
 public final class BaseXQueryException extends IOException {
-    /** Error message pattern. */
+    /**
+     * Error message pattern.
+     */
     private static final Pattern MESSAGE = Pattern.compile(
-            "^.* (.*), (\\d+)/(\\d+):\r?\n\\[(.*?)\\] (.*)$", Pattern.DOTALL);
+            "^.* (.*), (\\d+)/(\\d+):\r?\n\\[(.*?)] (.*)$", Pattern.DOTALL);
 
-    /** File. */
+    /**
+     * File.
+     */
     private final String file;
-    /** Line. */
+    /**
+     * Line.
+     */
     private final int line;
-    /** Column. */
+    /**
+     * Column.
+     */
     private final int column;
-    /** Error code. */
+    /**
+     * Error code.
+     */
     private final String code;
-    /** Info string. */
+    /**
+     * Info string.
+     */
     private final String info;
 
     /**
      * Returns an exception. Tries to convert the given exception to a query exception,
      * or returns the original exception.
+     *
      * @param ex exception
      * @return new exception
      */
@@ -39,6 +53,7 @@ public final class BaseXQueryException extends IOException {
     /**
      * Returns an exception. Tries to convert the given exception to a query exception,
      * or returns an I/O exception.
+     *
      * @param message message
      * @return new exception
      */
@@ -49,6 +64,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Constructor.
+     *
      * @param message message
      * @param matcher regular expression matcher
      */
@@ -63,6 +79,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Returns the line.
+     *
      * @return line
      */
     public int getLine() {
@@ -71,6 +88,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Returns the column.
+     *
      * @return column
      */
     public int getColumn() {
@@ -79,6 +97,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Returns the file.
+     *
      * @return file
      */
     public String getFile() {
@@ -87,6 +106,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Returns the error code.
+     *
      * @return error code
      */
     public String getCode() {
@@ -95,6 +115,7 @@ public final class BaseXQueryException extends IOException {
 
     /**
      * Return error info.
+     *
      * @return the error info
      */
     public String getInfo() {

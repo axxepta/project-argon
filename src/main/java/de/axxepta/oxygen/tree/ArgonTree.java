@@ -1,9 +1,9 @@
 package de.axxepta.oxygen.tree;
 
-import javax.swing.tree.TreeModel;
-
 import de.axxepta.oxygen.core.ClassFactory;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
+
+import javax.swing.tree.TreeModel;
 
 
 /**
@@ -12,12 +12,11 @@ import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 public class ArgonTree extends Tree {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ArgonTree(TreeModel root) {
-		super(root);
-		// Use our custom cell renderer.
-		this.setCellRenderer(ClassFactory.getInstance().getTreeCellRenderer());
-	}
+    public ArgonTree(final TreeModel root) {
+        super(root);
+        setCellRenderer(ClassFactory.getInstance().getTreeCellRenderer());
+    }
 
 }

@@ -25,7 +25,7 @@ public class SearchInFilesAction extends AbstractAction {
 
     private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    private JTree tree;
+    private final JTree tree;
     private String path = "";
 
     private JDialog searchDialog;
@@ -39,7 +39,7 @@ public class SearchInFilesAction extends AbstractAction {
     private JFrame parentFrame;
 
 
-    public SearchInFilesAction (String name, Icon icon, JTree tree){
+    public SearchInFilesAction(String name, Icon icon, JTree tree) {
         super(name, icon);
         this.tree = tree;
     }
@@ -51,7 +51,7 @@ public class SearchInFilesAction extends AbstractAction {
         parentFrame = (JFrame) ((new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame());
 
         searchDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.cm_search));
-        JPanel content = new JPanel(new BorderLayout(5,5));
+        JPanel content = new JPanel(new BorderLayout(5, 5));
 
         JPanel termPanel = new JPanel();
         termPanel.setLayout(new BoxLayout(termPanel, BoxLayout.Y_AXIS));
@@ -60,9 +60,9 @@ public class SearchInFilesAction extends AbstractAction {
         termPanel.add(searchTermTextField);
         content.add(termPanel, BorderLayout.NORTH);
 
-        JPanel allSettingsPanel = new JPanel(new GridLayout(2,1));
+        JPanel allSettingsPanel = new JPanel(new GridLayout(2, 1));
 
-        JPanel settingsPanel = new JPanel(new GridLayout(2,2));
+        JPanel settingsPanel = new JPanel(new GridLayout(2, 2));
         elementCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_elements));
         settingsPanel.add(elementCheckBox);
         textCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_text));
@@ -77,7 +77,7 @@ public class SearchInFilesAction extends AbstractAction {
         settingsPanel.setBorder(titleScope);
         allSettingsPanel.add(settingsPanel);
 
-        JPanel modSettingsPanel = new JPanel(new GridLayout(1,2));
+        JPanel modSettingsPanel = new JPanel(new GridLayout(1, 2));
         wholeCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_whole));
         modSettingsPanel.add(wholeCheckBox);
         caseCheckBox = new JCheckBox(Lang.get(Lang.Keys.lbl_casesens));

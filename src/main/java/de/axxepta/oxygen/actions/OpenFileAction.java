@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
  */
 public class OpenFileAction extends AbstractAction {
 
-    private TreeListener treeListener;
+    private final TreeListener treeListener;
 
     public OpenFileAction(String name, Icon icon, TreeListener treeListener) {
         super(name, icon);

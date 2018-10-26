@@ -2,9 +2,11 @@ package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.actions.ExportAction;
 import de.axxepta.oxygen.actions.RenameAction;
-import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.api.BaseXResource;
+import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.BaseXType;
 import de.axxepta.oxygen.customprotocol.BaseXByteArrayOutputStream;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import de.axxepta.oxygen.utils.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +39,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     private final ArgonTree tree;
     private final TreeModel model;
 
-    private DataFlavor treePathFlavor;
+    private final DataFlavor treePathFlavor;
 
     public ArgonTreeTransferHandler(ArgonTree tree) {
         super();
@@ -130,7 +132,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                         copyInTree(source, db_path, sourcePath, pathURLString);
                     } else {
                         String newName = sourcePath.getLastPathComponent().toString();
-                        String newPathString = CustomProtocolURLHandlerExtension.pathFromURLString(pathURLString) + "/" + newName;
+                        String newPathString = CustomProtocolURLUtils.pathFromURLString(pathURLString) + "/" + newName;
                         RenameAction.rename(model, sourcePath, source, db_path, newPathString, newName, workspace);
                     }
                 } catch (Exception ex) {
@@ -163,10 +165,10 @@ public class ArgonTreeTransferHandler extends TransferHandler {
 
     private static void copyInTree(BaseXSource source, String db_path, TreePath sourcePath, String pathURLString) throws Exception {
         List<BaseXResource> resourceList = ExportAction.getExportResourceList(source, sourcePath, db_path);
-        for (BaseXResource resource : resourceList){
+        for (BaseXResource resource : resourceList) {
             if (resource.getType().equals(BaseXType.RESOURCE)) {
                 String fullResourceName = ExportAction.getFullResource(sourcePath, source, resource);
-                String resourceURL = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" +
+                String resourceURL = source.getProtocol() + ":" +
                         fullResourceName;
                 String relativePath = ExportAction.getRelativePath(source, db_path, fullResourceName);
                 URL sourceURL = new URL(resourceURL);
@@ -184,7 +186,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
             len = is.read(buffer);
             if (len != -1) {
                 // ToDo: check content type of input resource
-                if (buffer[0] == (byte)0x3c) {
+                if (buffer[0] == (byte) 0x3c) {
                     try (ByteArrayOutputStream os = new BaseXByteArrayOutputStream(targetURL, "UTF-8")) {
                         os.write(buffer, 0, len);
                         streamCopy(is, os);
@@ -225,7 +227,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
                 URL url;
                 try {
                     url = new URL(pathList.get(i));
-                    String newPath = CustomProtocolURLHandlerExtension.pathFromURL(url);
+                    String newPath = CustomProtocolURLUtils.pathFromURL(url);
 
                     isLocked = ConnectionWrapper.isLocked(source, newPath);
                     if (isLocked) {
@@ -294,19 +296,18 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
 
-
     private byte[] readTextFile(URL url) throws IOException {
         List<Integer> integerList = new ArrayList<>();
 
         try (Reader urlReader = workspace.getUtilAccess().createReader(url, "UTF-8")) {
-            while(urlReader.ready()) {
+            while (urlReader.ready()) {
                 integerList.add(urlReader.read());
             }
         }
         byte[] bytes = new byte[integerList.size()];
         Iterator<Integer> iterator = integerList.iterator();
         int index = 0;
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Integer i = iterator.next();
             bytes[index] = i.byteValue();
             index++;
@@ -317,9 +318,9 @@ public class ArgonTreeTransferHandler extends TransferHandler {
 
     private class TransferRunnable implements Runnable {
 
-        private ArrayList<File> transferData;
-        private TreePath path;
-        private String pathURLString;
+        private final ArrayList<File> transferData;
+        private final TreePath path;
+        private final String pathURLString;
 
         TransferRunnable(ArrayList<File> transferData, TreePath path, String pathURLString) {
             this.transferData = transferData;

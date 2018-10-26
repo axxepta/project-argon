@@ -21,7 +21,8 @@ public final class XMLUtils {
     private static final XPathFactory xPathFactory = XPathFactory.newInstance();
     private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-    private XMLUtils() {}
+    private XMLUtils() {
+    }
 
     public static Document docFromByteArray(byte[] is) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
@@ -48,15 +49,15 @@ public final class XMLUtils {
     public static String encodingFromBytes(byte[] content) {
         String encoding = "";
         if (content.length > 4) {
-            if ((content[0] == (byte)0xFE) && (content[1] == (byte)0xFF)) {         // check for UTF-16BE BOM
+            if ((content[0] == (byte) 0xFE) && (content[1] == (byte) 0xFF)) {         // check for UTF-16BE BOM
                 return "UTF-16BE";
-            } else if ((content[0] == (byte)0xFF) && (content[1] == (byte)0xFE)) {  // check for UTF-16LE BOM
+            } else if ((content[0] == (byte) 0xFF) && (content[1] == (byte) 0xFE)) {  // check for UTF-16LE BOM
                 return "UTF-16LE";
-            } else if ((content[0] == (byte)0xEF) && (content[1] == (byte)0xBB) && (content[2] == (byte)0xBF)) {  // check for UTF-8 BOM
+            } else if ((content[0] == (byte) 0xEF) && (content[1] == (byte) 0xBB) && (content[2] == (byte) 0xBF)) {  // check for UTF-8 BOM
                 return "UTF-8";
 //            } else if ((content[0] == (byte)0x3c) && (content[content.length - 1] == (byte)0x3e)) {
                 // ToDo: trim byte array and check for last byte
-            } else if (content[0] == (byte)0x3c) {
+            } else if (content[0] == (byte) 0x3c) {
                 String contentString = IOUtils.returnUTF8String(content);
                 encoding = encodingFromPrologue(contentString);
             }

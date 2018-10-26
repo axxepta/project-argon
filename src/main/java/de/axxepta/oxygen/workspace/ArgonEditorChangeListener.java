@@ -5,7 +5,7 @@ import de.axxepta.oxygen.actions.CheckOutAction;
 import de.axxepta.oxygen.actions.StoreSnippetSelectionAction;
 import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.customprotocol.ArgonEditorsWatchMap;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.URLUtils;
@@ -29,12 +29,14 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 
+import static de.axxepta.oxygen.utils.WorkspaceUtils.booleanDialog;
+
 
 class ArgonEditorChangeListener extends WSEditorChangeListener {
 
     private static final Logger logger = LogManager.getLogger(ArgonEditorChangeListener.class);
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private final StandalonePluginWorkspace pluginWorkspaceAccess;
 
     private final Action snippetAction = new StoreSnippetSelectionAction();
     private final Action checkInAction = new CheckInAction(Lang.get(Lang.Keys.cm_checkin), ImageUtils.getIcon(ImageUtils.UNLOCK));
@@ -45,9 +47,9 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     private AuthorPopupMenuCustomizer authorPopupMenuCustomizer;
     private TextPopupMenuCustomizer textPopupMenuCustomizer;
 
-    private ToolbarButton runQueryButton;
-    private ToolbarButton newVersionButton;
-    private ToolbarButton saveToArgonButton;
+    private final ToolbarButton runQueryButton;
+    private final ToolbarButton newVersionButton;
+    private final ToolbarButton saveToArgonButton;
 
     ArgonEditorChangeListener(StandalonePluginWorkspace pluginWorkspace, final ToolbarButton runQueryButton,
                               final ToolbarButton newVersionButton, final ToolbarButton saveToArgonButton) {
@@ -82,15 +84,16 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
     public void editorClosed(URL editorLocation) {
         if (editorLocation.toString().startsWith(ArgonConst.ARGON)) {
             try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(editorLocation);
-                String path = CustomProtocolURLHandlerExtension.pathFromURL(editorLocation);
+                BaseXSource source = CustomProtocolURLUtils.sourceFromURL(editorLocation);
+                String path = CustomProtocolURLUtils.pathFromURL(editorLocation);
                 if (connection.lockedByUser(source, path) && !ArgonEditorsWatchMap.getInstance().askedForCheckIn(editorLocation)) {
 
-                    int checkInFile = pluginWorkspaceAccess.showConfirmDialog(
+                    int checkInFile = booleanDialog(pluginWorkspaceAccess,
                             Lang.get(Lang.Keys.dlg_closed),
                             Lang.get(Lang.Keys.lbl_closed),
-                            new String[]{Lang.get(Lang.Keys.cm_yes), Lang.get(Lang.Keys.cm_no)},
-                            new int[]{0, 1}, 0);
+                            Lang.get(Lang.Keys.cm_yes), 0,
+                            Lang.get(Lang.Keys.cm_no), 1,
+                            0);
                     if (checkInFile == 0) {
                         connection.unlock(source, path);
                     }
@@ -160,10 +163,10 @@ class ArgonEditorChangeListener extends WSEditorChangeListener {
         return new JMenuItem(checkOutAction);
     }
 
-    private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess){
+    private void checkEditorDependentMenuButtonStatus(PluginWorkspace pluginWorkspaceAccess) {
         WSEditor currentEditor = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
 
-        if(currentEditor == null) {
+        if (currentEditor == null) {
             runQueryButton.setEnabled(false);
             newVersionButton.setEnabled(false);
             saveToArgonButton.setEnabled(false);

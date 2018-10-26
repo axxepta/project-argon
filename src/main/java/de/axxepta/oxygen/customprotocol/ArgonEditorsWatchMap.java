@@ -1,28 +1,32 @@
 package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.api.TopicHolder;
+import de.axxepta.oxygen.api.event.ListDirEvent;
 import de.axxepta.oxygen.core.ObserverInterface;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.axxepta.oxygen.api.TopicHolder.listDir;
+
 /**
  * @author Markus on 28.10.2015.
  * The enwraped map contains information about which Argon URLs are opened in editors
  */
-public class ArgonEditorsWatchMap implements ObserverInterface {
+public class ArgonEditorsWatchMap implements ObserverInterface<ListDirEvent> {
 
-    private static ArgonEditorsWatchMap instance = new ArgonEditorsWatchMap();
+    private static final ArgonEditorsWatchMap instance = new ArgonEditorsWatchMap();
 
-    private Map<URL, EditorInfo> editorMap = new HashMap<>();
+    private final Map<URL, EditorInfo> editorMap = new HashMap<>();
     /**
      * contains all Argon resources with locks, locks owned by current user marked with true value
      */
-    private Map<URL, Boolean> lockMap = new HashMap<>();
+    private final Map<URL, Boolean> lockMap = new HashMap<>();
 
 
-    private ArgonEditorsWatchMap() {}
+    private ArgonEditorsWatchMap() {
+    }
 
     public static ArgonEditorsWatchMap getInstance() {
         return instance;
@@ -30,7 +34,7 @@ public class ArgonEditorsWatchMap implements ObserverInterface {
 
     public void init() {
         TopicHolder.newDir.register(this);
-        update("LIST_DIR", "");
+        update(listDir, "");
     }
 
     private boolean isLockInMap(URL url) {
@@ -46,23 +50,27 @@ public class ArgonEditorsWatchMap implements ObserverInterface {
     }
 
     public void addURL(URL url) {
-        if (!isURLInMap(url))
+        if (!isURLInMap(url)) {
             editorMap.put(url, new EditorInfo(false));
+        }
     }
 
     public void addURL(URL url, boolean checkedOut) {
-        if (isURLInMap(url))
+        if (isURLInMap(url)) {
             editorMap.get(url).setCheckedOut(checkedOut);
-        else
+        } else {
             editorMap.put(url, new EditorInfo(checkedOut));
-        if (checkedOut)
+        }
+        if (checkedOut) {
             lockMap.put(url, true);
+        }
     }
 
     public void removeURL(URL url) {
         editorMap.remove(url);
-        if (isLockInMap(url) && lockMap.get(url))
+        if (isLockInMap(url) && lockMap.get(url)) {
             lockMap.remove(url);
+        }
     }
 
     private boolean isURLInMap(URL url) {
@@ -70,26 +78,29 @@ public class ArgonEditorsWatchMap implements ObserverInterface {
     }
 
     public String getEncoding(URL url) {
-        if (isURLInMap(url))
+        if (isURLInMap(url)) {
             return "UTF-8";
-        else
+        } else {
             return "";
+        }
     }
 
     public boolean askedForCheckIn(URL url) {
-        if (isURLInMap(url))
+        if (isURLInMap(url)) {
             return editorMap.get(url).isAskedForCheckIn();
-        else
+        } else {
             return true;
+        }
     }
 
     public void setAskedForCheckIn(URL url, boolean asked) {
-        if (isURLInMap(url))
+        if (isURLInMap(url)) {
             editorMap.get(url).setAskedForCheckIn(asked);
+        }
     }
 
     @Override
-    public void update(String type, Object... message) {
+    public void update(ListDirEvent type, Object... message) {
         //
     }
 

@@ -2,7 +2,7 @@ package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import de.axxepta.oxygen.utils.ConnectionWrapper;
 import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.Lang;
@@ -28,12 +28,13 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
-import static ro.sync.ecss.extensions.api.node.AuthorNode.NODE_TYPE_CDATA;
-import static ro.sync.ecss.extensions.api.node.AuthorNode.NODE_TYPE_COMMENT;
-import static ro.sync.ecss.extensions.api.node.AuthorNode.NODE_TYPE_PI;
+import static ro.sync.ecss.extensions.api.node.AuthorNode.*;
 
 /**
  * @author Markus on 26.07.2016.
@@ -62,12 +63,12 @@ public class StoreSnippetSelectionAction extends AbstractAction {
                 logger.error("Error while parsing XML from AuthorPage selection: ", ble.getMessage());
             }
         } else if (editorAccess.getCurrentPageID().equals(EditorPageConstants.PAGE_TEXT)) {
-            WSTextEditorPage textPage = (WSTextEditorPage)editorAccess.getCurrentPage();
+            WSTextEditorPage textPage = (WSTextEditorPage) editorAccess.getCurrentPage();
             selection = textPage.getSelectedText();
         } else return;
 
         String[] buttons = {Lang.get(Lang.Keys.cm_tofile), Lang.get(Lang.Keys.cm_todb), Lang.get(Lang.Keys.cm_cancel)};
-        int[] responseIDs = { 0, 1, -1};
+        int[] responseIDs = {0, 1, -1};
         int saveTo = workspace.showConfirmDialog(Lang.get(Lang.Keys.dlg_snippet), Lang.get(Lang.Keys.lbl_snippet), buttons, responseIDs, 0);
         if (saveTo == -1)
             return;
@@ -78,15 +79,15 @@ public class StoreSnippetSelectionAction extends AbstractAction {
     }
 
     private void saveToArgon(String text) {
-        ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame)workspace.getParentFrame(),
+        ArgonChooserDialog urlChooser = new ArgonChooserDialog((Frame) workspace.getParentFrame(),
                 Lang.get(Lang.Keys.dlg_saveas), ArgonChooserDialog.Type.SAVE);
-        URL[] urls =  urlChooser.selectURLs();
+        URL[] urls = urlChooser.selectURLs();
         if (urls != null) {
             URL url = urls[0];
-            BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURL(url);
-            String path = CustomProtocolURLHandlerExtension.pathFromURL(url);
+            BaseXSource source = CustomProtocolURLUtils.sourceFromURL(url);
+            String path = CustomProtocolURLUtils.pathFromURL(url);
             if (ConnectionWrapper.isLocked(source, path)) {
-                workspace.showInformationMessage(Lang.get(Lang.Keys.warn_resource) + " " +Lang.get(Lang.Keys.warn_locked));
+                workspace.showInformationMessage(Lang.get(Lang.Keys.warn_resource) + " " + Lang.get(Lang.Keys.warn_locked));
             } else {
                 if (WorkspaceUtils.newResourceOrOverwrite(source, path)) {
                     try {
@@ -100,7 +101,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
                             ConnectionWrapper.unlock(source, path);
                         } catch (IOException ioe) {
                             ConnectionWrapper.unlock(source, path);
-                            workspace.showErrorMessage(Lang.get(Lang.Keys.warn_nosnippet) +" " + ioe.getMessage());
+                            workspace.showErrorMessage(Lang.get(Lang.Keys.warn_nosnippet) + " " + ioe.getMessage());
                         }
 
                     } catch (UnsupportedEncodingException use) {
@@ -112,7 +113,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
     }
 
     private void saveToFile(String text) {
-        File file = workspace.chooseFile(null, Lang.get(Lang.Keys.dlg_snippet),  new String[] {"*"}, "All Files", true);
+        File file = workspace.chooseFile(null, Lang.get(Lang.Keys.dlg_snippet), new String[]{"*"}, "All Files", true);
         if (file != null) {
             try {
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
@@ -170,7 +171,7 @@ public class StoreSnippetSelectionAction extends AbstractAction {
 
             authorTextBuilder.append(getStartTag(authorNode));
             if (authorNode instanceof AuthorParentNode) {
-                authorTextBuilder.append(getAuthorText(ctrl, (AuthorParentNode) authorNode, depth+1));
+                authorTextBuilder.append(getAuthorText(ctrl, (AuthorParentNode) authorNode, depth + 1));
             }
             authorTextBuilder.append(getEndTag(authorNode));
 
@@ -199,15 +200,18 @@ public class StoreSnippetSelectionAction extends AbstractAction {
         tagBuilder.append("<");
         switch (node.getType()) {
             case NODE_TYPE_PI: {
-                tagBuilder.append("?"); break;
+                tagBuilder.append("?");
+                break;
             }
             case NODE_TYPE_COMMENT: {
-                tagBuilder.append("!--"); break;
+                tagBuilder.append("!--");
+                break;
             }
             case NODE_TYPE_CDATA: {
-                tagBuilder.append("![CDATA["); break;
+                tagBuilder.append("![CDATA[");
+                break;
             }
-            default : {
+            default: {
                 tagBuilder.append(node.getName());
                 if (node instanceof AuthorElement) {
                     int nAttributes = ((AuthorElement) node).getAttributesCount();
@@ -225,10 +229,14 @@ public class StoreSnippetSelectionAction extends AbstractAction {
 
     private String getEndTag(AuthorNode node) {
         switch (node.getType()) {
-            case NODE_TYPE_PI: return "?>";
-            case NODE_TYPE_COMMENT: return "-->";
-            case NODE_TYPE_CDATA: return "]]>";
-            default: return "</" + node.getName() + ">";
+            case NODE_TYPE_PI:
+                return "?>";
+            case NODE_TYPE_COMMENT:
+                return "-->";
+            case NODE_TYPE_CDATA:
+                return "]]>";
+            default:
+                return "</" + node.getName() + ">";
         }
     }
 

@@ -31,7 +31,7 @@ public class BaseXRunQueryAction extends AbstractAction {
     private static final String COMMENT_ON = "(:";
     private static final String COMMENT_OFF = ":)";
 
-    public BaseXRunQueryAction (String name, Icon icon){
+    public BaseXRunQueryAction(String name, Icon icon) {
         super(name, icon);
     }
 
@@ -123,7 +123,7 @@ public class BaseXRunQueryAction extends AbstractAction {
         JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
         JDialog parametersDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_externalquery));
 
-        JPanel content = new JPanel(new BorderLayout(10,10));
+        JPanel content = new JPanel(new BorderLayout(10, 10));
 
         JPanel parameterPanel = new JPanel(new GridLayout(parameters.length, 2));
         JTextField[] parameterTextFields = new JTextField[parameters.length];
@@ -156,6 +156,7 @@ public class BaseXRunQueryAction extends AbstractAction {
 
     private static class MutableBoolean {
         boolean val;
+
         MutableBoolean(boolean value) {
             this.val = value;
         }

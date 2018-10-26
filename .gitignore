@@ -74,3 +74,4 @@ local.properties
 /*.ipr
 /work_resources
 /src/main/java/de/axxepta/oxygen/actions/MetaBuild.java
+out

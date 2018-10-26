@@ -1,10 +1,12 @@
 package de.axxepta.oxygen.api;
 
 import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.security.*;
-import java.util.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 /**
  * Java client for BaseX. Works with BaseX 7.0 and later
@@ -13,22 +15,33 @@ import java.util.*;
  * @author Christian Gruen, BaseX Team 2005-15, BSD License
  */
 public final class BaseXClient {
-    /** UTF-8 charset. */
+    /**
+     * UTF-8 charset.
+     */
     private static final Charset UTF8 = Charset.forName("UTF-8");
-    /** Output stream. */
+    /**
+     * Output stream.
+     */
     private final OutputStream out;
-    /** Input stream (buffered). */
+    /**
+     * Input stream (buffered).
+     */
     private final BufferedInputStream in;
 
-    /** Socket. */
+    /**
+     * Socket.
+     */
     private final Socket socket;
-    /** Command info. */
+    /**
+     * Command info.
+     */
     private String info;
 
     /**
      * Constructor.
-     * @param host server name
-     * @param port server port
+     *
+     * @param host     server name
+     * @param port     server port
      * @param username user name
      * @param password password
      * @throws IOException Exception
@@ -44,7 +57,7 @@ public final class BaseXClient {
         // receive server response
         final String[] response = receive().split(":");
         final String code, nonce;
-        if(response.length > 1) {
+        if (response.length > 1) {
             // support for digest authentication
             code = username + ':' + response[0] + ':' + password;
             nonce = response[1];
@@ -58,13 +71,14 @@ public final class BaseXClient {
         send(md5(md5(code) + nonce));
 
         // receive success flag
-        if(!ok()) throw new IOException("Access denied.");
+        if (!ok()) throw new IOException("Access denied.");
     }
 
     /**
      * Executes a command and serializes the result to an output stream.
+     *
      * @param command command
-     * @param output output stream
+     * @param output  output stream
      * @throws IOException Exception
      */
     public void execute(final String command, final OutputStream output) throws IOException {
@@ -72,11 +86,12 @@ public final class BaseXClient {
         send(command);
         receive(in, output);
         info = receive();
-        if(!ok()) throw new IOException(info);
+        if (!ok()) throw new IOException(info);
     }
 
     /**
      * Executes a command and returns the result.
+     *
      * @param command command
      * @return result
      * @throws IOException Exception
@@ -89,6 +104,7 @@ public final class BaseXClient {
 
     /**
      * Creates a query object.
+     *
      * @param query query string
      * @return query
      * @throws IOException Exception
@@ -99,7 +115,8 @@ public final class BaseXClient {
 
     /**
      * Creates a database.
-     * @param name name of database
+     *
+     * @param name  name of database
      * @param input xml input
      * @throws IOException I/O exception
      */
@@ -109,7 +126,8 @@ public final class BaseXClient {
 
     /**
      * Adds a document to a database.
-     * @param path path to resource
+     *
+     * @param path  path to resource
      * @param input xml input
      * @throws IOException I/O exception
      */
@@ -119,7 +137,8 @@ public final class BaseXClient {
 
     /**
      * Replaces a document in a database.
-     * @param path path to resource
+     *
+     * @param path  path to resource
      * @param input xml input
      * @throws IOException I/O exception
      */
@@ -129,7 +148,8 @@ public final class BaseXClient {
 
     /**
      * Stores a binary resource in a database.
-     * @param path path to resource
+     *
+     * @param path  path to resource
      * @param input xml input
      * @throws IOException I/O exception
      */
@@ -139,6 +159,7 @@ public final class BaseXClient {
 
     /**
      * Returns command information.
+     *
      * @return string info
      */
     public String info() {
@@ -147,6 +168,7 @@ public final class BaseXClient {
 
     /**
      * Closes the session.
+     *
      * @throws IOException Exception
      */
     public void close() throws IOException {
@@ -157,6 +179,7 @@ public final class BaseXClient {
 
     /**
      * Checks the next success flag.
+     *
      * @return value of check
      * @throws IOException Exception
      */
@@ -167,6 +190,7 @@ public final class BaseXClient {
 
     /**
      * Returns the next received string.
+     *
      * @return String result or info
      * @throws IOException I/O exception
      */
@@ -178,6 +202,7 @@ public final class BaseXClient {
 
     /**
      * Sends a string to the server.
+     *
      * @param string string to be sent
      * @throws IOException I/O exception
      */
@@ -187,13 +212,14 @@ public final class BaseXClient {
 
     /**
      * Receives a string and writes it to the specified output stream.
-     * @param input input stream
+     *
+     * @param input  input stream
      * @param output output stream
      * @throws IOException I/O exception
      */
     private static void receive(final InputStream input, final OutputStream output)
             throws IOException {
-        for(int b; (b = input.read()) > 0;) {
+        for (int b; (b = input.read()) > 0; ) {
             // read next byte if 0xFF is received
             output.write(b == 0xFF ? input.read() : b);
         }
@@ -201,8 +227,9 @@ public final class BaseXClient {
 
     /**
      * Sends a command, argument, and input.
-     * @param code command code
-     * @param path name, or path to resource
+     *
+     * @param code  command code
+     * @param path  name, or path to resource
      * @param input xml input
      * @throws IOException I/O exception
      */
@@ -214,25 +241,27 @@ public final class BaseXClient {
 
     /**
      * Sends an input stream to the server.
+     *
      * @param input xml input
      * @throws IOException I/O exception
      */
     private void send(final InputStream input) throws IOException {
         final BufferedInputStream bis = new BufferedInputStream(input);
         final BufferedOutputStream bos = new BufferedOutputStream(out);
-        for(int b; (b = bis.read()) != -1;) {
+        for (int b; (b = bis.read()) != -1; ) {
             // 0x00 and 0xFF will be prefixed by 0xFF
-            if(b == 0x00 || b == 0xFF) bos.write(0xFF);
+            if (b == 0x00 || b == 0xFF) bos.write(0xFF);
             bos.write(b);
         }
         bos.write(0);
         bos.flush();
         info = receive();
-        if(!ok()) throw new IOException(info);
+        if (!ok()) throw new IOException(info);
     }
 
     /**
      * Returns an MD5 hash.
+     *
      * @param pw String
      * @return String
      */
@@ -241,12 +270,12 @@ public final class BaseXClient {
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(pw.getBytes());
-            for(final byte b : md.digest()) {
+            for (final byte b : md.digest()) {
                 final String s = Integer.toHexString(b & 0xFF);
-                if(s.length() == 1) sb.append('0');
+                if (s.length() == 1) sb.append('0');
                 sb.append(s);
             }
-        } catch(final NoSuchAlgorithmException ex) {
+        } catch (final NoSuchAlgorithmException ex) {
             // should not occur
             ex.printStackTrace();
         }
@@ -257,15 +286,22 @@ public final class BaseXClient {
      * Inner class for iterative query execution.
      */
     public class Query {
-        /** Query id. */
+        /**
+         * Query id.
+         */
         private final String id;
-        /** Cached results. */
+        /**
+         * Cached results.
+         */
         private ArrayList<byte[]> cache;
-        /** Cache pointer. */
+        /**
+         * Cache pointer.
+         */
         private int pos;
 
         /**
          * Standard constructor.
+         *
          * @param query query string
          * @throws IOException I/O exception
          */
@@ -275,9 +311,10 @@ public final class BaseXClient {
 
         /**
          * Binds a value with the specified type to an external variable.
-         * @param name name of variable
+         *
+         * @param name  name of variable
          * @param value value
-         * @param type type (can be an empty string)
+         * @param type  type (can be an empty string)
          * @throws IOException I/O exception
          */
         public void bind(final String name, final String value, final String type) throws IOException {
@@ -287,6 +324,7 @@ public final class BaseXClient {
 
         /**
          * Binds a value to the context item.
+         *
          * @param value value
          * @throws IOException I/O exception
          */
@@ -296,8 +334,9 @@ public final class BaseXClient {
 
         /**
          * Binds a value with the specified type to the context item.
+         *
          * @param value value
-         * @param type type (can be an empty string)
+         * @param type  type (can be an empty string)
          * @throws IOException I/O exception
          */
         public void context(final String value, final String type) throws IOException {
@@ -307,30 +346,32 @@ public final class BaseXClient {
 
         /**
          * Checks for the next item.
+         *
          * @return result of check
          * @throws IOException I/O exception
          */
         public boolean more() throws IOException {
-            if(cache == null) {
+            if (cache == null) {
                 out.write(4);
                 send(id);
                 cache = new ArrayList<>();
                 final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                while(in.read() > 0) {
+                while (in.read() > 0) {
                     receive(in, os);
                     cache.add(os.toByteArray());
                     os.reset();
                 }
-                if(!ok()) throw new IOException(receive());
+                if (!ok()) throw new IOException(receive());
                 pos = 0;
             }
-            if(pos < cache.size()) return true;
+            if (pos < cache.size()) return true;
             cache = null;
             return false;
         }
 
         /**
          * Returns the next item.
+         *
          * @return item string
          * @throws IOException I/O Exception
          */
@@ -340,6 +381,7 @@ public final class BaseXClient {
 
         /**
          * Returns the whole result of the query.
+         *
          * @return query result
          * @throws IOException I/O Exception
          */
@@ -349,6 +391,7 @@ public final class BaseXClient {
 
         /**
          * Returns the query result as binary. Added for the Argon API.
+         *
          * @return query result
          * @throws IOException I/O Exception
          */
@@ -358,12 +401,13 @@ public final class BaseXClient {
 
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
             receive(in, os);
-            if(!ok()) throw new IOException(receive());
+            if (!ok()) throw new IOException(receive());
             return os.toByteArray();
         }
 
         /**
          * Returns query info in a string.
+         *
          * @return query info
          * @throws IOException I/O exception
          */
@@ -373,6 +417,7 @@ public final class BaseXClient {
 
         /**
          * Returns serialization parameters in a string.
+         *
          * @return query info
          * @throws IOException I/O exception
          */
@@ -382,6 +427,7 @@ public final class BaseXClient {
 
         /**
          * Closes the query.
+         *
          * @throws IOException I/O exception
          */
         public void close() throws IOException {
@@ -390,8 +436,9 @@ public final class BaseXClient {
 
         /**
          * Executes the specified command.
+         *
          * @param code command code
-         * @param arg argument
+         * @param arg  argument
          * @return resulting string
          * @throws IOException I/O exception
          */
@@ -399,7 +446,7 @@ public final class BaseXClient {
             out.write(code);
             send(arg);
             final String s = receive();
-            if(!ok()) throw new IOException(receive());
+            if (!ok()) throw new IOException(receive());
             return s;
         }
     }

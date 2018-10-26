@@ -1,18 +1,23 @@
 package de.axxepta.oxygen.tree;
 
 import de.axxepta.oxygen.actions.SearchInPathAction;
-import de.axxepta.oxygen.api.*;
+import de.axxepta.oxygen.api.ArgonConst;
+import de.axxepta.oxygen.api.BaseXSource;
+import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.core.ClassFactory;
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
 
 public class TreePane extends JPanel {
 
@@ -109,37 +114,38 @@ public class TreePane extends JPanel {
                 ArgonConst.ARGON + ":");
         databases.setAllowsChildren(true);
         root.add(databases);
-        DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
-                ArgonConst.ARGON_XQ + ":");
-        queryFolder.setAllowsChildren(true);
-        root.add(queryFolder);
-        DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo),
-                ArgonConst.ARGON_REPO + ":");
-        queryFolder.setAllowsChildren(true);
-        root.add(repoFolder);
+//        DefaultMutableTreeNode queryFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_restxq),
+//                ArgonConst.ARGON_XQ + ":");
+//        queryFolder.setAllowsChildren(true);
+//        queryFolder.setAllowsChildren(true);
+//        root.add(queryFolder);
+//        DefaultMutableTreeNode repoFolder = ClassFactory.getInstance().getTreeNode(Lang.get(Lang.Keys.tree_repo),
+//                ArgonConst.ARGON_REPO + ":");
+//        root.add(repoFolder);
         return root;
     }
 
     private static void setTreeState(JTree tree, TreePath path, boolean expanded) {
         Object lastNode = path.getLastPathComponent();
         for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
-            Object child = tree.getModel().getChild(lastNode,i);
+            Object child = tree.getModel().getChild(lastNode, i);
             TreePath pathToChild = path.pathByAddingChild(child);
             setTreeState(tree, pathToChild, expanded);
         }
-        if (expanded)
+        if (expanded) {
             tree.expandPath(path);
-        else
+        } else {
             tree.collapsePath(path);
+        }
     }
 
     private class SearchAction extends AbstractAction {
 
-        private JTextField filterField;
-        private TreePath rootPath;
-        private DefaultTreeModel model;
-        private ArgonTree tree;
-        private TreeListener treeListener;
+        private final JTextField filterField;
+        private final TreePath rootPath;
+        private final DefaultTreeModel model;
+        private final ArgonTree tree;
+        private final TreeListener treeListener;
         private DefaultMutableTreeNode newRoot;
 
         SearchAction(String name, Icon icon, DefaultTreeModel model, ArgonTree tree, TreeListener treeListener,
@@ -189,10 +195,10 @@ public class TreePane extends JPanel {
 
     private class ResetAction extends AbstractAction {
 
-        private JTextField filterField;
-        private DefaultTreeModel model;
-        private ArgonTree tree;
-        private TreeListener treeListener;
+        private final JTextField filterField;
+        private final DefaultTreeModel model;
+        private final ArgonTree tree;
+        private final TreeListener treeListener;
 
         ResetAction(String name, Icon icon, DefaultTreeModel model, ArgonTree tree, TreeListener treeListener,
                     JTextField filterField) {

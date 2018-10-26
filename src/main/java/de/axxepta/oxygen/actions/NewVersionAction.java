@@ -9,6 +9,8 @@ import de.axxepta.oxygen.utils.IOUtils;
 import de.axxepta.oxygen.utils.Lang;
 import de.axxepta.oxygen.utils.WorkspaceUtils;
 import de.axxepta.oxygen.versioncontrol.VersionHistoryUpdater;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -26,40 +28,44 @@ import java.net.URL;
  */
 public class NewVersionAction extends AbstractAction {
 
+    private static final Logger logger = LogManager.getLogger(NewVersionAction.class);
+
     private static final PluginWorkspace workspace = PluginWorkspaceProvider.getPluginWorkspace();
 
-    public NewVersionAction(String name, Icon icon){
+    public NewVersionAction(String name, Icon icon) {
         super(name, icon);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WSEditor editorAccess = workspace.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
-        URL url = editorAccess.getEditorLocation();
+        final WSEditor editorAccess = workspace.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
+        final URL url = editorAccess.getEditorLocation();
         if (url.toString().startsWith(ArgonConst.ARGON)) {
-            String protocol = CustomProtocolURLHandlerExtension.protocolFromURL(url);
-            CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
+            final String protocol = url.getProtocol();
+            final CustomProtocolURLHandlerExtension handlerExtension = new CustomProtocolURLHandlerExtension();
             if (handlerExtension.canCheckReadOnly(protocol) && !handlerExtension.isReadOnly(url)) {
-                byte[] outputArray = WorkspaceUtils.getEditorByteContent(editorAccess);
                 WorkspaceUtils.setCursor(WorkspaceUtils.WAIT_CURSOR);
-                String encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
-                if (!encoding.equals("UTF-8"))
+                final String encoding = ArgonEditorsWatchMap.getInstance().getEncoding(url);
+                byte[] outputArray = WorkspaceUtils.getEditorByteContent(editorAccess);
+                if (!encoding.equals("UTF-8")) {
                     outputArray = IOUtils.convertToUTF8(outputArray, encoding);
+                }
                 updateFile(url, outputArray, encoding);
                 WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             } else {
-                 workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noupdate1) + " " + url.toString() + ".\n" +
-                         Lang.get(Lang.Keys.msg_noupdate2));
+                workspace.showInformationMessage(Lang.get(Lang.Keys.msg_noupdate1) + " " + url.toString() + ".\n" +
+                        Lang.get(Lang.Keys.msg_noupdate2) + "\nActually, you have to check the file out first");
             }
         }
     }
 
     private static void updateFile(URL url, byte[] outputArray, String encoding) {
         try {
-            if (IOUtils.isXML(outputArray))
+            if (IOUtils.isXML(outputArray)) {
                 ConnectionWrapper.save(url, outputArray, encoding, true);
-            else
+            } else {
                 ConnectionWrapper.save(true, url, outputArray, true);
+            }
         } catch (IOException ex) {
             WorkspaceUtils.setCursor(WorkspaceUtils.DEFAULT_CURSOR);
             workspace.showInformationMessage(Lang.get(Lang.Keys.warn_failednewversion) + "\n" + url.toString());
