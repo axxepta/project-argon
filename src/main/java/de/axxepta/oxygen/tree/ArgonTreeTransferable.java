@@ -4,7 +4,6 @@ import de.axxepta.oxygen.actions.ExportAction;
 import de.axxepta.oxygen.api.BaseXResource;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.BaseXType;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,16 +14,18 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
 
+import static de.axxepta.oxygen.tree.TreeUtils.DEPTH_DB;
+
 /**
  * @author Markus on 27.10.2016.
  */
 class ArgonTreeTransferable implements Transferable {
 
     private static final Logger logger = LogManager.getLogger(ArgonTreeTransferable.class);
-    private static DataFlavor treePathFlavor = getTreePathFlavor();
-    private static DataFlavor uriListFlavor = getURIListFlavor();
-    private static DataFlavor[] flavors = initFlavors();
-    private TreePath path;
+    private static final DataFlavor treePathFlavor = getTreePathFlavor();
+    private static final DataFlavor uriListFlavor = getURIListFlavor();
+    private static final DataFlavor[] flavors = initFlavors();
+    private final TreePath path;
 
     ArgonTreeTransferable(TreePath path) {
         this.path = path;
@@ -43,13 +44,13 @@ class ArgonTreeTransferable implements Transferable {
     @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (flavor.equals(treePathFlavor)) {
-            if ((path.getPathCount() < 3) || TreeUtils.isDB(path)) {
+            if ((path.getPathCount() < DEPTH_DB) || TreeUtils.isDB(path)) {
                 throw new IOException("Drag error: Cannot copy/move databases or root branches.");
             }
             return path;
         }
         if (flavor.equals(uriListFlavor)) {
-            if ((path.getPathCount() < 3) || TreeUtils.isDB(path)) {
+            if ((path.getPathCount() < DEPTH_DB) || TreeUtils.isDB(path)) {
                 throw new IOException("Drag error: Cannot open databases or root branches.");
             }
             return getURIList();
@@ -68,7 +69,7 @@ class ArgonTreeTransferable implements Transferable {
         String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\"" +
                 TreePath.class.getName() + "\"";
         try {
-        return new DataFlavor(mimeType);
+            return new DataFlavor(mimeType);
         } catch (ClassNotFoundException cn) {
             logger.debug("Class not found creating DataFlavor");
             return new DataFlavor();
@@ -90,7 +91,7 @@ class ArgonTreeTransferable implements Transferable {
         for (BaseXResource resource : resourceList) {
             if (resource.getType().equals(BaseXType.RESOURCE)) {
                 String fullResourceName = ExportAction.getFullResource(path, source, resource);
-                String resourceURL = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" +
+                String resourceURL = source.getProtocol() + ":" +
                         fullResourceName;
                 uriListBuilder.append(resourceURL).append("\n");
             }

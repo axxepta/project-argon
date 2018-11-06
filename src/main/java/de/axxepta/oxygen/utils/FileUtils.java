@@ -3,7 +3,7 @@ package de.axxepta.oxygen.utils;
 import de.axxepta.oxygen.api.BaseXConnectionWrapper;
 import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.Connection;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
+import de.axxepta.oxygen.customprotocol.CustomProtocolURLUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +21,8 @@ public final class FileUtils {
 
     private static final Logger logger = LogManager.getLogger(FileUtils.class);
 
-    private FileUtils() {}
+    private FileUtils() {
+    }
 
     public static boolean directoryExists(File dir) {
         if (dir == null)
@@ -39,11 +40,10 @@ public final class FileUtils {
     }
 
     public static void copyFromBaseXToFile(String fileToCopy, String destinationFile) throws IOException {
-        BaseXSource source = CustomProtocolURLHandlerExtension.sourceFromURLString(fileToCopy);
-        String path = CustomProtocolURLHandlerExtension.pathFromURLString(fileToCopy);
+        BaseXSource source = CustomProtocolURLUtils.sourceFromURLString(fileToCopy);
+        String path = CustomProtocolURLUtils.pathFromURLString(fileToCopy);
 
-        try (Connection connection = BaseXConnectionWrapper.getConnection())
-        {
+        try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             byte[] bytesToCopy = connection.get(source, path, true);
             try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
                 fos.write(bytesToCopy);

@@ -2,17 +2,17 @@
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
-    <xt:extension id="Argon">
-        <xt:location href="argon-0.0.11.jar"/>
-        <xt:version>0.0.11</xt:version>
+    <xt:extension id="Kuhnuri">
+        <xt:location href="build/distributions/author-0.1.0.zip"/>
+        <xt:version>0.1.0</xt:version>
         <xt:oxy_version>17.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
-        <xt:author>axxepta solutions GmbH</xt:author>
-        <xt:name>Argon Author</xt:name>
+        <xt:author>Jarno Elovirta</xt:author>
+        <xt:name>Kuhnuri Author</xt:name>
         <xt:description xmlns="http://www.w3.org/1999/xhtml">
             <html xmlns="http://www.w3.org/1999/xhtml">
             <head>
-                <title>Argon Author plugin</title>
+                <title>Kuhnuri Author plugin</title>
             </head>
             <body>
                 <div>
@@ -27,8 +27,9 @@
             </html>
         </xt:description>
         <xt:license><![CDATA[The MIT License (MIT)
-            
+
 Copyright (c) 2015 axxepta solutions GmbH
+Copyright (c) 2017 Jarno Elovirta
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

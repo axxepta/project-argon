@@ -3,6 +3,7 @@ package de.axxepta.oxygen.api;
 /**
  * @author Max on 01.09.2015.
  */
+
 import de.axxepta.oxygen.core.ObserverInterface;
 import de.axxepta.oxygen.core.SubjectInterface;
 
@@ -11,21 +12,22 @@ import java.util.List;
 
 public class MsgTopic implements SubjectInterface {
 
-    private List<ObserverInterface> observers;
+    private final List<ObserverInterface> observers;
     private Object[] message;
-    private String type;
+    private final String type;
     private boolean changed;
-    private final Object MUTEX= new Object();
+    private final Object MUTEX = new Object();
 
-    MsgTopic(String msgType){
-        this.observers=new ArrayList<>();
+    public MsgTopic(String msgType) {
+        this.observers = new ArrayList<>();
         this.type = msgType;
     }
+
     @Override
     public void register(ObserverInterface obj) {
-        if(obj == null) throw new NullPointerException("Null Observer");
+        if (obj == null) throw new NullPointerException("Null Observer");
         synchronized (MUTEX) {
-            if(!observers.contains(obj)) observers.add(obj);
+            if (!observers.contains(obj)) observers.add(obj);
         }
     }
 
@@ -41,13 +43,14 @@ public class MsgTopic implements SubjectInterface {
         List<ObserverInterface> observersLocal;
         //synchronization is used to make sure any observer registered after message is received is not notified
         synchronized (MUTEX) {
-            if (!changed)
+            if (!changed) {
                 return;
+            }
             observersLocal = new ArrayList<>(this.observers);
-            this.changed=false;
+            this.changed = false;
         }
         for (ObserverInterface obj : observersLocal) {
-            obj.update(this.type, this.message);
+            obj.update(this, this.message);
         }
 
     }
@@ -58,10 +61,10 @@ public class MsgTopic implements SubjectInterface {
     }*/
 
     //method to post message to the topic
-    public void postMessage(Object... msg){
-        System.out.println("Message Posted to Topic: "+msg[0].toString());
-        this.message=msg;
-        this.changed=true;
+    public void postMessage(Object... msg) {
+        System.out.println("Message Posted to Topic: " + msg[0].toString());
+        this.message = msg;
+        this.changed = true;
         notifyObservers();
     }
 

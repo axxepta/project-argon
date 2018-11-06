@@ -9,14 +9,15 @@ import java.net.URL;
  */
 public final class URLUtils {
 
-    private URLUtils() {}
+    private URLUtils() {
+    }
 
     public static boolean isXML(String file) {
         return (file.toLowerCase().endsWith(".xml") ||
                 file.toLowerCase().endsWith(".svg") ||
                 file.toLowerCase().endsWith(".dita") ||
                 file.toLowerCase().endsWith(".ditaval") ||
-                file.toLowerCase().endsWith(".ditamap") );
+                file.toLowerCase().endsWith(".ditamap"));
     }
 
     public static boolean isXML(URL url) {
@@ -28,11 +29,12 @@ public final class URLUtils {
                 file.toLowerCase().endsWith(".xqm") ||
                 file.toLowerCase().endsWith(".xql") ||
                 file.toLowerCase().endsWith(".xqy") ||
-                file.toLowerCase().endsWith(".xquery") );
+                file.toLowerCase().endsWith(".xquery"));
     }
 
     /**
      * Tests whether the file extension indicates a non-XML file type, cannot exclude false negatives (file might be XML anyway)
+     *
      * @param url URL of file
      * @return true if non-xml type for sure
      */
@@ -42,6 +44,7 @@ public final class URLUtils {
 
     /**
      * Tests whether the file extension indicates a non-XML file type, cannot exclude false negatives (file might be XML anyway)
+     *
      * @param file name of file
      * @return true if non-xml type for sure
      */

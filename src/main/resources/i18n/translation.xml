@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translation>
+  <key value="tree_root">
+    <val lang="en_GN">Kuhnuri CMS</val>
+  </key>
+  <key value="tree_DB">
+    <val lang="en_GN">Databases</val>
+  </key>
+  <key value="tree_repo">
+    <val lang="en_GN">Repo Folder</val>
+  </key>
+  <key value="#tree_restxq">
+    <val lang="en_GN">Query Folder</val>
+  </key>
+  <key value="cm_open">
+    <val lang="en_GN">Open read-only</val>
+  </key>
+  <key value="cm_checkout">
+    <val lang="en_GN">Check Out</val>
+  </key>
+  <key value="cm_checkin">
+    <val lang="en_GN">Check In</val>
+  </key>
+  <key value="cm_adddb">
+    <val lang="en_GN">Add Database (Ins)</val>
+  </key>
+  <key value="cm_add">
+    <val lang="en_GN">Add (Ins)</val>
+  </key>
+  <key value="cm_addsimple">
+    <val lang="en_GN">Add</val>
+  </key>
+  <key value="cm_addfile">
+    <val lang="en_GN">Add File</val>
+  </key>
+  <key value="cm_newdir">
+    <val lang="en_GN">Add Directory</val>
+  </key>
+  <key value="cm_delete">
+    <val lang="en_GN">Delete (Del)</val>
+  </key>
+  <key value="cm_rename">
+    <val lang="en_GN">Rename</val>
+  </key>
+  <key value="cm_newversion">
+    <val lang="en_GN">Increase File Version</val>
+  </key>
+  <key value="cm_showversion">
+    <val lang="en_GN">Show Version History</val>
+  </key>
+  <key value="cm_refresh">
+    <val lang="en_GN">Refresh (F5)</val>
+  </key>
+  <key value="cm_search">
+    <val lang="en_GN">Search in Files</val>
+  </key>
+  <key value="cm_searchsimple">
+    <val lang="en_GN">Search</val>
+  </key>
+  <key value="cm_find">
+    <val lang="en_GN">Search In Path</val>
+  </key>
+  <key value="cm_save">
+    <val lang="en_GN">Save</val>
+  </key>
+  <key value="cm_ok">
+    <val lang="en_GN">Ok</val>
+  </key>
+  <key value="cm_cancel">
+    <val lang="en_GN">Cancel</val>
+  </key>
+  <key value="cm_tofile">
+    <val lang="en_GN">Filesystem</val>
+  </key>
+  <key value="cm_todb">
+    <val lang="en_GN">Kuhnuri</val>
+  </key>
+  <key value="cm_export">
+    <val lang="en_GN">Export Files</val>
+  </key>
+  <key value="cm_saveas">
+    <val lang="en_GN">Save As with Kuhnuri CMS Protocol</val>
+  </key>
+  <key value="cm_replycomment">
+    <val lang="en_GN">Reply to Comment</val>
+  </key>
+  <key value="cm_runquery">
+    <val lang="en_GN">Run BaseX XQuery</val>
+  </key>
+  <key value="cm_checkinselected">
+    <val lang="en_GN">Check in selected files</val>
+  </key>
+  <key value="cm_exit">
+    <val lang="en_GN">Exit</val>
+  </key>
+  <key value="cm_yes">
+    <val lang="en_GN">Yes</val>
+  </key>
+  <key value="cm_no">
+    <val lang="en_GN">No</val>
+  </key>
+  <key value="cm_all">
+    <val lang="en_GN">All</val>
+  </key>
+  <key value="cm_always">
+    <val lang="en_GN">Always</val>
+  </key>
+  <key value="cm_never">
+    <val lang="en_GN">Never</val>
+  </key>
+  <key value="cm_compare">
+    <val lang="en_GN">Compare</val>
+  </key>
+  <key value="cm_reset">
+    <val lang="en_GN">Reset to</val>
+  </key>
+  <key value="cm_overwrite">
+    <val lang="en_GN">Overwrite</val>
+  </key>
+  <key value="cm_nosave">
+    <val lang="en_GN">Don't save</val>
+  </key>
+  <key value="lbl_filename">
+    <val lang="en_GN">File Name</val>
+  </key>
+  <key value="lbl_filetype">
+    <val lang="en_GN">File Type</val>
+  </key>
+  <key value="lbl_filestocheck">
+    <val lang="en_GN">Choose files to check in:</val>
+  </key>
+  <key value="lbl_delete">
+    <val lang="en_GN">Do you really want to delete the resource(s)?</val>
+  </key>
+  <key value="lbl_dir">
+    <val lang="en_GN">Directory Name</val>
+  </key>
+  <key value="lbl_searchpath">
+    <val lang="en_GN">Search path:</val>
+  </key>
+  <key value="lbl_elements">
+    <val lang="en_GN">Elements</val>
+  </key>
+  <key value="lbl_text">
+    <val lang="en_GN">Text content</val>
+  </key>
+  <key value="lbl_attributes">
+    <val lang="en_GN">Attributes</val>
+  </key>
+  <key value="lbl_attrbvalues">
+    <val lang="en_GN">Attribute values</val>
+  </key>
+  <key value="lbl_scope">
+    <val lang="en_GN">Scope</val>
+  </key>
+  <key value="lbl_options">
+    <val lang="en_GN">Options</val>
+  </key>
+  <key value="lbl_whole">
+    <val lang="en_GN">Whole entry match</val>
+  </key>
+  <key value="lbl_casesens">
+    <val lang="en_GN">Case sensitive</val>
+  </key>
+  <key value="lbl_snippet">
+    <val lang="en_GN">Save snippet to</val>
+  </key>
+  <key value="lbl_search1">
+    <val lang="en_GN">Search for '</val>
+  </key>
+  <key value="lbl_search2">
+    <val lang="en_GN">' in '</val>
+  </key>
+  <key value="lbl_search3">
+    <val lang="en_GN">' found</val>
+  </key>
+  <key value="lbl_search4">
+    <val lang="en_GN">resource(s).</val>
+  </key>
+  <key value="lbl_overwrite">
+    <val lang="en_GN">Resource already exists. Overwrite?</val>
+  </key>
+  <key value="lbl_version">
+    <val lang="en_GN">Version</val>
+  </key>
+  <key value="lbl_revision">
+    <val lang="en_GN">Revision</val>
+  </key>
+  <key value="lbl_date">
+    <val lang="en_GN">Date</val>
+  </key>
+  <key value="lbl_closed">
+    <val lang="en_GN">You just closed a checked out file. Do you want to check it in?</val>
+  </key>
+  <key value="lbl_connection">
+    <val lang="en_GN">Connection configuration:</val>
+  </key>
+  <key value="lbl_host">
+    <val lang="en_GN">Kuhnuri CMS Host:</val>
+  </key>
+  <key value="lbl_user">
+    <val lang="en_GN">Kuhnuri CMS User Name:</val>
+  </key>
+  <key value="lbl_pwd">
+    <val lang="en_GN">Kuhnuri CMS Password:</val>
+  </key>
+  <key value="lbl_vcs">
+    <val lang="en_GN">Version control</val>
+  </key>
+  <key value="lbl_dboptions">
+    <val lang="en_GN">Options for creating new databases</val>
+  </key>
+  <key value="lbl_chop">
+    <val lang="en_GN">Chop whitespaces</val>
+  </key>
+  <key value="lbl_ftindex">
+    <val lang="en_GN">Full-text index:</val>
+  </key>
+  <key value="lbl_textindex">
+    <val lang="en_GN">Text index:</val>
+  </key>
+  <key value="lbl_attributeindex">
+    <val lang="en_GN">Attribute index:</val>
+  </key>
+  <key value="lbl_tokenindex">
+    <val lang="en_GN">Token index:</val>
+  </key>
+  <key value="lbl_fixdefault">
+    <val lang="en_GN">Note that you cannot overwrite the default setting.</val>
+  </key>
+  <key value="lbl_fe">
+    <val lang="en_GN">Ignore databases filter while tree filtering</val>
+  </key>
+  <key value="tt_fe">
+    <val lang="en_GN">Ignore databases when filtering with tree filter</val>
+  </key>
+  <key value="title_connection">
+    <val lang="en_GN">Kuhnuri CMS Connection</val>
+  </key>
+  <key value="title_connection2">
+    <val lang="en_GN">Kuhnuri CMS connection configuration</val>
+  </key>
+  <key value="title_history">
+    <val lang="en_GN">Kuhnuri CMS Version History</val>
+  </key>
+  <key value="warn_failednewdb">
+    <val lang="en_GN">Failed to add new database:</val>
+  </key>
+  <key value="warn_failednewfile">
+    <val lang="en_GN">Couldn't create new file.</val>
+  </key>
+  <key value="warn_faileddeletedb">
+    <val lang="en_GN">Failed to delete database:</val>
+  </key>
+  <key value="warn_faileddelete">
+    <val lang="en_GN">Failed to resource:</val>
+  </key>
+  <key value="warn_failedexport">
+    <val lang="en_GN">Failed to export resources from database:</val>
+  </key>
+  <key value="warn_failednewversion">
+    <val lang="en_GN">Couldn't write updated version of file</val>
+  </key>
+  <key value="warn_failedrename">
+    <val lang="en_GN">Failed to rename resource.</val>
+  </key>
+  <key value="warn_resource">
+    <val lang="en_GN">Resource</val>
+  </key>
+  <key value="warn_storing">
+    <val lang="en_GN">could not be stored to Kuhnuri CMS connection</val>
+  </key>
+  <key value="warn_locked">
+    <val lang="en_GN">already exists and is locked by another user.</val>
+  </key>
+  <key value="warn_nosnippet">
+    <val lang="en_GN">Failed to store snippet to Kuhnuri CMS:</val>
+  </key>
+  <key value="warn_nofile">
+    <val lang="en_GN">Failed to store snippet to File:</val>
+  </key>
+  <key value="warn_failedsearch">
+    <val lang="en_GN">Failed to search for Kuhnuri CMS resources:</val>
+  </key>
+  <key value="warn_failedlist">
+    <val lang="en_GN">Failed to get resource list from Kuhnuri CMS server:</val>
+  </key>
+  <key value="warn_notransfer">
+    <val lang="en_GN">Couldn't access transferred objects, see log file for details.</val>
+  </key>
+  <key value="warn_transfernoread">
+    <val lang="en_GN">Couldn't read transferred object</val>
+  </key>
+  <key value="warn_transfernowrite1">
+    <val lang="en_GN">Couldn't store transferred object</val>
+  </key>
+  <key value="warn_transfernowrite2">
+    <val lang="en_GN">to database:</val>
+  </key>
+  <key value="warn_connectionsettings1">
+    <val lang="en_GN">Choose a name suitable for a file (without white spaces or special characters)</val>
+  </key>
+  <key value="warn_connectionsettings2">
+    <val lang="en_GN">as 'Connection configuration'!</val>
+  </key>
+  <key value="warn_settingspath1">
+    <val lang="en_GN">Couldn't create config directory 'argon' in user home path.</val>
+  </key>
+  <key value="warn_settingspath2">
+    <val lang="en_GN">Please create it manually to store connection settings permanently.</val>
+  </key>
+  <key value="warn_settingspath3">
+    <val lang="en_GN">Couldn't store connection settings to file</val>
+  </key>
+  <key value="msg_dbexists1">
+    <val lang="en_GN">Database with this name already exists or</val>
+  </key>
+  <key value="msg_dbexists2">
+    <val lang="en_GN">connection could not be established.</val>
+  </key>
+  <key value="msg_fileexists1">
+    <val lang="en_GN">Couldn't create new file. Resource already exists</val>
+  </key>
+  <key value="msg_fileexists2">
+    <val lang="en_GN">and is locked by another user.</val>
+  </key>
+  <key value="msg_noquery">
+    <val lang="en_GN">No XQuery in editor window!</val>
+  </key>
+  <key value="msg_noeditor">
+    <val lang="en_GN">No editor window opened!</val>
+  </key>
+  <key value="msg_checkpriordelete">
+    <val lang="en_GN">Path contains locked resource(s). Check in all files prior to deleting.</val>
+  </key>
+  <key value="msg_noupdate1">
+    <val lang="en_GN">Couldn't update version of file</val>
+  </key>
+  <key value="msg_noupdate2">
+    <val lang="en_GN">File is locked by other user.</val>
+  </key>
+  <key value="msg_norename1">
+    <val lang="en_GN">Target directory</val>
+  </key>
+  <key value="msg_norename2">
+    <val lang="en_GN">already exists. Cannot rename resource.</val>
+  </key>
+  <key value="msg_norename3">
+    <val lang="en_GN">Source or target is locked or contains locked file. Check in before renaming.</val>
+  </key>
+  <key value="msg_transferlocked">
+    <val lang="en_GN">The following target URLs are locked by another user and could not be overwritten:</val>
+  </key>
+  <key value="msg_nameexists">
+    <val lang="en_GN">New name already exists</val>
+  </key>
+  <key value="msg_settingsexists">
+    <val lang="en_GN">The connection setting already exists. Overwrite or rename?</val>
+  </key>
+  <key value="msg_noscopeselected">
+    <val lang="en_GN">Select at least one scope before running the search!</val>
+  </key>
+  <key value="dlg_addfileinto">
+    <val lang="en_GN">Add new File to</val>
+  </key>
+  <key value="dlg_externalquery">
+    <val lang="en_GN">External XQuery parameters</val>
+  </key>
+  <key value="dlg_checkedout">
+    <val lang="en_GN">Checked out files</val>
+  </key>
+  <key value="dlg_delete">
+    <val lang="en_GN">Delete Resource(s)</val>
+  </key>
+  <key value="dlg_newdir">
+    <val lang="en_GN">Add new Directory to</val>
+  </key>
+  <key value="dlg_replycomment">
+    <val lang="en_GN">Reply to comment</val>
+  </key>
+  <key value="dlg_saveas">
+    <val lang="en_GN">Save File via Kuhnuri CMS Connection</val>
+  </key>
+  <key value="#dlg_open">
+    <val lang="en_GN">Open File via Kuhnuri CMS Connection</val>
+  </key>
+  <key value="dlg_open">
+    <val lang="en_GN">Open Kuhnuri CMS...</val>
+  </key>
+  <key value="dlg_snippet">
+    <val lang="en_GN">Save Snippet</val>
+  </key>
+  <key value="dlg_foundresources">
+    <val lang="en_GN">Found Resources</val>
+  </key>
+  <key value="dlg_overwrite">
+    <val lang="en_GN">Overwrite resource?</val>
+  </key>
+  <key value="dlg_closed">
+    <val lang="en_GN">Closed checked out file</val>
+  </key>
+  <key value="dlg_overwritesetting">
+    <val lang="en_GN">Overwrite connection setting?</val>
+  </key>
+  <key value="dlg_newsetting">
+    <val lang="en_GN">New connection setting name</val>
+  </key>
+</translation>

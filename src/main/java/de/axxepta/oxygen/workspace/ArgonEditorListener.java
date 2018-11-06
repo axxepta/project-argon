@@ -13,15 +13,15 @@ import java.net.URL;
  */
 class ArgonEditorListener extends WSEditorListener {
 
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+    private final StandalonePluginWorkspace pluginWorkspaceAccess;
 
-    ArgonEditorListener(StandalonePluginWorkspace pluginWorkspaceAccess) {
+    ArgonEditorListener(final StandalonePluginWorkspace pluginWorkspaceAccess) {
         this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     }
 
     @Override
-    public void editorSaved(int operationType) {
-        URL editorLocation = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA).getEditorLocation();
+    public void editorSaved(final int operationType) {
+        final URL editorLocation = pluginWorkspaceAccess.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA).getEditorLocation();
         TopicHolder.changedEditorStatus.postMessage(VersionHistoryUpdater.checkVersionHistory(editorLocation));
     }
 

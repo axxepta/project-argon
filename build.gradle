@@ -1,93 +1,84 @@
 apply plugin: 'java'
-apply plugin: 'idea'
-// apply plugin: 'war'
-//apply plugin: 'jetty'
 apply plugin: 'maven'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-group = 'de.axxepta'
-version = '0.0.11'
+group = 'de.axxepta.argon'
+version = '0.1.1'
 
 repositories {
     mavenCentral()
     maven {
-    	url 'http://files.basex.org/maven'
+        url 'http://files.basex.org/maven'
+    }
+    maven {
+        url 'http://oxygenxml.com/maven'
     }
     flatDir {
         dirs 'libs'
     }
 }
 
-
-configurations {
-    releaseJars
-}
+//configurations {
+//    releaseJars
+//}
 
 dependencies {
-
     //providedCompile 'javax.servlet:servlet-api:2.5'
     //runtime 'javax.servlet:jstl:1.1.2'
-
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.jidesoft:jide-oss:3.6.7'
     compile 'com.sun.jersey:jersey-client:1.9'
     compile 'org.basex:basex:8.5.3'
-    
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.2'
+    //compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.9.2'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
-  	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
+    compile group: 'com.google.guava', name: 'guava', version: '23.4-jre'
+    compile group: 'com.oxygenxml', name: 'oxygen', version: '19.1.0.1'
+    compile group: 'com.oxygenxml', name: 'oxygen-sdk', version: '19.1.0.1'
 
-    releaseJars 'com.sun.jersey:jersey-client:1.9'
-    releaseJars 'com.jidesoft:jide-oss:3.6.7'
-    releaseJars 'org.basex:basex:8.5.3'
-    releaseJars 'org.apache.logging.log4j:log4j-api:2.3'
-    releaseJars 'org.apache.logging.log4j:log4j-core:2.3'
-
-/*    compile 'com.jidesoft:jide-oss:3.6.7'
-    compile 'com.sun.jersey:jersey-client:1.9'
-    compile 'org.basex:basex:8.5.3'
-    compile 'com.getsentry.raven:raven-log4j2:7.8.0'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.1'
-
-    releaseJars 'com.sun.jersey:jersey-client:1.9'
-    releaseJars 'com.jidesoft:jide-oss:3.6.7'
-    releaseJars 'org.basex:basex:8.5.3'
-    releaseJars 'com.getsentry.raven:raven-log4j2:7.8.0'
-    releaseJars 'org.apache.logging.log4j:log4j-slf4j-impl:2.1' */
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+//    releaseJars 'com.sun.jersey:jersey-client:1.9'
+//    releaseJars 'com.jidesoft:jide-oss:3.6.7'
+//    releaseJars 'org.basex:basex:8.5.3'
+//    releaseJars 'org.apache.logging.log4j:log4j-api:2.3'
+//    releaseJars 'org.apache.logging.log4j:log4j-core:2.3'
 }
 
+//task copyToLib( type: Copy ) {
+//    into "$buildDir/libs/lib"
+//    from configurations.releaseJars
+//}
 
-task copyToLib( type: Copy ) {
-    into "$buildDir/libs/lib"
-    from configurations.releaseJars
-}
+//jar {
+//    dependsOn copyToLib
+//}
 
-jar {
-    dependsOn copyToLib
-}
-
-
-//create a single Jar with all dependencies
-/*task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
-                'Implementation-Version': version,
-                'Main-Class': 'de.axxepta.oxygen.workspace.WorkspaceAccessPlugin'
+task dist(type: Zip, dependsOn: jar) {
+    from (configurations.runtime.allArtifacts.files) {
+        into "lib"
     }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}*/
-
-idea{
-    project {
-        languageLevel = '1.8'
+    from (configurations.runtime) {
+        into "lib"
+        exclude "oxygen-*.jar"
     }
-    module {
-        downloadJavadoc = true // defaults to false
-        downloadSources = true
+    from (".") {
+        include "LICENSE"
+        include "extension.xml"
+        include "plugin.xml"
+        include "catalog.xml"
     }
+    from ("src/main/resources") {
+        include "images/**"
+    }
+    from ("src/main/resources") {
+        include "i18n/**"
+    }
+    archiveName "${project.name}-${project.version}.zip"
 }

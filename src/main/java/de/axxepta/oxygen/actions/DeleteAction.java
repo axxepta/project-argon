@@ -22,16 +22,16 @@ import java.awt.event.ActionEvent;
  */
 public class DeleteAction extends AbstractAction {
 
-    private ArgonTree tree;
-    private TreeModel treeModel;
+    private final ArgonTree tree;
+    private final TreeModel treeModel;
 
-    public DeleteAction(String name, Icon icon, ArgonTree tree){
+    public DeleteAction(String name, Icon icon, ArgonTree tree) {
         super(name, icon);
         this.tree = tree;
         this.treeModel = tree.getModel();
     }
 
-    public DeleteAction(ArgonTree tree){
+    public DeleteAction(ArgonTree tree) {
         super();
         this.tree = tree;
         this.treeModel = tree.getModel();
@@ -57,8 +57,8 @@ public class DeleteAction extends AbstractAction {
                         if (dialogResult == 0) {
                             if (TreeUtils.isDB(path)) {
                                 try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-                                        connection.drop(db_path);
-                                        ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
+                                    connection.drop(db_path);
+                                    ((DefaultTreeModel) treeModel).removeNodeFromParent((DefaultMutableTreeNode) path.getLastPathComponent());
                                 } catch (Exception er) {
                                     pluginWorkspace.showErrorMessage(Lang.get(Lang.Keys.warn_faileddeletedb) + " " + er.getMessage());
                                 }

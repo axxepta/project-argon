@@ -24,7 +24,7 @@ public class VersionHistoryPanel extends JPanel {
         versionHistoryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
         versionHistoryTable.getColumnModel().getColumn(1).setPreferredWidth(20);
         versionHistoryTable.getColumnModel().getColumn(2).setCellRenderer(new DateTableCellRenderer());
-        versionHistoryTable.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+        versionHistoryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         VersionHistoryUpdater versionHistoryUpdater = new VersionHistoryUpdater(versionHistoryTable);
         TopicHolder.changedEditorStatus.register(versionHistoryUpdater);
@@ -39,7 +39,7 @@ public class VersionHistoryPanel extends JPanel {
         compareRevisionsButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         versionHistoryButtonPanel.add(compareRevisionsButton);
         versionHistoryButtonPanel.add(new Box.Filler(
-                new Dimension(10,10), new Dimension(20,10), new Dimension(50,10)));
+                new Dimension(10, 10), new Dimension(20, 10), new Dimension(50, 10)));
         replaceRevisionButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         versionHistoryButtonPanel.add(replaceRevisionButton);
 

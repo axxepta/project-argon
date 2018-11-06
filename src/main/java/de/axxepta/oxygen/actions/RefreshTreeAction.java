@@ -16,8 +16,8 @@ import java.util.ArrayList;
  */
 public class RefreshTreeAction extends AbstractAction {
 
-    private ArgonTree tree;
-    private TreeModel model;
+    private final ArgonTree tree;
+    private final TreeModel model;
 
     public RefreshTreeAction(String name, Icon icon, ArgonTree tree) {
         super(name, icon);
@@ -47,7 +47,7 @@ public class RefreshTreeAction extends AbstractAction {
 
     private void buildDummyTree(DummyNode node, TreePath path) {
         int childCount = model.getChildCount(path.getLastPathComponent());
-        for (int i=0; i<childCount; i++) {
+        for (int i = 0; i < childCount; i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) model.getChild(path.getLastPathComponent(), i);
             if (child.getAllowsChildren()) {
                 TreePath newPath = path.pathByAddingChild(child);
@@ -68,7 +68,7 @@ public class RefreshTreeAction extends AbstractAction {
             tree.collapsePath(path);
         }
         int childCount = model.getChildCount(path.getLastPathComponent());
-        for (int i=0; i<childCount; i++) {
+        for (int i = 0; i < childCount; i++) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) model.getChild(path.getLastPathComponent(), i);
             if (node.isNodeAsStringChild(currentNode.getUserObject().toString())) {
                 TreePath childPath = path.pathByAddingChild(currentNode);
@@ -80,9 +80,9 @@ public class RefreshTreeAction extends AbstractAction {
     }
 
     private class DummyNode {
-        String name;
-        ArrayList<DummyNode> children;
-        boolean expanded;
+        final String name;
+        final ArrayList<DummyNode> children;
+        final boolean expanded;
 
         private DummyNode(String name, boolean expanded) {
             this.name = name;
@@ -90,7 +90,7 @@ public class RefreshTreeAction extends AbstractAction {
             this.children = new ArrayList<>();
         }
 
-        private boolean isExpanded(){
+        private boolean isExpanded() {
             return this.expanded;
         }
 
@@ -103,7 +103,7 @@ public class RefreshTreeAction extends AbstractAction {
         }
 
         private int getIndex(String childName) {
-            for (int i=0; i<children.size(); i++) {
+            for (int i = 0; i < children.size(); i++) {
                 if (children.get(i).getName().equals(childName))
                     return i;
             }

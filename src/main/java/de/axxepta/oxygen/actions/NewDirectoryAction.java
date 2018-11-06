@@ -5,7 +5,6 @@ import de.axxepta.oxygen.api.BaseXSource;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.customprotocol.ArgonChooserDialog;
 import de.axxepta.oxygen.customprotocol.ArgonChooserListModel;
-import de.axxepta.oxygen.customprotocol.CustomProtocolURLHandlerExtension;
 import de.axxepta.oxygen.tree.ArgonTree;
 import de.axxepta.oxygen.tree.ArgonTreeNode;
 import de.axxepta.oxygen.tree.TreeListener;
@@ -27,7 +26,7 @@ import java.util.List;
  */
 public class NewDirectoryAction extends AbstractAction {
 
-    private ArgonTree tree;
+    private final ArgonTree tree;
     private List<ArgonChooserListModel.Element> chooserPath;
     private JDialog newDirectoryDialog;
     private JTextField newDirectoryNameTextField;
@@ -50,15 +49,23 @@ public class NewDirectoryAction extends AbstractAction {
         String urlString;
         if (tree == null) {
             switch (chooserPath.get(0).getType()) {
-                case REPO: source = BaseXSource.REPO; break;
-                case XQ: source = BaseXSource.RESTXQ; break;
-                default: source = BaseXSource.DATABASE;
+                case REPO:
+                    source = BaseXSource.REPO;
+                    break;
+//                case XQ:
+//                    source = BaseXSource.RESTXQ;
+//                    break;
+                default:
+                    source = BaseXSource.DATABASE;
             }
             resource = ArgonChooserDialog.getResourceString(chooserPath);
-            urlString = CustomProtocolURLHandlerExtension.protocolFromSource(source) + ":" + resource;
+            urlString = source.getProtocol() + ":" + resource;
             ArgonEntity element = chooserPath.get(chooserPath.size() - 1).getType();
-            if (element.equals(ArgonEntity.DIR) || element.equals(ArgonEntity.DB) ||
-                    element.equals(ArgonEntity.REPO) || element.equals(ArgonEntity.XQ)) {
+            if (element.equals(ArgonEntity.DIR)
+                    || element.equals(ArgonEntity.DB)
+                    || element.equals(ArgonEntity.REPO)
+//                    || element.equals(ArgonEntity.XQ)
+                    ) {
                 createNewDirDialog(source, resource, urlString);
             }
         } else {
@@ -78,7 +85,7 @@ public class NewDirectoryAction extends AbstractAction {
         JFrame parentFrame = (JFrame) (new AuthorComponentFactory()).getWorkspaceUtilities().getParentFrame();
         newDirectoryDialog = DialogTools.getOxygenDialog(parentFrame, Lang.get(Lang.Keys.dlg_newdir) + " " + urlString);
 
-        JPanel content = new JPanel(new BorderLayout(10,10));
+        JPanel content = new JPanel(new BorderLayout(10, 10));
 
         MakeNewDirectoryAction makeDirectory = new MakeNewDirectoryAction(Lang.get(Lang.Keys.cm_newdir),
                 source, resource, urlString);
@@ -106,9 +113,9 @@ public class NewDirectoryAction extends AbstractAction {
 
     private class MakeNewDirectoryAction extends AbstractAction {
 
-        private String path;
-        private BaseXSource source;
-        private String urlString;
+        private final String path;
+        private final BaseXSource source;
+        private final String urlString;
 
         MakeNewDirectoryAction(String name, BaseXSource source, String path, String urlString) {
             super(name);

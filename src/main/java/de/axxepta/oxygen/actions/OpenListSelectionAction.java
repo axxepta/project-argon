@@ -1,10 +1,9 @@
 package de.axxepta.oxygen.actions;
 
 import de.axxepta.oxygen.utils.WorkspaceUtils;
-import ro.sync.exml.workspace.api.PluginWorkspace;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 import javax.swing.*;

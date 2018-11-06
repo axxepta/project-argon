@@ -16,14 +16,15 @@ public final class IOUtils {
 
     private static final Logger logger = LogManager.getLogger(IOUtils.class);
 
-    private IOUtils() {}
+    private IOUtils() {
+    }
 
     static byte[] getBytesFromInputStream(InputStream stream) throws IOException {
         byte[] bytes;
         try (ByteArrayOutputStream boStream = new ByteArrayOutputStream()) {
             int nRead;
             int bufferSize = 1024;
-            byte[] readData = new byte[bufferSize];
+            final byte[] readData = new byte[bufferSize];
             while ((nRead = stream.read(readData, 0, bufferSize)) != -1) {
                 boStream.write(readData, 0, nRead);
             }
@@ -67,19 +68,20 @@ public final class IOUtils {
 
     public static boolean isXML(byte[] bytes) {
         if (bytes.length > 4) {
-            if ((bytes[0] == (byte)0xFE) && (bytes[1] == (byte)0xFF)) {         // check for UTF-16BE BOM
+            if ((bytes[0] == (byte) 0xFE) && (bytes[1] == (byte) 0xFF)) {         // check for UTF-16BE BOM
                 return checkXML(Arrays.copyOfRange(bytes, 2, bytes.length - 1), "UTF-16BE");
-            } else if ((bytes[0] == (byte)0xFF) && (bytes[1] == (byte)0xFE)) {  // check for UTF-16LE BOM
+            } else if ((bytes[0] == (byte) 0xFF) && (bytes[1] == (byte) 0xFE)) {  // check for UTF-16LE BOM
                 return checkXML(Arrays.copyOfRange(bytes, 2, bytes.length - 1), "UTF-16LE");
-            } else if ((bytes[0] == (byte)0xEF) && (bytes[1] == (byte)0xBB) && (bytes[2] == (byte)0xBF)) {  // check for UTF-8 BOM
+            } else if ((bytes[0] == (byte) 0xEF) && (bytes[1] == (byte) 0xBB) && (bytes[2] == (byte) 0xBF)) {  // check for UTF-8 BOM
                 return checkXML(Arrays.copyOfRange(bytes, 3, bytes.length - 1), "UTF-8");
-            } else if ((bytes[0] == (byte)0x3c) && (bytes[bytes.length - 1] == (byte)0x3e)) { // check for UTF-8/ISO 8859-1 code starting with '<', ending with '>'
+            } else if ((bytes[0] == (byte) 0x3c) && (bytes[bytes.length - 1] == (byte) 0x3e)) { // check for UTF-8/ISO 8859-1 code starting with '<', ending with '>'
                 return true;
             } else {
                 return checkXML(bytes, "UTF-8");
             }
-        } else
+        } else {
             return false;
+        }
     }
 
     private static boolean isXML(String wannabe) {

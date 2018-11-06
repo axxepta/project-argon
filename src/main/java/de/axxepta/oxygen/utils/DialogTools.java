@@ -17,7 +17,7 @@ public class DialogTools {
         int dx = (parentSize.width - dialogSize.width) / 2;
         int dy = (parentSize.height - dialogSize.height) / 2;
 
-        dialog.setLocation(parent.getX()+dx, parent.getY()+dy);
+        dialog.setLocation(parent.getX() + dx, parent.getY() + dy);
     }
 
     public static void wrapAndShow(JDialog dialog, JPanel content, JFrame parentFrame) {

@@ -2,6 +2,8 @@ package de.axxepta.oxygen.customprotocol;
 
 import de.axxepta.oxygen.utils.ImageUtils;
 import de.axxepta.oxygen.utils.Lang;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.InputURLChooser;
 import ro.sync.exml.workspace.api.standalone.InputURLChooserCustomizer;
@@ -16,9 +18,12 @@ import java.util.List;
  * @author Markus on 29.10.2016.
  */
 public class ArgonInputURLChooserCustomizer implements InputURLChooserCustomizer {
+
+    private static final Logger logger = LogManager.getLogger(ArgonInputURLChooserCustomizer.class);
+
     @Override
     public void customizeBrowseActions(List<Action> list, InputURLChooser inputURLChooser) {
-        Action browseCMS = new AbstractAction("Argon BaseX", ImageUtils.getIcon(ImageUtils.BASEX)) {
+        final Action browseCMS = new AbstractAction("Argon BaseX", ImageUtils.getIcon(ImageUtils.BASEX)) {
             public void actionPerformed(ActionEvent e) {
                 ArgonChooserDialog urlChooser = new ArgonChooserDialog(
                         (Frame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
