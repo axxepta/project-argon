@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import static de.axxepta.oxygen.workspace.ArgonOptionPage.*;
 
@@ -29,7 +30,7 @@ public class BaseXConnectionWrapper {
         logger.info("refreshFromOptions " + host + " " + port + " " +  user + " " +  pass);
         try {
             connection = ClassFactory.getInstance().getRestConnection(host, port, user, pass);
-        } catch (MalformedURLException er) {
+        } catch (URISyntaxException er) {
             connection = null;
         }
 
@@ -40,7 +41,7 @@ public class BaseXConnectionWrapper {
     public static void refreshDefaults() {
         try {
             connection = ClassFactory.getInstance().getRestConnection("localhost:8984/rest", 8984, "admin", "admin");
-        } catch (MalformedURLException er) {
+        } catch (URISyntaxException er) {
             connection = null;
         }
     }
@@ -48,7 +49,7 @@ public class BaseXConnectionWrapper {
     public static void refreshDefaults(String host, int port, String user, String password) {
         try {
             connection = ClassFactory.getInstance().getRestConnection(host, port, user, password);
-        } catch (MalformedURLException er) {
+        } catch (URISyntaxException er) {
             connection = null;
         }
     }

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="DEBUG" packages="org.apache.logging.log4j.core">
+<configuration status="INFO" packages="org.apache.logging.log4j.core">
 	<appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</Console>
-    <!-- <File name="File" fileName="${env:ARGON_HOME}/argon.log"> -->
-		<File name="File" fileName="/Volumes/tmp/argon.log">
+        <!--<File name="File" fileName="${env:ARGON_HOME}/argon.log">
+
 			<PatternLayout pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</File>
+		-->
 	</appenders>
 	<Loggers>
 		<Logger name="de.axxepta.oxygen" level="debug" additivity="false">
-			<AppenderRef ref="File" />
+			<AppenderRef ref="Console" />
+			<!-- <AppenderRef ref="File" /> -->
 		</Logger>
 		<Root level="info">
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="File"/>
+			<!-- <AppenderRef ref="File"/> -->
 		</Root>
 	</Loggers>
 </configuration>

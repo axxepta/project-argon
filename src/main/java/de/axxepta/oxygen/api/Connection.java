@@ -23,7 +23,7 @@ public interface Connection extends Closeable {
      * @return entries
      * @throws IOException I/O exception
      */
-    List<Resource> list(final BaseXSource source, final String path) throws IOException;
+    List<BaseXResource> list(final BaseXSource source, final String path) throws IOException;
 
     /**
      * Returns resources of the given data source and path and recursively all it's children.

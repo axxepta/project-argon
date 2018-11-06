@@ -5,6 +5,7 @@ package de.axxepta.oxygen.api;
  *
  * @author Christian Gruen, BaseX GmbH 2015, BSD License
  */
+
 public final class BaseXResource {
     /**
      * Entry name.

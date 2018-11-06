@@ -48,23 +48,23 @@ public final class ConnectionUtils {
     /**
      * Create database chop option
      */
-    public static final String CHOP = "CHOP";
+    public static final String CHOP = "OPT_CHOP";
     /**
      * Create database ftindex option
      */
-    public static final String FTINDEX = "FTINDEX";
+    public static final String FTINDEX = "OPT_FTINDEX";
     /**
      * Create database ftindex option
      */
-    public static final String TEXTINDEX = "TEXTINDEX";
+    public static final String TEXTINDEX = "OPT_TEXTINDEX";
     /**
      * Create database ftindex option
      */
-    public static final String ATTRINDEX = "ATTRINDEX";
+    public static final String ATTRINDEX = "OPT_ATTRINDEX";
     /**
      * Create database ftindex option
      */
-    public static final String TOKENINDEX = "TOKENINDEX";
+    public static final String TOKENINDEX = "OPT_TOKENINDEX";
     /**
      * Use version control option
      */
@@ -100,16 +100,20 @@ public final class ConnectionUtils {
      * @throws IOException I/O exception
      */
     public static String getQuery(final String path) throws IOException {
-        final String resource = path + ".xq";
-        return (getAPIResource(resource));
+        final String resource = "argon/" + path + ".xq";
+        //only return the name of the query
+        return resource;
+        //return (getAPIResource(resource));
     }
 
+    /*
     public static String getAPIResource(final String path) throws IOException {
         final String resource = "/api/" + path;
         final InputStream is = ConnectionUtils.class.getResourceAsStream(resource);
         if (is == null) throw new IOException("Resource not found: " + resource);
         return Token.string(new IOStream(is).read());
     }
+    */
 
     /**
      * Prepares a resource for being sent to the server. Encodes non-XML input to Base64.

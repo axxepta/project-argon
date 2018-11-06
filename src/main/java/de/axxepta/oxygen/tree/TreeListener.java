@@ -4,10 +4,7 @@ import de.axxepta.oxygen.actions.AddDatabaseAction;
 import de.axxepta.oxygen.actions.AddNewFileAction;
 import de.axxepta.oxygen.actions.DeleteAction;
 import de.axxepta.oxygen.actions.RefreshTreeAction;
-import de.axxepta.oxygen.api.BaseXSource;
-import de.axxepta.oxygen.api.BaseXType;
-import de.axxepta.oxygen.api.MsgTopic;
-import de.axxepta.oxygen.api.Resource;
+import de.axxepta.oxygen.api.*;
 import de.axxepta.oxygen.api.event.NewDirEvent;
 import de.axxepta.oxygen.api.event.SaveFileEvent;
 import de.axxepta.oxygen.core.ClassFactory;
@@ -94,6 +91,15 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         }
     }
 
+
+    private static boolean isRightClick(MouseEvent e) {
+        return (e.getButton()==MouseEvent.BUTTON3 ||
+                (System.getProperty("os.name").contains("Mac OS") &&
+                        (e.getModifiers() & InputEvent.BUTTON1_MASK) != 0 &&
+                        (e.getModifiers() & InputEvent.CTRL_MASK) != 0));
+    }
+
+
     @Override
     public void mousePressed(MouseEvent e) {
         path = tree.getPathForLocation(e.getX(), e.getY());
@@ -119,7 +125,8 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         } catch (NullPointerException er) {
             er.printStackTrace();
         }
-        if (e.isPopupTrigger()) {
+       // if (e.isPopupTrigger()) {
+        if (isRightClick(e)) {
             contextMenu.show(e.getComponent(), e.getX(), e.getY(), path);
         }
     }
@@ -156,7 +163,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 db_path = "";
             }
 
-            List<Resource> childList;
+            List<BaseXResource> childList;
             try {
                 childList = ConnectionWrapper.list(source, db_path);
             } catch (Exception er) {
@@ -278,7 +285,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
         doubleClickExpandEnabled = expand;
     }
 
-    private boolean updateExpandedNode(MutableTreeNode node, List<Resource> newChildrenList) {
+    private boolean updateExpandedNode(MutableTreeNode node, List<BaseXResource> newChildrenList) {
         final Set<String> childrenValues = newChildrenList.stream()
                 .map(child -> child.name)
                 .collect(Collectors.toSet());
@@ -310,7 +317,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
             }
         }
         if (node.getChildCount() == 0) {  // if old list was empty skip lexicographic insert (faster)
-            for (Resource newPossibleChild : newChildrenList) {
+            for (BaseXResource newPossibleChild : newChildrenList) {
                 final String url = ((ArgonTreeNode) node).getTag().toString() + "/" + newPossibleChild.name;
                 newChild = ClassFactory.getInstance().getTreeNode(newPossibleChild.name, url);
                 newChild.setAllowsChildren(newPossibleChild.type == BaseXType.DIRECTORY);
@@ -318,7 +325,7 @@ public class TreeListener extends MouseAdapter implements TreeSelectionListener,
                 treeChanged = true;
             }
         } else {
-            for (Resource newPossibleChild : newChildrenList) {
+            for (BaseXResource newPossibleChild : newChildrenList) {
                 if (!oldChildren.contains(newPossibleChild.name)) {
                     TreeUtils.insertStrAsNodeLexi(treeModel, newPossibleChild.name, (DefaultMutableTreeNode) node,
                             newPossibleChild.type != BaseXType.DIRECTORY);

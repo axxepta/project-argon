@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * @author Markus on 02.06.2016.
@@ -43,7 +44,7 @@ public class ClassFactory {
         return new ArgonPopupMenu(tree, treeModel);
     }
 
-    public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {
+    public Connection getRestConnection(String host, int port, String user, String password) throws URISyntaxException {
         return new RestConnection(host, port, user, password);
     }
 

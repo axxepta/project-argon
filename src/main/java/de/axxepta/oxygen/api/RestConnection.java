@@ -5,6 +5,7 @@ import de.axxepta.oxygen.versioncontrol.VersionHistoryEntry;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -16,6 +17,7 @@ import org.basex.util.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.basex.util.http.HttpMethod;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -38,7 +40,7 @@ public class RestConnection implements Connection {
     /**
      * URI.
      */
-    protected final URL url;
+    protected final String url;
     protected final URI uri;
     protected final String basicAuth;
     private final CustomProtocolURLHandlerExtension lockCache = new CustomProtocolURLHandlerExtension();
@@ -52,14 +54,14 @@ public class RestConnection implements Connection {
      * @param password password string
      */
     public RestConnection(final String server, final int port, final String user,
-                          final String password) throws MalformedURLException {
+                          final String password) throws URISyntaxException {
+
         basicAuth = "Basic " + Base64.encode(user + ':' + password);
-        url = new URL("http://" + user + ":" + password + "@" + server);
-        try {
-            uri = url.toURI();
-        } catch (URISyntaxException e) {
-            throw new MalformedURLException(e.getMessage());
-        }
+        //TODO: scheme should not be assumed http only
+        //url = "http://" + user + ":" + password + "@" + server;
+        url = "http://" + server + ":" + port + "/rest";
+
+        uri = new URIBuilder(url).build();
     }
 
     @Override
@@ -68,18 +70,20 @@ public class RestConnection implements Connection {
     }
 
     @Override
-    public List<Resource> list(final BaseXSource source, final String path) throws IOException {
-        logger.info("list " + source + " [" +  path + "]");
-        final Resource resource = getResourceMetadata(path);
-        final List<Resource> list = resource.children;
-//        final String result = Token.string(request);
-//        final ArrayList<BaseXResource> list = new ArrayList<>();
-//        if (!result.isEmpty()) {
-//            final String[] results = result.split("\r?\n");
-//            for (int r = 0, rl = results.length; r < rl; r += 2) {
-//                list.add(new BaseXResource(results[r + 1], BaseXType.get(results[r]), source));
-//            }
-//        }
+    public List<BaseXResource> list(final BaseXSource source, final String path) throws IOException {
+
+        logger.debug("list " + source + " [" +  path + "]");
+
+        //final Resource resource = getResourceMetadata(path);
+        //final List<Resource> list = resource.children;
+        final String result = Token.string(request(getQuery("list-" + source), PATH, path));
+        final ArrayList<BaseXResource> list = new ArrayList<>();
+        if (!result.isEmpty()) {
+            final String[] results = result.split("\r?\n");
+            for (int r = 0, rl = results.length; r < rl; r += 2) {
+                list.add(new BaseXResource(results[r + 1], BaseXType.valueOf(results[r]), source));
+            }
+        }
         return list;
     }
 
@@ -91,6 +95,7 @@ public class RestConnection implements Connection {
 
     @Override
     public List<BaseXResource> listAll(final BaseXSource source, final String path) throws IOException {
+
         logger.info("listAll " + source + " [" +  path + "]");
         final String result = Token.string(request(getQuery("listall-" + source), PATH, path));
         final ArrayList<BaseXResource> list = new ArrayList<>();
@@ -362,28 +367,57 @@ public class RestConnection implements Connection {
     /**
      * Executes the specified HTTP request and returns the result.
      *
-     * @param body     request body
+     * @param query name of the query
      * @param bindings keys and values
      * @return string result, or {@code null} for a failure.
      * @throws IOException I/O exception
      */
-    protected byte[] request(final String body, final String... bindings) throws IOException {
-        logger.info("request " + body.split("\n")[0] + " " + String.join(",", bindings));
-        final StringWriter buf = new StringWriter();
-        new UnsupportedOperationException().printStackTrace(new PrintWriter(buf));
-        logger.error(buf);
-        if (true) return new byte[]{};
-        final HttpURLConnection conn = ConnectionUtils.getConnection(url);
+    protected byte[] request(final String query, final String... bindings) throws IOException {
+
+        URIBuilder ub = null;
+        URI queryUri = null;
+        HttpURLConnection conn = null;
+
         try {
+            ub = new URIBuilder(url);
+
+            ub.addParameter("run", query);
+            ub.addParameter("method","text");
+
+            for (int b = 0, bl = bindings.length; b < bl; b += 2) {
+                ub.addParameter(bindings[b], bindings[b + 1]);
+            }
+
+            queryUri = ub.build();
+
+        }catch(URISyntaxException ex) {
+            logger.error("Connection failed to set uri: ", ex.getMessage());
+            throw BaseXQueryException.get(ex.getMessage());
+        }
+
+        logger.debug("uri: " + queryUri.toString());
+
+
+        try {
+            conn = ConnectionUtils.getConnection(queryUri.toURL());
             conn.setRequestProperty("Authorization", basicAuth);
-            conn.setDoOutput(true);
-            conn.setDoInput(false);
             conn.setAllowUserInteraction(false);
-//            conn.setRequestMethod(POST.name());
             conn.setRequestMethod(GET.name());
+
+            return new IOStream(conn.getInputStream()).read();
+        } catch (final IOException ex) {
+            logger.error("Connection failed to set query: ", ex.getMessage());
+            final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
+            throw BaseXQueryException.get(msg);
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    //  conn.setRequestMethod(POST.name());
 //            conn.setRequestProperty(HttpText.CONTENT_TYPE, MediaType.APPLICATION_XML.toString());
 
-            // build and send query
+    // build and send query
 //            final TokenBuilder tb = new TokenBuilder();
 //            tb.add("<query xmlns='http://basex.org/rest'>\n");
 //            tb.add("<text>").add(toEntities(body)).add("</text>\n");
@@ -396,15 +430,7 @@ public class RestConnection implements Connection {
 //                out.write(tb.finish());
 //                out.close();
 //            }
-            return new IOStream(conn.getInputStream()).read();
-        } catch (final IOException ex) {
-            logger.debug("Connection failed to set query: ", ex.getMessage());
-            final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
-            throw BaseXQueryException.get(msg);
-        } finally {
-            conn.disconnect();
-        }
-    }
+
 
     /**
      * Executes the specified HTTP request and returns the result.
@@ -423,26 +449,20 @@ public class RestConnection implements Connection {
      * @throws IOException I/O exception
      */
     protected byte[] request(final String path, final HttpMethod method) throws IOException {
-        try {
-            logger.info(method.name() + " "
-//                    + url + " " + path + " -> "
-                    + url.toURI().resolve(path).toURL());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        logger.debug(method.name() + " " + uri.resolve(path).toURL());
+
         HttpURLConnection conn = null;
         try {
-            conn = ConnectionUtils.getConnection(url.toURI().resolve(path).toURL());
+            conn = ConnectionUtils.getConnection(uri.resolve(path).toURL());
             conn.setRequestProperty("Authorization", basicAuth);
             conn.setAllowUserInteraction(false);
             conn.setRequestMethod(method.name());
             return new IOStream(conn.getInputStream()).read();
         } catch (final IOException ex) {
-            logger.debug("Connection failed to set query: ", ex.getMessage());
+            logger.error("Connection failed to set query: ", ex.getMessage());
             final String msg = Token.string(new IOStream(conn.getErrorStream()).read());
             throw BaseXQueryException.get(msg);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(path);
         } finally {
             conn.disconnect();
         }

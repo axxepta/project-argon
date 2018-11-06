@@ -156,7 +156,7 @@ public final class ConnectionWrapper {
         return inputStream;
     }
 
-    public static List<Resource> list(BaseXSource source, String path) throws IOException {
+    public static List<BaseXResource> list(BaseXSource source, String path) throws IOException {
         logger.info("list " + source + " "+ path);
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
             return connection.list(source, path);
@@ -188,7 +188,7 @@ public final class ConnectionWrapper {
 
     public static boolean directoryExists(BaseXSource source, String path) {
         try (Connection connection = BaseXConnectionWrapper.getConnection()) {
-            List<Resource> resourceList = connection.list(source, path);
+            List<BaseXResource> resourceList = connection.list(source, path);
             return (resourceList.size() != 0);
         } catch (NullPointerException npe) {
             logger.info("Error checking for directory " + path + ": no database connection");
