@@ -44,7 +44,7 @@ public class ClassFactory {
         return new ArgonPopupMenu(tree, treeModel);
     }
 
-    public Connection getRestConnection(String host, int port, String user, String password) throws URISyntaxException {
+    public Connection getRestConnection(String host, int port, String user, String password) throws MalformedURLException {
         return new RestConnection(host, port, user, password);
     }
 

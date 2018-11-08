@@ -100,20 +100,21 @@ public final class ConnectionUtils {
      * @throws IOException I/O exception
      */
     public static String getQuery(final String path) throws IOException {
-        final String resource = "argon/" + path + ".xq";
+        //final String resource = "argon/" + path + ".xq";
         //only return the name of the query
-        return resource;
-        //return (getAPIResource(resource));
+       // return resource;
+        final String resource = path + ".xq";
+        return (getAPIResource(resource));
     }
 
-    /*
+
     public static String getAPIResource(final String path) throws IOException {
         final String resource = "/api/" + path;
         final InputStream is = ConnectionUtils.class.getResourceAsStream(resource);
         if (is == null) throw new IOException("Resource not found: " + resource);
         return Token.string(new IOStream(is).read());
     }
-    */
+
 
     /**
      * Prepares a resource for being sent to the server. Encodes non-XML input to Base64.

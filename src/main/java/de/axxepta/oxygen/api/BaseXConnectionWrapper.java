@@ -30,7 +30,7 @@ public class BaseXConnectionWrapper {
         logger.info("refreshFromOptions " + host + " " + port + " " +  user + " " +  pass);
         try {
             connection = ClassFactory.getInstance().getRestConnection(host, port, user, pass);
-        } catch (URISyntaxException er) {
+        } catch (MalformedURLException er) {
             connection = null;
         }
 
@@ -41,7 +41,7 @@ public class BaseXConnectionWrapper {
     public static void refreshDefaults() {
         try {
             connection = ClassFactory.getInstance().getRestConnection("localhost:8984/rest", 8984, "admin", "admin");
-        } catch (URISyntaxException er) {
+        } catch (MalformedURLException er) {
             connection = null;
         }
     }
@@ -49,7 +49,7 @@ public class BaseXConnectionWrapper {
     public static void refreshDefaults(String host, int port, String user, String password) {
         try {
             connection = ClassFactory.getInstance().getRestConnection(host, port, user, password);
-        } catch (URISyntaxException er) {
+        } catch (MalformedURLException er) {
             connection = null;
         }
     }
