@@ -60,7 +60,7 @@ dependencies {
 //    dependsOn copyToLib
 //}
 
-task dist(type: Zip, dependsOn: jar) {
+task toArchive(type: Copy, dependsOn: jar) {
     from (configurations.runtime.allArtifacts.files) {
         into "lib"
     }
@@ -70,9 +70,9 @@ task dist(type: Zip, dependsOn: jar) {
     }
     from (".") {
         include "LICENSE"
-        include "extension.xml"
+        //include "extension.xml"
         include "plugin.xml"
-        include "catalog.xml"
+        //include "catalog.xml"
     }
     from ("src/main/resources") {
         include "images/**"
@@ -80,5 +80,17 @@ task dist(type: Zip, dependsOn: jar) {
     from ("src/main/resources") {
         include "i18n/**"
     }
-    archiveName "${project.name}-${project.version}.zip"
+    into "${buildDir}/toArchive"
+    //archiveName "${project.name}-${project.version}.zip"
 }
+
+
+
+task packageDistribution(type: Zip, dependsOn: toArchive) {
+    archiveName = "${project.name}-${project.version}.zip"
+    destinationDir = file("${buildDir}/dist")
+
+    from "${buildDir}/toArchive"
+}
+
+

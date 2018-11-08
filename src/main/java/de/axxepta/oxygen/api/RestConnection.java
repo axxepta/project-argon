@@ -77,6 +77,9 @@ public class RestConnection implements Connection {
         //final Resource resource = getResourceMetadata(path);
         //final List<Resource> list = resource.children;
         final String result = Token.string(request(getQuery("list-" + source), PATH, path));
+
+        logger.debug("result " + result);
+
         final ArrayList<BaseXResource> list = new ArrayList<>();
         if (!result.isEmpty()) {
             final String[] results = result.split("\r?\n");

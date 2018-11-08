@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
-<plugin name="Kuhnuri" description="Plugin for accessing BaseX DB" version="0.1.0"
+<plugin name="Kuhnuri" description="Plugin for accessing BaseX DB" version="0.1.1"
         vendor="Jarno Elovirta" class="de.axxepta.oxygen.workspace.WorkspaceAccessPlugin"
         classLoaderType="preferReferencedResources">
     <runtime>
 
-        <library name="lib/author-0.1.0.jar" />
+        <library name="lib/author-0.1.1.jar" />
         <library name="lib/jersey-core-1.9.jar" />
         <library name="lib/jide-oss-3.6.7.jar" />
         <library name="lib/jersey-client-1.9.jar" />
