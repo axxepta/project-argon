@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3d30828-18d3-4a8c-bd47-23932b0e0ca8" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXConnectionWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXConnectionWrapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ConnectionUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ConnectionUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ClassFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ClassFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/VersionHistoryEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/VersionHistoryEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <ignored path="argon.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -125,6 +121,7 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="bat" value="1" />
+          <entry key="gitignore" value="1" />
           <entry key="gradle" value="6" />
           <entry key="java" value="56" />
           <entry key="xml" value="7" />
@@ -136,13 +133,14 @@
           <entry key="Bat" value="1" />
           <entry key="Groovy" value="6" />
           <entry key="JAVA" value="56" />
-          <entry key="PLAIN_TEXT" value="5" />
+          <entry key="PLAIN_TEXT" value="6" />
           <entry key="XML" value="7" />
           <entry key="XQuery" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
+          <entry key="gitignore" value="6" />
           <entry key="gradle" value="107" />
           <entry key="java" value="1287" />
           <entry key="xml" value="86" />
@@ -152,6 +150,7 @@
         <counts>
           <entry key="Groovy" value="107" />
           <entry key="JAVA" value="1287" />
+          <entry key="PLAIN_TEXT" value="6" />
           <entry key="XML" value="86" />
         </counts>
       </usages-collector>
@@ -164,22 +163,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="203">
-              <caret line="56" column="101" selection-start-line="56" selection-start-column="101" selection-end-line="56" selection-end-column="101" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="21" />
+            <state relative-caret-position="561">
+              <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -624,6 +611,7 @@
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXConnectionWrapper.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -665,70 +653,6 @@
             </path>
             <path>
               <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="build" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="build" type="462c0819:PsiDirectoryNode" />
-              <item name="distributions" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="build" type="462c0819:PsiDirectoryNode" />
-              <item name="toArchive" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="oxygen" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="oxygen" type="462c0819:PsiDirectoryNode" />
-              <item name="api" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="author" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -760,7 +684,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541671163951" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541672448102" />
     <property name="full.screen.before.presentation.mode" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../syncrovet/_GIT/Syncrovet-Alfavet" />
     <property name="project.structure.last.edited" value="Project" />
@@ -1115,7 +1039,7 @@
     <frame x="-201" y="-1429" width="1837" height="1341" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20540236" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20540236" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.30163935" />
       <window_info id="UI Designer" order="2" />
       <window_info id="Palette&#9;" order="3" />
@@ -1124,8 +1048,8 @@
       <window_info id="Palette " order="6" />
       <window_info id="Favorites" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.45198676" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4927706" weight="0.25331125" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.45198676" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4927706" visible="true" weight="0.25331125" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1204,7 +1128,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/parseQuery.java" />
     <entry file="file://$PROJECT_DIR$/src/main/resources/api/lock.xq">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="493">
@@ -1517,13 +1440,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="203">
@@ -1531,6 +1447,20 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
         </state>
       </provider>
     </entry>
