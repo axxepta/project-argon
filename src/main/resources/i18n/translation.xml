@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <translation>
   <key value="tree_root">
-    <val lang="en_GN">Kuhnuri CMS</val>
+    <val lang="en_GN">BaseX</val>
   </key>
   <key value="tree_DB">
     <val lang="en_GN">Databases</val>
@@ -73,13 +73,13 @@
     <val lang="en_GN">Filesystem</val>
   </key>
   <key value="cm_todb">
-    <val lang="en_GN">Kuhnuri</val>
+    <val lang="en_GN">Argon</val>
   </key>
   <key value="cm_export">
     <val lang="en_GN">Export Files</val>
   </key>
   <key value="cm_saveas">
-    <val lang="en_GN">Save As with Kuhnuri CMS Protocol</val>
+    <val lang="en_GN">Save As with BaseX Protocol</val>
   </key>
   <key value="cm_replycomment">
     <val lang="en_GN">Reply to Comment</val>
@@ -196,13 +196,13 @@
     <val lang="en_GN">Connection configuration:</val>
   </key>
   <key value="lbl_host">
-    <val lang="en_GN">Kuhnuri CMS Host:</val>
+    <val lang="en_GN">BaseX Host:</val>
   </key>
   <key value="lbl_user">
-    <val lang="en_GN">Kuhnuri CMS User Name:</val>
+    <val lang="en_GN">BaseX User Name:</val>
   </key>
   <key value="lbl_pwd">
-    <val lang="en_GN">Kuhnuri CMS Password:</val>
+    <val lang="en_GN">BaseX Password:</val>
   </key>
   <key value="lbl_vcs">
     <val lang="en_GN">Version control</val>
@@ -235,13 +235,13 @@
     <val lang="en_GN">Ignore databases when filtering with tree filter</val>
   </key>
   <key value="title_connection">
-    <val lang="en_GN">Kuhnuri CMS Connection</val>
+    <val lang="en_GN">BaseX Connection</val>
   </key>
   <key value="title_connection2">
-    <val lang="en_GN">Kuhnuri CMS connection configuration</val>
+    <val lang="en_GN">BaseX connection configuration</val>
   </key>
   <key value="title_history">
-    <val lang="en_GN">Kuhnuri CMS Version History</val>
+    <val lang="en_GN">Argon Version History</val>
   </key>
   <key value="warn_failednewdb">
     <val lang="en_GN">Failed to add new database:</val>
@@ -268,22 +268,22 @@
     <val lang="en_GN">Resource</val>
   </key>
   <key value="warn_storing">
-    <val lang="en_GN">could not be stored to Kuhnuri CMS connection</val>
+    <val lang="en_GN">could not be stored to BaseX connection</val>
   </key>
   <key value="warn_locked">
     <val lang="en_GN">already exists and is locked by another user.</val>
   </key>
   <key value="warn_nosnippet">
-    <val lang="en_GN">Failed to store snippet to Kuhnuri CMS:</val>
+    <val lang="en_GN">Failed to store snippet to BaseX:</val>
   </key>
   <key value="warn_nofile">
     <val lang="en_GN">Failed to store snippet to File:</val>
   </key>
   <key value="warn_failedsearch">
-    <val lang="en_GN">Failed to search for Kuhnuri CMS resources:</val>
+    <val lang="en_GN">Failed to search for BaseX resources:</val>
   </key>
   <key value="warn_failedlist">
-    <val lang="en_GN">Failed to get resource list from Kuhnuri CMS server:</val>
+    <val lang="en_GN">Failed to get resource list from BaseX server:</val>
   </key>
   <key value="warn_notransfer">
     <val lang="en_GN">Couldn't access transferred objects, see log file for details.</val>
@@ -379,13 +379,13 @@
     <val lang="en_GN">Reply to comment</val>
   </key>
   <key value="dlg_saveas">
-    <val lang="en_GN">Save File via Kuhnuri CMS Connection</val>
+    <val lang="en_GN">Save File via BaseX Connection</val>
   </key>
   <key value="#dlg_open">
-    <val lang="en_GN">Open File via Kuhnuri CMS Connection</val>
+    <val lang="en_GN">Open File via BaseX Connection</val>
   </key>
   <key value="dlg_open">
-    <val lang="en_GN">Open Kuhnuri CMS...</val>
+    <val lang="en_GN">Open BaseX...</val>
   </key>
   <key value="dlg_snippet">
     <val lang="en_GN">Save Snippet</val>

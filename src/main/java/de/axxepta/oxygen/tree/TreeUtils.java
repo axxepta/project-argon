@@ -126,8 +126,8 @@ public class TreeUtils {
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_DB))) {
                 return BaseXSource.DATABASE;
             }
-//            if (sourceStr.equals(Lang.get(Lang.Keys.tree_restxq)))
-//                return BaseXSource.RESTXQ;
+           if (sourceStr.equals(Lang.get(Lang.Keys.tree_restxq)))
+               return BaseXSource.RESTXQ;
             if (sourceStr.equals(Lang.get(Lang.Keys.tree_repo))) {
                 return BaseXSource.REPO;
             }

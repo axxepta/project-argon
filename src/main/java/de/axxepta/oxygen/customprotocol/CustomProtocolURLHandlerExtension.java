@@ -11,6 +11,7 @@ import ro.sync.exml.plugin.lock.LockException;
 import ro.sync.exml.plugin.lock.LockHandler;
 import ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension;
 import ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension;
+//import sun.misc.Lock;
 
 import java.net.URL;
 import java.net.URLStreamHandler;
@@ -26,16 +27,21 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
     private static final Logger logger = LogManager.getLogger(CustomProtocolURLHandlerExtension.class);
     public static final Cache<URL, Boolean> readOnlyCache = CacheBuilder.newBuilder()
             .maximumSize(1000)
-            .expireAfterWrite(10, TimeUnit.SECONDS)
+            .expireAfterWrite(1, TimeUnit.SECONDS)
             .build();
 
     private final LockHandler lockHandler = new LockHandler() {
+
         @Override
         public void unlock(URL url) throws LockException {
+            logger.debug("lock handler: unlock called for " + url.toString());
+            readOnlyCache.put(url, Boolean.TRUE);
         }
 
         @Override
         public void updateLock(URL url, int i) throws LockException {
+            logger.debug("lock handler: update lock called");
+
         }
     };
 
@@ -50,9 +56,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
             case ArgonConst.ARGON:
                 handler = new ArgonProtocolHandler(BaseXSource.DATABASE);
                 return handler;
-//            case ArgonConst.ARGON_XQ:
-//                handler = new ArgonProtocolHandler(BaseXSource.RESTXQ);
-//                return handler;
+           case ArgonConst.ARGON_XQ:
+               handler = new ArgonProtocolHandler(BaseXSource.RESTXQ);
+               return handler;
             case ArgonConst.ARGON_REPO:
                 handler = new ArgonProtocolHandler(BaseXSource.REPO);
                 return handler;
@@ -78,6 +84,9 @@ public class CustomProtocolURLHandlerExtension implements URLStreamHandlerWithLo
 
     @Override
     public boolean isReadOnly(URL url) {
+
+        //return ConnectionWrapper.isLockedByUser(CustomProtocolURLUtils.sourceFromURL(url), CustomProtocolURLUtils.pathFromURL(url));
+
         // FIXME there should be a way to put/remove from cache on checkout/checkin operations
         try {
             return readOnlyCache.get(url, () -> !ConnectionWrapper.isLockedByUser(CustomProtocolURLUtils.sourceFromURL(url), CustomProtocolURLUtils.pathFromURL(url)));

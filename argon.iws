@@ -2,7 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3d30828-18d3-4a8c-bd47-23932b0e0ca8" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/argon.iws" beforeDir="false" afterPath="$PROJECT_DIR$/argon.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ArgonEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ArgonEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXSource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonEditorsWatchMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonEditorsWatchMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/Lang.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/Lang.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/DateTableCellRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/DateTableCellRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/api/create-database.xq" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/api/create-database.xq" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/i18n/translation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/i18n/translation.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java" afterDir="false" />
     </list>
     <ignored path="argon.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -75,11 +89,6 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="author" type="f1a62948:ProjectNode" />
-                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="author" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
@@ -111,47 +120,50 @@
     <session id="1454681778">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
-          <entry key="project.open.time.11" value="1" />
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.10" value="2" />
+          <entry key="project.open.time.11" value="2" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.23" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="bat" value="1" />
-          <entry key="gitignore" value="1" />
-          <entry key="gradle" value="6" />
-          <entry key="java" value="56" />
-          <entry key="xml" value="7" />
-          <entry key="xq" value="7" />
+          <entry key="gitignore" value="2" />
+          <entry key="gradle" value="8" />
+          <entry key="java" value="99" />
+          <entry key="xml" value="8" />
+          <entry key="xq" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Bat" value="1" />
-          <entry key="Groovy" value="6" />
-          <entry key="JAVA" value="56" />
-          <entry key="PLAIN_TEXT" value="6" />
-          <entry key="XML" value="7" />
-          <entry key="XQuery" value="2" />
+          <entry key="Groovy" value="8" />
+          <entry key="JAVA" value="99" />
+          <entry key="PLAIN_TEXT" value="7" />
+          <entry key="XML" value="8" />
+          <entry key="XQuery" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="6" />
-          <entry key="gradle" value="107" />
-          <entry key="java" value="1287" />
-          <entry key="xml" value="86" />
+          <entry key="gradle" value="137" />
+          <entry key="java" value="2046" />
+          <entry key="xml" value="97" />
+          <entry key="xq" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Groovy" value="107" />
-          <entry key="JAVA" value="1287" />
+          <entry key="Groovy" value="137" />
+          <entry key="JAVA" value="2046" />
           <entry key="PLAIN_TEXT" value="6" />
-          <entry key="XML" value="86" />
+          <entry key="XML" value="97" />
+          <entry key="XQuery" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -163,10 +175,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ArgonEntity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
-              <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
+            <state relative-caret-position="119">
+              <caret line="7" column="17" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -195,10 +207,23 @@
       <find>save</find>
       <find>uris</find>
       <find>URISyntaxException</find>
+      <find>drophan</find>
+      <find>drag</find>
+      <find>rt</find>
+      <find>drop</find>
+      <find>loc</find>
+      <find>Version</find>
+      <find>init</find>
+      <find>gra</find>
+      <find>Argon.</find>
     </findStrings>
     <replaceStrings>
       <replace>'2.9.2</replace>
+      <replace>BaseX</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>F:\Projekte\argon\project-argon\src\main\java\de\axxepta\oxygen</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -394,9 +419,9 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="6141741325021" />
+        <entry key="$PROJECT_DIR$" value="6166652648188" />
         <entry key="$PROJECT_DIR$/.gradle" value="0" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="660225103" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="1720730932" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="407797137" />
         <entry key="$PROJECT_DIR$/settings.gradle" value="361029268" />
       </map>
@@ -584,27 +609,22 @@
         <option value="$PROJECT_DIR$/src/main/resources/api/locked.xq" />
         <option value="$PROJECT_DIR$/src/main/resources/api/lock.xq" />
         <option value="$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq" />
-        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" />
         <option value="$PROJECT_DIR$/src/main/resources/api/get-database.xq" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/workspace/BaseXOptionPage.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/VersionRevisionUpdater.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/BaseXByteArrayOutputStream.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/workspace/ArgonWorkspaceAccessPluginExtension.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferHandler.java" />
         <option value="$PROJECT_DIR$/build_release.bat" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BasexConnection.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java" />
         <option value="$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/customprotocol/ArgonRestConnectionTest.java" />
         <option value="$PROJECT_DIR$/src/main/resources/log4j2.xml" />
-        <option value="$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXResource.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/ConnectionWrapper.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java" />
         <option value="$PROJECT_DIR$/extension.xml" />
         <option value="$PROJECT_DIR$/plugin.xml" />
-        <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ConnectionUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/VersionHistoryEntry.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ClassFactory.java" />
@@ -612,6 +632,22 @@
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/api/create-database.xq" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonEditorsWatchMap.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/DateTableCellRenderer.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/i18n/translation.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTree.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeNode.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferHandler.java" />
+        <option value="$PROJECT_DIR$/build.gradle" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXSource.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeUtils.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/Lang.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLUtils.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ArgonEntity.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java" />
       </list>
     </option>
   </component>
@@ -623,10 +659,10 @@
     <option name="LAST_EDITED_TAB_NAME" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-201" />
-    <option name="y" value="-1429" />
-    <option name="width" value="1837" />
-    <option name="height" value="1341" />
+    <option name="x" value="211" />
+    <option name="y" value="26" />
+    <option name="width" value="1673" />
+    <option name="height" value="1010" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -642,8 +678,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -653,12 +687,54 @@
             </path>
             <path>
               <item name="author" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="author" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="author" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="author" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="oxygen" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="author" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="oxygen" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="author" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project-argon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="oxygen" type="462c0819:PsiDirectoryNode" />
+              <item name="tree" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -684,14 +760,14 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541672448102" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541968999915" />
     <property name="full.screen.before.presentation.mode" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../syncrovet/_GIT/Syncrovet-Alfavet" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -822,7 +898,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="project-argon [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="project-argon [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -833,25 +909,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="clean" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method v="2" />
-    </configuration>
-    <configuration name="project-argon [dist]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="dist" />
+            <option value="build" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -888,6 +946,24 @@
         <option name="taskNames">
           <list>
             <option value="packageDistribution" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="project-argon [test]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="test" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -974,19 +1050,19 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Gradle.project-argon [clean]" />
-      <item itemvalue="Gradle.project-argon [dist]" />
       <item itemvalue="Gradle.project-argon [jar]" />
       <item itemvalue="Gradle.project-argon [toArchive]" />
       <item itemvalue="Gradle.project-argon [packageDistribution]" />
+      <item itemvalue="Gradle.project-argon [build]" />
+      <item itemvalue="Gradle.project-argon [test]" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.project-argon [test]" />
+        <item itemvalue="Gradle.project-argon [build]" />
         <item itemvalue="Gradle.project-argon [packageDistribution]" />
         <item itemvalue="Gradle.project-argon [toArchive]" />
         <item itemvalue="Gradle.project-argon [jar]" />
-        <item itemvalue="Gradle.project-argon [dist]" />
-        <item itemvalue="Gradle.project-argon [clean]" />
       </list>
     </recent_temporary>
   </component>
@@ -1004,12 +1080,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="project-argon_[test] - 2018.11.06 at 14h 22m 13s.xml">
-      <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
-    </history-entry>
-    <history-entry file="project-argon_[test] - 2018.11.06 at 14h 24m 09s.xml">
-      <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
-    </history-entry>
     <history-entry file="project-argon_[test] - 2018.11.06 at 14h 40m 24s.xml">
       <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
     </history-entry>
@@ -1034,12 +1104,18 @@
     <history-entry file="project-argon_[test] - 2018.11.06 at 16h 13m 13s.xml">
       <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
     </history-entry>
+    <history-entry file="project-argon_[test] - 2018.11.08 at 12h 32m 51s.xml">
+      <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
+    </history-entry>
+    <history-entry file="project-argon_[test] - 2018.11.08 at 12h 35m 45s.xml">
+      <configuration name="project-argon [test]" configurationId="GradleRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-201" y="-1429" width="1837" height="1341" extended-state="0" />
+    <frame x="211" y="26" width="1673" height="1010" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20540236" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21636702" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.30163935" />
       <window_info id="UI Designer" order="2" />
       <window_info id="Palette&#9;" order="3" />
@@ -1048,8 +1124,8 @@
       <window_info id="Palette " order="6" />
       <window_info id="Favorites" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.45198676" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4927706" visible="true" weight="0.25331125" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.5005701" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4927706" visible="true" weight="0.13911061" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1057,7 +1133,7 @@
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5072294" side_tool="true" weight="0.27498" />
       <window_info anchor="bottom" id="Build" order="8" weight="0.0076791807" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.18138042" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.21826087" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.21778141" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.18214607" />
       <window_info anchor="bottom" id="Application Servers" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -1068,7 +1144,7 @@
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="right" id="Theme Preview" order="6" />
       <window_info anchor="right" id="Maven Projects" order="7" weight="0.32996207" />
-      <window_info anchor="right" id="Gradle" order="8" visible="true" weight="0.13899831" />
+      <window_info anchor="right" id="Gradle" order="8" visible="true" weight="0.12585245" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21855828" />
@@ -1128,170 +1204,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/lock.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="1" selection-start-line="29" selection-start-column="1" selection-end-line="29" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/locked.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="47" selection-start-line="10" selection-start-column="47" selection-end-line="10" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/lockedByUser.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/no-lock-set.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/get-database.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/release">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/release/extension.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="50" lean-forward="true" selection-start-line="14" selection-start-column="50" selection-end-line="14" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.2/21f2f0b1de60af93890b12fac673035f516f0c94/jackson-databind-2.9.2-sources.jar!/com/fasterxml/jackson/databind/ObjectMapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15946">
-          <caret line="1014" column="24" selection-start-line="1014" selection-start-column="24" selection-end-line="1014" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/create-database.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/delete-database.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/delete-repo.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/init.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/listall-database.xq">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="3" selection-start-line="8" selection-start-column="3" selection-end-line="8" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/api/list-database.xq">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="50" selection-start-line="11" selection-start-column="50" selection-end-line="11" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BasexConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2669">
-          <caret line="25" column="25" lean-forward="true" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ClientConnection.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/actions/SearchInPathAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="45" column="11" selection-start-line="45" selection-start-column="11" selection-end-line="45" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://F:/Server/OpenJDK8_x64_Win_jdk8u172-b11/jdk8u172-b11/src.zip!/java/net/URLConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="764">
-          <caret line="897" column="16" selection-start-line="897" selection-start-column="16" selection-end-line="897" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/test-results/test/TEST-de.axxepta.oxygen.customprotocol.ArgonRestConnectionTest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="77" selection-start-line="13" selection-start-column="77" selection-end-line="13" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLUtilsTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="48" selection-start-line="48" selection-end-line="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonPopupMenu.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1836">
-          <caret line="128" column="31" selection-start-line="128" selection-start-column="30" selection-end-line="128" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/Lang.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="23" selection-start-line="23" selection-end-line="23" />
-          <folding>
-            <element signature="method#get#0;class#Lang#0" />
-            <element signature="e#6011#6012#0" expanded="true" />
-            <element signature="e#6060#6061#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Resource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/settings.gradle">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="jar://F:/Server/OpenJDK8_x64_Win_jdk8u172-b11/jdk8u172-b11/src.zip!/java/net/HttpURLConnection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -1303,9 +1215,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
           <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1323,24 +1232,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXResource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="7" lean-forward="true" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/Connection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-680">
           <caret line="25" column="22" selection-start-line="25" selection-start-column="22" selection-end-line="25" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="240" column="30" selection-start-line="240" selection-start-column="30" selection-end-line="240" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -1361,18 +1256,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/toArchive/plugin.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-51" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="67" column="18" lean-forward="true" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/build/toArchive/plugin.xml" />
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.basex/basex/8.5.3/d249e1ceeb403b6b1d3ae956743cc240c845ccd1/basex-8.5.3-sources.jar!/org/basex/util/Token.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -1380,29 +1264,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="174" column="11" selection-start-line="174" selection-start-column="11" selection-end-line="174" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#TreeListener#0;class#TreeListener#0" />
-            <element signature="method#keyPressed#0;class#TreeListener#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/ConnectionWrapper.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="244">
           <caret line="142" column="74" lean-forward="true" selection-start-line="142" selection-start-column="74" selection-end-line="142" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ConnectionUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="105" column="32" selection-start-line="105" selection-start-column="32" selection-end-line="105" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -1420,16 +1285,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ClassFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="46" column="121" selection-start-line="46" selection-start-column="121" selection-end-line="46" selection-end-column="121" />
         </state>
       </provider>
     </entry>
@@ -1440,30 +1295,305 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/de/axxepta/oxygen/api/ArgonRestConnectionTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="27" column="17" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ConnectionUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="97" column="35" selection-start-line="97" selection-start-column="35" selection-end-line="97" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/RestConnection.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
-          <caret line="56" column="101" selection-start-line="56" selection-start-column="101" selection-end-line="56" selection-end-column="101" />
+        <state relative-caret-position="337">
+          <caret line="83" column="21" selection-start-line="83" selection-start-column="16" selection-end-line="83" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/api/create-database.xq">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="163" selection-start-line="15" selection-start-column="163" selection-end-line="15" selection-end-column="163" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/api/checked-out-files.xq">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.oxygenxml/oxygen/19.1.0.1/c6883b46b4b990b2f588a5ae3f9c09cf018529fb/oxygen-19.1.0.1-sources.jar!/ro/sync/exml/plugin/lock/LockHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="62" column="17" selection-start-line="62" selection-start-column="17" selection-end-line="62" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/event/ListDirEvent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="42" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ClassFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="663">
+          <caret line="63" column="22" selection-start-line="63" selection-start-column="19" selection-end-line="63" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/SubjectInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/core/ObserverInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/i18n/translation.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="27" selection-start-line="3" selection-start-column="22" selection-end-line="3" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://F:/Server/OpenJDK8_x64_Win_jdk8u172-b11/jdk8u172-b11/src.zip!/javax/swing/TransferHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-986">
+          <caret line="81" column="2" lean-forward="true" selection-start-line="81" selection-start-column="2" selection-end-line="81" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="275" column="13" selection-start-line="275" selection-start-column="13" selection-end-line="275" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#TreeListener#0;class#TreeListener#0" />
+            <element signature="method#updateExpandedNode#0;class#TreeListener#0" />
+            <element signature="method#keyPressed#0;class#TreeListener#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-167">
+          <caret line="41" column="5" lean-forward="true" selection-start-line="41" selection-start-column="5" selection-end-line="41" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/versioncontrol/DateTableCellRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="43" selection-start-line="43" selection-end-line="43" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java">
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.oxygenxml/oxygen/19.1.0.1/c6883b46b4b990b2f588a5ae3f9c09cf018529fb/oxygen-19.1.0.1-sources.jar!/ro/sync/exml/workspace/api/standalone/ui/Tree.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="21" />
+        <state relative-caret-position="221">
+          <caret line="67" column="13" selection-start-line="67" selection-start-column="13" selection-end-line="67" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeCellRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="663">
+          <caret line="39" column="4" selection-start-line="39" selection-start-column="4" selection-end-line="39" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/settings.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeTransferHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1838#1839#0" expanded="true" />
+            <element signature="e#1884#1885#0" expanded="true" />
+            <element signature="e#2007#2008#0" expanded="true" />
+            <element signature="e#2054#2055#0" expanded="true" />
+            <element signature="e#2103#2104#0" expanded="true" />
+            <element signature="e#2138#2139#0" expanded="true" />
+            <element signature="method#canImport#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#canMoveInTree#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#importData#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#copyInTree#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#copyURLsInTree#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#streamCopy#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#transferFiles#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#copyFile#0;class#ArgonTreeTransferHandler#0" />
+            <element signature="method#readTextFile#0;class#ArgonTreeTransferHandler#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonEditorsWatchMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="25" column="36" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="33" column="5" selection-start-line="33" selection-start-column="5" selection-end-line="33" selection-end-column="5" />
+        <state relative-caret-position="260">
+          <caret line="30" column="4" selection-start-line="30" selection-start-column="1" selection-end-line="30" selection-end-column="4" />
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.oxygenxml/oxygen/20.0.0.2/be0c0a05bb6738e98559699fd1a7e1773c70eefc/oxygen-20.0.0.2-sources.jar!/ro/sync/exml/plugin/lock/LockHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="62" column="17" selection-start-line="62" selection-start-column="17" selection-end-line="62" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/actions/CheckOutAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="986">
+          <caret line="74" column="24" selection-start-line="74" selection-start-column="12" selection-end-line="74" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTreeNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="12" column="16" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/ArgonTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="12" column="33" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="13" column="7" lean-forward="true" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLHandlerExtension.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="67">
+          <caret line="56" column="63" selection-start-line="56" selection-start-column="63" selection-end-line="56" selection-end-column="63" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/tree/TreeUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="130" column="48" selection-start-line="130" selection-start-column="47" selection-end-line="130" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/utils/Lang.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="96" selection-start-line="96" selection-end-line="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/CustomProtocolURLUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="663">
+          <caret line="48" column="12" lean-forward="true" selection-start-line="48" selection-start-column="12" selection-end-line="48" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXResource.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="22" column="7" lean-forward="true" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
+          <folding>
+            <element signature="e#752#753#0" expanded="true" />
+            <element signature="e#779#780#0" expanded="true" />
+            <element signature="e#825#826#0" expanded="true" />
+            <element signature="e#872#873#0" expanded="true" />
+            <element signature="e#908#909#0" expanded="true" />
+            <element signature="e#964#965#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserListModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="62" column="53" selection-start-line="62" selection-start-column="53" selection-end-line="62" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/BaseXSource.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="3" lean-forward="true" selection-start-line="17" selection-start-column="3" selection-end-line="17" selection-end-column="3" />
+          <folding>
+            <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#883#884#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/customprotocol/ArgonChooserDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="207" column="40" selection-start-line="207" selection-start-column="40" selection-end-line="207" selection-end-column="40" />
+          <folding>
+            <element signature="e#11455#11456#0" expanded="true" />
+            <element signature="e#11502#11503#0" expanded="true" />
+            <element signature="e#11565#11566#0" expanded="true" />
+            <element signature="e#11612#11613#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/axxepta/oxygen/api/ArgonEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="gradleExecuteTaskHistory">
+    <option value="" />
   </component>
   <component name="masterDetails">
     <states>

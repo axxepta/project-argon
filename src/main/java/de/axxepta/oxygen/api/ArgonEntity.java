@@ -12,7 +12,7 @@ public enum ArgonEntity {
     DB,
     DB_BASE,
     REPO,
-//    XQ,
+    XQ,
     ROOT;
 
     public static ArgonEntity get(final String string) {

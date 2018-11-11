@@ -16,7 +16,7 @@ public enum BaseXSource {
 //    /**
 //     * RESTXQ.
 //     */
-//    RESTXQ("argonquery"),
+    RESTXQ("argonquery"),
     /**
      * Repository.
      */

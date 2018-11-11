@@ -19,7 +19,7 @@ public class ArgonRestConnectionTest {
     @BeforeClass
     public static void setUp() throws Exception {
 
-        conn = new RestConnection("localhost", 8984, "admin", "admin");
+        conn = new RestConnection("localhost:8984/rest", 8984, "admin", "admin");
     }
 
     @Test

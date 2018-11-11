@@ -65,30 +65,42 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
     public Transferable createTransferable(JComponent c) {
+        logger.debug("creating transferable for selection");
         return new ArgonTreeTransferable(getTreeSelection()[0]);
     }
 
     public boolean canImport(TransferHandler.TransferSupport info) {
+        logger.debug("check can import " + info.toString());
+
         if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
                 info.isDataFlavorSupported(treePathFlavor)) || !info.isDrop()) {
             return false;
         }
         info.setShowDropLocation(true);
         TreePath path = ((JTree.DropLocation) info.getDropLocation()).getPath();
+
+        logger.debug("path from drop location " + path.toString());
+
         //DefaultTreeModel model = (DefaultTreeModel) ((JTree) info.getComponent()).getModel();
         if (!TreeUtils.isRoot(path) && !TreeUtils.isDbSource(path)) {
-            if (info.getDropAction() == COPY)
-                return true;
+
+            logger.debug("checked root and db source");
+
+            try {
+
+                if (info.getDropAction() == COPY) return true;
+
             if (info.isDataFlavorSupported(treePathFlavor)) {
-                try {
-                    TreePath importPath = (TreePath) info.getTransferable().getTransferData(treePathFlavor);
-                    return canMoveInTree(path.getPath(), importPath.getPath());
-                } catch (IOException | UnsupportedFlavorException ex) {
-                    return false;
-                }
-            } else {
-                return true;
+                logger.debug("check can move in tree");
+                TreePath importPath = (TreePath) info.getTransferable().getTransferData(treePathFlavor);
+                return canMoveInTree(path.getPath(), importPath.getPath());
+            } else return true;
+
+            } catch (Exception ex) {
+                logger.debug("exception "+ ex.getMessage());
+                return false;
             }
+
         } else {
             return false;
         }
@@ -108,6 +120,8 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
     public boolean importData(TransferHandler.TransferSupport info) {
+
+        logger.debug("import data: " + info.toString());
         if (!(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ||
                 info.isDataFlavorSupported(treePathFlavor)) || !info.isDrop()) {
             return false;
@@ -210,6 +224,7 @@ public class ArgonTreeTransferHandler extends TransferHandler {
     }
 
     private void transferFiles(ArrayList<File> transferData, TreePath path, String pathURLString) {
+        logger.debug("start transfer files");
         BaseXSource source = TreeUtils.sourceFromTreePath(path);
 
         ArrayList<String> pathList = new ArrayList<>();

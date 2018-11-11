@@ -37,6 +37,23 @@ public class CustomProtocolURLUtils {
         return sourceFromURLString(url.toString());
     }
 
+
+    public static BaseXSource sourceFromURLString(String urlString) {
+        String protocol;
+        int ind1 = urlString.indexOf(":");
+        if (ind1 == -1)     // no proper URL string, but used someplace
+            protocol = urlString;
+        else
+            protocol = urlString.substring(0, ind1);
+        switch (protocol) {
+            case ArgonConst.ARGON_XQ: return BaseXSource.RESTXQ;
+            case ArgonConst.ARGON_REPO: return BaseXSource.REPO;
+            case ArgonConst.ARGON: return BaseXSource.DATABASE;
+            default: return null;
+        }
+    }
+
+    /*
     public static BaseXSource sourceFromURLString(String urlString) {
         final URI uri = URI.create(urlString);
         if (uri.getScheme() == null) {
@@ -52,5 +69,5 @@ public class CustomProtocolURLUtils {
             default:
                 return null;
         }
-    }
+    }*/
 }

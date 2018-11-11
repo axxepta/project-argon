@@ -1,5 +1,6 @@
 package de.axxepta.oxygen.customprotocol;
 
+import de.axxepta.oxygen.api.MsgTopic;
 import de.axxepta.oxygen.api.TopicHolder;
 import de.axxepta.oxygen.api.event.ListDirEvent;
 import de.axxepta.oxygen.core.ObserverInterface;
@@ -14,7 +15,7 @@ import static de.axxepta.oxygen.api.TopicHolder.listDir;
  * @author Markus on 28.10.2015.
  * The enwraped map contains information about which Argon URLs are opened in editors
  */
-public class ArgonEditorsWatchMap implements ObserverInterface<ListDirEvent> {
+public class ArgonEditorsWatchMap implements ObserverInterface<MsgTopic> {
 
     private static final ArgonEditorsWatchMap instance = new ArgonEditorsWatchMap();
 
@@ -100,7 +101,7 @@ public class ArgonEditorsWatchMap implements ObserverInterface<ListDirEvent> {
     }
 
     @Override
-    public void update(ListDirEvent type, Object... message) {
+    public void update(MsgTopic type, Object... message) {
         //
     }
 
