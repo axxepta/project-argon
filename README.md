@@ -1,9 +1,9 @@
-# Kuhnuri CMS Oxygen Plugin 
+# Argon Author Oxygen Plugin 
 
-Plugin to Oxygen XML editor to add support for Kuhnuri CMS.
+Plugin to Oxygen XML editor to add support for BaseX DB.
 
 ## License
 
-Kuhnuri CMS Oxygen Plugin is licensed for use under [The MIT License][1].
+Argon Author is licensed for use under [The MIT License][1].
 
 [1]: https://opensource.org/licenses/MIT
